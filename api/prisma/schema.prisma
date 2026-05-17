@@ -1,0 +1,43 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Player {
+  id        String   @id @default(uuid())
+  name      String
+  rating    Float    @default(1000)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  teamA1Matches Match[] @relation("TeamAPlayer1")
+  teamA2Matches Match[] @relation("TeamAPlayer2")
+  teamB1Matches Match[] @relation("TeamBPlayer1")
+  teamB2Matches Match[] @relation("TeamBPlayer2")
+}
+
+model Match {
+  id String @id @default(uuid())
+
+  teamAPlayer1Id String
+  teamAPlayer2Id String
+  teamBPlayer1Id String
+  teamBPlayer2Id String
+
+  teamAPlayer1 Player @relation("TeamAPlayer1", fields: [teamAPlayer1Id], references: [id])
+  teamAPlayer2 Player @relation("TeamAPlayer2", fields: [teamAPlayer2Id], references: [id])
+  teamBPlayer1 Player @relation("TeamBPlayer1", fields: [teamBPlayer1Id], references: [id])
+  teamBPlayer2 Player @relation("TeamBPlayer2", fields: [teamBPlayer2Id], references: [id])
+
+  gamesA Int
+  gamesB Int
+
+  ratingDeltaA Float
+  ratingDeltaB Float
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

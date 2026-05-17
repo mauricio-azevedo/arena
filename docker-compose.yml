@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: beachrank-postgres
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_USER: beachrank
+      POSTGRES_PASSWORD: beachrank
+      POSTGRES_DB: beachrank
+    volumes:
+      - beachrank-postgres-data:/var/lib/postgresql/data
+
+volumes:
+  beachrank-postgres-data:
