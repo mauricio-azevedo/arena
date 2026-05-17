@@ -1,5 +1,12 @@
-import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
-import { MatchesService } from './matches.service';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+} from '@nestjs/common';import { MatchesService } from './matches.service';
 
 @Controller('matches')
 export class MatchesController {
@@ -18,5 +25,10 @@ export class MatchesController {
   @Get()
   findAll() {
     return this.matchesService.findAll();
+  }
+
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.matchesService.remove(id);
   }
 }

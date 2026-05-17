@@ -82,3 +82,15 @@ export async function updateMatch(
 
 	return response.json();
 }
+
+export async function deleteMatch(id: string): Promise<{ success: boolean }> {
+	const response = await fetch(`${API_BASE_URL}/matches/${id}`, {
+		method: 'DELETE',
+	});
+
+	if (!response.ok) {
+		throw new Error('Failed to delete match');
+	}
+
+	return response.json();
+}

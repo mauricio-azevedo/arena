@@ -1,12 +1,24 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { MoreHorizontal } from 'lucide-react';
 import type { Match, Player } from '@/types/api';
-import { updateMatch } from '@/lib/api';
+import { deleteMatch, updateMatch } from '@/lib/api';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import {
+	AlertDialog,
+	AlertDialogAction,
+	AlertDialogCancel,
+	AlertDialogContent,
+	AlertDialogDescription,
+	AlertDialogFooter,
+	AlertDialogHeader,
+	AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import {
 	Dialog,
 	DialogContent,
@@ -14,20 +26,18 @@ import {
 	DialogTitle,
 } from '@/components/ui/dialog';
 import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import {
 	Select,
 	SelectContent,
 	SelectItem,
 	SelectTrigger,
 	SelectValue,
 } from '@/components/ui/select';
-import { MoreHorizontal } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 
 type Props = {
 	matches: Match[];
@@ -75,63 +85,117 @@ function MatchCard({
 	match: Match;
 	onCorrect: () => void;
 }) {
+	const router = useRouter();
+	const [deleteOpen, setDeleteOpen] = useState(false);
+	const [isDeleting, setIsDeleting] = useState(false);
+
 	const teamAWon = match.gamesA > match.gamesB;
 	const winningDelta = teamAWon ? match.ratingDeltaA : match.ratingDeltaB;
 
+	async function handleDelete() {
+		setIsDeleting(true);
+
+		try {
+			await deleteMatch(match.id);
+			setDeleteOpen(false);
+			router.refresh();
+		} finally {
+			setIsDeleting(false);
+		}
+	}
+
 	return (
-		<Card className="relative">
-			<CardContent className="p-4 pr-12">
-				<DropdownMenu>
-					<DropdownMenuTrigger asChild>
-						<Button
-							type="button"
-							variant="ghost"
-							size="icon"
-							className="absolute right-3 top-3 h-8 w-8 text-muted-foreground"
-							aria-label="Ações da partida"
-						>
-							<MoreHorizontal className="h-4 w-4" />
-						</Button>
-					</DropdownMenuTrigger>
+		<>
+      <Card className="relative">
+        <CardContent className="p-4 pr-12">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+				  type="button"
+	              variant="ghost"
+	              size="icon"
+	              className="absolute right-3 top-3 h-8 w-8 text-muted-foreground"
+	              aria-label="Ações da partida"
+			  >
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
 
-					<DropdownMenuContent align="end">
-						<DropdownMenuItem onClick={onCorrect}>
-							Editar
-						</DropdownMenuItem>
-					</DropdownMenuContent>
-				</DropdownMenu>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={onCorrect}>
+                Editar
+              </DropdownMenuItem>
 
-				<div className="flex items-center justify-between gap-4">
-					<div className="min-w-0 flex-1 space-y-3">
-						<MatchTeam
-							names={`${match.teamAPlayer1.name} / ${match.teamAPlayer2.name}`}
-							score={match.gamesA}
-							isWinner={teamAWon}
-						/>
+              <DropdownMenuItem
+				  className="text-destructive focus:text-destructive"
+	              onSelect={(event) => {
+					  event.preventDefault();
+					  setDeleteOpen(true);
+				  }}
+			  >
+                Apagar
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
 
-						<MatchTeam
-							names={`${match.teamBPlayer1.name} / ${match.teamBPlayer2.name}`}
-							score={match.gamesB}
-							isWinner={!teamAWon}
-						/>
+          <div className="flex items-center justify-between gap-4">
+            <div className="min-w-0 flex-1 space-y-3">
+              <MatchTeam
+				  names={`${match.teamAPlayer1.name} / ${match.teamAPlayer2.name}`}
+	              score={match.gamesA}
+	              isWinner={teamAWon}
+			  />
 
-						<p className="text-xs text-muted-foreground">
-							{formatDate(match.createdAt)}
-						</p>
-					</div>
+              <MatchTeam
+				  names={`${match.teamBPlayer1.name} / ${match.teamBPlayer2.name}`}
+	              score={match.gamesB}
+	              isWinner={!teamAWon}
+			  />
 
-					<div className="shrink-0 text-right">
-						<p className="text-3xl font-semibold tracking-tight">
-							{match.gamesA}–{match.gamesB}
-						</p>
+              <p className="text-xs text-muted-foreground">
+                {formatDate(match.createdAt)}
+              </p>
+            </div>
 
-						<p className="mt-1 text-xs text-muted-foreground">
-							{formatDelta(winningDelta)}
-						</p>
-					</div>
-				</div>
-			</CardContent>
-		</Card>
+            <div className="shrink-0 text-right">
+              <p className="text-3xl font-semibold tracking-tight">
+                {match.gamesA}–{match.gamesB}
+              </p>
+
+              <p className="mt-1 text-xs text-muted-foreground">
+                {formatDelta(winningDelta)}
+              </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+        <AlertDialogContent className="max-w-md rounded-3xl">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Apagar partida?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Este lançamento será removido e o ranking será recalculado com o
+              histórico restante.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isDeleting}>
+              Cancelar
+            </AlertDialogCancel>
+
+            <AlertDialogAction
+				onClick={handleDelete}
+	            disabled={isDeleting}
+	            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+			>
+              {isDeleting ? 'Apagando...' : 'Apagar'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
 	);
 }
 
@@ -155,17 +219,17 @@ function CorrectMatchDialog({
 	const [message, setMessage] = useState<string | null>(null);
 	const [isSubmitting, setIsSubmitting] = useState(false);
 
-	function openWithMatch(nextMatch: Match | null) {
-		if (!nextMatch) return;
+	useEffect(() => {
+		if (!match) return;
 
-		setTeamAPlayer1Id(nextMatch.teamAPlayer1Id);
-		setTeamAPlayer2Id(nextMatch.teamAPlayer2Id);
-		setTeamBPlayer1Id(nextMatch.teamBPlayer1Id);
-		setTeamBPlayer2Id(nextMatch.teamBPlayer2Id);
-		setGamesA(String(nextMatch.gamesA));
-		setGamesB(String(nextMatch.gamesB));
+		setTeamAPlayer1Id(match.teamAPlayer1Id);
+		setTeamAPlayer2Id(match.teamAPlayer2Id);
+		setTeamBPlayer1Id(match.teamBPlayer1Id);
+		setTeamBPlayer2Id(match.teamBPlayer2Id);
+		setGamesA(String(match.gamesA));
+		setGamesB(String(match.gamesB));
 		setMessage(null);
-	}
+	}, [match]);
 
 	const selectedPlayerIds = useMemo(
 		() =>
@@ -235,13 +299,7 @@ function CorrectMatchDialog({
 	}
 
 	return (
-		<Dialog
-			open={Boolean(match)}
-			onOpenChange={(open) => {
-				if (!open) onClose();
-				if (open) openWithMatch(match);
-			}}
-		>
+		<Dialog open={Boolean(match)} onOpenChange={(open) => !open && onClose()}>
 			<DialogContent className="max-w-md rounded-3xl">
 				<DialogHeader>
 					<DialogTitle>Corrigir partida</DialogTitle>

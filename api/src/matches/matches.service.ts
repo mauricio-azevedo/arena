@@ -215,4 +215,24 @@ export class MatchesService {
       teamBPlayer2: true,
     };
   }
+
+  async remove(id: string) {
+    return this.prisma.$transaction(async (tx) => {
+      const existingMatch = await tx.match.findUnique({
+        where: { id },
+      });
+
+      if (!existingMatch) {
+        throw new NotFoundException('Match not found');
+      }
+
+      await tx.match.delete({
+        where: { id },
+      });
+
+      await this.recalculateRatings(tx);
+
+      return { success: true };
+    });
+  }
 }
