@@ -6,7 +6,7 @@ import {
 import { PrismaService } from '../prisma/prisma.service';
 import { calculateBeachRating } from '../rating/calculate-beach-rating';
 
-type CreateMatchBody = {
+type MatchBody = {
   teamAPlayer1Id: string;
   teamAPlayer2Id: string;
   teamBPlayer1Id: string;
@@ -15,17 +15,85 @@ type CreateMatchBody = {
   gamesB: number;
 };
 
+const INITIAL_RATING = 1000;
+
 @Injectable()
 export class MatchesService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(body: CreateMatchBody) {
+  async create(body: MatchBody) {
+    this.validateMatchBody(body);
+
+    return this.prisma.$transaction(async (tx) => {
+      await this.ensurePlayersExist(tx, body);
+
+      const match = await tx.match.create({
+        data: {
+          ...body,
+          ratingDeltaA: 0,
+          ratingDeltaB: 0,
+        },
+      });
+
+      await this.recalculateRatings(tx);
+
+      return tx.match.findUnique({
+        where: { id: match.id },
+        include: this.matchInclude(),
+      });
+    });
+  }
+
+  async update(id: string, body: MatchBody) {
+    this.validateMatchBody(body);
+
+    return this.prisma.$transaction(async (tx) => {
+      const existingMatch = await tx.match.findUnique({
+        where: { id },
+      });
+
+      if (!existingMatch) {
+        throw new NotFoundException('Match not found');
+      }
+
+      await this.ensurePlayersExist(tx, body);
+
+      await tx.match.update({
+        where: { id },
+        data: {
+          ...body,
+          ratingDeltaA: 0,
+          ratingDeltaB: 0,
+        },
+      });
+
+      await this.recalculateRatings(tx);
+
+      return tx.match.findUnique({
+        where: { id },
+        include: this.matchInclude(),
+      });
+    });
+  }
+
+  findAll() {
+    return this.prisma.match.findMany({
+      orderBy: { createdAt: 'desc' },
+      include: this.matchInclude(),
+    });
+  }
+
+  private validateMatchBody(body: MatchBody) {
     const playerIds = [
       body.teamAPlayer1Id,
       body.teamAPlayer2Id,
       body.teamBPlayer1Id,
       body.teamBPlayer2Id,
     ];
+
+    if (playerIds.some((id) => !id)) {
+      throw new BadRequestException('All players are required');
+    }
 
     if (new Set(playerIds).size !== 4) {
       throw new BadRequestException('A player cannot appear twice in a match');
@@ -34,71 +102,113 @@ export class MatchesService {
     if (body.gamesA < 0 || body.gamesB < 0 || body.gamesA + body.gamesB === 0) {
       throw new BadRequestException('Invalid score');
     }
+  }
 
-    const players = await this.prisma.player.findMany({
+  private async ensurePlayersExist(tx: any, body: MatchBody) {
+    const playerIds = [
+      body.teamAPlayer1Id,
+      body.teamAPlayer2Id,
+      body.teamBPlayer1Id,
+      body.teamBPlayer2Id,
+    ];
+
+    const players = await tx.player.findMany({
       where: { id: { in: playerIds } },
     });
 
     if (players.length !== 4) {
       throw new NotFoundException('One or more players were not found');
     }
+  }
 
-    const byId = Object.fromEntries(
-      players.map((player) => [player.id, player]),
+  private async recalculateRatings(tx: any) {
+    type RatingState = {
+      id: string;
+      name: string;
+      rating: number;
+    };
+
+    const players = (await tx.player.findMany({
+      select: {
+        id: true,
+        name: true,
+        rating: true,
+      },
+    })) as RatingState[];
+
+    const playersById = new Map<string, RatingState>(
+      players.map((player) => [
+        player.id,
+        {
+          id: player.id,
+          name: player.name,
+          rating: INITIAL_RATING,
+        },
+      ]),
     );
 
-    const result = calculateBeachRating({
-      teamA: [byId[body.teamAPlayer1Id], byId[body.teamAPlayer2Id]],
-      teamB: [byId[body.teamBPlayer1Id], byId[body.teamBPlayer2Id]],
-      gamesA: body.gamesA,
-      gamesB: body.gamesB,
+    const matches = await tx.match.findMany({
+      orderBy: { createdAt: 'asc' },
     });
 
-    return this.prisma.$transaction(async (tx) => {
+    for (const match of matches) {
+      const teamAPlayer1 = playersById.get(match.teamAPlayer1Id);
+      const teamAPlayer2 = playersById.get(match.teamAPlayer2Id);
+      const teamBPlayer1 = playersById.get(match.teamBPlayer1Id);
+      const teamBPlayer2 = playersById.get(match.teamBPlayer2Id);
+
+      if (!teamAPlayer1 || !teamAPlayer2 || !teamBPlayer1 || !teamBPlayer2) {
+        throw new Error('Invalid match players');
+      }
+
+      const result = calculateBeachRating({
+        teamA: [teamAPlayer1, teamAPlayer2],
+        teamB: [teamBPlayer1, teamBPlayer2],
+        gamesA: match.gamesA,
+        gamesB: match.gamesB,
+      });
+
       for (const player of result.teamA.players) {
-        await tx.player.update({
-          where: { id: player.id },
-          data: { rating: player.newRating },
+        playersById.set(player.id, {
+          id: player.id,
+          name: player.name,
+          rating: player.newRating,
         });
       }
 
       for (const player of result.teamB.players) {
-        await tx.player.update({
-          where: { id: player.id },
-          data: { rating: player.newRating },
+        playersById.set(player.id, {
+          id: player.id,
+          name: player.name,
+          rating: player.newRating,
         });
       }
 
-      return tx.match.create({
+      await tx.match.update({
+        where: { id: match.id },
         data: {
-          teamAPlayer1Id: body.teamAPlayer1Id,
-          teamAPlayer2Id: body.teamAPlayer2Id,
-          teamBPlayer1Id: body.teamBPlayer1Id,
-          teamBPlayer2Id: body.teamBPlayer2Id,
-          gamesA: body.gamesA,
-          gamesB: body.gamesB,
           ratingDeltaA: result.teamA.delta,
           ratingDeltaB: result.teamB.delta,
         },
-        include: {
-          teamAPlayer1: true,
-          teamAPlayer2: true,
-          teamBPlayer1: true,
-          teamBPlayer2: true,
+      });
+    }
+
+    for (const player of playersById.values()) {
+      await tx.player.update({
+        where: { id: player.id },
+        data: {
+          rating: player.rating,
         },
       });
-    });
+    }
   }
 
-  findAll() {
-    return this.prisma.match.findMany({
-      orderBy: { createdAt: 'desc' },
-      include: {
-        teamAPlayer1: true,
-        teamAPlayer2: true,
-        teamBPlayer1: true,
-        teamBPlayer2: true,
-      },
-    });
+  private matchInclude() {
+    return {
+      teamAPlayer1: true,
+      teamAPlayer2: true,
+      teamBPlayer1: true,
+      teamBPlayer2: true,
+    };
   }
 }
