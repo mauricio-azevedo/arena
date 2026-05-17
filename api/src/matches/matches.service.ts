@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { calculateBeachRating } from '../rating/calculate-beach-rating';
+import type { Prisma } from '../generated/prisma/client';
 
 type MatchBody = {
   teamAPlayer1Id: string;
@@ -104,7 +105,10 @@ export class MatchesService {
     }
   }
 
-  private async ensurePlayersExist(tx: any, body: MatchBody) {
+  private async ensurePlayersExist(
+    tx: Prisma.TransactionClient,
+    body: MatchBody,
+  ) {
     const playerIds = [
       body.teamAPlayer1Id,
       body.teamAPlayer2Id,
@@ -121,7 +125,7 @@ export class MatchesService {
     }
   }
 
-  private async recalculateRatings(tx: any) {
+  private async recalculateRatings(tx: Prisma.TransactionClient) {
     type RatingState = {
       id: string;
       name: string;
