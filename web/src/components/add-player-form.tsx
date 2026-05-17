@@ -3,6 +3,10 @@
 import { FormEvent, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createPlayer } from '@/lib/api';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 export function AddPlayerForm() {
 	const router = useRouter();
@@ -28,21 +32,29 @@ export function AddPlayerForm() {
 	}
 
 	return (
-		<form onSubmit={handleSubmit} className="mt-8 flex gap-2">
-			<input
-				value={name}
-				onChange={(event) => setName(event.target.value)}
-				placeholder="Nome do jogador"
-				className="min-w-0 flex-1 rounded-2xl bg-zinc-900 px-4 py-3 text-sm text-white outline-none ring-1 ring-zinc-800 placeholder:text-zinc-500 focus:ring-amber-400"
-			/>
+		<Card className="mt-6">
+			<CardHeader>
+				<CardTitle>Novo jogador</CardTitle>
+			</CardHeader>
 
-			<button
-				type="submit"
-				disabled={isSubmitting}
-				className="rounded-2xl bg-amber-400 px-4 py-3 text-sm font-black text-zinc-950 disabled:opacity-50"
-			>
-				Adicionar
-			</button>
-		</form>
+			<CardContent>
+				<form onSubmit={handleSubmit} className="space-y-3">
+					<div className="space-y-2">
+						<Label htmlFor="player-name">Nome</Label>
+
+						<Input
+							id="player-name"
+							value={name}
+							onChange={(event) => setName(event.target.value)}
+							placeholder="Ex: João Silva"
+						/>
+					</div>
+
+					<Button type="submit" className="w-full" disabled={isSubmitting}>
+						{isSubmitting ? 'Adicionando...' : 'Adicionar jogador'}
+					</Button>
+				</form>
+			</CardContent>
+		</Card>
 	);
 }
