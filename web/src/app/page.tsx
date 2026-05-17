@@ -1,4 +1,5 @@
 import { getRanking } from '@/lib/api';
+import { AddPlayerForm } from '@/components/add-player-form';
 
 export default async function Home() {
 	const ranking = await getRanking();
@@ -15,6 +16,8 @@ export default async function Home() {
 				<p className="mt-2 text-sm text-zinc-400">
 					Rating casual baseado em desempenho nas partidas.
 				</p>
+
+				<AddPlayerForm />
 
 				<section className="mt-8 space-y-3">
 					{ranking.map((player, index) => (

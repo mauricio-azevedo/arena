@@ -13,3 +13,19 @@ export async function getRanking(): Promise<Player[]> {
 
 	return response.json();
 }
+
+export async function createPlayer(name: string): Promise<Player> {
+	const response = await fetch(`${API_BASE_URL}/players`, {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+		},
+		body: JSON.stringify({ name }),
+	});
+
+	if (!response.ok) {
+		throw new Error('Failed to create player');
+	}
+
+	return response.json();
+}
