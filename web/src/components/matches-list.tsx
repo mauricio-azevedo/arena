@@ -9,8 +9,7 @@ export function MatchesList({ matches }: Props) {
 	if (matches.length === 0) {
 		return (
 			<section className="mt-8">
-				<h2 className="text-xl font-black">Histórico</h2>
-				<p className="mt-2 text-sm text-muted-foreground">
+				<p className="text-sm text-muted-foreground">
 					Nenhuma partida registrada ainda.
 				</p>
 			</section>
@@ -18,69 +17,90 @@ export function MatchesList({ matches }: Props) {
 	}
 
 	return (
-		<section className="mt-8">
-			<div className="mt-4 space-y-3">
-				{matches.map((match) => {
-					const teamAWon = match.gamesA > match.gamesB;
+		<section className="mt-8 space-y-3">
+			{matches.map((match) => {
+				const teamAWon = match.gamesA > match.gamesB;
+				const winningDelta = teamAWon ? match.ratingDeltaA : match.ratingDeltaB;
 
-					return (
-						<Card key={match.id}>
-							<CardContent className="p-4">
-								<div className="flex items-center justify-between gap-4">
-									<div className="min-w-0 space-y-2">
-										<TeamLine
-											players={`${match.teamAPlayer1.name} / ${match.teamAPlayer2.name}`}
-											isWinner={teamAWon}
-										/>
+				return (
+					<Card key={match.id} className="overflow-hidden">
+						<CardContent className="p-4">
+							<div className="flex items-center justify-between gap-4">
+								<div className="min-w-0 flex-1 space-y-3">
+									<MatchTeam
+										names={`${match.teamAPlayer1.name} / ${match.teamAPlayer2.name}`}
+										score={match.gamesA}
+										isWinner={teamAWon}
+									/>
 
-										<TeamLine
-											players={`${match.teamBPlayer1.name} / ${match.teamBPlayer2.name}`}
-											isWinner={!teamAWon}
-										/>
+									<MatchTeam
+										names={`${match.teamBPlayer1.name} / ${match.teamBPlayer2.name}`}
+										score={match.gamesB}
+										isWinner={!teamAWon}
+									/>
 
-										<p className="pt-1 text-xs text-muted-foreground">
-											{new Date(match.createdAt).toLocaleDateString('pt-BR')}
-										</p>
-									</div>
-
-									<div className="shrink-0 text-right">
-										<p className="text-2xl font-black">
-											{match.gamesA}–{match.gamesB}
-										</p>
-										<p className="text-xs text-muted-foreground">
-											{teamAWon
-												? formatDelta(match.ratingDeltaA)
-												: formatDelta(match.ratingDeltaB)}
-										</p>
-									</div>
+									<p className="text-xs text-muted-foreground">
+										{formatDate(match.createdAt)}
+									</p>
 								</div>
-							</CardContent>
-						</Card>
-					);
-				})}
-			</div>
+
+								<div className="shrink-0 text-right">
+									<p className="text-3xl font-semibold tracking-tight">
+										{match.gamesA}–{match.gamesB}
+									</p>
+
+									<p className="mt-1 text-xs text-muted-foreground">
+										{formatDelta(winningDelta)}
+									</p>
+								</div>
+							</div>
+						</CardContent>
+					</Card>
+				);
+			})}
 		</section>
 	);
 }
 
-function TeamLine({
-					  players,
-					  isWinner,
-				  }: {
-	players: string;
+type MatchTeamProps = {
+	names: string;
+	score: number;
 	isWinner: boolean;
-}) {
+};
+
+function MatchTeam({ names, score, isWinner }: MatchTeamProps) {
 	return (
-		<p
-			className={`truncate text-sm ${
-				isWinner ? 'font-bold text-foreground' : 'text-muted-foreground'
-			}`}
-		>
-			{players}
-		</p>
+		<div className="flex min-w-0 items-center gap-3">
+			<div
+				className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-sm font-semibold ${
+					isWinner
+						? 'bg-foreground text-background'
+						: 'bg-muted text-muted-foreground'
+				}`}
+			>
+				{score}
+			</div>
+
+			<p
+				className={`truncate text-sm ${
+					isWinner
+						? 'font-semibold text-foreground'
+						: 'text-muted-foreground'
+				}`}
+			>
+				{names}
+			</p>
+		</div>
 	);
 }
 
 function formatDelta(delta: number) {
-	return `${delta >= 0 ? '+' : ''}${delta.toFixed(1)} rating`;
+	return `${delta >= 0 ? '+' : ''}${delta.toFixed(1)}`;
+}
+
+function formatDate(date: string) {
+	return new Date(date).toLocaleDateString('pt-BR', {
+		day: '2-digit',
+		month: 'short',
+	});
 }
