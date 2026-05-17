@@ -1,4 +1,4 @@
-import { Player } from '@/types/api';
+import type { CreateMatchInput, Match, Player } from '@/types/api';
 
 const API_BASE_URL = 'http://localhost:3000';
 
@@ -25,6 +25,22 @@ export async function createPlayer(name: string): Promise<Player> {
 
 	if (!response.ok) {
 		throw new Error('Failed to create player');
+	}
+
+	return response.json();
+}
+
+export async function createMatch(input: CreateMatchInput): Promise<Match> {
+	const response = await fetch(`${API_BASE_URL}/matches`, {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+		},
+		body: JSON.stringify(input),
+	});
+
+	if (!response.ok) {
+		throw new Error('Failed to create match');
 	}
 
 	return response.json();

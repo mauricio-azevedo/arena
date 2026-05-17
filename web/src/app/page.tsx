@@ -1,5 +1,6 @@
 import { getRanking } from '@/lib/api';
 import { AddPlayerForm } from '@/components/add-player-form';
+import { AddMatchForm } from '@/components/add-match-form';
 
 export default async function Home() {
 	const ranking = await getRanking();
@@ -18,6 +19,8 @@ export default async function Home() {
 				</p>
 
 				<AddPlayerForm />
+
+				<AddMatchForm players={ranking} />
 
 				<section className="mt-8 space-y-3">
 					{ranking.map((player, index) => (
