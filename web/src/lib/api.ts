@@ -45,3 +45,15 @@ export async function createMatch(input: CreateMatchInput): Promise<Match> {
 
 	return response.json();
 }
+
+export async function getMatches(): Promise<Match[]> {
+	const response = await fetch(`${API_BASE_URL}/matches`, {
+		cache: 'no-store',
+	});
+
+	if (!response.ok) {
+		throw new Error('Failed to fetch matches');
+	}
+
+	return response.json();
+}

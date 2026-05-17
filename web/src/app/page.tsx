@@ -1,9 +1,10 @@
-import { getRanking } from '@/lib/api';
+import { getMatches, getRanking } from '@/lib/api';
 import { AddPlayerForm } from '@/components/add-player-form';
 import { AddMatchForm } from '@/components/add-match-form';
+import { MatchesList } from '@/components/matches-list';
 
 export default async function Home() {
-	const ranking = await getRanking();
+	const [ranking, matches] = await Promise.all([getRanking(), getMatches()]);
 
 	return (
 		<main className="min-h-screen bg-zinc-950 px-4 py-6 text-white">
@@ -48,6 +49,8 @@ export default async function Home() {
 						</div>
 					))}
 				</section>
+
+				<MatchesList matches={matches} />
 			</div>
 		</main>
 	);
