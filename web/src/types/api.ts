@@ -32,3 +32,5 @@ export type CreateMatchInput = {
 	gamesA: number;
 	gamesB: number;
 };
+
+export type UpdateMatchInput = CreateMatchInput;
