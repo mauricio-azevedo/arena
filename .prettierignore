@@ -1,0 +1,10 @@
+node_modules
+.next
+dist
+coverage
+
+api/src/generated
+api/prisma/migrations
+
+.env
+.env.*

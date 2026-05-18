@@ -4,14 +4,19 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5052a858-9146-4578-ba76-8e5fa30968fa" name="Changes" comment="" />
+    <list default="true" id="5052a858-9146-4578-ba76-8e5fa30968fa" name="Changes" comment="feat: add rating calculation in match creation; update player ratings and save deltas">
+      <change afterPath="$PROJECT_DIR$/.prettierignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/prettier.config.cjs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/src/components/add-match-form.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/components/add-match-form.tsx" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="24" />
+    <option name="cachedIndexableFilesCount" value="100" />
     <option name="fileBasedEmbeddingIndicesEnabled" value="true" />
   </component>
   <component name="Git.Settings">
@@ -23,61 +28,61 @@
   </component>
   <component name="NextEditCompletionFeaturesState">
     <decayedCancelled>
-      <entry key="MS100" value="3.748256912825392E-6" />
-      <entry key="MS500" value="0.14067138102144416" />
-      <entry key="S2" value="1.0291124281893107" />
-      <entry key="S5" value="1.5331130688126444" />
-      <entry key="S10" value="1.7510448367805487" />
-      <entry key="S30" value="1.9133521655271517" />
-      <entry key="S60" value="1.9656686004390886" />
-      <entry key="M2" value="2.1190993541977567" />
-      <entry key="M5" value="3.267201320051914" />
-      <entry key="M10" value="6.767487631621377" />
-      <entry key="M15" value="10.044322821892347" />
-      <entry key="M30" value="16.006014166935234" />
-      <entry key="H1" value="20.661332721208563" />
-      <entry key="H2" value="23.585690141857054" />
-      <entry key="H4" value="25.241891460645338" />
-      <entry key="D1" value="27.939608954780297" />
-      <entry key="W1" value="29.60190124155499" />
+      <entry key="MS100" value="1.6551967019291816" />
+      <entry key="MS500" value="1.9189128834790499" />
+      <entry key="S2" value="1.9790809151918836" />
+      <entry key="S5" value="1.9915792591361536" />
+      <entry key="S10" value="1.9957807289062819" />
+      <entry key="S30" value="1.999801525643899" />
+      <entry key="S60" value="2.048404359169691" />
+      <entry key="M2" value="2.331032853971557" />
+      <entry key="M5" value="4.163824992311142" />
+      <entry key="M10" value="8.472548887588722" />
+      <entry key="M15" value="12.090233114783992" />
+      <entry key="M30" value="19.47090171412175" />
+      <entry key="H1" value="28.757128618169386" />
+      <entry key="H2" value="39.471751076068074" />
+      <entry key="H4" value="48.78595157119914" />
+      <entry key="D1" value="61.326666429376296" />
+      <entry key="W1" value="65.20021079302313" />
     </decayedCancelled>
     <decayedSelected>
-      <entry key="MS100" value="1.0" />
-      <entry key="MS500" value="1.0" />
-      <entry key="S2" value="1.0" />
-      <entry key="S5" value="1.0" />
-      <entry key="S10" value="1.0" />
-      <entry key="S30" value="1.0000000000000657" />
-      <entry key="S60" value="1.000000392609107" />
-      <entry key="M2" value="1.0010892499902895" />
-      <entry key="M5" value="1.1410685461701846" />
-      <entry key="M10" value="1.7407674075096873" />
-      <entry key="M15" value="2.2951627244523722" />
-      <entry key="M30" value="3.2720412334231908" />
-      <entry key="H1" value="4.013268125185734" />
-      <entry key="H2" value="4.471346954551139" />
-      <entry key="H4" value="4.726200285978703" />
-      <entry key="D1" value="4.952991716403698" />
-      <entry key="W1" value="4.993250056104106" />
+      <entry key="MS100" value="0.0" />
+      <entry key="MS500" value="0.0" />
+      <entry key="S2" value="1.5214903404815376E-181" />
+      <entry key="S5" value="4.708772189724714E-73" />
+      <entry key="S10" value="6.862049394841686E-37" />
+      <entry key="S30" value="8.820325518861155E-13" />
+      <entry key="S60" value="9.39165880921004E-7" />
+      <entry key="M2" value="9.691057859039406E-4" />
+      <entry key="M5" value="0.062397301515710046" />
+      <entry key="M10" value="0.2590620654447377" />
+      <entry key="M15" value="0.44257800703281613" />
+      <entry key="M30" value="0.9257405679758752" />
+      <entry key="H1" value="1.8996554129011196" />
+      <entry key="H2" value="3.3634823309767703" />
+      <entry key="H4" value="4.761503233750436" />
+      <entry key="D1" value="6.548741656394892" />
+      <entry key="W1" value="6.933291122767306" />
     </decayedSelected>
     <decayedShown>
-      <entry key="MS100" value="5.42929729912552E-5" />
-      <entry key="MS500" value="0.27833032484063114" />
-      <entry key="S2" value="1.6377164577975076" />
-      <entry key="S5" value="2.3528864974738135" />
-      <entry key="S10" value="2.656443273438957" />
-      <entry key="S30" value="2.8807644567124724" />
-      <entry key="S60" value="2.9492392151040336" />
-      <entry key="M2" value="3.111925262887654" />
-      <entry key="M5" value="4.404327140513036" />
-      <entry key="M10" value="8.5048691043114" />
-      <entry key="M15" value="12.336332965265333" />
-      <entry key="M30" value="19.275676177722428" />
-      <entry key="H1" value="24.673102570333423" />
-      <entry key="H2" value="28.056191917489084" />
-      <entry key="H4" value="29.967642161510224" />
-      <entry key="D1" value="32.89251926294205" />
-      <entry key="W1" value="34.5951391610647" />
+      <entry key="MS100" value="1.6099352610719166" />
+      <entry key="MS500" value="1.908301618902615" />
+      <entry key="S2" value="1.9763392273112614" />
+      <entry key="S5" value="1.9904751992361815" />
+      <entry key="S10" value="1.9952274576836238" />
+      <entry key="S30" value="1.9996065175706512" />
+      <entry key="S60" value="2.0481039555875586" />
+      <entry key="M2" value="2.331263538190702" />
+      <entry key="M5" value="4.224613438445255" />
+      <entry key="M10" value="8.729222522269545" />
+      <entry key="M15" value="12.530317874788118" />
+      <entry key="M30" value="20.39452297438202" />
+      <entry key="H1" value="30.655182134346752" />
+      <entry key="H2" value="42.83410427373225" />
+      <entry key="H4" value="53.546743168525275" />
+      <entry key="D1" value="67.87525663569092" />
+      <entry key="W1" value="72.1334789268756" />
     </decayedShown>
   </component>
   <component name="ProjectColorInfo">{
@@ -85,6 +90,9 @@
   &quot;fromUser&quot;: false
 }</component>
   <component name="ProjectId" id="3Dm6pQ2ZPUsqiNM1oMBPNGzq1jQ" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="autoscrollFromSource" value="true" />
     <option name="autoscrollToSource" value="true" />
@@ -109,8 +117,8 @@
     "node.js.selected.package.eslint": "(autodetect)",
     "nodejs_interpreter_path": "/home/mauricio/.nvm/versions/node/v22.14.0/bin/node",
     "nodejs_package_manager_path": "npm",
-    "prettierjs.PrettierConfiguration.Package": "/home/mauricio/projects/beachrank/api/node_modules/prettier",
-    "settings.editor.selected.configurable": "settings.javascript.runtime",
+    "prettierjs.PrettierConfiguration.Package": "/home/mauricio/projects/beachrank/node_modules/prettier",
+    "settings.editor.selected.configurable": "ml.llm.LLMConfigurable",
     "to.speed.mode.migration.done": "true",
     "ts.external.directory.path": "/home/mauricio/projects/beachrank/api/node_modules/typescript/lib"
   }
@@ -134,5 +142,29 @@
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
+    <option name="CHECK_NEW_TODO" value="false" />
+    <MESSAGE value="docs: add detailed project description and setup instructions to README.md" />
+    <MESSAGE value="feat: implement match update functionality and improve match validation and rating recalculation logic" />
+    <MESSAGE value="refactor: update type definitions in matches service for improved type safety" />
+    <MESSAGE value="chore: update package dependencies and add new libraries" />
+    <MESSAGE value="feat: add reusable UI components (Badge, Button, Card, Input, Label, Select, Separator) and utility functions" />
+    <MESSAGE value="feat: add initial pages for matches, players, and rankings along with app shell and bottom navigation components" />
+    <MESSAGE value="feat: implement AppShell layout with BottomNav and refactor pages (`ranking`, `players`, `matches`, `new match`) to use it; redirect `/` to `/ranking`" />
+    <MESSAGE value="feat: enhance AddPlayerForm UI with reusable components and update default font variables in globals.css" />
+    <MESSAGE value="feat: update AddMatchForm with improved UI, validations, and reusable components" />
+    <MESSAGE value="feat: enhance MatchesList with empty state, improved UI, and reusable components" />
+    <MESSAGE value="feat: refactor AddMatchForm and MatchesList with reusable components and enhanced validations" />
+    <MESSAGE value="feat: refactor MatchesList to use MatchTeam component, improve UI, and add date/score formatting functions" />
+    <MESSAGE value="feat: update AddPlayerForm with improved UI, validation messages, and enhanced UX" />
+    <MESSAGE value="feat: refine Ranking page UI with improved layout, typography, and formatting" />
+    <MESSAGE value="feat: add reusable Dialog and DropdownMenu components; enhance MatchesList with edit match functionality and improved UI" />
+    <MESSAGE value="feat: add delete match functionality to API and integrate with frontend" />
+    <MESSAGE value="feat: add reusable AlertDialog component; implement delete match functionality in MatchesList and backend integration" />
+    <MESSAGE value="feat: add rating calculation in match creation; update player ratings and save deltas" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat: add rating calculation in match creation; update player ratings and save deltas" />
+    <option name="NON_MODAL_COMMIT_POSTPONE_SLOW_CHECKS" value="false" />
   </component>
 </project>

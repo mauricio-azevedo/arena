@@ -6,7 +6,8 @@ import {
   Param,
   Patch,
   Post,
-} from '@nestjs/common';import { MatchesService } from './matches.service';
+} from '@nestjs/common';
+import { MatchesService } from './matches.service';
 
 @Controller('matches')
 export class MatchesController {

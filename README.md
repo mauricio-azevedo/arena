@@ -51,19 +51,19 @@ For each doubles match:
 - Rating change is calculated from the difference between actual and expected performance
 
 ```ts
-expectedA = 1 / (1 + 10 ** ((teamBRating - teamARating) / 400))
+expectedA = 1 / (1 + 10 ** ((teamBRating - teamARating) / 400));
 
-actualA = gamesA / (gamesA + gamesB)
+actualA = gamesA / (gamesA + gamesB);
 
-deltaA = 32 * (actualA - expectedA)
+deltaA = 32 * (actualA - expectedA);
 ```
 
 Current constants:
 
 ```ts
-ELO_DIVISOR = 400
-K_FACTOR = 32
-INITIAL_RATING = 1000
+ELO_DIVISOR = 400;
+K_FACTOR = 32;
+INITIAL_RATING = 1000;
 ```
 
 These values are intentionally simple for the MVP and may be adjusted after testing with real match data.
