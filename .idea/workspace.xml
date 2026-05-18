@@ -4,11 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5052a858-9146-4578-ba76-8e5fa30968fa" name="Changes" comment="feat: add rating calculation in match creation; update player ratings and save deltas">
-      <change afterPath="$PROJECT_DIR$/.prettierignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/prettier.config.cjs" afterDir="false" />
+    <list default="true" id="5052a858-9146-4578-ba76-8e5fa30968fa" name="Changes" comment="feat: integrate Prettier for code formatting; add configuration, scripts, and formatting adjustments">
+      <change beforePath="$PROJECT_DIR$/.idea/prettier.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/prettier.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/src/components/add-match-form.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/components/add-match-form.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/src/components/matches-list.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/components/matches-list.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -16,11 +15,15 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="100" />
+    <option name="cachedIndexableFilesCount" value="104" />
     <option name="fileBasedEmbeddingIndicesEnabled" value="true" />
+  </component>
+  <component name="FormatOnSaveOptions">
+    <option name="myRunOnSave" value="false" />
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="SIGN_OFF_COMMIT" value="true" />
   </component>
   <component name="McpProjectServerCommands">
     <commands />
@@ -118,7 +121,7 @@
     "nodejs_interpreter_path": "/home/mauricio/.nvm/versions/node/v22.14.0/bin/node",
     "nodejs_package_manager_path": "npm",
     "prettierjs.PrettierConfiguration.Package": "/home/mauricio/projects/beachrank/node_modules/prettier",
-    "settings.editor.selected.configurable": "ml.llm.LLMConfigurable",
+    "settings.editor.selected.configurable": "actions.on.save",
     "to.speed.mode.migration.done": "true",
     "ts.external.directory.path": "/home/mauricio/projects/beachrank/api/node_modules/typescript/lib"
   }
@@ -164,7 +167,8 @@
     <MESSAGE value="feat: add delete match functionality to API and integrate with frontend" />
     <MESSAGE value="feat: add reusable AlertDialog component; implement delete match functionality in MatchesList and backend integration" />
     <MESSAGE value="feat: add rating calculation in match creation; update player ratings and save deltas" />
-    <option name="LAST_COMMIT_MESSAGE" value="feat: add rating calculation in match creation; update player ratings and save deltas" />
+    <MESSAGE value="feat: integrate Prettier for code formatting; add configuration, scripts, and formatting adjustments" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat: integrate Prettier for code formatting; add configuration, scripts, and formatting adjustments" />
     <option name="NON_MODAL_COMMIT_POSTPONE_SLOW_CHECKS" value="false" />
   </component>
 </project>
