@@ -26,20 +26,64 @@ export class MatchesService {
     this.validateMatchBody(body);
 
     return this.prisma.$transaction(async (tx) => {
-      await this.ensurePlayersExist(tx, body);
+      const playerIds = [
+        body.teamAPlayer1Id,
+        body.teamAPlayer2Id,
+        body.teamBPlayer1Id,
+        body.teamBPlayer2Id,
+      ];
 
-      const match = await tx.match.create({
-        data: {
-          ...body,
-          ratingDeltaA: 0,
-          ratingDeltaB: 0,
+      const players = await tx.player.findMany({
+        where: { id: { in: playerIds } },
+        select: {
+          id: true,
+          name: true,
+          rating: true,
         },
       });
 
-      await this.recalculateRatings(tx);
+      if (players.length !== 4) {
+        throw new NotFoundException('One or more players were not found');
+      }
 
-      return tx.match.findUnique({
-        where: { id: match.id },
+      const playersById = new Map(players.map((player) => [player.id, player]));
+
+      const teamAPlayer1 = playersById.get(body.teamAPlayer1Id);
+      const teamAPlayer2 = playersById.get(body.teamAPlayer2Id);
+      const teamBPlayer1 = playersById.get(body.teamBPlayer1Id);
+      const teamBPlayer2 = playersById.get(body.teamBPlayer2Id);
+
+      if (!teamAPlayer1 || !teamAPlayer2 || !teamBPlayer1 || !teamBPlayer2) {
+        throw new NotFoundException('One or more players were not found');
+      }
+
+      const result = calculateBeachRating({
+        teamA: [teamAPlayer1, teamAPlayer2],
+        teamB: [teamBPlayer1, teamBPlayer2],
+        gamesA: body.gamesA,
+        gamesB: body.gamesB,
+      });
+
+      for (const player of result.teamA.players) {
+        await tx.player.update({
+          where: { id: player.id },
+          data: { rating: player.newRating },
+        });
+      }
+
+      for (const player of result.teamB.players) {
+        await tx.player.update({
+          where: { id: player.id },
+          data: { rating: player.newRating },
+        });
+      }
+
+      return tx.match.create({
+        data: {
+          ...body,
+          ratingDeltaA: result.teamA.delta,
+          ratingDeltaB: result.teamB.delta,
+        },
         include: this.matchInclude(),
       });
     });
