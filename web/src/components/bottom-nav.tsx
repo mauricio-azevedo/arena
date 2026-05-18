@@ -17,12 +17,12 @@ const items = [
   },
   {
     href: '/matches/new',
-    label: 'Nova',
+    label: 'Nova Partida',
     icon: PlusCircle,
   },
   {
     href: '/matches',
-    label: 'Histórico',
+    label: 'Partidas',
     icon: History,
   },
 ];

@@ -1,18 +1,14 @@
 import { getRanking } from '@/lib/api';
 import { AddPlayerForm } from '@/components/add-player-form';
 import { AppShell } from '@/components/app-shell';
+import { PageHeader } from '@/components/page-header';
 
 export default async function PlayersPage() {
   const players = await getRanking();
 
   return (
     <AppShell>
-      <h1 className="text-3xl font-black">Jogadores</h1>
-
-      <p className="mt-2 text-sm text-muted-foreground">
-        Cadastre jogadores para registrar partidas.
-      </p>
-
+      <PageHeader title="Jogadores" />
       <AddPlayerForm />
 
       <section className="mt-8 space-y-3">

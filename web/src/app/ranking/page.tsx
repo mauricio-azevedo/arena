@@ -1,16 +1,14 @@
 import { getRanking } from '@/lib/api';
 import { AppShell } from '@/components/app-shell';
 import { Card, CardContent } from '@/components/ui/card';
+import { PageHeader } from '@/components/page-header';
 
 export default async function RankingPage() {
   const ranking = await getRanking();
 
   return (
     <AppShell>
-      <header>
-        <p className="text-sm font-medium text-muted-foreground">BeachRank</p>
-        <h1 className="mt-1 text-3xl font-semibold tracking-tight">Ranking</h1>
-      </header>
+      <PageHeader title="Ranking" />
 
       <section className="mt-6 space-y-2">
         {ranking.map((player, index) => (
