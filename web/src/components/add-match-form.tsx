@@ -5,9 +5,6 @@ import { useRouter } from 'next/navigation';
 import { createMatch } from '@/lib/api';
 import type { Player } from '@/types/api';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import {
   Select,
   SelectContent,
@@ -15,6 +12,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Check, ChevronsUpDown, X } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from '@/components/ui/command';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 type Props = {
   players: Player[];
@@ -27,8 +35,8 @@ export function AddMatchForm({ players }: Props) {
   const [teamAPlayer2Id, setTeamAPlayer2Id] = useState('');
   const [teamBPlayer1Id, setTeamBPlayer1Id] = useState('');
   const [teamBPlayer2Id, setTeamBPlayer2Id] = useState('');
-  const [gamesA, setGamesA] = useState('6');
-  const [gamesB, setGamesB] = useState('4');
+  const [gamesA, setGamesA] = useState('0');
+  const [gamesB, setGamesB] = useState('0');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
 
@@ -99,9 +107,11 @@ export function AddMatchForm({ players }: Props) {
 
   return (
     <form onSubmit={handleSubmit} className="mt-6 space-y-4">
-      <div>
+      <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3">
         <TeamSection
-          title="Dupla A"
+          scoreLabel="A"
+          scoreValue={gamesA}
+          onScoreChange={setGamesA}
           isWinner={winner === 'A'}
           players={players}
           selectedPlayerIds={selectedPlayerIds}
@@ -111,10 +121,14 @@ export function AddMatchForm({ players }: Props) {
           onPlayer2Change={setTeamAPlayer2Id}
         />
 
-        <div className="h-px bg-border" />
+        <div className="flex items-center justify-center text-muted-foreground">
+          <X className="size-5" aria-hidden="true" />
+        </div>
 
         <TeamSection
-          title="Dupla B"
+          scoreLabel="B"
+          scoreValue={gamesB}
+          onScoreChange={setGamesB}
           isWinner={winner === 'B'}
           players={players}
           selectedPlayerIds={selectedPlayerIds}
@@ -125,24 +139,11 @@ export function AddMatchForm({ players }: Props) {
         />
       </div>
 
-      <div>
-        <div>
-          <Label className="text-base font-semibold">Placar</Label>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Se terminar no tiebreak, registre como 7–6.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3">
-          <ScoreInput label="A" value={gamesA} onChange={setGamesA} isWinner={winner === 'A'} />
-
-          <span className="text-2xl font-semibold text-muted-foreground">–</span>
-
-          <ScoreInput label="B" value={gamesB} onChange={setGamesB} isWinner={winner === 'B'} />
-        </div>
-      </div>
-
       {message && <p className="px-1 text-center text-sm text-muted-foreground">{message}</p>}
+
+      <p className="text-center text-sm text-muted-foreground">
+        Se terminar no tiebreak, registre como 7–6.
+      </p>
 
       <Button type="submit" className="h-12 w-full text-base" disabled={isSubmitting}>
         {isSubmitting ? 'Salvando...' : 'Salvar partida'}
@@ -152,7 +153,9 @@ export function AddMatchForm({ players }: Props) {
 }
 
 type TeamSectionProps = {
-  title: string;
+  scoreLabel: string;
+  scoreValue: string;
+  onScoreChange: (value: string) => void;
   isWinner: boolean;
   players: Player[];
   selectedPlayerIds: string[];
@@ -163,7 +166,9 @@ type TeamSectionProps = {
 };
 
 function TeamSection({
-  title,
+  scoreLabel,
+  scoreValue,
+  onScoreChange,
   isWinner,
   players,
   selectedPlayerIds,
@@ -173,14 +178,8 @@ function TeamSection({
   onPlayer2Change,
 }: TeamSectionProps) {
   return (
-    <section className="space-y-3">
-      <div className="flex items-center justify-between">
-        <Label className="text-base font-semibold">{title}</Label>
-
-        {isWinner && <span className="text-sm font-medium text-muted-foreground">vencedora</span>}
-      </div>
-
-      <div className="grid grid-cols-2 gap-2">
+    <div className="space-y-3">
+      <div className="space-y-2">
         <PlayerSelect
           value={player1Id}
           onChange={onPlayer1Change}
@@ -197,7 +196,14 @@ function TeamSection({
           placeholder="Jogador 2"
         />
       </div>
-    </section>
+
+      <ScoreInput
+        label={scoreLabel}
+        value={scoreValue}
+        onChange={onScoreChange}
+        isWinner={isWinner}
+      />
+    </div>
   );
 }
 
@@ -216,24 +222,63 @@ function PlayerSelect({
   onChange,
   placeholder,
 }: PlayerSelectProps) {
+  const [open, setOpen] = useState(false);
+
+  const selectedPlayer = players.find((player) => player.id === value);
+
   return (
-    <Select value={value} onValueChange={onChange}>
-      <SelectTrigger className="h-12">
-        <SelectValue placeholder={placeholder} />
-      </SelectTrigger>
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button
+          type="button"
+          variant="outline"
+          role="combobox"
+          aria-expanded={open}
+          className="h-12 w-full justify-between font-normal"
+        >
+          <span className="truncate">{selectedPlayer ? selectedPlayer.name : placeholder}</span>
 
-      <SelectContent>
-        {players.map((player) => {
-          const isSelectedElsewhere = selectedPlayerIds.includes(player.id) && player.id !== value;
+          <ChevronsUpDown className="size-4 shrink-0 opacity-50" />
+        </Button>
+      </PopoverTrigger>
 
-          return (
-            <SelectItem key={player.id} value={player.id} disabled={isSelectedElsewhere}>
-              {player.name}
-            </SelectItem>
-          );
-        })}
-      </SelectContent>
-    </Select>
+      <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
+        <Command>
+          <CommandInput placeholder="Buscar jogador..." />
+
+          <CommandList>
+            <CommandEmpty>Nenhum jogador encontrado.</CommandEmpty>
+
+            <CommandGroup>
+              {players.map((player) => {
+                const isSelected = player.id === value;
+                const isSelectedElsewhere = selectedPlayerIds.includes(player.id) && !isSelected;
+
+                return (
+                  <CommandItem
+                    key={player.id}
+                    value={player.name}
+                    disabled={isSelectedElsewhere}
+                    onSelect={() => {
+                      if (isSelectedElsewhere) return;
+
+                      onChange(player.id);
+                      setOpen(false);
+                    }}
+                  >
+                    <span className="truncate">{player.name}</span>
+
+                    <Check
+                      className={cn('ml-auto size-4', isSelected ? 'opacity-100' : 'opacity-0')}
+                    />
+                  </CommandItem>
+                );
+              })}
+            </CommandGroup>
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
   );
 }
 
@@ -244,20 +289,31 @@ type ScoreInputProps = {
   isWinner: boolean;
 };
 
+const scoreOptions = ['0', '1', '2', '3', '4', '5', '6', '7'];
+
 function ScoreInput({ label, value, onChange, isWinner }: ScoreInputProps) {
   return (
-    <div className="space-y-2">
-      <Label className="block text-center text-sm text-muted-foreground">Dupla {label}</Label>
+    <Select value={value} onValueChange={onChange}>
+      <SelectTrigger
+        aria-label={`Placar ${label}`}
+        className={cn(
+          'relative h-14! w-full justify-center text-3xl font-semibold',
+          '[&>svg]:absolute [&>svg]:right-3 [&>svg]:top-1/2 [&>svg]:-translate-y-1/2',
+          isWinner && 'border-foreground',
+          'mb-0',
+        )}
+      >
+        <SelectValue />
+      </SelectTrigger>
 
-      <Input
-        value={value}
-        onChange={(event) => onChange(event.target.value)}
-        type="number"
-        min="0"
-        inputMode="numeric"
-        className={`h-16 text-center text-3xl font-semibold ${isWinner ? 'border-foreground' : ''}`}
-      />
-    </div>
+      <SelectContent>
+        {scoreOptions.map((score) => (
+          <SelectItem key={score} value={score}>
+            {score}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
   );
 }
 
