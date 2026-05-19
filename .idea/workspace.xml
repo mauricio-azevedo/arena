@@ -4,10 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5052a858-9146-4578-ba76-8e5fa30968fa" name="Changes" comment="feat: integrate Prettier for code formatting; add configuration, scripts, and formatting adjustments">
-      <change beforePath="$PROJECT_DIR$/.idea/prettier.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/prettier.xml" afterDir="false" />
+    <list default="true" id="5052a858-9146-4578-ba76-8e5fa30968fa" name="Changes" comment="feat: add authentication, group, and ranking API integrations; implement UI for groups, login, and registration pages&#10;&#10;Signed-off-by: Maurício Azevedo &lt;mauricio.mendonca.azevedo@gmail.com&gt;">
+      <change afterPath="$PROJECT_DIR$/web/src/app/invites/[token]/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/src/components/invite-accept-client.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/src/components/matches-list.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/components/matches-list.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/src/app/login/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/app/login/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/src/app/register/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/app/register/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/src/lib/api.ts" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/lib/api.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -15,7 +18,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="104" />
+    <option name="cachedIndexableFilesCount" value="106" />
     <option name="fileBasedEmbeddingIndicesEnabled" value="true" />
   </component>
   <component name="FormatOnSaveOptions">
@@ -31,62 +34,65 @@
   </component>
   <component name="NextEditCompletionFeaturesState">
     <decayedCancelled>
-      <entry key="MS100" value="1.6551967019291816" />
-      <entry key="MS500" value="1.9189128834790499" />
-      <entry key="S2" value="1.9790809151918836" />
-      <entry key="S5" value="1.9915792591361536" />
-      <entry key="S10" value="1.9957807289062819" />
-      <entry key="S30" value="1.999801525643899" />
-      <entry key="S60" value="2.048404359169691" />
-      <entry key="M2" value="2.331032853971557" />
-      <entry key="M5" value="4.163824992311142" />
-      <entry key="M10" value="8.472548887588722" />
-      <entry key="M15" value="12.090233114783992" />
-      <entry key="M30" value="19.47090171412175" />
-      <entry key="H1" value="28.757128618169386" />
-      <entry key="H2" value="39.471751076068074" />
-      <entry key="H4" value="48.78595157119914" />
-      <entry key="D1" value="61.326666429376296" />
-      <entry key="W1" value="65.20021079302313" />
+      <entry key="MS100" value="3.233743911056905E-6" />
+      <entry key="MS500" value="0.13759810562646396" />
+      <entry key="S2" value="1.023826285272418" />
+      <entry key="S5" value="1.5300039247227635" />
+      <entry key="S10" value="1.7492771350993988" />
+      <entry key="S30" value="1.9274233931129008" />
+      <entry key="S60" value="2.328481347482344" />
+      <entry key="M2" value="3.947600088287393" />
+      <entry key="M5" value="7.658781363051319" />
+      <entry key="M10" value="10.442570872410883" />
+      <entry key="M15" value="12.567751130119735" />
+      <entry key="M30" value="19.281107284158715" />
+      <entry key="H1" value="29.48363108274042" />
+      <entry key="H2" value="44.576578135736554" />
+      <entry key="H4" value="70.57237492470355" />
+      <entry key="D1" value="138.50612520845786" />
+      <entry key="W1" value="161.52190670782446" />
     </decayedCancelled>
     <decayedSelected>
-      <entry key="MS100" value="0.0" />
-      <entry key="MS500" value="0.0" />
-      <entry key="S2" value="1.5214903404815376E-181" />
-      <entry key="S5" value="4.708772189724714E-73" />
-      <entry key="S10" value="6.862049394841686E-37" />
-      <entry key="S30" value="8.820325518861155E-13" />
-      <entry key="S60" value="9.39165880921004E-7" />
-      <entry key="M2" value="9.691057859039406E-4" />
-      <entry key="M5" value="0.062397301515710046" />
-      <entry key="M10" value="0.2590620654447377" />
-      <entry key="M15" value="0.44257800703281613" />
-      <entry key="M30" value="0.9257405679758752" />
-      <entry key="H1" value="1.8996554129011196" />
-      <entry key="H2" value="3.3634823309767703" />
-      <entry key="H4" value="4.761503233750436" />
-      <entry key="D1" value="6.548741656394892" />
-      <entry key="W1" value="6.933291122767306" />
+      <entry key="MS100" value="1.0" />
+      <entry key="MS500" value="1.0" />
+      <entry key="S2" value="1.0" />
+      <entry key="S5" value="1.0" />
+      <entry key="S10" value="1.000000003929247" />
+      <entry key="S30" value="1.001577985867591" />
+      <entry key="S60" value="1.0397238702493978" />
+      <entry key="M2" value="1.1993084801550247" />
+      <entry key="M5" value="1.5246559460397067" />
+      <entry key="M10" value="1.7389609328394768" />
+      <entry key="M15" value="1.899367232533109" />
+      <entry key="M30" value="2.5350861051997517" />
+      <entry key="H1" value="3.745345818861819" />
+      <entry key="H2" value="5.647350620460613" />
+      <entry key="H4" value="8.800341468934452" />
+      <entry key="D1" value="16.897383878867025" />
+      <entry key="W1" value="19.50890609829033" />
     </decayedSelected>
     <decayedShown>
-      <entry key="MS100" value="1.6099352610719166" />
-      <entry key="MS500" value="1.908301618902615" />
-      <entry key="S2" value="1.9763392273112614" />
-      <entry key="S5" value="1.9904751992361815" />
-      <entry key="S10" value="1.9952274576836238" />
-      <entry key="S30" value="1.9996065175706512" />
-      <entry key="S60" value="2.0481039555875586" />
-      <entry key="M2" value="2.331263538190702" />
-      <entry key="M5" value="4.224613438445255" />
-      <entry key="M10" value="8.729222522269545" />
-      <entry key="M15" value="12.530317874788118" />
-      <entry key="M30" value="20.39452297438202" />
-      <entry key="H1" value="30.655182134346752" />
-      <entry key="H2" value="42.83410427373225" />
-      <entry key="H4" value="53.546743168525275" />
-      <entry key="D1" value="67.87525663569092" />
-      <entry key="W1" value="72.1334789268756" />
+      <entry key="MS100" value="3.8897376611852537E-4" />
+      <entry key="MS500" value="0.34502499232902895" />
+      <entry key="S2" value="1.6984905081627313" />
+      <entry key="S5" value="2.3843200312834254" />
+      <entry key="S10" value="2.6735628345515003" />
+      <entry key="S30" value="2.9030255528389315" />
+      <entry key="S60" value="3.3542945818008207" />
+      <entry key="M2" value="5.138200041303612" />
+      <entry key="M5" value="9.1785434855098" />
+      <entry key="M10" value="12.178623704984899" />
+      <entry key="M15" value="14.464974854917543" />
+      <entry key="M30" value="21.81480627594821" />
+      <entry key="H1" value="33.22790668626823" />
+      <entry key="H2" value="50.2224820296202" />
+      <entry key="H4" value="79.37082258129306" />
+      <entry key="D1" value="155.40267362161265" />
+      <entry key="W1" value="181.03066999762586" />
     </decayedShown>
+  </component>
+  <component name="OptimizeOnSaveOptions">
+    <option name="myRunOnSave" value="true" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 2,
@@ -102,30 +108,36 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.MCP Project settings loaded": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
-    "codeWithMe.voiceChat.enabledByDefault": "false",
-    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
-    "git-widget-placeholder": "main",
-    "javascript.preferred.runtime.type.id": "node",
-    "junie.onboarding.icon.badge.shown": "true",
-    "last_opened_file_path": "/home/mauricio/projects/beachrank",
-    "node.js.detected.package.eslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "nodejs_interpreter_path": "/home/mauricio/.nvm/versions/node/v22.14.0/bin/node",
-    "nodejs_package_manager_path": "npm",
-    "prettierjs.PrettierConfiguration.Package": "/home/mauricio/projects/beachrank/node_modules/prettier",
-    "settings.editor.selected.configurable": "actions.on.save",
-    "to.speed.mode.migration.done": "true",
-    "ts.external.directory.path": "/home/mauricio/projects/beachrank/api/node_modules/typescript/lib"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.MCP Project settings loaded&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
+    &quot;codeWithMe.voiceChat.enabledByDefault&quot;: &quot;false&quot;,
+    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;javascript.preferred.runtime.type.id&quot;: &quot;node&quot;,
+    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/home/mauricio/projects/beachrank&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_interpreter_path&quot;: &quot;/home/mauricio/.nvm/versions/node/v22.14.0/bin/node&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;prettierjs.PrettierConfiguration.Package&quot;: &quot;/home/mauricio/projects/beachrank/node_modules/prettier&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;actions.on.save&quot;,
+    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;/home/mauricio/projects/beachrank/api/node_modules/typescript/lib&quot;
   }
-}]]></component>
+}</component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/api/src/groups" />
+      <recent name="$PROJECT_DIR$/web/src/components" />
+    </key>
+  </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
@@ -149,15 +161,6 @@
   <component name="VcsManagerConfiguration">
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="docs: add detailed project description and setup instructions to README.md" />
-    <MESSAGE value="feat: implement match update functionality and improve match validation and rating recalculation logic" />
-    <MESSAGE value="refactor: update type definitions in matches service for improved type safety" />
-    <MESSAGE value="chore: update package dependencies and add new libraries" />
-    <MESSAGE value="feat: add reusable UI components (Badge, Button, Card, Input, Label, Select, Separator) and utility functions" />
-    <MESSAGE value="feat: add initial pages for matches, players, and rankings along with app shell and bottom navigation components" />
-    <MESSAGE value="feat: implement AppShell layout with BottomNav and refactor pages (`ranking`, `players`, `matches`, `new match`) to use it; redirect `/` to `/ranking`" />
-    <MESSAGE value="feat: enhance AddPlayerForm UI with reusable components and update default font variables in globals.css" />
-    <MESSAGE value="feat: update AddMatchForm with improved UI, validations, and reusable components" />
     <MESSAGE value="feat: enhance MatchesList with empty state, improved UI, and reusable components" />
     <MESSAGE value="feat: refactor AddMatchForm and MatchesList with reusable components and enhanced validations" />
     <MESSAGE value="feat: refactor MatchesList to use MatchTeam component, improve UI, and add date/score formatting functions" />
@@ -168,7 +171,22 @@
     <MESSAGE value="feat: add reusable AlertDialog component; implement delete match functionality in MatchesList and backend integration" />
     <MESSAGE value="feat: add rating calculation in match creation; update player ratings and save deltas" />
     <MESSAGE value="feat: integrate Prettier for code formatting; add configuration, scripts, and formatting adjustments" />
-    <option name="LAST_COMMIT_MESSAGE" value="feat: integrate Prettier for code formatting; add configuration, scripts, and formatting adjustments" />
+    <MESSAGE value="feat: enable Turbopack with project root configuration in Next.js" />
+    <MESSAGE value="feat: update AddMatchForm with revamped UI, dynamic score selection, and improved TeamSection component" />
+    <MESSAGE value="feat: enhance AddMatchForm UI/UX with new score input and player selection components; add cmdk library" />
+    <MESSAGE value="feat: add reusable UI components for commands, input groups, and popovers&#10;&#10;Signed-off-by: Maurício Azevedo &lt;mauricio.mendonca.azevedo@gmail.com&gt;" />
+    <MESSAGE value="feat: implement reusable PageHeader component; update pages for consistent headers and cleaner UI" />
+    <MESSAGE value="feat: add @nestjs/jwt and bcrypt dependencies for authentication functionality" />
+    <MESSAGE value="chore: remove generated Prisma Player model from source control" />
+    <MESSAGE value="chore: remove autogenerated Prisma Player model to clean up unused code and reduce bundle size" />
+    <MESSAGE value="chore: remove autogenerated Prisma Player model file to clean up unused code" />
+    <MESSAGE value="feat: add Groups module with CRUD endpoints and Prisma integration for group management" />
+    <MESSAGE value="chore: add autogenerated Prisma Group model file" />
+    <MESSAGE value="feat: add Auth module with JWT-based authentication, user registration, and login endpoints&#10;&#10;Signed-off-by: Maurício Azevedo &lt;mauricio.mendonca.azevedo@gmail.com&gt;" />
+    <MESSAGE value="feat: add Group Invites module with endpoints for creating, fetching, and accepting invites; update authentication and permissions logic to secure group operations&#10;&#10;Signed-off-by: Maurício Azevedo &lt;mauricio.mendonca.azevedo@gmail.com&gt;" />
+    <MESSAGE value="feat: add Me module with endpoint to fetch user's groups and Prisma integration&#10;&#10;Signed-off-by: Maurício Azevedo &lt;mauricio.mendonca.azevedo@gmail.com&gt;" />
+    <MESSAGE value="feat: add authentication, group, and ranking API integrations; implement UI for groups, login, and registration pages&#10;&#10;Signed-off-by: Maurício Azevedo &lt;mauricio.mendonca.azevedo@gmail.com&gt;" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat: add authentication, group, and ranking API integrations; implement UI for groups, login, and registration pages&#10;&#10;Signed-off-by: Maurício Azevedo &lt;mauricio.mendonca.azevedo@gmail.com&gt;" />
     <option name="NON_MODAL_COMMIT_POSTPONE_SLOW_CHECKS" value="false" />
   </component>
 </project>
