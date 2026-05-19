@@ -2,8 +2,8 @@
 
 import { FormEvent, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { createMatch } from '@/lib/api';
-import type { Player } from '@/types/api';
+import { createGroupMatch } from '@/lib/api';
+import type { GroupMember } from '@/types/api';
 import { Button } from '@/components/ui/button';
 import {
   Select,
@@ -24,11 +24,14 @@ import {
 } from '@/components/ui/command';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
+const TOKEN_STORAGE_KEY = 'beachrank_access_token';
+
 type Props = {
-  players: Player[];
+  groupId: string;
+  members: GroupMember[];
 };
 
-export function AddMatchForm({ players }: Props) {
+export function AddMatchForm({ groupId, members }: Props) {
   const router = useRouter();
 
   const [teamAPlayer1Id, setTeamAPlayer1Id] = useState('');
@@ -50,6 +53,13 @@ export function AddMatchForm({ players }: Props) {
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setMessage(null);
+
+    const token = window.localStorage.getItem(TOKEN_STORAGE_KEY);
+
+    if (!token) {
+      setMessage('Entre na sua conta para registrar uma partida.');
+      return;
+    }
 
     const playerIds = [teamAPlayer1Id, teamAPlayer2Id, teamBPlayer1Id, teamBPlayer2Id];
 
@@ -80,7 +90,7 @@ export function AddMatchForm({ players }: Props) {
     setIsSubmitting(true);
 
     try {
-      await createMatch({
+      await createGroupMatch(token, groupId, {
         teamAPlayer1Id,
         teamAPlayer2Id,
         teamBPlayer1Id,
@@ -89,20 +99,21 @@ export function AddMatchForm({ players }: Props) {
         gamesB: parsedGamesB,
       });
 
-      setTeamAPlayer1Id('');
-      setTeamAPlayer2Id('');
-      setTeamBPlayer1Id('');
-      setTeamBPlayer2Id('');
-      setGamesA('6');
-      setGamesB('4');
-      setMessage('Partida salva.');
-
+      router.push(`/groups/${groupId}?tab=matches`);
       router.refresh();
     } catch {
-      setMessage('Não foi possível salvar. Tente novamente.');
+      setMessage('Não foi possível salvar. Verifique se você faz parte deste grupo.');
     } finally {
       setIsSubmitting(false);
     }
+  }
+
+  if (members.length < 4) {
+    return (
+      <div className="mt-6 rounded-2xl border p-4 text-sm text-muted-foreground">
+        Este grupo precisa ter pelo menos 4 membros para registrar uma partida.
+      </div>
+    );
   }
 
   return (
@@ -113,7 +124,7 @@ export function AddMatchForm({ players }: Props) {
           scoreValue={gamesA}
           onScoreChange={setGamesA}
           isWinner={winner === 'A'}
-          players={players}
+          members={members}
           selectedPlayerIds={selectedPlayerIds}
           player1Id={teamAPlayer1Id}
           player2Id={teamAPlayer2Id}
@@ -130,7 +141,7 @@ export function AddMatchForm({ players }: Props) {
           scoreValue={gamesB}
           onScoreChange={setGamesB}
           isWinner={winner === 'B'}
-          players={players}
+          members={members}
           selectedPlayerIds={selectedPlayerIds}
           player1Id={teamBPlayer1Id}
           player2Id={teamBPlayer2Id}
@@ -157,7 +168,7 @@ type TeamSectionProps = {
   scoreValue: string;
   onScoreChange: (value: string) => void;
   isWinner: boolean;
-  players: Player[];
+  members: GroupMember[];
   selectedPlayerIds: string[];
   player1Id: string;
   player2Id: string;
@@ -170,7 +181,7 @@ function TeamSection({
   scoreValue,
   onScoreChange,
   isWinner,
-  players,
+  members,
   selectedPlayerIds,
   player1Id,
   player2Id,
@@ -183,7 +194,7 @@ function TeamSection({
         <PlayerSelect
           value={player1Id}
           onChange={onPlayer1Change}
-          players={players}
+          members={members}
           selectedPlayerIds={selectedPlayerIds}
           placeholder="Jogador 1"
         />
@@ -191,7 +202,7 @@ function TeamSection({
         <PlayerSelect
           value={player2Id}
           onChange={onPlayer2Change}
-          players={players}
+          members={members}
           selectedPlayerIds={selectedPlayerIds}
           placeholder="Jogador 2"
         />
@@ -208,7 +219,7 @@ function TeamSection({
 }
 
 type PlayerSelectProps = {
-  players: Player[];
+  members: GroupMember[];
   selectedPlayerIds: string[];
   value: string;
   onChange: (value: string) => void;
@@ -216,7 +227,7 @@ type PlayerSelectProps = {
 };
 
 function PlayerSelect({
-  players,
+  members,
   selectedPlayerIds,
   value,
   onChange,
@@ -224,7 +235,7 @@ function PlayerSelect({
 }: PlayerSelectProps) {
   const [open, setOpen] = useState(false);
 
-  const selectedPlayer = players.find((player) => player.id === value);
+  const selectedMember = members.find((member) => member.id === value);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -236,7 +247,9 @@ function PlayerSelect({
           aria-expanded={open}
           className="h-12 w-full justify-between font-normal"
         >
-          <span className="truncate">{selectedPlayer ? selectedPlayer.name : placeholder}</span>
+          <span className="truncate">
+            {selectedMember ? selectedMember.displayName : placeholder}
+          </span>
 
           <ChevronsUpDown className="size-4 shrink-0 opacity-50" />
         </Button>
@@ -250,23 +263,23 @@ function PlayerSelect({
             <CommandEmpty>Nenhum jogador encontrado.</CommandEmpty>
 
             <CommandGroup>
-              {players.map((player) => {
-                const isSelected = player.id === value;
-                const isSelectedElsewhere = selectedPlayerIds.includes(player.id) && !isSelected;
+              {members.map((member) => {
+                const isSelected = member.id === value;
+                const isSelectedElsewhere = selectedPlayerIds.includes(member.id) && !isSelected;
 
                 return (
                   <CommandItem
-                    key={player.id}
-                    value={player.name}
+                    key={member.id}
+                    value={member.displayName}
                     disabled={isSelectedElsewhere}
                     onSelect={() => {
                       if (isSelectedElsewhere) return;
 
-                      onChange(player.id);
+                      onChange(member.id);
                       setOpen(false);
                     }}
                   >
-                    <span className="truncate">{player.name}</span>
+                    <span className="truncate">{member.displayName}</span>
 
                     <Check
                       className={cn('ml-auto size-4', isSelected ? 'opacity-100' : 'opacity-0')}

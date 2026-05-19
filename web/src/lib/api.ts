@@ -185,6 +185,23 @@ export async function acceptInvite(
   return parseResponse(response, 'Failed to accept invite');
 }
 
+export async function createGroupMatch(
+  token: string,
+  groupId: string,
+  input: CreateMatchInput,
+): Promise<Match> {
+  const response = await fetch(`${API_BASE_URL}/groups/${groupId}/matches`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      ...authHeaders(token),
+    },
+    body: JSON.stringify(input),
+  });
+
+  return parseResponse<Match>(response, 'Failed to create group match');
+}
+
 /**
  * Legacy API
  * Mantido temporariamente até migrarmos as telas antigas para grupos.
