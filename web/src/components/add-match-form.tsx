@@ -2,8 +2,8 @@
 
 import { FormEvent, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { createGroupMatch } from '@/lib/api';
-import type { GroupMember } from '@/types/api';
+import { createGroupMatch, updateGroupMatch } from '@/lib/api';
+import type { GroupMember, Match } from '@/types/api';
 import { Button } from '@/components/ui/button';
 import {
   Select,
@@ -29,17 +29,26 @@ const TOKEN_STORAGE_KEY = 'beachrank_access_token';
 type Props = {
   groupId: string;
   members: GroupMember[];
+  match?: Match;
 };
 
-export function AddMatchForm({ groupId, members }: Props) {
+function getInitialMemberId(match: Match | undefined, team: 'TEAM_A' | 'TEAM_B', position: number) {
+  return (
+    match?.participants.find(
+      (participant) => participant.team === team && participant.position === position,
+    )?.groupMemberId ?? ''
+  );
+}
+
+export function AddMatchForm({ groupId, members, match }: Props) {
   const router = useRouter();
 
-  const [teamAPlayer1Id, setTeamAPlayer1Id] = useState('');
-  const [teamAPlayer2Id, setTeamAPlayer2Id] = useState('');
-  const [teamBPlayer1Id, setTeamBPlayer1Id] = useState('');
-  const [teamBPlayer2Id, setTeamBPlayer2Id] = useState('');
-  const [gamesA, setGamesA] = useState('0');
-  const [gamesB, setGamesB] = useState('0');
+  const [teamAPlayer1Id, setTeamAPlayer1Id] = useState(getInitialMemberId(match, 'TEAM_A', 1));
+  const [teamAPlayer2Id, setTeamAPlayer2Id] = useState(getInitialMemberId(match, 'TEAM_A', 2));
+  const [teamBPlayer1Id, setTeamBPlayer1Id] = useState(getInitialMemberId(match, 'TEAM_B', 1));
+  const [teamBPlayer2Id, setTeamBPlayer2Id] = useState(getInitialMemberId(match, 'TEAM_B', 2));
+  const [gamesA, setGamesA] = useState(match ? String(match.gamesA) : '0');
+  const [gamesB, setGamesB] = useState(match ? String(match.gamesB) : '0');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
 
@@ -90,14 +99,20 @@ export function AddMatchForm({ groupId, members }: Props) {
     setIsSubmitting(true);
 
     try {
-      await createGroupMatch(token, groupId, {
+      const input = {
         teamAPlayer1Id,
         teamAPlayer2Id,
         teamBPlayer1Id,
         teamBPlayer2Id,
         gamesA: parsedGamesA,
         gamesB: parsedGamesB,
-      });
+      };
+
+      if (match) {
+        await updateGroupMatch(token, groupId, match.id, input);
+      } else {
+        await createGroupMatch(token, groupId, input);
+      }
 
       router.push(`/groups/${groupId}?tab=matches`);
       router.refresh();
@@ -157,7 +172,7 @@ export function AddMatchForm({ groupId, members }: Props) {
       </p>
 
       <Button type="submit" className="h-12 w-full text-base" disabled={isSubmitting}>
-        {isSubmitting ? 'Salvando...' : 'Salvar partida'}
+        {isSubmitting ? 'Salvando...' : match ? 'Salvar correção' : 'Salvar partida'}
       </Button>
     </form>
   );

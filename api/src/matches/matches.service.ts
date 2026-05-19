@@ -221,6 +221,30 @@ export class MatchesService {
     });
   }
 
+  async findOne(groupId: string, id: string) {
+    const group = await this.prisma.group.findUnique({
+      where: { id: groupId },
+    });
+
+    if (!group) {
+      throw new NotFoundException('Group not found');
+    }
+
+    const match = await this.prisma.match.findFirst({
+      where: {
+        id,
+        groupId,
+      },
+      include: this.matchInclude(),
+    });
+
+    if (!match) {
+      throw new NotFoundException('Match not found');
+    }
+
+    return match;
+  }
+
   private validateMatchBody(body: MatchBody) {
     const playerIds = [
       body.teamAPlayer1Id,

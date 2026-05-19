@@ -42,6 +42,11 @@ export class MatchesController {
     return this.matchesService.findAll(groupId);
   }
 
+  @Get(':id')
+  findOne(@Param('groupId') groupId: string, @Param('id') id: string) {
+    return this.matchesService.findOne(groupId, id);
+  }
+
   @Patch(':id')
   @UseGuards(JwtAuthGuard)
   update(

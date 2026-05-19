@@ -1,4 +1,13 @@
-import type { AuthResponse, CreateMatchInput, Group, GroupInvite, GroupMember, Match, MyGroup, User, } from '@/types/api';
+import type {
+  AuthResponse,
+  CreateMatchInput,
+  Group,
+  GroupInvite,
+  GroupMember,
+  Match,
+  MyGroup,
+  User,
+} from '@/types/api';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:3000';
 
@@ -134,6 +143,14 @@ export async function getGroupMatches(groupId: string): Promise<Match[]> {
   return parseResponse<Match[]>(response, 'Failed to fetch group matches');
 }
 
+export async function getGroupMatch(groupId: string, matchId: string): Promise<Match> {
+  const response = await fetch(`${API_BASE_URL}/groups/${groupId}/matches/${matchId}`, {
+    cache: 'no-store',
+  });
+
+  return parseResponse<Match>(response, 'Failed to fetch group match');
+}
+
 export async function createGroupMatch(
   token: string,
   groupId: string,
@@ -164,6 +181,24 @@ export async function deleteGroupMatch(
   });
 
   return parseResponse<{ success: boolean }>(response, 'Failed to delete group match');
+}
+
+export async function updateGroupMatch(
+  token: string,
+  groupId: string,
+  matchId: string,
+  input: CreateMatchInput,
+): Promise<Match> {
+  const response = await fetch(`${API_BASE_URL}/groups/${groupId}/matches/${matchId}`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      ...authHeaders(token),
+    },
+    body: JSON.stringify(input),
+  });
+
+  return parseResponse<Match>(response, 'Failed to update group match');
 }
 
 /**

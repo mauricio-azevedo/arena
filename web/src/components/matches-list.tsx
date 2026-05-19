@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { MoreVertical, Trash2 } from 'lucide-react';
+import { MoreVertical, Pencil, Trash2 } from 'lucide-react';
 import { deleteGroupMatch } from '@/lib/api';
 import type { Match, MatchParticipant } from '@/types/api';
 import { Button } from '@/components/ui/button';
@@ -125,6 +125,17 @@ export function MatchCard({
               </DropdownMenuTrigger>
 
               <DropdownMenuContent align="end">
+                <DropdownMenuItem
+                  onSelect={() => {
+                    if (!groupId) return;
+
+                    router.push(`/groups/${groupId}/matches/${match.id}/edit`);
+                  }}
+                >
+                  <Pencil className="mr-2 h-4 w-4" />
+                  Corrigir lançamento
+                </DropdownMenuItem>
+
                 <DropdownMenuItem
                   className="text-destructive focus:text-destructive"
                   onSelect={(event) => {
