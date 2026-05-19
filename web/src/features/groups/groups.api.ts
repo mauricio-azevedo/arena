@@ -41,7 +41,7 @@ export function getGroupRanking(groupId: string): Promise<GroupMember[]> {
 }
 
 export function getGroupMembers(groupId: string): Promise<GroupMember[]> {
-  return apiRequest<GroupMember[]>(`/groups/${groupId}/players`, {
+  return apiRequest<GroupMember[]>(`/groups/${groupId}/members`, {
     cache: 'no-store',
   });
 }

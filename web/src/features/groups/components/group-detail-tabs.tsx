@@ -1,10 +1,8 @@
 'use client';
 
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import type { GroupMember, Match } from '@/types/api';
 import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { MatchesList } from '@/features/matches/components/matches-list';
 import { useEffect, useState } from 'react';
 import { getMyGroups } from '@/features/groups/groups.api';
@@ -157,17 +155,13 @@ function MembersTab({ members }: { members: GroupMember[] }) {
     <section className="space-y-3">
       {members.map((member) => (
         <Card key={member.id}>
-          <CardContent className="flex items-center justify-between p-4">
+          <CardContent className="p-4">
             <div>
               <p className="font-medium">{member.displayName}</p>
               <p className="text-xs text-muted-foreground">
                 {member.role === 'ADMIN' ? 'Admin' : 'Membro'}
               </p>
             </div>
-
-            <Button asChild variant="outline" size="sm">
-              <Link href={`/players/${member.id}`}>Ver</Link>
-            </Button>
           </CardContent>
         </Card>
       ))}
