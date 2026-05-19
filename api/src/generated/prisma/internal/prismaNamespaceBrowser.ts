@@ -56,7 +56,7 @@ export const ModelName = {
   GroupInvite: 'GroupInvite',
   GroupMember: 'GroupMember',
   Match: 'Match',
-  MatchParticipant: 'MatchParticipant'
+  MatchPlayer: 'MatchPlayer'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -160,7 +160,7 @@ export const MatchScalarFieldEnum = {
 export type MatchScalarFieldEnum = (typeof MatchScalarFieldEnum)[keyof typeof MatchScalarFieldEnum]
 
 
-export const MatchParticipantScalarFieldEnum = {
+export const MatchPlayerScalarFieldEnum = {
   id: 'id',
   matchId: 'matchId',
   groupId: 'groupId',
@@ -184,7 +184,7 @@ export const MatchParticipantScalarFieldEnum = {
   updatedAt: 'updatedAt'
 } as const
 
-export type MatchParticipantScalarFieldEnum = (typeof MatchParticipantScalarFieldEnum)[keyof typeof MatchParticipantScalarFieldEnum]
+export type MatchPlayerScalarFieldEnum = (typeof MatchPlayerScalarFieldEnum)[keyof typeof MatchPlayerScalarFieldEnum]
 
 
 export const SortOrder = {

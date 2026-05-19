@@ -110,7 +110,7 @@ model GroupMember {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  matchParticipants MatchParticipant[]
+  matchPlayers MatchPlayer[]
 
   @@unique([groupId, userId])
   @@unique([id, groupId])
@@ -148,7 +148,7 @@ model Match {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  participants MatchParticipant[]
+  players MatchPlayer[]
 
   @@unique([id, groupId])
   @@index([groupId])
@@ -157,7 +157,7 @@ model Match {
   @@index([groupId, ratingAlgorithm])
 }
 
-model MatchParticipant {
+model MatchPlayer {
   id String @id @default(uuid())
 
   matchId String

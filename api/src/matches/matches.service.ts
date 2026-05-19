@@ -50,7 +50,7 @@ export class MatchesService {
           winnerTeam: this.getWinnerTeam(body),
           ratingAlgorithm: RATING_ALGORITHM,
           playedAt,
-          participants: {
+          players: {
             create: [
               this.buildParticipantCreate(
                 groupId,
@@ -115,7 +115,7 @@ export class MatchesService {
       const membersById = await this.getMembersById(tx, groupId, body);
       const playedAt = this.parsePlayedAt(body.playedAt);
 
-      await tx.matchParticipant.deleteMany({
+      await tx.matchPlayer.deleteMany({
         where: { matchId: id, groupId },
       });
 
@@ -135,7 +135,7 @@ export class MatchesService {
           teamBRatingAfter: null,
           ratingAlgorithm: RATING_ALGORITHM,
           playedAt,
-          participants: {
+          players: {
             create: [
               this.buildParticipantCreate(
                 groupId,
@@ -254,7 +254,7 @@ export class MatchesService {
     ];
 
     if (playerIds.some((id) => !id)) {
-      throw new BadRequestException('All players are required');
+      throw new BadRequestException('All members are required');
     }
 
     if (new Set(playerIds).size !== 4) {
@@ -310,7 +310,7 @@ export class MatchesService {
 
     if (members.length !== 4) {
       throw new NotFoundException(
-        'One or more players were not found in this group',
+        'One or more members were not found in this group',
       );
     }
 
@@ -332,7 +332,7 @@ export class MatchesService {
 
     if (!member) {
       throw new NotFoundException(
-        'One or more players were not found in this group',
+        'One or more members were not found in this group',
       );
     }
 
@@ -400,18 +400,18 @@ export class MatchesService {
       where: { groupId },
       orderBy: [{ playedAt: 'asc' }, { createdAt: 'asc' }],
       include: {
-        participants: {
+        players: {
           orderBy: [{ team: 'asc' }, { position: 'asc' }],
         },
       },
     });
 
     for (const match of matches) {
-      const teamAParticipants = match.participants
+      const teamAParticipants = match.players
         .filter((participant) => participant.team === MatchTeam.TEAM_A)
         .sort((a, b) => a.position - b.position);
 
-      const teamBParticipants = match.participants
+      const teamBParticipants = match.players
         .filter((participant) => participant.team === MatchTeam.TEAM_B)
         .sort((a, b) => a.position - b.position);
 
@@ -452,7 +452,7 @@ export class MatchesService {
         updatedPlayers.map((player) => [player.id, player]),
       );
 
-      for (const participant of match.participants) {
+      for (const participant of match.players) {
         const before = this.getParticipantBeforeRating(
           participant.groupMemberId,
           teamAParticipants,
@@ -469,7 +469,7 @@ export class MatchesService {
           throw new Error('Invalid updated participant');
         }
 
-        await tx.matchParticipant.update({
+        await tx.matchPlayer.update({
           where: { id: participant.id },
           data: {
             ratingBefore: before,
@@ -548,7 +548,7 @@ export class MatchesService {
 
   private matchInclude() {
     return {
-      participants: {
+      players: {
         orderBy: [{ team: 'asc' as const }, { position: 'asc' as const }],
         include: {
           groupMember: {

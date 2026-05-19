@@ -1,17 +1,3 @@
-/*
-  Warnings:
-
-  - You are about to drop the column `ratingDeltaA` on the `Match` table. All the data in the column will be lost.
-  - You are about to drop the column `ratingDeltaB` on the `Match` table. All the data in the column will be lost.
-  - You are about to drop the column `teamAPlayer1Id` on the `Match` table. All the data in the column will be lost.
-  - You are about to drop the column `teamAPlayer2Id` on the `Match` table. All the data in the column will be lost.
-  - You are about to drop the column `teamBPlayer1Id` on the `Match` table. All the data in the column will be lost.
-  - You are about to drop the column `teamBPlayer2Id` on the `Match` table. All the data in the column will be lost.
-  - You are about to drop the `Player` table. If the table is not empty, all the data it contains will be lost.
-  - A unique constraint covering the columns `[id,groupId]` on the table `Match` will be added. If there are existing duplicate values, this will fail.
-  - Added the required column `groupId` to the `Match` table without a default value. This is not possible if the table is not empty.
-
-*/
 -- CreateEnum
 CREATE TYPE "GroupVisibility" AS ENUM ('PUBLIC');
 
@@ -20,41 +6,6 @@ CREATE TYPE "GroupMemberRole" AS ENUM ('ADMIN', 'MEMBER');
 
 -- CreateEnum
 CREATE TYPE "MatchTeam" AS ENUM ('TEAM_A', 'TEAM_B');
-
--- DropForeignKey
-ALTER TABLE "Match" DROP CONSTRAINT "Match_teamAPlayer1Id_fkey";
-
--- DropForeignKey
-ALTER TABLE "Match" DROP CONSTRAINT "Match_teamAPlayer2Id_fkey";
-
--- DropForeignKey
-ALTER TABLE "Match" DROP CONSTRAINT "Match_teamBPlayer1Id_fkey";
-
--- DropForeignKey
-ALTER TABLE "Match" DROP CONSTRAINT "Match_teamBPlayer2Id_fkey";
-
--- AlterTable
-ALTER TABLE "Match" DROP COLUMN "ratingDeltaA",
-DROP COLUMN "ratingDeltaB",
-DROP COLUMN "teamAPlayer1Id",
-DROP COLUMN "teamAPlayer2Id",
-DROP COLUMN "teamBPlayer1Id",
-DROP COLUMN "teamBPlayer2Id",
-ADD COLUMN     "groupId" TEXT NOT NULL,
-ADD COLUMN     "playedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-ADD COLUMN     "ratingAlgorithm" TEXT NOT NULL DEFAULT 'BEACH_ELO_V1',
-ADD COLUMN     "teamAActual" DOUBLE PRECISION,
-ADD COLUMN     "teamAExpected" DOUBLE PRECISION,
-ADD COLUMN     "teamARatingAfter" DOUBLE PRECISION,
-ADD COLUMN     "teamARatingBefore" DOUBLE PRECISION,
-ADD COLUMN     "teamBActual" DOUBLE PRECISION,
-ADD COLUMN     "teamBExpected" DOUBLE PRECISION,
-ADD COLUMN     "teamBRatingAfter" DOUBLE PRECISION,
-ADD COLUMN     "teamBRatingBefore" DOUBLE PRECISION,
-ADD COLUMN     "winnerTeam" "MatchTeam";
-
--- DropTable
-DROP TABLE "Player";
 
 -- CreateTable
 CREATE TABLE "User" (
@@ -119,7 +70,30 @@ CREATE TABLE "GroupMember" (
 );
 
 -- CreateTable
-CREATE TABLE "MatchParticipant" (
+CREATE TABLE "Match" (
+    "id" TEXT NOT NULL,
+    "groupId" TEXT NOT NULL,
+    "gamesA" INTEGER NOT NULL,
+    "gamesB" INTEGER NOT NULL,
+    "winnerTeam" "MatchTeam",
+    "teamAExpected" DOUBLE PRECISION,
+    "teamBExpected" DOUBLE PRECISION,
+    "teamAActual" DOUBLE PRECISION,
+    "teamBActual" DOUBLE PRECISION,
+    "teamARatingBefore" DOUBLE PRECISION,
+    "teamBRatingBefore" DOUBLE PRECISION,
+    "teamARatingAfter" DOUBLE PRECISION,
+    "teamBRatingAfter" DOUBLE PRECISION,
+    "ratingAlgorithm" TEXT NOT NULL DEFAULT 'BEACH_ELO_V1',
+    "playedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "Match_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "MatchPlayer" (
     "id" TEXT NOT NULL,
     "matchId" TEXT NOT NULL,
     "groupId" TEXT NOT NULL,
@@ -142,7 +116,7 @@ CREATE TABLE "MatchParticipant" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "MatchParticipant_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "MatchPlayer_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
@@ -194,33 +168,6 @@ CREATE UNIQUE INDEX "GroupMember_groupId_userId_key" ON "GroupMember"("groupId",
 CREATE UNIQUE INDEX "GroupMember_id_groupId_key" ON "GroupMember"("id", "groupId");
 
 -- CreateIndex
-CREATE INDEX "MatchParticipant_matchId_idx" ON "MatchParticipant"("matchId");
-
--- CreateIndex
-CREATE INDEX "MatchParticipant_groupId_idx" ON "MatchParticipant"("groupId");
-
--- CreateIndex
-CREATE INDEX "MatchParticipant_groupId_playedAt_idx" ON "MatchParticipant"("groupId", "playedAt");
-
--- CreateIndex
-CREATE INDEX "MatchParticipant_groupId_groupMemberId_idx" ON "MatchParticipant"("groupId", "groupMemberId");
-
--- CreateIndex
-CREATE INDEX "MatchParticipant_groupId_groupMemberId_playedAt_idx" ON "MatchParticipant"("groupId", "groupMemberId", "playedAt");
-
--- CreateIndex
-CREATE INDEX "MatchParticipant_groupMemberId_idx" ON "MatchParticipant"("groupMemberId");
-
--- CreateIndex
-CREATE INDEX "MatchParticipant_groupMemberId_playedAt_idx" ON "MatchParticipant"("groupMemberId", "playedAt");
-
--- CreateIndex
-CREATE UNIQUE INDEX "MatchParticipant_matchId_groupMemberId_key" ON "MatchParticipant"("matchId", "groupMemberId");
-
--- CreateIndex
-CREATE UNIQUE INDEX "MatchParticipant_matchId_team_position_key" ON "MatchParticipant"("matchId", "team", "position");
-
--- CreateIndex
 CREATE INDEX "Match_groupId_idx" ON "Match"("groupId");
 
 -- CreateIndex
@@ -234,6 +181,33 @@ CREATE INDEX "Match_groupId_ratingAlgorithm_idx" ON "Match"("groupId", "ratingAl
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Match_id_groupId_key" ON "Match"("id", "groupId");
+
+-- CreateIndex
+CREATE INDEX "MatchPlayer_matchId_idx" ON "MatchPlayer"("matchId");
+
+-- CreateIndex
+CREATE INDEX "MatchPlayer_groupId_idx" ON "MatchPlayer"("groupId");
+
+-- CreateIndex
+CREATE INDEX "MatchPlayer_groupId_playedAt_idx" ON "MatchPlayer"("groupId", "playedAt");
+
+-- CreateIndex
+CREATE INDEX "MatchPlayer_groupId_groupMemberId_idx" ON "MatchPlayer"("groupId", "groupMemberId");
+
+-- CreateIndex
+CREATE INDEX "MatchPlayer_groupId_groupMemberId_playedAt_idx" ON "MatchPlayer"("groupId", "groupMemberId", "playedAt");
+
+-- CreateIndex
+CREATE INDEX "MatchPlayer_groupMemberId_idx" ON "MatchPlayer"("groupMemberId");
+
+-- CreateIndex
+CREATE INDEX "MatchPlayer_groupMemberId_playedAt_idx" ON "MatchPlayer"("groupMemberId", "playedAt");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "MatchPlayer_matchId_groupMemberId_key" ON "MatchPlayer"("matchId", "groupMemberId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "MatchPlayer_matchId_team_position_key" ON "MatchPlayer"("matchId", "team", "position");
 
 -- AddForeignKey
 ALTER TABLE "Group" ADD CONSTRAINT "Group_createdById_fkey" FOREIGN KEY ("createdById") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -254,7 +228,7 @@ ALTER TABLE "GroupMember" ADD CONSTRAINT "GroupMember_userId_fkey" FOREIGN KEY (
 ALTER TABLE "Match" ADD CONSTRAINT "Match_groupId_fkey" FOREIGN KEY ("groupId") REFERENCES "Group"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "MatchParticipant" ADD CONSTRAINT "MatchParticipant_matchId_groupId_fkey" FOREIGN KEY ("matchId", "groupId") REFERENCES "Match"("id", "groupId") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "MatchPlayer" ADD CONSTRAINT "MatchPlayer_matchId_groupId_fkey" FOREIGN KEY ("matchId", "groupId") REFERENCES "Match"("id", "groupId") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "MatchParticipant" ADD CONSTRAINT "MatchParticipant_groupMemberId_groupId_fkey" FOREIGN KEY ("groupMemberId", "groupId") REFERENCES "GroupMember"("id", "groupId") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "MatchPlayer" ADD CONSTRAINT "MatchPlayer_groupMemberId_groupId_fkey" FOREIGN KEY ("groupMemberId", "groupId") REFERENCES "GroupMember"("id", "groupId") ON DELETE RESTRICT ON UPDATE CASCADE;

@@ -43,7 +43,7 @@ export type GroupMember = Prisma.GroupMemberModel
  */
 export type Match = Prisma.MatchModel
 /**
- * Model MatchParticipant
+ * Model MatchPlayer
  * 
  */
-export type MatchParticipant = Prisma.MatchParticipantModel
+export type MatchPlayer = Prisma.MatchPlayerModel
