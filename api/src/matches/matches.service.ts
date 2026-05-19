@@ -311,8 +311,14 @@ export class MatchesService {
     }
 
     return {
-      groupId,
-      groupMemberId,
+      groupMember: {
+        connect: {
+          id_groupId: {
+            id: groupMemberId,
+            groupId,
+          },
+        },
+      },
       displayNameSnapshot: member.displayName,
       team,
       position,
