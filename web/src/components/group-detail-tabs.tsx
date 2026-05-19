@@ -6,6 +6,8 @@ import type { GroupMember, Match } from '@/types/api';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { MatchesList } from '@/components/matches-list';
+import { useEffect, useState } from 'react';
+import { getMyGroups } from '@/lib/api';
 
 type GroupTab = 'ranking' | 'matches' | 'members';
 
@@ -23,8 +25,34 @@ const tabs: { value: GroupTab; label: string }[] = [
   { value: 'members', label: 'Membros' },
 ];
 
+const TOKEN_STORAGE_KEY = 'beachrank_access_token';
+
 export function GroupDetailTabs({ groupId, activeTab, ranking, members, matches }: Props) {
   const router = useRouter();
+
+  const [canManageMatches, setCanManageMatches] = useState(false);
+
+  useEffect(() => {
+    const token = window.localStorage.getItem(TOKEN_STORAGE_KEY);
+
+    if (!token) {
+      setCanManageMatches(false);
+      return;
+    }
+
+    async function checkMembership(userToken: string) {
+      try {
+        const memberships = await getMyGroups(userToken);
+        const membership = memberships.find((item) => item.groupId === groupId);
+
+        setCanManageMatches(Boolean(membership));
+      } catch {
+        setCanManageMatches(false);
+      }
+    }
+
+    checkMembership(token);
+  }, [groupId]);
 
   function setTab(tab: GroupTab) {
     router.replace(`/groups/${groupId}?tab=${tab}`, {
@@ -48,9 +76,10 @@ export function GroupDetailTabs({ groupId, activeTab, ranking, members, matches 
           </button>
         ))}
       </div>
-
       {activeTab === 'ranking' && <RankingTab ranking={ranking} />}
-      {activeTab === 'matches' && <MatchesTab matches={matches} />}
+      {activeTab === 'matches' && (
+        <MatchesTab matches={matches} groupId={groupId} canManage={canManageMatches} />
+      )}
       {activeTab === 'members' && <MembersTab members={members} />}
     </div>
   );
@@ -93,10 +122,20 @@ function RankingTab({ ranking }: { ranking: GroupMember[] }) {
   );
 }
 
-function MatchesTab({ matches }: { matches: Match[] }) {
+function MatchesTab({
+  matches,
+  groupId,
+  canManage,
+}: {
+  matches: Match[];
+  groupId: string;
+  canManage: boolean;
+}) {
   return (
     <MatchesList
       matches={matches}
+      groupId={groupId}
+      canManage={canManage}
       emptyTitle="Nenhuma partida registrada"
       emptyDescription="Quando o grupo registrar partidas, elas aparecem aqui."
     />

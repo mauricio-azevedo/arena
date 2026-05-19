@@ -1,13 +1,4 @@
-import type {
-  AuthResponse,
-  CreateMatchInput,
-  Group,
-  GroupInvite,
-  GroupMember,
-  Match,
-  MyGroup,
-  User,
-} from '@/types/api';
+import type { AuthResponse, CreateMatchInput, Group, GroupInvite, GroupMember, Match, MyGroup, User, } from '@/types/api';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:3000';
 
@@ -158,6 +149,21 @@ export async function createGroupMatch(
   });
 
   return parseResponse<Match>(response, 'Failed to create group match');
+}
+
+export async function deleteGroupMatch(
+  token: string,
+  groupId: string,
+  matchId: string,
+): Promise<{ success: boolean }> {
+  const response = await fetch(`${API_BASE_URL}/groups/${groupId}/matches/${matchId}`, {
+    method: 'DELETE',
+    headers: {
+      ...authHeaders(token),
+    },
+  });
+
+  return parseResponse<{ success: boolean }>(response, 'Failed to delete group match');
 }
 
 /**
