@@ -4,6 +4,7 @@ import { PageHeader } from '@/components/page-header';
 import { getGroups } from '@/features/groups/groups.api';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import { AuthStatus } from '@/features/auth/components/auth-status';
 
 export default async function GroupsPage() {
   const groups = await getGroups();
@@ -19,6 +20,8 @@ export default async function GroupsPage() {
         <Button asChild className="w-full">
           <Link href="/groups/new">Criar grupo</Link>
         </Button>
+
+        <AuthStatus />
 
         <GroupsTabs groups={groups} />
       </div>

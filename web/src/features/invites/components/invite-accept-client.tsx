@@ -8,8 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { getMyGroups } from '@/features/groups/groups.api';
 import { acceptInvite } from '@/features/invites/invites.api';
-
-const TOKEN_STORAGE_KEY = 'beachrank_access_token';
+import { getAccessToken } from '@/lib/auth';
 
 type Props = {
   invite: GroupInvite;
@@ -25,10 +24,10 @@ export function InviteAcceptClient({ invite }: Props) {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    const storedToken = window.localStorage.getItem(TOKEN_STORAGE_KEY);
-    setAuthToken(storedToken);
+    const token = getAccessToken();
+    setAuthToken(token);
 
-    if (!storedToken) {
+    if (!token) {
       setIsCheckingMembership(false);
       return;
     }
@@ -46,7 +45,7 @@ export function InviteAcceptClient({ invite }: Props) {
       }
     }
 
-    checkMembership(storedToken);
+    checkMembership(token);
   }, [invite.groupId]);
 
   async function handleAcceptInvite() {

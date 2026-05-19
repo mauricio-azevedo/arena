@@ -23,8 +23,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { deleteGroupMatch } from '@/features/matches/matches.api';
-
-const TOKEN_STORAGE_KEY = 'beachrank_access_token';
+import { getAccessToken } from '@/lib/auth';
 
 type MatchesListProps = {
   matches: Match[];
@@ -90,7 +89,7 @@ export function MatchCard({
       return;
     }
 
-    const token = window.localStorage.getItem(TOKEN_STORAGE_KEY);
+    const token = getAccessToken();
 
     if (!token) {
       setError('Entre na sua conta para apagar a partida.');

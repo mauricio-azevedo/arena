@@ -10,8 +10,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { login } from '@/features/auth/auth.api';
-
-const TOKEN_STORAGE_KEY = 'beachrank_access_token';
+import { setAccessToken } from '@/lib/auth';
 
 function getSafeRedirectUrl(redirect: string | null) {
   if (!redirect) {
@@ -45,7 +44,7 @@ export default function LoginPage() {
         password,
       });
 
-      window.localStorage.setItem(TOKEN_STORAGE_KEY, result.accessToken);
+      setAccessToken(result.accessToken);
       const searchParams = new URLSearchParams(window.location.search);
       router.push(getSafeRedirectUrl(searchParams.get('redirect')));
       router.refresh();

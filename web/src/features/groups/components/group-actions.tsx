@@ -4,8 +4,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { getMyGroups } from '@/features/groups/groups.api';
-
-const TOKEN_STORAGE_KEY = 'beachrank_access_token';
+import { getAccessToken } from '@/lib/auth';
 
 type Props = {
   groupId: string;
@@ -15,7 +14,7 @@ export function GroupActions({ groupId }: Props) {
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
-    const token = window.localStorage.getItem(TOKEN_STORAGE_KEY);
+    const token = getAccessToken();
 
     if (!token) {
       return;

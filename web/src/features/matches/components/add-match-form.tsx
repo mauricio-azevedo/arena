@@ -23,8 +23,7 @@ import {
 } from '@/components/ui/command';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { createGroupMatch, updateGroupMatch } from '@/features/matches/matches.api';
-
-const TOKEN_STORAGE_KEY = 'beachrank_access_token';
+import { getAccessToken } from '@/lib/auth';
 
 type Props = {
   groupId: string;
@@ -63,7 +62,7 @@ export function AddMatchForm({ groupId, members, match }: Props) {
     event.preventDefault();
     setMessage(null);
 
-    const token = window.localStorage.getItem(TOKEN_STORAGE_KEY);
+    const token = getAccessToken();
 
     if (!token) {
       setMessage('Entre na sua conta para registrar uma partida.');

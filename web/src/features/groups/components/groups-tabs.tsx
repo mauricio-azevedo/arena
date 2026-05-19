@@ -6,12 +6,11 @@ import type { Group, MyGroup } from '@/types/api';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { getMyGroups } from '@/features/groups/groups.api';
+import { getAccessToken } from '@/lib/auth';
 
 type Props = {
   groups: Group[];
 };
-
-const TOKEN_STORAGE_KEY = 'beachrank_access_token';
 
 export function GroupsTabs({ groups }: Props) {
   const [activeTab, setActiveTab] = useState<'mine' | 'all'>('mine');
@@ -21,10 +20,10 @@ export function GroupsTabs({ groups }: Props) {
   const [myGroupsError, setMyGroupsError] = useState<string | null>(null);
 
   useEffect(() => {
-    const storedToken = window.localStorage.getItem(TOKEN_STORAGE_KEY);
-    setToken(storedToken);
+    const token = getAccessToken();
+    setToken(token);
 
-    if (!storedToken) {
+    if (!token) {
       setIsLoadingMyGroups(false);
       return;
     }
@@ -43,7 +42,7 @@ export function GroupsTabs({ groups }: Props) {
       }
     }
 
-    loadMyGroups(storedToken);
+    loadMyGroups(token);
   }, []);
 
   return (

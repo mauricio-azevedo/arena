@@ -5,8 +5,7 @@ import type { GroupInvite } from '@/types/api';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { createGroupInvite } from '@/features/invites/invites.api';
-
-const TOKEN_STORAGE_KEY = 'beachrank_access_token';
+import { getAccessToken } from '@/lib/auth';
 
 type Props = {
   groupId: string;
@@ -19,7 +18,7 @@ export function GroupInviteClient({ groupId }: Props) {
   const [isCreating, setIsCreating] = useState(false);
 
   async function handleCreateInvite() {
-    const token = window.localStorage.getItem(TOKEN_STORAGE_KEY);
+    const token = getAccessToken();
 
     if (!token) {
       setError('Entre na sua conta para gerar convite.');

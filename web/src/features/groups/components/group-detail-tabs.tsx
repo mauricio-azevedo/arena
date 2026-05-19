@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { MatchesList } from '@/features/matches/components/matches-list';
 import { useEffect, useState } from 'react';
 import { getMyGroups } from '@/features/groups/groups.api';
+import { getAccessToken } from '@/lib/auth';
 
 type GroupTab = 'ranking' | 'matches' | 'members';
 
@@ -25,15 +26,14 @@ const tabs: { value: GroupTab; label: string }[] = [
   { value: 'members', label: 'Membros' },
 ];
 
-const TOKEN_STORAGE_KEY = 'beachrank_access_token';
-
+getAccessToken();
 export function GroupDetailTabs({ groupId, activeTab, ranking, members, matches }: Props) {
   const router = useRouter();
 
   const [canManageMatches, setCanManageMatches] = useState(false);
 
   useEffect(() => {
-    const token = window.localStorage.getItem(TOKEN_STORAGE_KEY);
+    const token = getAccessToken();
 
     if (!token) {
       setCanManageMatches(false);
