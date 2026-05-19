@@ -2,18 +2,18 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { BarChart3, History, PlusCircle, Users } from 'lucide-react';
+import { BarChart3, History, PlusCircle, UsersRound } from 'lucide-react';
 
 const items = [
+  {
+    href: '/groups',
+    label: 'Grupos',
+    icon: UsersRound,
+  },
   {
     href: '/ranking',
     label: 'Ranking',
     icon: BarChart3,
-  },
-  {
-    href: '/players',
-    label: 'Jogadores',
-    icon: Users,
   },
   {
     href: '/matches/new',
@@ -36,7 +36,7 @@ export function BottomNav() {
         {items.map((item) => {
           const Icon = item.icon;
           const isActive =
-            pathname === item.href || (item.href !== '/ranking' && pathname.startsWith(item.href));
+            pathname === item.href || (item.href !== '/groups' && pathname.startsWith(item.href));
 
           return (
             <Link

@@ -8,6 +8,7 @@ import { RankingModule } from './ranking/ranking.module';
 import { GroupsModule } from './groups/groups.module';
 import { AuthModule } from './auth/auth.module';
 import { GroupInvitesModule } from './group-invites/group-invites.module';
+import { MeModule } from './me/me.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { GroupInvitesModule } from './group-invites/group-invites.module';
     RankingModule,
     AuthModule,
     GroupInvitesModule,
+    MeModule,
   ],
   controllers: [AppController],
   providers: [AppService],
