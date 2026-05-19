@@ -13,6 +13,18 @@ import { Label } from '@/components/ui/label';
 
 const TOKEN_STORAGE_KEY = 'beachrank_access_token';
 
+function getSafeRedirectUrl(redirect: string | null) {
+  if (!redirect) {
+    return '/groups';
+  }
+
+  if (!redirect.startsWith('/') || redirect.startsWith('//')) {
+    return '/groups';
+  }
+
+  return redirect;
+}
+
 export default function LoginPage() {
   const router = useRouter();
 
@@ -34,7 +46,8 @@ export default function LoginPage() {
       });
 
       window.localStorage.setItem(TOKEN_STORAGE_KEY, result.accessToken);
-      router.push('/groups');
+      const searchParams = new URLSearchParams(window.location.search);
+      router.push(getSafeRedirectUrl(searchParams.get('redirect')));
       router.refresh();
     } catch {
       setError('Não foi possível entrar. Verifique seu e-mail e senha.');

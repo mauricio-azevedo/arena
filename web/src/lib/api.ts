@@ -154,6 +154,37 @@ export async function createGroupInvite(token: string, groupId: string): Promise
   return parseResponse<GroupInvite>(response, 'Failed to create group invite');
 }
 
+export async function getInvite(token: string): Promise<GroupInvite> {
+  const response = await fetch(`${API_BASE_URL}/invites/${token}`, {
+    cache: 'no-store',
+  });
+
+  return parseResponse<GroupInvite>(response, 'Failed to fetch invite');
+}
+
+export async function acceptInvite(
+  authToken: string,
+  inviteToken: string,
+): Promise<{
+  id: string;
+  groupId: string;
+  userId: string;
+  displayName: string;
+  rating: number;
+  role: 'ADMIN' | 'MEMBER';
+  group: Group;
+  user: User;
+}> {
+  const response = await fetch(`${API_BASE_URL}/invites/${inviteToken}/accept`, {
+    method: 'POST',
+    headers: {
+      ...authHeaders(authToken),
+    },
+  });
+
+  return parseResponse(response, 'Failed to accept invite');
+}
+
 /**
  * Legacy API
  * Mantido temporariamente até migrarmos as telas antigas para grupos.

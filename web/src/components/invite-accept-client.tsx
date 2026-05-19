@@ -1,0 +1,100 @@
+'use client';
+
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { acceptInvite } from '@/lib/api';
+import type { GroupInvite } from '@/types/api';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+
+const TOKEN_STORAGE_KEY = 'beachrank_access_token';
+
+type Props = {
+  invite: GroupInvite;
+};
+
+export function InviteAcceptClient({ invite }: Props) {
+  const router = useRouter();
+
+  const [authToken, setAuthToken] = useState<string | null>(null);
+  const [isAccepting, setIsAccepting] = useState(false);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    setAuthToken(window.localStorage.getItem(TOKEN_STORAGE_KEY));
+  }, []);
+
+  async function handleAcceptInvite() {
+    if (!authToken) {
+      return;
+    }
+
+    setError('');
+    setIsAccepting(true);
+
+    try {
+      const result = await acceptInvite(authToken, invite.token);
+      router.push(`/groups/${result.groupId}`);
+      router.refresh();
+    } catch {
+      setError('Não foi possível entrar no grupo. Tente novamente.');
+    } finally {
+      setIsAccepting(false);
+    }
+  }
+
+  const group = invite.group;
+
+  return (
+    <div className="space-y-4">
+      <Card>
+        <CardContent className="space-y-4 p-4">
+          <div className="space-y-1">
+            <p className="text-sm text-muted-foreground">Você foi convidado para entrar em</p>
+            <h1 className="text-2xl font-semibold tracking-tight">{group?.name ?? 'Grupo'}</h1>
+
+            {group?.description && (
+              <p className="text-sm leading-6 text-muted-foreground">{group.description}</p>
+            )}
+          </div>
+
+          <div className="flex gap-3 text-xs text-muted-foreground">
+            <span>{group?._count?.members ?? 0} membros</span>
+            <span>{group?._count?.matches ?? 0} partidas</span>
+          </div>
+
+          {!authToken ? (
+            <div className="space-y-3">
+              <p className="text-sm leading-6 text-muted-foreground">
+                Para participar do grupo, entre na sua conta ou crie uma conta nova.
+              </p>
+
+              <div className="grid grid-cols-2 gap-2">
+                <Button asChild>
+                  <Link href={`/login?redirect=${encodeURIComponent(`/invites/${invite.token}`)}`}>
+                    Entrar
+                  </Link>
+                </Button>
+
+                <Button asChild variant="outline">
+                  <Link
+                    href={`/register?redirect=${encodeURIComponent(`/invites/${invite.token}`)}`}
+                  >
+                    Criar conta
+                  </Link>
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <Button onClick={handleAcceptInvite} disabled={isAccepting} className="w-full">
+              {isAccepting ? 'Entrando...' : 'Entrar no grupo'}
+            </Button>
+          )}
+
+          {error && <p className="text-sm text-destructive">{error}</p>}
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
