@@ -145,8 +145,10 @@ export async function createGroupInvite(token: string, groupId: string): Promise
   const response = await fetch(`${API_BASE_URL}/groups/${groupId}/invites`, {
     method: 'POST',
     headers: {
+      'Content-Type': 'application/json',
       ...authHeaders(token),
     },
+    body: JSON.stringify({}),
   });
 
   return parseResponse<GroupInvite>(response, 'Failed to create group invite');
