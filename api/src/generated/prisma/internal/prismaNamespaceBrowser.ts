@@ -51,8 +51,12 @@ export const AnyNull = runtime.AnyNull
 
 
 export const ModelName = {
-  Player: 'Player',
-  Match: 'Match'
+  User: 'User',
+  Group: 'Group',
+  GroupInvite: 'GroupInvite',
+  GroupMember: 'GroupMember',
+  Match: 'Match',
+  MatchParticipant: 'MatchParticipant'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -71,32 +75,116 @@ export const TransactionIsolationLevel = runtime.makeStrictEnum({
 export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof typeof TransactionIsolationLevel]
 
 
-export const PlayerScalarFieldEnum = {
+export const UserScalarFieldEnum = {
   id: 'id',
-  name: 'name',
-  rating: 'rating',
+  firstName: 'firstName',
+  lastName: 'lastName',
+  email: 'email',
+  passwordHash: 'passwordHash',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
-export type PlayerScalarFieldEnum = (typeof PlayerScalarFieldEnum)[keyof typeof PlayerScalarFieldEnum]
+export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
+
+
+export const GroupScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  description: 'description',
+  visibility: 'visibility',
+  createdById: 'createdById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type GroupScalarFieldEnum = (typeof GroupScalarFieldEnum)[keyof typeof GroupScalarFieldEnum]
+
+
+export const GroupInviteScalarFieldEnum = {
+  id: 'id',
+  token: 'token',
+  groupId: 'groupId',
+  createdById: 'createdById',
+  expiresAt: 'expiresAt',
+  revokedAt: 'revokedAt',
+  uses: 'uses',
+  maxUses: 'maxUses',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type GroupInviteScalarFieldEnum = (typeof GroupInviteScalarFieldEnum)[keyof typeof GroupInviteScalarFieldEnum]
+
+
+export const GroupMemberScalarFieldEnum = {
+  id: 'id',
+  groupId: 'groupId',
+  userId: 'userId',
+  displayName: 'displayName',
+  rating: 'rating',
+  ratingDeviation: 'ratingDeviation',
+  ratingVolatility: 'ratingVolatility',
+  ratingMu: 'ratingMu',
+  ratingSigma: 'ratingSigma',
+  ratingAlgorithm: 'ratingAlgorithm',
+  role: 'role',
+  leftAt: 'leftAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type GroupMemberScalarFieldEnum = (typeof GroupMemberScalarFieldEnum)[keyof typeof GroupMemberScalarFieldEnum]
 
 
 export const MatchScalarFieldEnum = {
   id: 'id',
-  teamAPlayer1Id: 'teamAPlayer1Id',
-  teamAPlayer2Id: 'teamAPlayer2Id',
-  teamBPlayer1Id: 'teamBPlayer1Id',
-  teamBPlayer2Id: 'teamBPlayer2Id',
+  groupId: 'groupId',
   gamesA: 'gamesA',
   gamesB: 'gamesB',
-  ratingDeltaA: 'ratingDeltaA',
-  ratingDeltaB: 'ratingDeltaB',
+  winnerTeam: 'winnerTeam',
+  teamAExpected: 'teamAExpected',
+  teamBExpected: 'teamBExpected',
+  teamAActual: 'teamAActual',
+  teamBActual: 'teamBActual',
+  teamARatingBefore: 'teamARatingBefore',
+  teamBRatingBefore: 'teamBRatingBefore',
+  teamARatingAfter: 'teamARatingAfter',
+  teamBRatingAfter: 'teamBRatingAfter',
+  ratingAlgorithm: 'ratingAlgorithm',
+  playedAt: 'playedAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
 export type MatchScalarFieldEnum = (typeof MatchScalarFieldEnum)[keyof typeof MatchScalarFieldEnum]
+
+
+export const MatchParticipantScalarFieldEnum = {
+  id: 'id',
+  matchId: 'matchId',
+  groupId: 'groupId',
+  groupMemberId: 'groupMemberId',
+  displayNameSnapshot: 'displayNameSnapshot',
+  team: 'team',
+  position: 'position',
+  ratingBefore: 'ratingBefore',
+  ratingAfter: 'ratingAfter',
+  ratingDelta: 'ratingDelta',
+  ratingDeviationBefore: 'ratingDeviationBefore',
+  ratingDeviationAfter: 'ratingDeviationAfter',
+  ratingVolatilityBefore: 'ratingVolatilityBefore',
+  ratingVolatilityAfter: 'ratingVolatilityAfter',
+  ratingMuBefore: 'ratingMuBefore',
+  ratingMuAfter: 'ratingMuAfter',
+  ratingSigmaBefore: 'ratingSigmaBefore',
+  ratingSigmaAfter: 'ratingSigmaAfter',
+  playedAt: 'playedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type MatchParticipantScalarFieldEnum = (typeof MatchParticipantScalarFieldEnum)[keyof typeof MatchParticipantScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -113,4 +201,12 @@ export const QueryMode = {
 } as const
 
 export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
+
+
+export const NullsOrder = {
+  first: 'first',
+  last: 'last'
+} as const
+
+export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
 

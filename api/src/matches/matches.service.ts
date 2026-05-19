@@ -3,6 +3,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { MatchTeam } from '../generated/prisma/enums';
 import { PrismaService } from '../prisma/prisma.service';
 import { calculateBeachRating } from '../rating/calculate-beach-rating';
 import type { Prisma } from '../generated/prisma/client';
@@ -14,105 +15,164 @@ type MatchBody = {
   teamBPlayer2Id: string;
   gamesA: number;
   gamesB: number;
+  playedAt?: string;
+};
+
+type RatingState = {
+  id: string;
+  name: string;
+  rating: number;
 };
 
 const INITIAL_RATING = 1000;
+const RATING_ALGORITHM = 'BEACH_ELO_V1';
 
 @Injectable()
 export class MatchesService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(body: MatchBody) {
+  async create(groupId: string, body: MatchBody) {
     this.validateMatchBody(body);
 
     return this.prisma.$transaction(async (tx) => {
-      const playerIds = [
-        body.teamAPlayer1Id,
-        body.teamAPlayer2Id,
-        body.teamBPlayer1Id,
-        body.teamBPlayer2Id,
-      ];
+      await this.ensureGroupExists(tx, groupId);
 
-      const players = await tx.player.findMany({
-        where: { id: { in: playerIds } },
-        select: {
-          id: true,
-          name: true,
-          rating: true,
-        },
-      });
+      const membersById = await this.getMembersById(tx, groupId, body);
+      const playedAt = this.parsePlayedAt(body.playedAt);
 
-      if (players.length !== 4) {
-        throw new NotFoundException('One or more players were not found');
-      }
-
-      const playersById = new Map(players.map((player) => [player.id, player]));
-
-      const teamAPlayer1 = playersById.get(body.teamAPlayer1Id);
-      const teamAPlayer2 = playersById.get(body.teamAPlayer2Id);
-      const teamBPlayer1 = playersById.get(body.teamBPlayer1Id);
-      const teamBPlayer2 = playersById.get(body.teamBPlayer2Id);
-
-      if (!teamAPlayer1 || !teamAPlayer2 || !teamBPlayer1 || !teamBPlayer2) {
-        throw new NotFoundException('One or more players were not found');
-      }
-
-      const result = calculateBeachRating({
-        teamA: [teamAPlayer1, teamAPlayer2],
-        teamB: [teamBPlayer1, teamBPlayer2],
-        gamesA: body.gamesA,
-        gamesB: body.gamesB,
-      });
-
-      for (const player of result.teamA.players) {
-        await tx.player.update({
-          where: { id: player.id },
-          data: { rating: player.newRating },
-        });
-      }
-
-      for (const player of result.teamB.players) {
-        await tx.player.update({
-          where: { id: player.id },
-          data: { rating: player.newRating },
-        });
-      }
-
-      return tx.match.create({
+      const match = await tx.match.create({
         data: {
-          ...body,
-          ratingDeltaA: result.teamA.delta,
-          ratingDeltaB: result.teamB.delta,
+          groupId,
+          gamesA: body.gamesA,
+          gamesB: body.gamesB,
+          winnerTeam: this.getWinnerTeam(body),
+          ratingAlgorithm: RATING_ALGORITHM,
+          playedAt,
+          participants: {
+            create: [
+              this.buildParticipantCreate(
+                groupId,
+                body.teamAPlayer1Id,
+                membersById,
+                MatchTeam.TEAM_A,
+                1,
+                playedAt,
+              ),
+              this.buildParticipantCreate(
+                groupId,
+                body.teamAPlayer2Id,
+                membersById,
+                MatchTeam.TEAM_A,
+                2,
+                playedAt,
+              ),
+              this.buildParticipantCreate(
+                groupId,
+                body.teamBPlayer1Id,
+                membersById,
+                MatchTeam.TEAM_B,
+                1,
+                playedAt,
+              ),
+              this.buildParticipantCreate(
+                groupId,
+                body.teamBPlayer2Id,
+                membersById,
+                MatchTeam.TEAM_B,
+                2,
+                playedAt,
+              ),
+            ],
+          },
         },
+      });
+
+      await this.recalculateRatings(tx, groupId);
+
+      return tx.match.findUnique({
+        where: { id: match.id },
         include: this.matchInclude(),
       });
     });
   }
 
-  async update(id: string, body: MatchBody) {
+  async update(groupId: string, id: string, body: MatchBody) {
     this.validateMatchBody(body);
 
     return this.prisma.$transaction(async (tx) => {
-      const existingMatch = await tx.match.findUnique({
-        where: { id },
+      await this.ensureGroupExists(tx, groupId);
+
+      const existingMatch = await tx.match.findFirst({
+        where: { id, groupId },
       });
 
       if (!existingMatch) {
         throw new NotFoundException('Match not found');
       }
 
-      await this.ensurePlayersExist(tx, body);
+      const membersById = await this.getMembersById(tx, groupId, body);
+      const playedAt = this.parsePlayedAt(body.playedAt);
+
+      await tx.matchParticipant.deleteMany({
+        where: { matchId: id, groupId },
+      });
 
       await tx.match.update({
         where: { id },
         data: {
-          ...body,
-          ratingDeltaA: 0,
-          ratingDeltaB: 0,
+          gamesA: body.gamesA,
+          gamesB: body.gamesB,
+          winnerTeam: this.getWinnerTeam(body),
+          teamAExpected: null,
+          teamBExpected: null,
+          teamAActual: null,
+          teamBActual: null,
+          teamARatingBefore: null,
+          teamBRatingBefore: null,
+          teamARatingAfter: null,
+          teamBRatingAfter: null,
+          ratingAlgorithm: RATING_ALGORITHM,
+          playedAt,
+          participants: {
+            create: [
+              this.buildParticipantCreate(
+                groupId,
+                body.teamAPlayer1Id,
+                membersById,
+                MatchTeam.TEAM_A,
+                1,
+                playedAt,
+              ),
+              this.buildParticipantCreate(
+                groupId,
+                body.teamAPlayer2Id,
+                membersById,
+                MatchTeam.TEAM_A,
+                2,
+                playedAt,
+              ),
+              this.buildParticipantCreate(
+                groupId,
+                body.teamBPlayer1Id,
+                membersById,
+                MatchTeam.TEAM_B,
+                1,
+                playedAt,
+              ),
+              this.buildParticipantCreate(
+                groupId,
+                body.teamBPlayer2Id,
+                membersById,
+                MatchTeam.TEAM_B,
+                2,
+                playedAt,
+              ),
+            ],
+          },
         },
       });
 
-      await this.recalculateRatings(tx);
+      await this.recalculateRatings(tx, groupId);
 
       return tx.match.findUnique({
         where: { id },
@@ -121,9 +181,40 @@ export class MatchesService {
     });
   }
 
-  findAll() {
+  async remove(groupId: string, id: string) {
+    return this.prisma.$transaction(async (tx) => {
+      await this.ensureGroupExists(tx, groupId);
+
+      const existingMatch = await tx.match.findFirst({
+        where: { id, groupId },
+      });
+
+      if (!existingMatch) {
+        throw new NotFoundException('Match not found');
+      }
+
+      await tx.match.delete({
+        where: { id },
+      });
+
+      await this.recalculateRatings(tx, groupId);
+
+      return { success: true };
+    });
+  }
+
+  async findAll(groupId: string) {
+    const group = await this.prisma.group.findUnique({
+      where: { id: groupId },
+    });
+
+    if (!group) {
+      throw new NotFoundException('Group not found');
+    }
+
     return this.prisma.match.findMany({
-      orderBy: { createdAt: 'desc' },
+      where: { groupId },
+      orderBy: [{ playedAt: 'desc' }, { createdAt: 'desc' }],
       include: this.matchInclude(),
     });
   }
@@ -147,67 +238,166 @@ export class MatchesService {
     if (body.gamesA < 0 || body.gamesB < 0 || body.gamesA + body.gamesB === 0) {
       throw new BadRequestException('Invalid score');
     }
+
+    if (body.gamesA === body.gamesB) {
+      throw new BadRequestException('A match cannot end in a draw');
+    }
   }
 
-  private async ensurePlayersExist(
+  private async ensureGroupExists(
     tx: Prisma.TransactionClient,
+    groupId: string,
+  ) {
+    const group = await tx.group.findUnique({
+      where: { id: groupId },
+    });
+
+    if (!group) {
+      throw new NotFoundException('Group not found');
+    }
+  }
+
+  private async getMembersById(
+    tx: Prisma.TransactionClient,
+    groupId: string,
     body: MatchBody,
   ) {
-    const playerIds = [
+    const memberIds = [
       body.teamAPlayer1Id,
       body.teamAPlayer2Id,
       body.teamBPlayer1Id,
       body.teamBPlayer2Id,
     ];
 
-    const players = await tx.player.findMany({
-      where: { id: { in: playerIds } },
-    });
-
-    if (players.length !== 4) {
-      throw new NotFoundException('One or more players were not found');
-    }
-  }
-
-  private async recalculateRatings(tx: Prisma.TransactionClient) {
-    type RatingState = {
-      id: string;
-      name: string;
-      rating: number;
-    };
-
-    const players = (await tx.player.findMany({
+    const members = await tx.groupMember.findMany({
+      where: {
+        groupId,
+        id: { in: memberIds },
+        leftAt: null,
+      },
       select: {
         id: true,
-        name: true,
+        displayName: true,
         rating: true,
       },
-    })) as RatingState[];
+    });
 
-    const playersById = new Map<string, RatingState>(
-      players.map((player) => [
-        player.id,
+    if (members.length !== 4) {
+      throw new NotFoundException(
+        'One or more players were not found in this group',
+      );
+    }
+
+    return new Map(members.map((member) => [member.id, member]));
+  }
+
+  private buildParticipantCreate(
+    groupId: string,
+    groupMemberId: string,
+    membersById: Map<
+      string,
+      { id: string; displayName: string; rating: number }
+    >,
+    team: MatchTeam,
+    position: number,
+    playedAt: Date,
+  ) {
+    const member = membersById.get(groupMemberId);
+
+    if (!member) {
+      throw new NotFoundException(
+        'One or more players were not found in this group',
+      );
+    }
+
+    return {
+      groupId,
+      groupMemberId,
+      displayNameSnapshot: member.displayName,
+      team,
+      position,
+      ratingBefore: 0,
+      ratingAfter: 0,
+      ratingDelta: 0,
+      playedAt,
+    };
+  }
+
+  private parsePlayedAt(playedAt?: string) {
+    if (!playedAt) {
+      return new Date();
+    }
+
+    const date = new Date(playedAt);
+
+    if (Number.isNaN(date.getTime())) {
+      throw new BadRequestException('Invalid playedAt');
+    }
+
+    return date;
+  }
+
+  private getWinnerTeam(body: MatchBody) {
+    return body.gamesA > body.gamesB ? MatchTeam.TEAM_A : MatchTeam.TEAM_B;
+  }
+
+  private async recalculateRatings(
+    tx: Prisma.TransactionClient,
+    groupId: string,
+  ) {
+    const members = await tx.groupMember.findMany({
+      where: { groupId },
+      select: {
+        id: true,
+        displayName: true,
+      },
+    });
+
+    const membersById = new Map<string, RatingState>(
+      members.map((member) => [
+        member.id,
         {
-          id: player.id,
-          name: player.name,
+          id: member.id,
+          name: member.displayName,
           rating: INITIAL_RATING,
         },
       ]),
     );
 
     const matches = await tx.match.findMany({
-      orderBy: { createdAt: 'asc' },
+      where: { groupId },
+      orderBy: [{ playedAt: 'asc' }, { createdAt: 'asc' }],
+      include: {
+        participants: {
+          orderBy: [{ team: 'asc' }, { position: 'asc' }],
+        },
+      },
     });
 
     for (const match of matches) {
-      const teamAPlayer1 = playersById.get(match.teamAPlayer1Id);
-      const teamAPlayer2 = playersById.get(match.teamAPlayer2Id);
-      const teamBPlayer1 = playersById.get(match.teamBPlayer1Id);
-      const teamBPlayer2 = playersById.get(match.teamBPlayer2Id);
+      const teamAParticipants = match.participants
+        .filter((participant) => participant.team === MatchTeam.TEAM_A)
+        .sort((a, b) => a.position - b.position);
+
+      const teamBParticipants = match.participants
+        .filter((participant) => participant.team === MatchTeam.TEAM_B)
+        .sort((a, b) => a.position - b.position);
+
+      if (teamAParticipants.length !== 2 || teamBParticipants.length !== 2) {
+        throw new Error('Invalid match participants');
+      }
+
+      const teamAPlayer1 = membersById.get(teamAParticipants[0].groupMemberId);
+      const teamAPlayer2 = membersById.get(teamAParticipants[1].groupMemberId);
+      const teamBPlayer1 = membersById.get(teamBParticipants[0].groupMemberId);
+      const teamBPlayer2 = membersById.get(teamBParticipants[1].groupMemberId);
 
       if (!teamAPlayer1 || !teamAPlayer2 || !teamBPlayer1 || !teamBPlayer2) {
         throw new Error('Invalid match players');
       }
+
+      const teamARatingBefore = (teamAPlayer1.rating + teamAPlayer2.rating) / 2;
+      const teamBRatingBefore = (teamBPlayer1.rating + teamBPlayer2.rating) / 2;
 
       const result = calculateBeachRating({
         teamA: [teamAPlayer1, teamAPlayer2],
@@ -216,67 +406,133 @@ export class MatchesService {
         gamesB: match.gamesB,
       });
 
-      for (const player of result.teamA.players) {
-        playersById.set(player.id, {
+      const updatedPlayers = [...result.teamA.players, ...result.teamB.players];
+
+      for (const player of updatedPlayers) {
+        membersById.set(player.id, {
           id: player.id,
           name: player.name,
           rating: player.newRating,
         });
       }
 
-      for (const player of result.teamB.players) {
-        playersById.set(player.id, {
-          id: player.id,
-          name: player.name,
-          rating: player.newRating,
+      const playerById = new Map(
+        updatedPlayers.map((player) => [player.id, player]),
+      );
+
+      for (const participant of match.participants) {
+        const before = this.getParticipantBeforeRating(
+          participant.groupMemberId,
+          teamAParticipants,
+          teamBParticipants,
+          teamAPlayer1,
+          teamAPlayer2,
+          teamBPlayer1,
+          teamBPlayer2,
+        );
+
+        const updatedPlayer = playerById.get(participant.groupMemberId);
+
+        if (!updatedPlayer) {
+          throw new Error('Invalid updated participant');
+        }
+
+        await tx.matchParticipant.update({
+          where: { id: participant.id },
+          data: {
+            ratingBefore: before,
+            ratingAfter: updatedPlayer.newRating,
+            ratingDelta: updatedPlayer.newRating - before,
+            playedAt: match.playedAt,
+          },
         });
       }
+
+      const teamARatingAfter =
+        (result.teamA.players[0].newRating +
+          result.teamA.players[1].newRating) /
+        2;
+      const teamBRatingAfter =
+        (result.teamB.players[0].newRating +
+          result.teamB.players[1].newRating) /
+        2;
 
       await tx.match.update({
         where: { id: match.id },
         data: {
-          ratingDeltaA: result.teamA.delta,
-          ratingDeltaB: result.teamB.delta,
+          winnerTeam:
+            match.gamesA > match.gamesB ? MatchTeam.TEAM_A : MatchTeam.TEAM_B,
+          teamAExpected: result.teamA.expected,
+          teamBExpected: result.teamB.expected,
+          teamAActual: result.teamA.actual,
+          teamBActual: result.teamB.actual,
+          teamARatingBefore,
+          teamBRatingBefore,
+          teamARatingAfter,
+          teamBRatingAfter,
+          ratingAlgorithm: RATING_ALGORITHM,
         },
       });
     }
 
-    for (const player of playersById.values()) {
-      await tx.player.update({
-        where: { id: player.id },
+    for (const member of membersById.values()) {
+      await tx.groupMember.update({
+        where: { id: member.id },
         data: {
-          rating: player.rating,
+          rating: member.rating,
+          ratingAlgorithm: RATING_ALGORITHM,
         },
       });
     }
+  }
+
+  private getParticipantBeforeRating(
+    groupMemberId: string,
+    teamAParticipants: { groupMemberId: string }[],
+    teamBParticipants: { groupMemberId: string }[],
+    teamAPlayer1: RatingState,
+    teamAPlayer2: RatingState,
+    teamBPlayer1: RatingState,
+    teamBPlayer2: RatingState,
+  ) {
+    if (groupMemberId === teamAParticipants[0].groupMemberId) {
+      return teamAPlayer1.rating;
+    }
+
+    if (groupMemberId === teamAParticipants[1].groupMemberId) {
+      return teamAPlayer2.rating;
+    }
+
+    if (groupMemberId === teamBParticipants[0].groupMemberId) {
+      return teamBPlayer1.rating;
+    }
+
+    if (groupMemberId === teamBParticipants[1].groupMemberId) {
+      return teamBPlayer2.rating;
+    }
+
+    throw new Error('Invalid participant');
   }
 
   private matchInclude() {
     return {
-      teamAPlayer1: true,
-      teamAPlayer2: true,
-      teamBPlayer1: true,
-      teamBPlayer2: true,
+      participants: {
+        orderBy: [{ team: 'asc' as const }, { position: 'asc' as const }],
+        include: {
+          groupMember: {
+            include: {
+              user: {
+                select: {
+                  id: true,
+                  firstName: true,
+                  lastName: true,
+                  email: true,
+                },
+              },
+            },
+          },
+        },
+      },
     };
-  }
-
-  async remove(id: string) {
-    return this.prisma.$transaction(async (tx) => {
-      const existingMatch = await tx.match.findUnique({
-        where: { id },
-      });
-
-      if (!existingMatch) {
-        throw new NotFoundException('Match not found');
-      }
-
-      await tx.match.delete({
-        where: { id },
-      });
-
-      await this.recalculateRatings(tx);
-
-      return { success: true };
-    });
   }
 }

@@ -1,17 +1,20 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { PlayersService } from './players.service';
 
-@Controller('players')
+@Controller('groups/:groupId/players')
 export class PlayersController {
   constructor(private readonly playersService: PlayersService) {}
 
   @Post()
-  create(@Body() body: { name: string }) {
-    return this.playersService.create(body.name);
+  create(
+    @Param('groupId') groupId: string,
+    @Body() body: { userId: string; displayName?: string },
+  ) {
+    return this.playersService.create(groupId, body);
   }
 
   @Get()
-  findAll() {
-    return this.playersService.findAll();
+  findAll(@Param('groupId') groupId: string) {
+    return this.playersService.findAll(groupId);
   }
 }

@@ -29,55 +29,85 @@ export type AggregateMatch = {
 export type MatchAvgAggregateOutputType = {
   gamesA: number | null
   gamesB: number | null
-  ratingDeltaA: number | null
-  ratingDeltaB: number | null
+  teamAExpected: number | null
+  teamBExpected: number | null
+  teamAActual: number | null
+  teamBActual: number | null
+  teamARatingBefore: number | null
+  teamBRatingBefore: number | null
+  teamARatingAfter: number | null
+  teamBRatingAfter: number | null
 }
 
 export type MatchSumAggregateOutputType = {
   gamesA: number | null
   gamesB: number | null
-  ratingDeltaA: number | null
-  ratingDeltaB: number | null
+  teamAExpected: number | null
+  teamBExpected: number | null
+  teamAActual: number | null
+  teamBActual: number | null
+  teamARatingBefore: number | null
+  teamBRatingBefore: number | null
+  teamARatingAfter: number | null
+  teamBRatingAfter: number | null
 }
 
 export type MatchMinAggregateOutputType = {
   id: string | null
-  teamAPlayer1Id: string | null
-  teamAPlayer2Id: string | null
-  teamBPlayer1Id: string | null
-  teamBPlayer2Id: string | null
+  groupId: string | null
   gamesA: number | null
   gamesB: number | null
-  ratingDeltaA: number | null
-  ratingDeltaB: number | null
+  winnerTeam: $Enums.MatchTeam | null
+  teamAExpected: number | null
+  teamBExpected: number | null
+  teamAActual: number | null
+  teamBActual: number | null
+  teamARatingBefore: number | null
+  teamBRatingBefore: number | null
+  teamARatingAfter: number | null
+  teamBRatingAfter: number | null
+  ratingAlgorithm: string | null
+  playedAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
 }
 
 export type MatchMaxAggregateOutputType = {
   id: string | null
-  teamAPlayer1Id: string | null
-  teamAPlayer2Id: string | null
-  teamBPlayer1Id: string | null
-  teamBPlayer2Id: string | null
+  groupId: string | null
   gamesA: number | null
   gamesB: number | null
-  ratingDeltaA: number | null
-  ratingDeltaB: number | null
+  winnerTeam: $Enums.MatchTeam | null
+  teamAExpected: number | null
+  teamBExpected: number | null
+  teamAActual: number | null
+  teamBActual: number | null
+  teamARatingBefore: number | null
+  teamBRatingBefore: number | null
+  teamARatingAfter: number | null
+  teamBRatingAfter: number | null
+  ratingAlgorithm: string | null
+  playedAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
 }
 
 export type MatchCountAggregateOutputType = {
   id: number
-  teamAPlayer1Id: number
-  teamAPlayer2Id: number
-  teamBPlayer1Id: number
-  teamBPlayer2Id: number
+  groupId: number
   gamesA: number
   gamesB: number
-  ratingDeltaA: number
-  ratingDeltaB: number
+  winnerTeam: number
+  teamAExpected: number
+  teamBExpected: number
+  teamAActual: number
+  teamBActual: number
+  teamARatingBefore: number
+  teamBRatingBefore: number
+  teamARatingAfter: number
+  teamBRatingAfter: number
+  ratingAlgorithm: number
+  playedAt: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -87,55 +117,85 @@ export type MatchCountAggregateOutputType = {
 export type MatchAvgAggregateInputType = {
   gamesA?: true
   gamesB?: true
-  ratingDeltaA?: true
-  ratingDeltaB?: true
+  teamAExpected?: true
+  teamBExpected?: true
+  teamAActual?: true
+  teamBActual?: true
+  teamARatingBefore?: true
+  teamBRatingBefore?: true
+  teamARatingAfter?: true
+  teamBRatingAfter?: true
 }
 
 export type MatchSumAggregateInputType = {
   gamesA?: true
   gamesB?: true
-  ratingDeltaA?: true
-  ratingDeltaB?: true
+  teamAExpected?: true
+  teamBExpected?: true
+  teamAActual?: true
+  teamBActual?: true
+  teamARatingBefore?: true
+  teamBRatingBefore?: true
+  teamARatingAfter?: true
+  teamBRatingAfter?: true
 }
 
 export type MatchMinAggregateInputType = {
   id?: true
-  teamAPlayer1Id?: true
-  teamAPlayer2Id?: true
-  teamBPlayer1Id?: true
-  teamBPlayer2Id?: true
+  groupId?: true
   gamesA?: true
   gamesB?: true
-  ratingDeltaA?: true
-  ratingDeltaB?: true
+  winnerTeam?: true
+  teamAExpected?: true
+  teamBExpected?: true
+  teamAActual?: true
+  teamBActual?: true
+  teamARatingBefore?: true
+  teamBRatingBefore?: true
+  teamARatingAfter?: true
+  teamBRatingAfter?: true
+  ratingAlgorithm?: true
+  playedAt?: true
   createdAt?: true
   updatedAt?: true
 }
 
 export type MatchMaxAggregateInputType = {
   id?: true
-  teamAPlayer1Id?: true
-  teamAPlayer2Id?: true
-  teamBPlayer1Id?: true
-  teamBPlayer2Id?: true
+  groupId?: true
   gamesA?: true
   gamesB?: true
-  ratingDeltaA?: true
-  ratingDeltaB?: true
+  winnerTeam?: true
+  teamAExpected?: true
+  teamBExpected?: true
+  teamAActual?: true
+  teamBActual?: true
+  teamARatingBefore?: true
+  teamBRatingBefore?: true
+  teamARatingAfter?: true
+  teamBRatingAfter?: true
+  ratingAlgorithm?: true
+  playedAt?: true
   createdAt?: true
   updatedAt?: true
 }
 
 export type MatchCountAggregateInputType = {
   id?: true
-  teamAPlayer1Id?: true
-  teamAPlayer2Id?: true
-  teamBPlayer1Id?: true
-  teamBPlayer2Id?: true
+  groupId?: true
   gamesA?: true
   gamesB?: true
-  ratingDeltaA?: true
-  ratingDeltaB?: true
+  winnerTeam?: true
+  teamAExpected?: true
+  teamBExpected?: true
+  teamAActual?: true
+  teamBActual?: true
+  teamARatingBefore?: true
+  teamBRatingBefore?: true
+  teamARatingAfter?: true
+  teamBRatingAfter?: true
+  ratingAlgorithm?: true
+  playedAt?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -229,14 +289,20 @@ export type MatchGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalAr
 
 export type MatchGroupByOutputType = {
   id: string
-  teamAPlayer1Id: string
-  teamAPlayer2Id: string
-  teamBPlayer1Id: string
-  teamBPlayer2Id: string
+  groupId: string
   gamesA: number
   gamesB: number
-  ratingDeltaA: number
-  ratingDeltaB: number
+  winnerTeam: $Enums.MatchTeam | null
+  teamAExpected: number | null
+  teamBExpected: number | null
+  teamAActual: number | null
+  teamBActual: number | null
+  teamARatingBefore: number | null
+  teamBRatingBefore: number | null
+  teamARatingAfter: number | null
+  teamBRatingAfter: number | null
+  ratingAlgorithm: string
+  playedAt: Date
   createdAt: Date
   updatedAt: Date
   _count: MatchCountAggregateOutputType | null
@@ -266,71 +332,90 @@ export type MatchWhereInput = {
   OR?: Prisma.MatchWhereInput[]
   NOT?: Prisma.MatchWhereInput | Prisma.MatchWhereInput[]
   id?: Prisma.StringFilter<"Match"> | string
-  teamAPlayer1Id?: Prisma.StringFilter<"Match"> | string
-  teamAPlayer2Id?: Prisma.StringFilter<"Match"> | string
-  teamBPlayer1Id?: Prisma.StringFilter<"Match"> | string
-  teamBPlayer2Id?: Prisma.StringFilter<"Match"> | string
+  groupId?: Prisma.StringFilter<"Match"> | string
   gamesA?: Prisma.IntFilter<"Match"> | number
   gamesB?: Prisma.IntFilter<"Match"> | number
-  ratingDeltaA?: Prisma.FloatFilter<"Match"> | number
-  ratingDeltaB?: Prisma.FloatFilter<"Match"> | number
+  winnerTeam?: Prisma.EnumMatchTeamNullableFilter<"Match"> | $Enums.MatchTeam | null
+  teamAExpected?: Prisma.FloatNullableFilter<"Match"> | number | null
+  teamBExpected?: Prisma.FloatNullableFilter<"Match"> | number | null
+  teamAActual?: Prisma.FloatNullableFilter<"Match"> | number | null
+  teamBActual?: Prisma.FloatNullableFilter<"Match"> | number | null
+  teamARatingBefore?: Prisma.FloatNullableFilter<"Match"> | number | null
+  teamBRatingBefore?: Prisma.FloatNullableFilter<"Match"> | number | null
+  teamARatingAfter?: Prisma.FloatNullableFilter<"Match"> | number | null
+  teamBRatingAfter?: Prisma.FloatNullableFilter<"Match"> | number | null
+  ratingAlgorithm?: Prisma.StringFilter<"Match"> | string
+  playedAt?: Prisma.DateTimeFilter<"Match"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"Match"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Match"> | Date | string
-  teamAPlayer1?: Prisma.XOR<Prisma.PlayerScalarRelationFilter, Prisma.PlayerWhereInput>
-  teamAPlayer2?: Prisma.XOR<Prisma.PlayerScalarRelationFilter, Prisma.PlayerWhereInput>
-  teamBPlayer1?: Prisma.XOR<Prisma.PlayerScalarRelationFilter, Prisma.PlayerWhereInput>
-  teamBPlayer2?: Prisma.XOR<Prisma.PlayerScalarRelationFilter, Prisma.PlayerWhereInput>
+  group?: Prisma.XOR<Prisma.GroupScalarRelationFilter, Prisma.GroupWhereInput>
+  participants?: Prisma.MatchParticipantListRelationFilter
 }
 
 export type MatchOrderByWithRelationInput = {
   id?: Prisma.SortOrder
-  teamAPlayer1Id?: Prisma.SortOrder
-  teamAPlayer2Id?: Prisma.SortOrder
-  teamBPlayer1Id?: Prisma.SortOrder
-  teamBPlayer2Id?: Prisma.SortOrder
+  groupId?: Prisma.SortOrder
   gamesA?: Prisma.SortOrder
   gamesB?: Prisma.SortOrder
-  ratingDeltaA?: Prisma.SortOrder
-  ratingDeltaB?: Prisma.SortOrder
+  winnerTeam?: Prisma.SortOrderInput | Prisma.SortOrder
+  teamAExpected?: Prisma.SortOrderInput | Prisma.SortOrder
+  teamBExpected?: Prisma.SortOrderInput | Prisma.SortOrder
+  teamAActual?: Prisma.SortOrderInput | Prisma.SortOrder
+  teamBActual?: Prisma.SortOrderInput | Prisma.SortOrder
+  teamARatingBefore?: Prisma.SortOrderInput | Prisma.SortOrder
+  teamBRatingBefore?: Prisma.SortOrderInput | Prisma.SortOrder
+  teamARatingAfter?: Prisma.SortOrderInput | Prisma.SortOrder
+  teamBRatingAfter?: Prisma.SortOrderInput | Prisma.SortOrder
+  ratingAlgorithm?: Prisma.SortOrder
+  playedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
-  teamAPlayer1?: Prisma.PlayerOrderByWithRelationInput
-  teamAPlayer2?: Prisma.PlayerOrderByWithRelationInput
-  teamBPlayer1?: Prisma.PlayerOrderByWithRelationInput
-  teamBPlayer2?: Prisma.PlayerOrderByWithRelationInput
+  group?: Prisma.GroupOrderByWithRelationInput
+  participants?: Prisma.MatchParticipantOrderByRelationAggregateInput
 }
 
 export type MatchWhereUniqueInput = Prisma.AtLeast<{
   id?: string
+  id_groupId?: Prisma.MatchIdGroupIdCompoundUniqueInput
   AND?: Prisma.MatchWhereInput | Prisma.MatchWhereInput[]
   OR?: Prisma.MatchWhereInput[]
   NOT?: Prisma.MatchWhereInput | Prisma.MatchWhereInput[]
-  teamAPlayer1Id?: Prisma.StringFilter<"Match"> | string
-  teamAPlayer2Id?: Prisma.StringFilter<"Match"> | string
-  teamBPlayer1Id?: Prisma.StringFilter<"Match"> | string
-  teamBPlayer2Id?: Prisma.StringFilter<"Match"> | string
+  groupId?: Prisma.StringFilter<"Match"> | string
   gamesA?: Prisma.IntFilter<"Match"> | number
   gamesB?: Prisma.IntFilter<"Match"> | number
-  ratingDeltaA?: Prisma.FloatFilter<"Match"> | number
-  ratingDeltaB?: Prisma.FloatFilter<"Match"> | number
+  winnerTeam?: Prisma.EnumMatchTeamNullableFilter<"Match"> | $Enums.MatchTeam | null
+  teamAExpected?: Prisma.FloatNullableFilter<"Match"> | number | null
+  teamBExpected?: Prisma.FloatNullableFilter<"Match"> | number | null
+  teamAActual?: Prisma.FloatNullableFilter<"Match"> | number | null
+  teamBActual?: Prisma.FloatNullableFilter<"Match"> | number | null
+  teamARatingBefore?: Prisma.FloatNullableFilter<"Match"> | number | null
+  teamBRatingBefore?: Prisma.FloatNullableFilter<"Match"> | number | null
+  teamARatingAfter?: Prisma.FloatNullableFilter<"Match"> | number | null
+  teamBRatingAfter?: Prisma.FloatNullableFilter<"Match"> | number | null
+  ratingAlgorithm?: Prisma.StringFilter<"Match"> | string
+  playedAt?: Prisma.DateTimeFilter<"Match"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"Match"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Match"> | Date | string
-  teamAPlayer1?: Prisma.XOR<Prisma.PlayerScalarRelationFilter, Prisma.PlayerWhereInput>
-  teamAPlayer2?: Prisma.XOR<Prisma.PlayerScalarRelationFilter, Prisma.PlayerWhereInput>
-  teamBPlayer1?: Prisma.XOR<Prisma.PlayerScalarRelationFilter, Prisma.PlayerWhereInput>
-  teamBPlayer2?: Prisma.XOR<Prisma.PlayerScalarRelationFilter, Prisma.PlayerWhereInput>
-}, "id">
+  group?: Prisma.XOR<Prisma.GroupScalarRelationFilter, Prisma.GroupWhereInput>
+  participants?: Prisma.MatchParticipantListRelationFilter
+}, "id" | "id_groupId">
 
 export type MatchOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
-  teamAPlayer1Id?: Prisma.SortOrder
-  teamAPlayer2Id?: Prisma.SortOrder
-  teamBPlayer1Id?: Prisma.SortOrder
-  teamBPlayer2Id?: Prisma.SortOrder
+  groupId?: Prisma.SortOrder
   gamesA?: Prisma.SortOrder
   gamesB?: Prisma.SortOrder
-  ratingDeltaA?: Prisma.SortOrder
-  ratingDeltaB?: Prisma.SortOrder
+  winnerTeam?: Prisma.SortOrderInput | Prisma.SortOrder
+  teamAExpected?: Prisma.SortOrderInput | Prisma.SortOrder
+  teamBExpected?: Prisma.SortOrderInput | Prisma.SortOrder
+  teamAActual?: Prisma.SortOrderInput | Prisma.SortOrder
+  teamBActual?: Prisma.SortOrderInput | Prisma.SortOrder
+  teamARatingBefore?: Prisma.SortOrderInput | Prisma.SortOrder
+  teamBRatingBefore?: Prisma.SortOrderInput | Prisma.SortOrder
+  teamARatingAfter?: Prisma.SortOrderInput | Prisma.SortOrder
+  teamBRatingAfter?: Prisma.SortOrderInput | Prisma.SortOrder
+  ratingAlgorithm?: Prisma.SortOrder
+  playedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.MatchCountOrderByAggregateInput
@@ -345,14 +430,20 @@ export type MatchScalarWhereWithAggregatesInput = {
   OR?: Prisma.MatchScalarWhereWithAggregatesInput[]
   NOT?: Prisma.MatchScalarWhereWithAggregatesInput | Prisma.MatchScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"Match"> | string
-  teamAPlayer1Id?: Prisma.StringWithAggregatesFilter<"Match"> | string
-  teamAPlayer2Id?: Prisma.StringWithAggregatesFilter<"Match"> | string
-  teamBPlayer1Id?: Prisma.StringWithAggregatesFilter<"Match"> | string
-  teamBPlayer2Id?: Prisma.StringWithAggregatesFilter<"Match"> | string
+  groupId?: Prisma.StringWithAggregatesFilter<"Match"> | string
   gamesA?: Prisma.IntWithAggregatesFilter<"Match"> | number
   gamesB?: Prisma.IntWithAggregatesFilter<"Match"> | number
-  ratingDeltaA?: Prisma.FloatWithAggregatesFilter<"Match"> | number
-  ratingDeltaB?: Prisma.FloatWithAggregatesFilter<"Match"> | number
+  winnerTeam?: Prisma.EnumMatchTeamNullableWithAggregatesFilter<"Match"> | $Enums.MatchTeam | null
+  teamAExpected?: Prisma.FloatNullableWithAggregatesFilter<"Match"> | number | null
+  teamBExpected?: Prisma.FloatNullableWithAggregatesFilter<"Match"> | number | null
+  teamAActual?: Prisma.FloatNullableWithAggregatesFilter<"Match"> | number | null
+  teamBActual?: Prisma.FloatNullableWithAggregatesFilter<"Match"> | number | null
+  teamARatingBefore?: Prisma.FloatNullableWithAggregatesFilter<"Match"> | number | null
+  teamBRatingBefore?: Prisma.FloatNullableWithAggregatesFilter<"Match"> | number | null
+  teamARatingAfter?: Prisma.FloatNullableWithAggregatesFilter<"Match"> | number | null
+  teamBRatingAfter?: Prisma.FloatNullableWithAggregatesFilter<"Match"> | number | null
+  ratingAlgorithm?: Prisma.StringWithAggregatesFilter<"Match"> | string
+  playedAt?: Prisma.DateTimeWithAggregatesFilter<"Match"> | Date | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Match"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Match"> | Date | string
 }
@@ -361,68 +452,102 @@ export type MatchCreateInput = {
   id?: string
   gamesA: number
   gamesB: number
-  ratingDeltaA: number
-  ratingDeltaB: number
+  winnerTeam?: $Enums.MatchTeam | null
+  teamAExpected?: number | null
+  teamBExpected?: number | null
+  teamAActual?: number | null
+  teamBActual?: number | null
+  teamARatingBefore?: number | null
+  teamBRatingBefore?: number | null
+  teamARatingAfter?: number | null
+  teamBRatingAfter?: number | null
+  ratingAlgorithm?: string
+  playedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
-  teamAPlayer1: Prisma.PlayerCreateNestedOneWithoutTeamA1MatchesInput
-  teamAPlayer2: Prisma.PlayerCreateNestedOneWithoutTeamA2MatchesInput
-  teamBPlayer1: Prisma.PlayerCreateNestedOneWithoutTeamB1MatchesInput
-  teamBPlayer2: Prisma.PlayerCreateNestedOneWithoutTeamB2MatchesInput
+  group: Prisma.GroupCreateNestedOneWithoutMatchesInput
+  participants?: Prisma.MatchParticipantCreateNestedManyWithoutMatchInput
 }
 
 export type MatchUncheckedCreateInput = {
   id?: string
-  teamAPlayer1Id: string
-  teamAPlayer2Id: string
-  teamBPlayer1Id: string
-  teamBPlayer2Id: string
+  groupId: string
   gamesA: number
   gamesB: number
-  ratingDeltaA: number
-  ratingDeltaB: number
+  winnerTeam?: $Enums.MatchTeam | null
+  teamAExpected?: number | null
+  teamBExpected?: number | null
+  teamAActual?: number | null
+  teamBActual?: number | null
+  teamARatingBefore?: number | null
+  teamBRatingBefore?: number | null
+  teamARatingAfter?: number | null
+  teamBRatingAfter?: number | null
+  ratingAlgorithm?: string
+  playedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
+  participants?: Prisma.MatchParticipantUncheckedCreateNestedManyWithoutMatchInput
 }
 
 export type MatchUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   gamesA?: Prisma.IntFieldUpdateOperationsInput | number
   gamesB?: Prisma.IntFieldUpdateOperationsInput | number
-  ratingDeltaA?: Prisma.FloatFieldUpdateOperationsInput | number
-  ratingDeltaB?: Prisma.FloatFieldUpdateOperationsInput | number
+  winnerTeam?: Prisma.NullableEnumMatchTeamFieldUpdateOperationsInput | $Enums.MatchTeam | null
+  teamAExpected?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamBExpected?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamAActual?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamBActual?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamARatingBefore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamBRatingBefore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamARatingAfter?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamBRatingAfter?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  ratingAlgorithm?: Prisma.StringFieldUpdateOperationsInput | string
+  playedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  teamAPlayer1?: Prisma.PlayerUpdateOneRequiredWithoutTeamA1MatchesNestedInput
-  teamAPlayer2?: Prisma.PlayerUpdateOneRequiredWithoutTeamA2MatchesNestedInput
-  teamBPlayer1?: Prisma.PlayerUpdateOneRequiredWithoutTeamB1MatchesNestedInput
-  teamBPlayer2?: Prisma.PlayerUpdateOneRequiredWithoutTeamB2MatchesNestedInput
+  group?: Prisma.GroupUpdateOneRequiredWithoutMatchesNestedInput
+  participants?: Prisma.MatchParticipantUpdateManyWithoutMatchNestedInput
 }
 
 export type MatchUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  teamAPlayer1Id?: Prisma.StringFieldUpdateOperationsInput | string
-  teamAPlayer2Id?: Prisma.StringFieldUpdateOperationsInput | string
-  teamBPlayer1Id?: Prisma.StringFieldUpdateOperationsInput | string
-  teamBPlayer2Id?: Prisma.StringFieldUpdateOperationsInput | string
+  groupId?: Prisma.StringFieldUpdateOperationsInput | string
   gamesA?: Prisma.IntFieldUpdateOperationsInput | number
   gamesB?: Prisma.IntFieldUpdateOperationsInput | number
-  ratingDeltaA?: Prisma.FloatFieldUpdateOperationsInput | number
-  ratingDeltaB?: Prisma.FloatFieldUpdateOperationsInput | number
+  winnerTeam?: Prisma.NullableEnumMatchTeamFieldUpdateOperationsInput | $Enums.MatchTeam | null
+  teamAExpected?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamBExpected?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamAActual?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamBActual?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamARatingBefore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamBRatingBefore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamARatingAfter?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamBRatingAfter?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  ratingAlgorithm?: Prisma.StringFieldUpdateOperationsInput | string
+  playedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  participants?: Prisma.MatchParticipantUncheckedUpdateManyWithoutMatchNestedInput
 }
 
 export type MatchCreateManyInput = {
   id?: string
-  teamAPlayer1Id: string
-  teamAPlayer2Id: string
-  teamBPlayer1Id: string
-  teamBPlayer2Id: string
+  groupId: string
   gamesA: number
   gamesB: number
-  ratingDeltaA: number
-  ratingDeltaB: number
+  winnerTeam?: $Enums.MatchTeam | null
+  teamAExpected?: number | null
+  teamBExpected?: number | null
+  teamAActual?: number | null
+  teamBActual?: number | null
+  teamARatingBefore?: number | null
+  teamBRatingBefore?: number | null
+  teamARatingAfter?: number | null
+  teamBRatingAfter?: number | null
+  ratingAlgorithm?: string
+  playedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -431,22 +556,37 @@ export type MatchUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   gamesA?: Prisma.IntFieldUpdateOperationsInput | number
   gamesB?: Prisma.IntFieldUpdateOperationsInput | number
-  ratingDeltaA?: Prisma.FloatFieldUpdateOperationsInput | number
-  ratingDeltaB?: Prisma.FloatFieldUpdateOperationsInput | number
+  winnerTeam?: Prisma.NullableEnumMatchTeamFieldUpdateOperationsInput | $Enums.MatchTeam | null
+  teamAExpected?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamBExpected?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamAActual?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamBActual?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamARatingBefore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamBRatingBefore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamARatingAfter?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamBRatingAfter?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  ratingAlgorithm?: Prisma.StringFieldUpdateOperationsInput | string
+  playedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type MatchUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  teamAPlayer1Id?: Prisma.StringFieldUpdateOperationsInput | string
-  teamAPlayer2Id?: Prisma.StringFieldUpdateOperationsInput | string
-  teamBPlayer1Id?: Prisma.StringFieldUpdateOperationsInput | string
-  teamBPlayer2Id?: Prisma.StringFieldUpdateOperationsInput | string
+  groupId?: Prisma.StringFieldUpdateOperationsInput | string
   gamesA?: Prisma.IntFieldUpdateOperationsInput | number
   gamesB?: Prisma.IntFieldUpdateOperationsInput | number
-  ratingDeltaA?: Prisma.FloatFieldUpdateOperationsInput | number
-  ratingDeltaB?: Prisma.FloatFieldUpdateOperationsInput | number
+  winnerTeam?: Prisma.NullableEnumMatchTeamFieldUpdateOperationsInput | $Enums.MatchTeam | null
+  teamAExpected?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamBExpected?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamAActual?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamBActual?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamARatingBefore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamBRatingBefore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamARatingAfter?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamBRatingAfter?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  ratingAlgorithm?: Prisma.StringFieldUpdateOperationsInput | string
+  playedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -461,16 +601,27 @@ export type MatchOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
 }
 
+export type MatchIdGroupIdCompoundUniqueInput = {
+  id: string
+  groupId: string
+}
+
 export type MatchCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  teamAPlayer1Id?: Prisma.SortOrder
-  teamAPlayer2Id?: Prisma.SortOrder
-  teamBPlayer1Id?: Prisma.SortOrder
-  teamBPlayer2Id?: Prisma.SortOrder
+  groupId?: Prisma.SortOrder
   gamesA?: Prisma.SortOrder
   gamesB?: Prisma.SortOrder
-  ratingDeltaA?: Prisma.SortOrder
-  ratingDeltaB?: Prisma.SortOrder
+  winnerTeam?: Prisma.SortOrder
+  teamAExpected?: Prisma.SortOrder
+  teamBExpected?: Prisma.SortOrder
+  teamAActual?: Prisma.SortOrder
+  teamBActual?: Prisma.SortOrder
+  teamARatingBefore?: Prisma.SortOrder
+  teamBRatingBefore?: Prisma.SortOrder
+  teamARatingAfter?: Prisma.SortOrder
+  teamBRatingAfter?: Prisma.SortOrder
+  ratingAlgorithm?: Prisma.SortOrder
+  playedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -478,34 +629,52 @@ export type MatchCountOrderByAggregateInput = {
 export type MatchAvgOrderByAggregateInput = {
   gamesA?: Prisma.SortOrder
   gamesB?: Prisma.SortOrder
-  ratingDeltaA?: Prisma.SortOrder
-  ratingDeltaB?: Prisma.SortOrder
+  teamAExpected?: Prisma.SortOrder
+  teamBExpected?: Prisma.SortOrder
+  teamAActual?: Prisma.SortOrder
+  teamBActual?: Prisma.SortOrder
+  teamARatingBefore?: Prisma.SortOrder
+  teamBRatingBefore?: Prisma.SortOrder
+  teamARatingAfter?: Prisma.SortOrder
+  teamBRatingAfter?: Prisma.SortOrder
 }
 
 export type MatchMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  teamAPlayer1Id?: Prisma.SortOrder
-  teamAPlayer2Id?: Prisma.SortOrder
-  teamBPlayer1Id?: Prisma.SortOrder
-  teamBPlayer2Id?: Prisma.SortOrder
+  groupId?: Prisma.SortOrder
   gamesA?: Prisma.SortOrder
   gamesB?: Prisma.SortOrder
-  ratingDeltaA?: Prisma.SortOrder
-  ratingDeltaB?: Prisma.SortOrder
+  winnerTeam?: Prisma.SortOrder
+  teamAExpected?: Prisma.SortOrder
+  teamBExpected?: Prisma.SortOrder
+  teamAActual?: Prisma.SortOrder
+  teamBActual?: Prisma.SortOrder
+  teamARatingBefore?: Prisma.SortOrder
+  teamBRatingBefore?: Prisma.SortOrder
+  teamARatingAfter?: Prisma.SortOrder
+  teamBRatingAfter?: Prisma.SortOrder
+  ratingAlgorithm?: Prisma.SortOrder
+  playedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
 export type MatchMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  teamAPlayer1Id?: Prisma.SortOrder
-  teamAPlayer2Id?: Prisma.SortOrder
-  teamBPlayer1Id?: Prisma.SortOrder
-  teamBPlayer2Id?: Prisma.SortOrder
+  groupId?: Prisma.SortOrder
   gamesA?: Prisma.SortOrder
   gamesB?: Prisma.SortOrder
-  ratingDeltaA?: Prisma.SortOrder
-  ratingDeltaB?: Prisma.SortOrder
+  winnerTeam?: Prisma.SortOrder
+  teamAExpected?: Prisma.SortOrder
+  teamBExpected?: Prisma.SortOrder
+  teamAActual?: Prisma.SortOrder
+  teamBActual?: Prisma.SortOrder
+  teamARatingBefore?: Prisma.SortOrder
+  teamBRatingBefore?: Prisma.SortOrder
+  teamARatingAfter?: Prisma.SortOrder
+  teamBRatingAfter?: Prisma.SortOrder
+  ratingAlgorithm?: Prisma.SortOrder
+  playedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -513,344 +682,145 @@ export type MatchMinOrderByAggregateInput = {
 export type MatchSumOrderByAggregateInput = {
   gamesA?: Prisma.SortOrder
   gamesB?: Prisma.SortOrder
-  ratingDeltaA?: Prisma.SortOrder
-  ratingDeltaB?: Prisma.SortOrder
+  teamAExpected?: Prisma.SortOrder
+  teamBExpected?: Prisma.SortOrder
+  teamAActual?: Prisma.SortOrder
+  teamBActual?: Prisma.SortOrder
+  teamARatingBefore?: Prisma.SortOrder
+  teamBRatingBefore?: Prisma.SortOrder
+  teamARatingAfter?: Prisma.SortOrder
+  teamBRatingAfter?: Prisma.SortOrder
 }
 
-export type MatchCreateNestedManyWithoutTeamAPlayer1Input = {
-  create?: Prisma.XOR<Prisma.MatchCreateWithoutTeamAPlayer1Input, Prisma.MatchUncheckedCreateWithoutTeamAPlayer1Input> | Prisma.MatchCreateWithoutTeamAPlayer1Input[] | Prisma.MatchUncheckedCreateWithoutTeamAPlayer1Input[]
-  connectOrCreate?: Prisma.MatchCreateOrConnectWithoutTeamAPlayer1Input | Prisma.MatchCreateOrConnectWithoutTeamAPlayer1Input[]
-  createMany?: Prisma.MatchCreateManyTeamAPlayer1InputEnvelope
+export type MatchScalarRelationFilter = {
+  is?: Prisma.MatchWhereInput
+  isNot?: Prisma.MatchWhereInput
+}
+
+export type MatchCreateNestedManyWithoutGroupInput = {
+  create?: Prisma.XOR<Prisma.MatchCreateWithoutGroupInput, Prisma.MatchUncheckedCreateWithoutGroupInput> | Prisma.MatchCreateWithoutGroupInput[] | Prisma.MatchUncheckedCreateWithoutGroupInput[]
+  connectOrCreate?: Prisma.MatchCreateOrConnectWithoutGroupInput | Prisma.MatchCreateOrConnectWithoutGroupInput[]
+  createMany?: Prisma.MatchCreateManyGroupInputEnvelope
   connect?: Prisma.MatchWhereUniqueInput | Prisma.MatchWhereUniqueInput[]
 }
 
-export type MatchCreateNestedManyWithoutTeamAPlayer2Input = {
-  create?: Prisma.XOR<Prisma.MatchCreateWithoutTeamAPlayer2Input, Prisma.MatchUncheckedCreateWithoutTeamAPlayer2Input> | Prisma.MatchCreateWithoutTeamAPlayer2Input[] | Prisma.MatchUncheckedCreateWithoutTeamAPlayer2Input[]
-  connectOrCreate?: Prisma.MatchCreateOrConnectWithoutTeamAPlayer2Input | Prisma.MatchCreateOrConnectWithoutTeamAPlayer2Input[]
-  createMany?: Prisma.MatchCreateManyTeamAPlayer2InputEnvelope
+export type MatchUncheckedCreateNestedManyWithoutGroupInput = {
+  create?: Prisma.XOR<Prisma.MatchCreateWithoutGroupInput, Prisma.MatchUncheckedCreateWithoutGroupInput> | Prisma.MatchCreateWithoutGroupInput[] | Prisma.MatchUncheckedCreateWithoutGroupInput[]
+  connectOrCreate?: Prisma.MatchCreateOrConnectWithoutGroupInput | Prisma.MatchCreateOrConnectWithoutGroupInput[]
+  createMany?: Prisma.MatchCreateManyGroupInputEnvelope
   connect?: Prisma.MatchWhereUniqueInput | Prisma.MatchWhereUniqueInput[]
 }
 
-export type MatchCreateNestedManyWithoutTeamBPlayer1Input = {
-  create?: Prisma.XOR<Prisma.MatchCreateWithoutTeamBPlayer1Input, Prisma.MatchUncheckedCreateWithoutTeamBPlayer1Input> | Prisma.MatchCreateWithoutTeamBPlayer1Input[] | Prisma.MatchUncheckedCreateWithoutTeamBPlayer1Input[]
-  connectOrCreate?: Prisma.MatchCreateOrConnectWithoutTeamBPlayer1Input | Prisma.MatchCreateOrConnectWithoutTeamBPlayer1Input[]
-  createMany?: Prisma.MatchCreateManyTeamBPlayer1InputEnvelope
-  connect?: Prisma.MatchWhereUniqueInput | Prisma.MatchWhereUniqueInput[]
-}
-
-export type MatchCreateNestedManyWithoutTeamBPlayer2Input = {
-  create?: Prisma.XOR<Prisma.MatchCreateWithoutTeamBPlayer2Input, Prisma.MatchUncheckedCreateWithoutTeamBPlayer2Input> | Prisma.MatchCreateWithoutTeamBPlayer2Input[] | Prisma.MatchUncheckedCreateWithoutTeamBPlayer2Input[]
-  connectOrCreate?: Prisma.MatchCreateOrConnectWithoutTeamBPlayer2Input | Prisma.MatchCreateOrConnectWithoutTeamBPlayer2Input[]
-  createMany?: Prisma.MatchCreateManyTeamBPlayer2InputEnvelope
-  connect?: Prisma.MatchWhereUniqueInput | Prisma.MatchWhereUniqueInput[]
-}
-
-export type MatchUncheckedCreateNestedManyWithoutTeamAPlayer1Input = {
-  create?: Prisma.XOR<Prisma.MatchCreateWithoutTeamAPlayer1Input, Prisma.MatchUncheckedCreateWithoutTeamAPlayer1Input> | Prisma.MatchCreateWithoutTeamAPlayer1Input[] | Prisma.MatchUncheckedCreateWithoutTeamAPlayer1Input[]
-  connectOrCreate?: Prisma.MatchCreateOrConnectWithoutTeamAPlayer1Input | Prisma.MatchCreateOrConnectWithoutTeamAPlayer1Input[]
-  createMany?: Prisma.MatchCreateManyTeamAPlayer1InputEnvelope
-  connect?: Prisma.MatchWhereUniqueInput | Prisma.MatchWhereUniqueInput[]
-}
-
-export type MatchUncheckedCreateNestedManyWithoutTeamAPlayer2Input = {
-  create?: Prisma.XOR<Prisma.MatchCreateWithoutTeamAPlayer2Input, Prisma.MatchUncheckedCreateWithoutTeamAPlayer2Input> | Prisma.MatchCreateWithoutTeamAPlayer2Input[] | Prisma.MatchUncheckedCreateWithoutTeamAPlayer2Input[]
-  connectOrCreate?: Prisma.MatchCreateOrConnectWithoutTeamAPlayer2Input | Prisma.MatchCreateOrConnectWithoutTeamAPlayer2Input[]
-  createMany?: Prisma.MatchCreateManyTeamAPlayer2InputEnvelope
-  connect?: Prisma.MatchWhereUniqueInput | Prisma.MatchWhereUniqueInput[]
-}
-
-export type MatchUncheckedCreateNestedManyWithoutTeamBPlayer1Input = {
-  create?: Prisma.XOR<Prisma.MatchCreateWithoutTeamBPlayer1Input, Prisma.MatchUncheckedCreateWithoutTeamBPlayer1Input> | Prisma.MatchCreateWithoutTeamBPlayer1Input[] | Prisma.MatchUncheckedCreateWithoutTeamBPlayer1Input[]
-  connectOrCreate?: Prisma.MatchCreateOrConnectWithoutTeamBPlayer1Input | Prisma.MatchCreateOrConnectWithoutTeamBPlayer1Input[]
-  createMany?: Prisma.MatchCreateManyTeamBPlayer1InputEnvelope
-  connect?: Prisma.MatchWhereUniqueInput | Prisma.MatchWhereUniqueInput[]
-}
-
-export type MatchUncheckedCreateNestedManyWithoutTeamBPlayer2Input = {
-  create?: Prisma.XOR<Prisma.MatchCreateWithoutTeamBPlayer2Input, Prisma.MatchUncheckedCreateWithoutTeamBPlayer2Input> | Prisma.MatchCreateWithoutTeamBPlayer2Input[] | Prisma.MatchUncheckedCreateWithoutTeamBPlayer2Input[]
-  connectOrCreate?: Prisma.MatchCreateOrConnectWithoutTeamBPlayer2Input | Prisma.MatchCreateOrConnectWithoutTeamBPlayer2Input[]
-  createMany?: Prisma.MatchCreateManyTeamBPlayer2InputEnvelope
-  connect?: Prisma.MatchWhereUniqueInput | Prisma.MatchWhereUniqueInput[]
-}
-
-export type MatchUpdateManyWithoutTeamAPlayer1NestedInput = {
-  create?: Prisma.XOR<Prisma.MatchCreateWithoutTeamAPlayer1Input, Prisma.MatchUncheckedCreateWithoutTeamAPlayer1Input> | Prisma.MatchCreateWithoutTeamAPlayer1Input[] | Prisma.MatchUncheckedCreateWithoutTeamAPlayer1Input[]
-  connectOrCreate?: Prisma.MatchCreateOrConnectWithoutTeamAPlayer1Input | Prisma.MatchCreateOrConnectWithoutTeamAPlayer1Input[]
-  upsert?: Prisma.MatchUpsertWithWhereUniqueWithoutTeamAPlayer1Input | Prisma.MatchUpsertWithWhereUniqueWithoutTeamAPlayer1Input[]
-  createMany?: Prisma.MatchCreateManyTeamAPlayer1InputEnvelope
+export type MatchUpdateManyWithoutGroupNestedInput = {
+  create?: Prisma.XOR<Prisma.MatchCreateWithoutGroupInput, Prisma.MatchUncheckedCreateWithoutGroupInput> | Prisma.MatchCreateWithoutGroupInput[] | Prisma.MatchUncheckedCreateWithoutGroupInput[]
+  connectOrCreate?: Prisma.MatchCreateOrConnectWithoutGroupInput | Prisma.MatchCreateOrConnectWithoutGroupInput[]
+  upsert?: Prisma.MatchUpsertWithWhereUniqueWithoutGroupInput | Prisma.MatchUpsertWithWhereUniqueWithoutGroupInput[]
+  createMany?: Prisma.MatchCreateManyGroupInputEnvelope
   set?: Prisma.MatchWhereUniqueInput | Prisma.MatchWhereUniqueInput[]
   disconnect?: Prisma.MatchWhereUniqueInput | Prisma.MatchWhereUniqueInput[]
   delete?: Prisma.MatchWhereUniqueInput | Prisma.MatchWhereUniqueInput[]
   connect?: Prisma.MatchWhereUniqueInput | Prisma.MatchWhereUniqueInput[]
-  update?: Prisma.MatchUpdateWithWhereUniqueWithoutTeamAPlayer1Input | Prisma.MatchUpdateWithWhereUniqueWithoutTeamAPlayer1Input[]
-  updateMany?: Prisma.MatchUpdateManyWithWhereWithoutTeamAPlayer1Input | Prisma.MatchUpdateManyWithWhereWithoutTeamAPlayer1Input[]
+  update?: Prisma.MatchUpdateWithWhereUniqueWithoutGroupInput | Prisma.MatchUpdateWithWhereUniqueWithoutGroupInput[]
+  updateMany?: Prisma.MatchUpdateManyWithWhereWithoutGroupInput | Prisma.MatchUpdateManyWithWhereWithoutGroupInput[]
   deleteMany?: Prisma.MatchScalarWhereInput | Prisma.MatchScalarWhereInput[]
 }
 
-export type MatchUpdateManyWithoutTeamAPlayer2NestedInput = {
-  create?: Prisma.XOR<Prisma.MatchCreateWithoutTeamAPlayer2Input, Prisma.MatchUncheckedCreateWithoutTeamAPlayer2Input> | Prisma.MatchCreateWithoutTeamAPlayer2Input[] | Prisma.MatchUncheckedCreateWithoutTeamAPlayer2Input[]
-  connectOrCreate?: Prisma.MatchCreateOrConnectWithoutTeamAPlayer2Input | Prisma.MatchCreateOrConnectWithoutTeamAPlayer2Input[]
-  upsert?: Prisma.MatchUpsertWithWhereUniqueWithoutTeamAPlayer2Input | Prisma.MatchUpsertWithWhereUniqueWithoutTeamAPlayer2Input[]
-  createMany?: Prisma.MatchCreateManyTeamAPlayer2InputEnvelope
+export type MatchUncheckedUpdateManyWithoutGroupNestedInput = {
+  create?: Prisma.XOR<Prisma.MatchCreateWithoutGroupInput, Prisma.MatchUncheckedCreateWithoutGroupInput> | Prisma.MatchCreateWithoutGroupInput[] | Prisma.MatchUncheckedCreateWithoutGroupInput[]
+  connectOrCreate?: Prisma.MatchCreateOrConnectWithoutGroupInput | Prisma.MatchCreateOrConnectWithoutGroupInput[]
+  upsert?: Prisma.MatchUpsertWithWhereUniqueWithoutGroupInput | Prisma.MatchUpsertWithWhereUniqueWithoutGroupInput[]
+  createMany?: Prisma.MatchCreateManyGroupInputEnvelope
   set?: Prisma.MatchWhereUniqueInput | Prisma.MatchWhereUniqueInput[]
   disconnect?: Prisma.MatchWhereUniqueInput | Prisma.MatchWhereUniqueInput[]
   delete?: Prisma.MatchWhereUniqueInput | Prisma.MatchWhereUniqueInput[]
   connect?: Prisma.MatchWhereUniqueInput | Prisma.MatchWhereUniqueInput[]
-  update?: Prisma.MatchUpdateWithWhereUniqueWithoutTeamAPlayer2Input | Prisma.MatchUpdateWithWhereUniqueWithoutTeamAPlayer2Input[]
-  updateMany?: Prisma.MatchUpdateManyWithWhereWithoutTeamAPlayer2Input | Prisma.MatchUpdateManyWithWhereWithoutTeamAPlayer2Input[]
+  update?: Prisma.MatchUpdateWithWhereUniqueWithoutGroupInput | Prisma.MatchUpdateWithWhereUniqueWithoutGroupInput[]
+  updateMany?: Prisma.MatchUpdateManyWithWhereWithoutGroupInput | Prisma.MatchUpdateManyWithWhereWithoutGroupInput[]
   deleteMany?: Prisma.MatchScalarWhereInput | Prisma.MatchScalarWhereInput[]
 }
 
-export type MatchUpdateManyWithoutTeamBPlayer1NestedInput = {
-  create?: Prisma.XOR<Prisma.MatchCreateWithoutTeamBPlayer1Input, Prisma.MatchUncheckedCreateWithoutTeamBPlayer1Input> | Prisma.MatchCreateWithoutTeamBPlayer1Input[] | Prisma.MatchUncheckedCreateWithoutTeamBPlayer1Input[]
-  connectOrCreate?: Prisma.MatchCreateOrConnectWithoutTeamBPlayer1Input | Prisma.MatchCreateOrConnectWithoutTeamBPlayer1Input[]
-  upsert?: Prisma.MatchUpsertWithWhereUniqueWithoutTeamBPlayer1Input | Prisma.MatchUpsertWithWhereUniqueWithoutTeamBPlayer1Input[]
-  createMany?: Prisma.MatchCreateManyTeamBPlayer1InputEnvelope
-  set?: Prisma.MatchWhereUniqueInput | Prisma.MatchWhereUniqueInput[]
-  disconnect?: Prisma.MatchWhereUniqueInput | Prisma.MatchWhereUniqueInput[]
-  delete?: Prisma.MatchWhereUniqueInput | Prisma.MatchWhereUniqueInput[]
-  connect?: Prisma.MatchWhereUniqueInput | Prisma.MatchWhereUniqueInput[]
-  update?: Prisma.MatchUpdateWithWhereUniqueWithoutTeamBPlayer1Input | Prisma.MatchUpdateWithWhereUniqueWithoutTeamBPlayer1Input[]
-  updateMany?: Prisma.MatchUpdateManyWithWhereWithoutTeamBPlayer1Input | Prisma.MatchUpdateManyWithWhereWithoutTeamBPlayer1Input[]
-  deleteMany?: Prisma.MatchScalarWhereInput | Prisma.MatchScalarWhereInput[]
+export type NullableEnumMatchTeamFieldUpdateOperationsInput = {
+  set?: $Enums.MatchTeam | null
 }
 
-export type MatchUpdateManyWithoutTeamBPlayer2NestedInput = {
-  create?: Prisma.XOR<Prisma.MatchCreateWithoutTeamBPlayer2Input, Prisma.MatchUncheckedCreateWithoutTeamBPlayer2Input> | Prisma.MatchCreateWithoutTeamBPlayer2Input[] | Prisma.MatchUncheckedCreateWithoutTeamBPlayer2Input[]
-  connectOrCreate?: Prisma.MatchCreateOrConnectWithoutTeamBPlayer2Input | Prisma.MatchCreateOrConnectWithoutTeamBPlayer2Input[]
-  upsert?: Prisma.MatchUpsertWithWhereUniqueWithoutTeamBPlayer2Input | Prisma.MatchUpsertWithWhereUniqueWithoutTeamBPlayer2Input[]
-  createMany?: Prisma.MatchCreateManyTeamBPlayer2InputEnvelope
-  set?: Prisma.MatchWhereUniqueInput | Prisma.MatchWhereUniqueInput[]
-  disconnect?: Prisma.MatchWhereUniqueInput | Prisma.MatchWhereUniqueInput[]
-  delete?: Prisma.MatchWhereUniqueInput | Prisma.MatchWhereUniqueInput[]
-  connect?: Prisma.MatchWhereUniqueInput | Prisma.MatchWhereUniqueInput[]
-  update?: Prisma.MatchUpdateWithWhereUniqueWithoutTeamBPlayer2Input | Prisma.MatchUpdateWithWhereUniqueWithoutTeamBPlayer2Input[]
-  updateMany?: Prisma.MatchUpdateManyWithWhereWithoutTeamBPlayer2Input | Prisma.MatchUpdateManyWithWhereWithoutTeamBPlayer2Input[]
-  deleteMany?: Prisma.MatchScalarWhereInput | Prisma.MatchScalarWhereInput[]
+export type MatchCreateNestedOneWithoutParticipantsInput = {
+  create?: Prisma.XOR<Prisma.MatchCreateWithoutParticipantsInput, Prisma.MatchUncheckedCreateWithoutParticipantsInput>
+  connectOrCreate?: Prisma.MatchCreateOrConnectWithoutParticipantsInput
+  connect?: Prisma.MatchWhereUniqueInput
 }
 
-export type MatchUncheckedUpdateManyWithoutTeamAPlayer1NestedInput = {
-  create?: Prisma.XOR<Prisma.MatchCreateWithoutTeamAPlayer1Input, Prisma.MatchUncheckedCreateWithoutTeamAPlayer1Input> | Prisma.MatchCreateWithoutTeamAPlayer1Input[] | Prisma.MatchUncheckedCreateWithoutTeamAPlayer1Input[]
-  connectOrCreate?: Prisma.MatchCreateOrConnectWithoutTeamAPlayer1Input | Prisma.MatchCreateOrConnectWithoutTeamAPlayer1Input[]
-  upsert?: Prisma.MatchUpsertWithWhereUniqueWithoutTeamAPlayer1Input | Prisma.MatchUpsertWithWhereUniqueWithoutTeamAPlayer1Input[]
-  createMany?: Prisma.MatchCreateManyTeamAPlayer1InputEnvelope
-  set?: Prisma.MatchWhereUniqueInput | Prisma.MatchWhereUniqueInput[]
-  disconnect?: Prisma.MatchWhereUniqueInput | Prisma.MatchWhereUniqueInput[]
-  delete?: Prisma.MatchWhereUniqueInput | Prisma.MatchWhereUniqueInput[]
-  connect?: Prisma.MatchWhereUniqueInput | Prisma.MatchWhereUniqueInput[]
-  update?: Prisma.MatchUpdateWithWhereUniqueWithoutTeamAPlayer1Input | Prisma.MatchUpdateWithWhereUniqueWithoutTeamAPlayer1Input[]
-  updateMany?: Prisma.MatchUpdateManyWithWhereWithoutTeamAPlayer1Input | Prisma.MatchUpdateManyWithWhereWithoutTeamAPlayer1Input[]
-  deleteMany?: Prisma.MatchScalarWhereInput | Prisma.MatchScalarWhereInput[]
+export type MatchUpdateOneRequiredWithoutParticipantsNestedInput = {
+  create?: Prisma.XOR<Prisma.MatchCreateWithoutParticipantsInput, Prisma.MatchUncheckedCreateWithoutParticipantsInput>
+  connectOrCreate?: Prisma.MatchCreateOrConnectWithoutParticipantsInput
+  upsert?: Prisma.MatchUpsertWithoutParticipantsInput
+  connect?: Prisma.MatchWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.MatchUpdateToOneWithWhereWithoutParticipantsInput, Prisma.MatchUpdateWithoutParticipantsInput>, Prisma.MatchUncheckedUpdateWithoutParticipantsInput>
 }
 
-export type MatchUncheckedUpdateManyWithoutTeamAPlayer2NestedInput = {
-  create?: Prisma.XOR<Prisma.MatchCreateWithoutTeamAPlayer2Input, Prisma.MatchUncheckedCreateWithoutTeamAPlayer2Input> | Prisma.MatchCreateWithoutTeamAPlayer2Input[] | Prisma.MatchUncheckedCreateWithoutTeamAPlayer2Input[]
-  connectOrCreate?: Prisma.MatchCreateOrConnectWithoutTeamAPlayer2Input | Prisma.MatchCreateOrConnectWithoutTeamAPlayer2Input[]
-  upsert?: Prisma.MatchUpsertWithWhereUniqueWithoutTeamAPlayer2Input | Prisma.MatchUpsertWithWhereUniqueWithoutTeamAPlayer2Input[]
-  createMany?: Prisma.MatchCreateManyTeamAPlayer2InputEnvelope
-  set?: Prisma.MatchWhereUniqueInput | Prisma.MatchWhereUniqueInput[]
-  disconnect?: Prisma.MatchWhereUniqueInput | Prisma.MatchWhereUniqueInput[]
-  delete?: Prisma.MatchWhereUniqueInput | Prisma.MatchWhereUniqueInput[]
-  connect?: Prisma.MatchWhereUniqueInput | Prisma.MatchWhereUniqueInput[]
-  update?: Prisma.MatchUpdateWithWhereUniqueWithoutTeamAPlayer2Input | Prisma.MatchUpdateWithWhereUniqueWithoutTeamAPlayer2Input[]
-  updateMany?: Prisma.MatchUpdateManyWithWhereWithoutTeamAPlayer2Input | Prisma.MatchUpdateManyWithWhereWithoutTeamAPlayer2Input[]
-  deleteMany?: Prisma.MatchScalarWhereInput | Prisma.MatchScalarWhereInput[]
-}
-
-export type MatchUncheckedUpdateManyWithoutTeamBPlayer1NestedInput = {
-  create?: Prisma.XOR<Prisma.MatchCreateWithoutTeamBPlayer1Input, Prisma.MatchUncheckedCreateWithoutTeamBPlayer1Input> | Prisma.MatchCreateWithoutTeamBPlayer1Input[] | Prisma.MatchUncheckedCreateWithoutTeamBPlayer1Input[]
-  connectOrCreate?: Prisma.MatchCreateOrConnectWithoutTeamBPlayer1Input | Prisma.MatchCreateOrConnectWithoutTeamBPlayer1Input[]
-  upsert?: Prisma.MatchUpsertWithWhereUniqueWithoutTeamBPlayer1Input | Prisma.MatchUpsertWithWhereUniqueWithoutTeamBPlayer1Input[]
-  createMany?: Prisma.MatchCreateManyTeamBPlayer1InputEnvelope
-  set?: Prisma.MatchWhereUniqueInput | Prisma.MatchWhereUniqueInput[]
-  disconnect?: Prisma.MatchWhereUniqueInput | Prisma.MatchWhereUniqueInput[]
-  delete?: Prisma.MatchWhereUniqueInput | Prisma.MatchWhereUniqueInput[]
-  connect?: Prisma.MatchWhereUniqueInput | Prisma.MatchWhereUniqueInput[]
-  update?: Prisma.MatchUpdateWithWhereUniqueWithoutTeamBPlayer1Input | Prisma.MatchUpdateWithWhereUniqueWithoutTeamBPlayer1Input[]
-  updateMany?: Prisma.MatchUpdateManyWithWhereWithoutTeamBPlayer1Input | Prisma.MatchUpdateManyWithWhereWithoutTeamBPlayer1Input[]
-  deleteMany?: Prisma.MatchScalarWhereInput | Prisma.MatchScalarWhereInput[]
-}
-
-export type MatchUncheckedUpdateManyWithoutTeamBPlayer2NestedInput = {
-  create?: Prisma.XOR<Prisma.MatchCreateWithoutTeamBPlayer2Input, Prisma.MatchUncheckedCreateWithoutTeamBPlayer2Input> | Prisma.MatchCreateWithoutTeamBPlayer2Input[] | Prisma.MatchUncheckedCreateWithoutTeamBPlayer2Input[]
-  connectOrCreate?: Prisma.MatchCreateOrConnectWithoutTeamBPlayer2Input | Prisma.MatchCreateOrConnectWithoutTeamBPlayer2Input[]
-  upsert?: Prisma.MatchUpsertWithWhereUniqueWithoutTeamBPlayer2Input | Prisma.MatchUpsertWithWhereUniqueWithoutTeamBPlayer2Input[]
-  createMany?: Prisma.MatchCreateManyTeamBPlayer2InputEnvelope
-  set?: Prisma.MatchWhereUniqueInput | Prisma.MatchWhereUniqueInput[]
-  disconnect?: Prisma.MatchWhereUniqueInput | Prisma.MatchWhereUniqueInput[]
-  delete?: Prisma.MatchWhereUniqueInput | Prisma.MatchWhereUniqueInput[]
-  connect?: Prisma.MatchWhereUniqueInput | Prisma.MatchWhereUniqueInput[]
-  update?: Prisma.MatchUpdateWithWhereUniqueWithoutTeamBPlayer2Input | Prisma.MatchUpdateWithWhereUniqueWithoutTeamBPlayer2Input[]
-  updateMany?: Prisma.MatchUpdateManyWithWhereWithoutTeamBPlayer2Input | Prisma.MatchUpdateManyWithWhereWithoutTeamBPlayer2Input[]
-  deleteMany?: Prisma.MatchScalarWhereInput | Prisma.MatchScalarWhereInput[]
-}
-
-export type IntFieldUpdateOperationsInput = {
-  set?: number
-  increment?: number
-  decrement?: number
-  multiply?: number
-  divide?: number
-}
-
-export type MatchCreateWithoutTeamAPlayer1Input = {
+export type MatchCreateWithoutGroupInput = {
   id?: string
   gamesA: number
   gamesB: number
-  ratingDeltaA: number
-  ratingDeltaB: number
+  winnerTeam?: $Enums.MatchTeam | null
+  teamAExpected?: number | null
+  teamBExpected?: number | null
+  teamAActual?: number | null
+  teamBActual?: number | null
+  teamARatingBefore?: number | null
+  teamBRatingBefore?: number | null
+  teamARatingAfter?: number | null
+  teamBRatingAfter?: number | null
+  ratingAlgorithm?: string
+  playedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
-  teamAPlayer2: Prisma.PlayerCreateNestedOneWithoutTeamA2MatchesInput
-  teamBPlayer1: Prisma.PlayerCreateNestedOneWithoutTeamB1MatchesInput
-  teamBPlayer2: Prisma.PlayerCreateNestedOneWithoutTeamB2MatchesInput
+  participants?: Prisma.MatchParticipantCreateNestedManyWithoutMatchInput
 }
 
-export type MatchUncheckedCreateWithoutTeamAPlayer1Input = {
+export type MatchUncheckedCreateWithoutGroupInput = {
   id?: string
-  teamAPlayer2Id: string
-  teamBPlayer1Id: string
-  teamBPlayer2Id: string
   gamesA: number
   gamesB: number
-  ratingDeltaA: number
-  ratingDeltaB: number
+  winnerTeam?: $Enums.MatchTeam | null
+  teamAExpected?: number | null
+  teamBExpected?: number | null
+  teamAActual?: number | null
+  teamBActual?: number | null
+  teamARatingBefore?: number | null
+  teamBRatingBefore?: number | null
+  teamARatingAfter?: number | null
+  teamBRatingAfter?: number | null
+  ratingAlgorithm?: string
+  playedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
+  participants?: Prisma.MatchParticipantUncheckedCreateNestedManyWithoutMatchInput
 }
 
-export type MatchCreateOrConnectWithoutTeamAPlayer1Input = {
+export type MatchCreateOrConnectWithoutGroupInput = {
   where: Prisma.MatchWhereUniqueInput
-  create: Prisma.XOR<Prisma.MatchCreateWithoutTeamAPlayer1Input, Prisma.MatchUncheckedCreateWithoutTeamAPlayer1Input>
+  create: Prisma.XOR<Prisma.MatchCreateWithoutGroupInput, Prisma.MatchUncheckedCreateWithoutGroupInput>
 }
 
-export type MatchCreateManyTeamAPlayer1InputEnvelope = {
-  data: Prisma.MatchCreateManyTeamAPlayer1Input | Prisma.MatchCreateManyTeamAPlayer1Input[]
+export type MatchCreateManyGroupInputEnvelope = {
+  data: Prisma.MatchCreateManyGroupInput | Prisma.MatchCreateManyGroupInput[]
   skipDuplicates?: boolean
 }
 
-export type MatchCreateWithoutTeamAPlayer2Input = {
-  id?: string
-  gamesA: number
-  gamesB: number
-  ratingDeltaA: number
-  ratingDeltaB: number
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  teamAPlayer1: Prisma.PlayerCreateNestedOneWithoutTeamA1MatchesInput
-  teamBPlayer1: Prisma.PlayerCreateNestedOneWithoutTeamB1MatchesInput
-  teamBPlayer2: Prisma.PlayerCreateNestedOneWithoutTeamB2MatchesInput
-}
-
-export type MatchUncheckedCreateWithoutTeamAPlayer2Input = {
-  id?: string
-  teamAPlayer1Id: string
-  teamBPlayer1Id: string
-  teamBPlayer2Id: string
-  gamesA: number
-  gamesB: number
-  ratingDeltaA: number
-  ratingDeltaB: number
-  createdAt?: Date | string
-  updatedAt?: Date | string
-}
-
-export type MatchCreateOrConnectWithoutTeamAPlayer2Input = {
+export type MatchUpsertWithWhereUniqueWithoutGroupInput = {
   where: Prisma.MatchWhereUniqueInput
-  create: Prisma.XOR<Prisma.MatchCreateWithoutTeamAPlayer2Input, Prisma.MatchUncheckedCreateWithoutTeamAPlayer2Input>
+  update: Prisma.XOR<Prisma.MatchUpdateWithoutGroupInput, Prisma.MatchUncheckedUpdateWithoutGroupInput>
+  create: Prisma.XOR<Prisma.MatchCreateWithoutGroupInput, Prisma.MatchUncheckedCreateWithoutGroupInput>
 }
 
-export type MatchCreateManyTeamAPlayer2InputEnvelope = {
-  data: Prisma.MatchCreateManyTeamAPlayer2Input | Prisma.MatchCreateManyTeamAPlayer2Input[]
-  skipDuplicates?: boolean
-}
-
-export type MatchCreateWithoutTeamBPlayer1Input = {
-  id?: string
-  gamesA: number
-  gamesB: number
-  ratingDeltaA: number
-  ratingDeltaB: number
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  teamAPlayer1: Prisma.PlayerCreateNestedOneWithoutTeamA1MatchesInput
-  teamAPlayer2: Prisma.PlayerCreateNestedOneWithoutTeamA2MatchesInput
-  teamBPlayer2: Prisma.PlayerCreateNestedOneWithoutTeamB2MatchesInput
-}
-
-export type MatchUncheckedCreateWithoutTeamBPlayer1Input = {
-  id?: string
-  teamAPlayer1Id: string
-  teamAPlayer2Id: string
-  teamBPlayer2Id: string
-  gamesA: number
-  gamesB: number
-  ratingDeltaA: number
-  ratingDeltaB: number
-  createdAt?: Date | string
-  updatedAt?: Date | string
-}
-
-export type MatchCreateOrConnectWithoutTeamBPlayer1Input = {
+export type MatchUpdateWithWhereUniqueWithoutGroupInput = {
   where: Prisma.MatchWhereUniqueInput
-  create: Prisma.XOR<Prisma.MatchCreateWithoutTeamBPlayer1Input, Prisma.MatchUncheckedCreateWithoutTeamBPlayer1Input>
+  data: Prisma.XOR<Prisma.MatchUpdateWithoutGroupInput, Prisma.MatchUncheckedUpdateWithoutGroupInput>
 }
 
-export type MatchCreateManyTeamBPlayer1InputEnvelope = {
-  data: Prisma.MatchCreateManyTeamBPlayer1Input | Prisma.MatchCreateManyTeamBPlayer1Input[]
-  skipDuplicates?: boolean
-}
-
-export type MatchCreateWithoutTeamBPlayer2Input = {
-  id?: string
-  gamesA: number
-  gamesB: number
-  ratingDeltaA: number
-  ratingDeltaB: number
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  teamAPlayer1: Prisma.PlayerCreateNestedOneWithoutTeamA1MatchesInput
-  teamAPlayer2: Prisma.PlayerCreateNestedOneWithoutTeamA2MatchesInput
-  teamBPlayer1: Prisma.PlayerCreateNestedOneWithoutTeamB1MatchesInput
-}
-
-export type MatchUncheckedCreateWithoutTeamBPlayer2Input = {
-  id?: string
-  teamAPlayer1Id: string
-  teamAPlayer2Id: string
-  teamBPlayer1Id: string
-  gamesA: number
-  gamesB: number
-  ratingDeltaA: number
-  ratingDeltaB: number
-  createdAt?: Date | string
-  updatedAt?: Date | string
-}
-
-export type MatchCreateOrConnectWithoutTeamBPlayer2Input = {
-  where: Prisma.MatchWhereUniqueInput
-  create: Prisma.XOR<Prisma.MatchCreateWithoutTeamBPlayer2Input, Prisma.MatchUncheckedCreateWithoutTeamBPlayer2Input>
-}
-
-export type MatchCreateManyTeamBPlayer2InputEnvelope = {
-  data: Prisma.MatchCreateManyTeamBPlayer2Input | Prisma.MatchCreateManyTeamBPlayer2Input[]
-  skipDuplicates?: boolean
-}
-
-export type MatchUpsertWithWhereUniqueWithoutTeamAPlayer1Input = {
-  where: Prisma.MatchWhereUniqueInput
-  update: Prisma.XOR<Prisma.MatchUpdateWithoutTeamAPlayer1Input, Prisma.MatchUncheckedUpdateWithoutTeamAPlayer1Input>
-  create: Prisma.XOR<Prisma.MatchCreateWithoutTeamAPlayer1Input, Prisma.MatchUncheckedCreateWithoutTeamAPlayer1Input>
-}
-
-export type MatchUpdateWithWhereUniqueWithoutTeamAPlayer1Input = {
-  where: Prisma.MatchWhereUniqueInput
-  data: Prisma.XOR<Prisma.MatchUpdateWithoutTeamAPlayer1Input, Prisma.MatchUncheckedUpdateWithoutTeamAPlayer1Input>
-}
-
-export type MatchUpdateManyWithWhereWithoutTeamAPlayer1Input = {
+export type MatchUpdateManyWithWhereWithoutGroupInput = {
   where: Prisma.MatchScalarWhereInput
-  data: Prisma.XOR<Prisma.MatchUpdateManyMutationInput, Prisma.MatchUncheckedUpdateManyWithoutTeamAPlayer1Input>
+  data: Prisma.XOR<Prisma.MatchUpdateManyMutationInput, Prisma.MatchUncheckedUpdateManyWithoutGroupInput>
 }
 
 export type MatchScalarWhereInput = {
@@ -858,382 +828,349 @@ export type MatchScalarWhereInput = {
   OR?: Prisma.MatchScalarWhereInput[]
   NOT?: Prisma.MatchScalarWhereInput | Prisma.MatchScalarWhereInput[]
   id?: Prisma.StringFilter<"Match"> | string
-  teamAPlayer1Id?: Prisma.StringFilter<"Match"> | string
-  teamAPlayer2Id?: Prisma.StringFilter<"Match"> | string
-  teamBPlayer1Id?: Prisma.StringFilter<"Match"> | string
-  teamBPlayer2Id?: Prisma.StringFilter<"Match"> | string
+  groupId?: Prisma.StringFilter<"Match"> | string
   gamesA?: Prisma.IntFilter<"Match"> | number
   gamesB?: Prisma.IntFilter<"Match"> | number
-  ratingDeltaA?: Prisma.FloatFilter<"Match"> | number
-  ratingDeltaB?: Prisma.FloatFilter<"Match"> | number
+  winnerTeam?: Prisma.EnumMatchTeamNullableFilter<"Match"> | $Enums.MatchTeam | null
+  teamAExpected?: Prisma.FloatNullableFilter<"Match"> | number | null
+  teamBExpected?: Prisma.FloatNullableFilter<"Match"> | number | null
+  teamAActual?: Prisma.FloatNullableFilter<"Match"> | number | null
+  teamBActual?: Prisma.FloatNullableFilter<"Match"> | number | null
+  teamARatingBefore?: Prisma.FloatNullableFilter<"Match"> | number | null
+  teamBRatingBefore?: Prisma.FloatNullableFilter<"Match"> | number | null
+  teamARatingAfter?: Prisma.FloatNullableFilter<"Match"> | number | null
+  teamBRatingAfter?: Prisma.FloatNullableFilter<"Match"> | number | null
+  ratingAlgorithm?: Prisma.StringFilter<"Match"> | string
+  playedAt?: Prisma.DateTimeFilter<"Match"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"Match"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Match"> | Date | string
 }
 
-export type MatchUpsertWithWhereUniqueWithoutTeamAPlayer2Input = {
-  where: Prisma.MatchWhereUniqueInput
-  update: Prisma.XOR<Prisma.MatchUpdateWithoutTeamAPlayer2Input, Prisma.MatchUncheckedUpdateWithoutTeamAPlayer2Input>
-  create: Prisma.XOR<Prisma.MatchCreateWithoutTeamAPlayer2Input, Prisma.MatchUncheckedCreateWithoutTeamAPlayer2Input>
-}
-
-export type MatchUpdateWithWhereUniqueWithoutTeamAPlayer2Input = {
-  where: Prisma.MatchWhereUniqueInput
-  data: Prisma.XOR<Prisma.MatchUpdateWithoutTeamAPlayer2Input, Prisma.MatchUncheckedUpdateWithoutTeamAPlayer2Input>
-}
-
-export type MatchUpdateManyWithWhereWithoutTeamAPlayer2Input = {
-  where: Prisma.MatchScalarWhereInput
-  data: Prisma.XOR<Prisma.MatchUpdateManyMutationInput, Prisma.MatchUncheckedUpdateManyWithoutTeamAPlayer2Input>
-}
-
-export type MatchUpsertWithWhereUniqueWithoutTeamBPlayer1Input = {
-  where: Prisma.MatchWhereUniqueInput
-  update: Prisma.XOR<Prisma.MatchUpdateWithoutTeamBPlayer1Input, Prisma.MatchUncheckedUpdateWithoutTeamBPlayer1Input>
-  create: Prisma.XOR<Prisma.MatchCreateWithoutTeamBPlayer1Input, Prisma.MatchUncheckedCreateWithoutTeamBPlayer1Input>
-}
-
-export type MatchUpdateWithWhereUniqueWithoutTeamBPlayer1Input = {
-  where: Prisma.MatchWhereUniqueInput
-  data: Prisma.XOR<Prisma.MatchUpdateWithoutTeamBPlayer1Input, Prisma.MatchUncheckedUpdateWithoutTeamBPlayer1Input>
-}
-
-export type MatchUpdateManyWithWhereWithoutTeamBPlayer1Input = {
-  where: Prisma.MatchScalarWhereInput
-  data: Prisma.XOR<Prisma.MatchUpdateManyMutationInput, Prisma.MatchUncheckedUpdateManyWithoutTeamBPlayer1Input>
-}
-
-export type MatchUpsertWithWhereUniqueWithoutTeamBPlayer2Input = {
-  where: Prisma.MatchWhereUniqueInput
-  update: Prisma.XOR<Prisma.MatchUpdateWithoutTeamBPlayer2Input, Prisma.MatchUncheckedUpdateWithoutTeamBPlayer2Input>
-  create: Prisma.XOR<Prisma.MatchCreateWithoutTeamBPlayer2Input, Prisma.MatchUncheckedCreateWithoutTeamBPlayer2Input>
-}
-
-export type MatchUpdateWithWhereUniqueWithoutTeamBPlayer2Input = {
-  where: Prisma.MatchWhereUniqueInput
-  data: Prisma.XOR<Prisma.MatchUpdateWithoutTeamBPlayer2Input, Prisma.MatchUncheckedUpdateWithoutTeamBPlayer2Input>
-}
-
-export type MatchUpdateManyWithWhereWithoutTeamBPlayer2Input = {
-  where: Prisma.MatchScalarWhereInput
-  data: Prisma.XOR<Prisma.MatchUpdateManyMutationInput, Prisma.MatchUncheckedUpdateManyWithoutTeamBPlayer2Input>
-}
-
-export type MatchCreateManyTeamAPlayer1Input = {
+export type MatchCreateWithoutParticipantsInput = {
   id?: string
-  teamAPlayer2Id: string
-  teamBPlayer1Id: string
-  teamBPlayer2Id: string
   gamesA: number
   gamesB: number
-  ratingDeltaA: number
-  ratingDeltaB: number
+  winnerTeam?: $Enums.MatchTeam | null
+  teamAExpected?: number | null
+  teamBExpected?: number | null
+  teamAActual?: number | null
+  teamBActual?: number | null
+  teamARatingBefore?: number | null
+  teamBRatingBefore?: number | null
+  teamARatingAfter?: number | null
+  teamBRatingAfter?: number | null
+  ratingAlgorithm?: string
+  playedAt?: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  group: Prisma.GroupCreateNestedOneWithoutMatchesInput
+}
+
+export type MatchUncheckedCreateWithoutParticipantsInput = {
+  id?: string
+  groupId: string
+  gamesA: number
+  gamesB: number
+  winnerTeam?: $Enums.MatchTeam | null
+  teamAExpected?: number | null
+  teamBExpected?: number | null
+  teamAActual?: number | null
+  teamBActual?: number | null
+  teamARatingBefore?: number | null
+  teamBRatingBefore?: number | null
+  teamARatingAfter?: number | null
+  teamBRatingAfter?: number | null
+  ratingAlgorithm?: string
+  playedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
 
-export type MatchCreateManyTeamAPlayer2Input = {
+export type MatchCreateOrConnectWithoutParticipantsInput = {
+  where: Prisma.MatchWhereUniqueInput
+  create: Prisma.XOR<Prisma.MatchCreateWithoutParticipantsInput, Prisma.MatchUncheckedCreateWithoutParticipantsInput>
+}
+
+export type MatchUpsertWithoutParticipantsInput = {
+  update: Prisma.XOR<Prisma.MatchUpdateWithoutParticipantsInput, Prisma.MatchUncheckedUpdateWithoutParticipantsInput>
+  create: Prisma.XOR<Prisma.MatchCreateWithoutParticipantsInput, Prisma.MatchUncheckedCreateWithoutParticipantsInput>
+  where?: Prisma.MatchWhereInput
+}
+
+export type MatchUpdateToOneWithWhereWithoutParticipantsInput = {
+  where?: Prisma.MatchWhereInput
+  data: Prisma.XOR<Prisma.MatchUpdateWithoutParticipantsInput, Prisma.MatchUncheckedUpdateWithoutParticipantsInput>
+}
+
+export type MatchUpdateWithoutParticipantsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  gamesA?: Prisma.IntFieldUpdateOperationsInput | number
+  gamesB?: Prisma.IntFieldUpdateOperationsInput | number
+  winnerTeam?: Prisma.NullableEnumMatchTeamFieldUpdateOperationsInput | $Enums.MatchTeam | null
+  teamAExpected?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamBExpected?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamAActual?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamBActual?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamARatingBefore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamBRatingBefore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamARatingAfter?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamBRatingAfter?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  ratingAlgorithm?: Prisma.StringFieldUpdateOperationsInput | string
+  playedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  group?: Prisma.GroupUpdateOneRequiredWithoutMatchesNestedInput
+}
+
+export type MatchUncheckedUpdateWithoutParticipantsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  groupId?: Prisma.StringFieldUpdateOperationsInput | string
+  gamesA?: Prisma.IntFieldUpdateOperationsInput | number
+  gamesB?: Prisma.IntFieldUpdateOperationsInput | number
+  winnerTeam?: Prisma.NullableEnumMatchTeamFieldUpdateOperationsInput | $Enums.MatchTeam | null
+  teamAExpected?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamBExpected?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamAActual?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamBActual?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamARatingBefore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamBRatingBefore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamARatingAfter?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamBRatingAfter?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  ratingAlgorithm?: Prisma.StringFieldUpdateOperationsInput | string
+  playedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type MatchCreateManyGroupInput = {
   id?: string
-  teamAPlayer1Id: string
-  teamBPlayer1Id: string
-  teamBPlayer2Id: string
   gamesA: number
   gamesB: number
-  ratingDeltaA: number
-  ratingDeltaB: number
+  winnerTeam?: $Enums.MatchTeam | null
+  teamAExpected?: number | null
+  teamBExpected?: number | null
+  teamAActual?: number | null
+  teamBActual?: number | null
+  teamARatingBefore?: number | null
+  teamBRatingBefore?: number | null
+  teamARatingAfter?: number | null
+  teamBRatingAfter?: number | null
+  ratingAlgorithm?: string
+  playedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
 
-export type MatchCreateManyTeamBPlayer1Input = {
-  id?: string
-  teamAPlayer1Id: string
-  teamAPlayer2Id: string
-  teamBPlayer2Id: string
-  gamesA: number
-  gamesB: number
-  ratingDeltaA: number
-  ratingDeltaB: number
-  createdAt?: Date | string
-  updatedAt?: Date | string
-}
-
-export type MatchCreateManyTeamBPlayer2Input = {
-  id?: string
-  teamAPlayer1Id: string
-  teamAPlayer2Id: string
-  teamBPlayer1Id: string
-  gamesA: number
-  gamesB: number
-  ratingDeltaA: number
-  ratingDeltaB: number
-  createdAt?: Date | string
-  updatedAt?: Date | string
-}
-
-export type MatchUpdateWithoutTeamAPlayer1Input = {
+export type MatchUpdateWithoutGroupInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   gamesA?: Prisma.IntFieldUpdateOperationsInput | number
   gamesB?: Prisma.IntFieldUpdateOperationsInput | number
-  ratingDeltaA?: Prisma.FloatFieldUpdateOperationsInput | number
-  ratingDeltaB?: Prisma.FloatFieldUpdateOperationsInput | number
+  winnerTeam?: Prisma.NullableEnumMatchTeamFieldUpdateOperationsInput | $Enums.MatchTeam | null
+  teamAExpected?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamBExpected?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamAActual?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamBActual?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamARatingBefore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamBRatingBefore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamARatingAfter?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamBRatingAfter?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  ratingAlgorithm?: Prisma.StringFieldUpdateOperationsInput | string
+  playedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  teamAPlayer2?: Prisma.PlayerUpdateOneRequiredWithoutTeamA2MatchesNestedInput
-  teamBPlayer1?: Prisma.PlayerUpdateOneRequiredWithoutTeamB1MatchesNestedInput
-  teamBPlayer2?: Prisma.PlayerUpdateOneRequiredWithoutTeamB2MatchesNestedInput
+  participants?: Prisma.MatchParticipantUpdateManyWithoutMatchNestedInput
 }
 
-export type MatchUncheckedUpdateWithoutTeamAPlayer1Input = {
+export type MatchUncheckedUpdateWithoutGroupInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  teamAPlayer2Id?: Prisma.StringFieldUpdateOperationsInput | string
-  teamBPlayer1Id?: Prisma.StringFieldUpdateOperationsInput | string
-  teamBPlayer2Id?: Prisma.StringFieldUpdateOperationsInput | string
   gamesA?: Prisma.IntFieldUpdateOperationsInput | number
   gamesB?: Prisma.IntFieldUpdateOperationsInput | number
-  ratingDeltaA?: Prisma.FloatFieldUpdateOperationsInput | number
-  ratingDeltaB?: Prisma.FloatFieldUpdateOperationsInput | number
+  winnerTeam?: Prisma.NullableEnumMatchTeamFieldUpdateOperationsInput | $Enums.MatchTeam | null
+  teamAExpected?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamBExpected?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamAActual?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamBActual?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamARatingBefore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamBRatingBefore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamARatingAfter?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamBRatingAfter?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  ratingAlgorithm?: Prisma.StringFieldUpdateOperationsInput | string
+  playedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  participants?: Prisma.MatchParticipantUncheckedUpdateManyWithoutMatchNestedInput
 }
 
-export type MatchUncheckedUpdateManyWithoutTeamAPlayer1Input = {
+export type MatchUncheckedUpdateManyWithoutGroupInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  teamAPlayer2Id?: Prisma.StringFieldUpdateOperationsInput | string
-  teamBPlayer1Id?: Prisma.StringFieldUpdateOperationsInput | string
-  teamBPlayer2Id?: Prisma.StringFieldUpdateOperationsInput | string
   gamesA?: Prisma.IntFieldUpdateOperationsInput | number
   gamesB?: Prisma.IntFieldUpdateOperationsInput | number
-  ratingDeltaA?: Prisma.FloatFieldUpdateOperationsInput | number
-  ratingDeltaB?: Prisma.FloatFieldUpdateOperationsInput | number
+  winnerTeam?: Prisma.NullableEnumMatchTeamFieldUpdateOperationsInput | $Enums.MatchTeam | null
+  teamAExpected?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamBExpected?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamAActual?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamBActual?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamARatingBefore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamBRatingBefore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamARatingAfter?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamBRatingAfter?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  ratingAlgorithm?: Prisma.StringFieldUpdateOperationsInput | string
+  playedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
-export type MatchUpdateWithoutTeamAPlayer2Input = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  gamesA?: Prisma.IntFieldUpdateOperationsInput | number
-  gamesB?: Prisma.IntFieldUpdateOperationsInput | number
-  ratingDeltaA?: Prisma.FloatFieldUpdateOperationsInput | number
-  ratingDeltaB?: Prisma.FloatFieldUpdateOperationsInput | number
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  teamAPlayer1?: Prisma.PlayerUpdateOneRequiredWithoutTeamA1MatchesNestedInput
-  teamBPlayer1?: Prisma.PlayerUpdateOneRequiredWithoutTeamB1MatchesNestedInput
-  teamBPlayer2?: Prisma.PlayerUpdateOneRequiredWithoutTeamB2MatchesNestedInput
+
+/**
+ * Count Type MatchCountOutputType
+ */
+
+export type MatchCountOutputType = {
+  participants: number
 }
 
-export type MatchUncheckedUpdateWithoutTeamAPlayer2Input = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  teamAPlayer1Id?: Prisma.StringFieldUpdateOperationsInput | string
-  teamBPlayer1Id?: Prisma.StringFieldUpdateOperationsInput | string
-  teamBPlayer2Id?: Prisma.StringFieldUpdateOperationsInput | string
-  gamesA?: Prisma.IntFieldUpdateOperationsInput | number
-  gamesB?: Prisma.IntFieldUpdateOperationsInput | number
-  ratingDeltaA?: Prisma.FloatFieldUpdateOperationsInput | number
-  ratingDeltaB?: Prisma.FloatFieldUpdateOperationsInput | number
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+export type MatchCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  participants?: boolean | MatchCountOutputTypeCountParticipantsArgs
 }
 
-export type MatchUncheckedUpdateManyWithoutTeamAPlayer2Input = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  teamAPlayer1Id?: Prisma.StringFieldUpdateOperationsInput | string
-  teamBPlayer1Id?: Prisma.StringFieldUpdateOperationsInput | string
-  teamBPlayer2Id?: Prisma.StringFieldUpdateOperationsInput | string
-  gamesA?: Prisma.IntFieldUpdateOperationsInput | number
-  gamesB?: Prisma.IntFieldUpdateOperationsInput | number
-  ratingDeltaA?: Prisma.FloatFieldUpdateOperationsInput | number
-  ratingDeltaB?: Prisma.FloatFieldUpdateOperationsInput | number
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+/**
+ * MatchCountOutputType without action
+ */
+export type MatchCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the MatchCountOutputType
+   */
+  select?: Prisma.MatchCountOutputTypeSelect<ExtArgs> | null
 }
 
-export type MatchUpdateWithoutTeamBPlayer1Input = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  gamesA?: Prisma.IntFieldUpdateOperationsInput | number
-  gamesB?: Prisma.IntFieldUpdateOperationsInput | number
-  ratingDeltaA?: Prisma.FloatFieldUpdateOperationsInput | number
-  ratingDeltaB?: Prisma.FloatFieldUpdateOperationsInput | number
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  teamAPlayer1?: Prisma.PlayerUpdateOneRequiredWithoutTeamA1MatchesNestedInput
-  teamAPlayer2?: Prisma.PlayerUpdateOneRequiredWithoutTeamA2MatchesNestedInput
-  teamBPlayer2?: Prisma.PlayerUpdateOneRequiredWithoutTeamB2MatchesNestedInput
+/**
+ * MatchCountOutputType without action
+ */
+export type MatchCountOutputTypeCountParticipantsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.MatchParticipantWhereInput
 }
-
-export type MatchUncheckedUpdateWithoutTeamBPlayer1Input = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  teamAPlayer1Id?: Prisma.StringFieldUpdateOperationsInput | string
-  teamAPlayer2Id?: Prisma.StringFieldUpdateOperationsInput | string
-  teamBPlayer2Id?: Prisma.StringFieldUpdateOperationsInput | string
-  gamesA?: Prisma.IntFieldUpdateOperationsInput | number
-  gamesB?: Prisma.IntFieldUpdateOperationsInput | number
-  ratingDeltaA?: Prisma.FloatFieldUpdateOperationsInput | number
-  ratingDeltaB?: Prisma.FloatFieldUpdateOperationsInput | number
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-}
-
-export type MatchUncheckedUpdateManyWithoutTeamBPlayer1Input = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  teamAPlayer1Id?: Prisma.StringFieldUpdateOperationsInput | string
-  teamAPlayer2Id?: Prisma.StringFieldUpdateOperationsInput | string
-  teamBPlayer2Id?: Prisma.StringFieldUpdateOperationsInput | string
-  gamesA?: Prisma.IntFieldUpdateOperationsInput | number
-  gamesB?: Prisma.IntFieldUpdateOperationsInput | number
-  ratingDeltaA?: Prisma.FloatFieldUpdateOperationsInput | number
-  ratingDeltaB?: Prisma.FloatFieldUpdateOperationsInput | number
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-}
-
-export type MatchUpdateWithoutTeamBPlayer2Input = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  gamesA?: Prisma.IntFieldUpdateOperationsInput | number
-  gamesB?: Prisma.IntFieldUpdateOperationsInput | number
-  ratingDeltaA?: Prisma.FloatFieldUpdateOperationsInput | number
-  ratingDeltaB?: Prisma.FloatFieldUpdateOperationsInput | number
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  teamAPlayer1?: Prisma.PlayerUpdateOneRequiredWithoutTeamA1MatchesNestedInput
-  teamAPlayer2?: Prisma.PlayerUpdateOneRequiredWithoutTeamA2MatchesNestedInput
-  teamBPlayer1?: Prisma.PlayerUpdateOneRequiredWithoutTeamB1MatchesNestedInput
-}
-
-export type MatchUncheckedUpdateWithoutTeamBPlayer2Input = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  teamAPlayer1Id?: Prisma.StringFieldUpdateOperationsInput | string
-  teamAPlayer2Id?: Prisma.StringFieldUpdateOperationsInput | string
-  teamBPlayer1Id?: Prisma.StringFieldUpdateOperationsInput | string
-  gamesA?: Prisma.IntFieldUpdateOperationsInput | number
-  gamesB?: Prisma.IntFieldUpdateOperationsInput | number
-  ratingDeltaA?: Prisma.FloatFieldUpdateOperationsInput | number
-  ratingDeltaB?: Prisma.FloatFieldUpdateOperationsInput | number
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-}
-
-export type MatchUncheckedUpdateManyWithoutTeamBPlayer2Input = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  teamAPlayer1Id?: Prisma.StringFieldUpdateOperationsInput | string
-  teamAPlayer2Id?: Prisma.StringFieldUpdateOperationsInput | string
-  teamBPlayer1Id?: Prisma.StringFieldUpdateOperationsInput | string
-  gamesA?: Prisma.IntFieldUpdateOperationsInput | number
-  gamesB?: Prisma.IntFieldUpdateOperationsInput | number
-  ratingDeltaA?: Prisma.FloatFieldUpdateOperationsInput | number
-  ratingDeltaB?: Prisma.FloatFieldUpdateOperationsInput | number
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-}
-
 
 
 export type MatchSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  teamAPlayer1Id?: boolean
-  teamAPlayer2Id?: boolean
-  teamBPlayer1Id?: boolean
-  teamBPlayer2Id?: boolean
+  groupId?: boolean
   gamesA?: boolean
   gamesB?: boolean
-  ratingDeltaA?: boolean
-  ratingDeltaB?: boolean
+  winnerTeam?: boolean
+  teamAExpected?: boolean
+  teamBExpected?: boolean
+  teamAActual?: boolean
+  teamBActual?: boolean
+  teamARatingBefore?: boolean
+  teamBRatingBefore?: boolean
+  teamARatingAfter?: boolean
+  teamBRatingAfter?: boolean
+  ratingAlgorithm?: boolean
+  playedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  teamAPlayer1?: boolean | Prisma.PlayerDefaultArgs<ExtArgs>
-  teamAPlayer2?: boolean | Prisma.PlayerDefaultArgs<ExtArgs>
-  teamBPlayer1?: boolean | Prisma.PlayerDefaultArgs<ExtArgs>
-  teamBPlayer2?: boolean | Prisma.PlayerDefaultArgs<ExtArgs>
+  group?: boolean | Prisma.GroupDefaultArgs<ExtArgs>
+  participants?: boolean | Prisma.Match$participantsArgs<ExtArgs>
+  _count?: boolean | Prisma.MatchCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["match"]>
 
 export type MatchSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  teamAPlayer1Id?: boolean
-  teamAPlayer2Id?: boolean
-  teamBPlayer1Id?: boolean
-  teamBPlayer2Id?: boolean
+  groupId?: boolean
   gamesA?: boolean
   gamesB?: boolean
-  ratingDeltaA?: boolean
-  ratingDeltaB?: boolean
+  winnerTeam?: boolean
+  teamAExpected?: boolean
+  teamBExpected?: boolean
+  teamAActual?: boolean
+  teamBActual?: boolean
+  teamARatingBefore?: boolean
+  teamBRatingBefore?: boolean
+  teamARatingAfter?: boolean
+  teamBRatingAfter?: boolean
+  ratingAlgorithm?: boolean
+  playedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  teamAPlayer1?: boolean | Prisma.PlayerDefaultArgs<ExtArgs>
-  teamAPlayer2?: boolean | Prisma.PlayerDefaultArgs<ExtArgs>
-  teamBPlayer1?: boolean | Prisma.PlayerDefaultArgs<ExtArgs>
-  teamBPlayer2?: boolean | Prisma.PlayerDefaultArgs<ExtArgs>
+  group?: boolean | Prisma.GroupDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["match"]>
 
 export type MatchSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  teamAPlayer1Id?: boolean
-  teamAPlayer2Id?: boolean
-  teamBPlayer1Id?: boolean
-  teamBPlayer2Id?: boolean
+  groupId?: boolean
   gamesA?: boolean
   gamesB?: boolean
-  ratingDeltaA?: boolean
-  ratingDeltaB?: boolean
+  winnerTeam?: boolean
+  teamAExpected?: boolean
+  teamBExpected?: boolean
+  teamAActual?: boolean
+  teamBActual?: boolean
+  teamARatingBefore?: boolean
+  teamBRatingBefore?: boolean
+  teamARatingAfter?: boolean
+  teamBRatingAfter?: boolean
+  ratingAlgorithm?: boolean
+  playedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  teamAPlayer1?: boolean | Prisma.PlayerDefaultArgs<ExtArgs>
-  teamAPlayer2?: boolean | Prisma.PlayerDefaultArgs<ExtArgs>
-  teamBPlayer1?: boolean | Prisma.PlayerDefaultArgs<ExtArgs>
-  teamBPlayer2?: boolean | Prisma.PlayerDefaultArgs<ExtArgs>
+  group?: boolean | Prisma.GroupDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["match"]>
 
 export type MatchSelectScalar = {
   id?: boolean
-  teamAPlayer1Id?: boolean
-  teamAPlayer2Id?: boolean
-  teamBPlayer1Id?: boolean
-  teamBPlayer2Id?: boolean
+  groupId?: boolean
   gamesA?: boolean
   gamesB?: boolean
-  ratingDeltaA?: boolean
-  ratingDeltaB?: boolean
+  winnerTeam?: boolean
+  teamAExpected?: boolean
+  teamBExpected?: boolean
+  teamAActual?: boolean
+  teamBActual?: boolean
+  teamARatingBefore?: boolean
+  teamBRatingBefore?: boolean
+  teamARatingAfter?: boolean
+  teamBRatingAfter?: boolean
+  ratingAlgorithm?: boolean
+  playedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type MatchOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "teamAPlayer1Id" | "teamAPlayer2Id" | "teamBPlayer1Id" | "teamBPlayer2Id" | "gamesA" | "gamesB" | "ratingDeltaA" | "ratingDeltaB" | "createdAt" | "updatedAt", ExtArgs["result"]["match"]>
+export type MatchOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "groupId" | "gamesA" | "gamesB" | "winnerTeam" | "teamAExpected" | "teamBExpected" | "teamAActual" | "teamBActual" | "teamARatingBefore" | "teamBRatingBefore" | "teamARatingAfter" | "teamBRatingAfter" | "ratingAlgorithm" | "playedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["match"]>
 export type MatchInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  teamAPlayer1?: boolean | Prisma.PlayerDefaultArgs<ExtArgs>
-  teamAPlayer2?: boolean | Prisma.PlayerDefaultArgs<ExtArgs>
-  teamBPlayer1?: boolean | Prisma.PlayerDefaultArgs<ExtArgs>
-  teamBPlayer2?: boolean | Prisma.PlayerDefaultArgs<ExtArgs>
+  group?: boolean | Prisma.GroupDefaultArgs<ExtArgs>
+  participants?: boolean | Prisma.Match$participantsArgs<ExtArgs>
+  _count?: boolean | Prisma.MatchCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type MatchIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  teamAPlayer1?: boolean | Prisma.PlayerDefaultArgs<ExtArgs>
-  teamAPlayer2?: boolean | Prisma.PlayerDefaultArgs<ExtArgs>
-  teamBPlayer1?: boolean | Prisma.PlayerDefaultArgs<ExtArgs>
-  teamBPlayer2?: boolean | Prisma.PlayerDefaultArgs<ExtArgs>
+  group?: boolean | Prisma.GroupDefaultArgs<ExtArgs>
 }
 export type MatchIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  teamAPlayer1?: boolean | Prisma.PlayerDefaultArgs<ExtArgs>
-  teamAPlayer2?: boolean | Prisma.PlayerDefaultArgs<ExtArgs>
-  teamBPlayer1?: boolean | Prisma.PlayerDefaultArgs<ExtArgs>
-  teamBPlayer2?: boolean | Prisma.PlayerDefaultArgs<ExtArgs>
+  group?: boolean | Prisma.GroupDefaultArgs<ExtArgs>
 }
 
 export type $MatchPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Match"
   objects: {
-    teamAPlayer1: Prisma.$PlayerPayload<ExtArgs>
-    teamAPlayer2: Prisma.$PlayerPayload<ExtArgs>
-    teamBPlayer1: Prisma.$PlayerPayload<ExtArgs>
-    teamBPlayer2: Prisma.$PlayerPayload<ExtArgs>
+    group: Prisma.$GroupPayload<ExtArgs>
+    participants: Prisma.$MatchParticipantPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
-    teamAPlayer1Id: string
-    teamAPlayer2Id: string
-    teamBPlayer1Id: string
-    teamBPlayer2Id: string
+    groupId: string
     gamesA: number
     gamesB: number
-    ratingDeltaA: number
-    ratingDeltaB: number
+    winnerTeam: $Enums.MatchTeam | null
+    teamAExpected: number | null
+    teamBExpected: number | null
+    teamAActual: number | null
+    teamBActual: number | null
+    teamARatingBefore: number | null
+    teamBRatingBefore: number | null
+    teamARatingAfter: number | null
+    teamBRatingAfter: number | null
+    ratingAlgorithm: string
+    playedAt: Date
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["match"]>
@@ -1630,10 +1567,8 @@ readonly fields: MatchFieldRefs;
  */
 export interface Prisma__MatchClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  teamAPlayer1<T extends Prisma.PlayerDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PlayerDefaultArgs<ExtArgs>>): Prisma.Prisma__PlayerClient<runtime.Types.Result.GetResult<Prisma.$PlayerPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  teamAPlayer2<T extends Prisma.PlayerDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PlayerDefaultArgs<ExtArgs>>): Prisma.Prisma__PlayerClient<runtime.Types.Result.GetResult<Prisma.$PlayerPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  teamBPlayer1<T extends Prisma.PlayerDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PlayerDefaultArgs<ExtArgs>>): Prisma.Prisma__PlayerClient<runtime.Types.Result.GetResult<Prisma.$PlayerPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  teamBPlayer2<T extends Prisma.PlayerDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PlayerDefaultArgs<ExtArgs>>): Prisma.Prisma__PlayerClient<runtime.Types.Result.GetResult<Prisma.$PlayerPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  group<T extends Prisma.GroupDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.GroupDefaultArgs<ExtArgs>>): Prisma.Prisma__GroupClient<runtime.Types.Result.GetResult<Prisma.$GroupPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  participants<T extends Prisma.Match$participantsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Match$participantsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MatchParticipantPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1664,14 +1599,20 @@ export interface Prisma__MatchClient<T, Null = never, ExtArgs extends runtime.Ty
  */
 export interface MatchFieldRefs {
   readonly id: Prisma.FieldRef<"Match", 'String'>
-  readonly teamAPlayer1Id: Prisma.FieldRef<"Match", 'String'>
-  readonly teamAPlayer2Id: Prisma.FieldRef<"Match", 'String'>
-  readonly teamBPlayer1Id: Prisma.FieldRef<"Match", 'String'>
-  readonly teamBPlayer2Id: Prisma.FieldRef<"Match", 'String'>
+  readonly groupId: Prisma.FieldRef<"Match", 'String'>
   readonly gamesA: Prisma.FieldRef<"Match", 'Int'>
   readonly gamesB: Prisma.FieldRef<"Match", 'Int'>
-  readonly ratingDeltaA: Prisma.FieldRef<"Match", 'Float'>
-  readonly ratingDeltaB: Prisma.FieldRef<"Match", 'Float'>
+  readonly winnerTeam: Prisma.FieldRef<"Match", 'MatchTeam'>
+  readonly teamAExpected: Prisma.FieldRef<"Match", 'Float'>
+  readonly teamBExpected: Prisma.FieldRef<"Match", 'Float'>
+  readonly teamAActual: Prisma.FieldRef<"Match", 'Float'>
+  readonly teamBActual: Prisma.FieldRef<"Match", 'Float'>
+  readonly teamARatingBefore: Prisma.FieldRef<"Match", 'Float'>
+  readonly teamBRatingBefore: Prisma.FieldRef<"Match", 'Float'>
+  readonly teamARatingAfter: Prisma.FieldRef<"Match", 'Float'>
+  readonly teamBRatingAfter: Prisma.FieldRef<"Match", 'Float'>
+  readonly ratingAlgorithm: Prisma.FieldRef<"Match", 'String'>
+  readonly playedAt: Prisma.FieldRef<"Match", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"Match", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Match", 'DateTime'>
 }
@@ -2072,6 +2013,30 @@ export type MatchDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Interna
    * Limit how many Matches to delete.
    */
   limit?: number
+}
+
+/**
+ * Match.participants
+ */
+export type Match$participantsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the MatchParticipant
+   */
+  select?: Prisma.MatchParticipantSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the MatchParticipant
+   */
+  omit?: Prisma.MatchParticipantOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.MatchParticipantInclude<ExtArgs> | null
+  where?: Prisma.MatchParticipantWhereInput
+  orderBy?: Prisma.MatchParticipantOrderByWithRelationInput | Prisma.MatchParticipantOrderByWithRelationInput[]
+  cursor?: Prisma.MatchParticipantWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.MatchParticipantScalarFieldEnum | Prisma.MatchParticipantScalarFieldEnum[]
 }
 
 /**

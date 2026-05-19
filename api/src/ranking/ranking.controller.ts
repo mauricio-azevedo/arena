@@ -1,12 +1,12 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Param } from '@nestjs/common';
 import { RankingService } from './ranking.service';
 
-@Controller('ranking')
+@Controller('groups/:groupId/ranking')
 export class RankingController {
   constructor(private readonly rankingService: RankingService) {}
 
   @Get()
-  findAll() {
-    return this.rankingService.findAll();
+  findAll(@Param('groupId') groupId: string) {
+    return this.rankingService.findAll(groupId);
   }
 }

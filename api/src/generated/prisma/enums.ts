@@ -9,7 +9,24 @@
 * 🟢 You can import this file directly.
 */
 
+export const GroupVisibility = {
+  PUBLIC: 'PUBLIC'
+} as const
+
+export type GroupVisibility = (typeof GroupVisibility)[keyof typeof GroupVisibility]
 
 
-// This file is empty because there are no enums in the schema.
-export {}
+export const GroupMemberRole = {
+  ADMIN: 'ADMIN',
+  MEMBER: 'MEMBER'
+} as const
+
+export type GroupMemberRole = (typeof GroupMemberRole)[keyof typeof GroupMemberRole]
+
+
+export const MatchTeam = {
+  TEAM_A: 'TEAM_A',
+  TEAM_B: 'TEAM_B'
+} as const
+
+export type MatchTeam = (typeof MatchTeam)[keyof typeof MatchTeam]

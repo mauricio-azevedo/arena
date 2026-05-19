@@ -8,38 +8,196 @@ datasource db {
   provider = "postgresql"
 }
 
-model Player {
-  id        String   @id @default(uuid())
-  name      String
-  rating    Float    @default(1000)
+enum GroupVisibility {
+  PUBLIC
+}
+
+enum GroupMemberRole {
+  ADMIN
+  MEMBER
+}
+
+enum MatchTeam {
+  TEAM_A
+  TEAM_B
+}
+
+model User {
+  id           String @id @default(uuid())
+  firstName    String
+  lastName     String
+  email        String @unique
+  passwordHash String
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  teamA1Matches Match[] @relation("TeamAPlayer1")
-  teamA2Matches Match[] @relation("TeamAPlayer2")
-  teamB1Matches Match[] @relation("TeamBPlayer1")
-  teamB2Matches Match[] @relation("TeamBPlayer2")
+  createdGroups  Group[]       @relation("GroupCreator")
+  memberships    GroupMember[]
+  createdInvites GroupInvite[] @relation("GroupInviteCreator")
+
+  @@index([email])
+}
+
+model Group {
+  id          String          @id @default(uuid())
+  name        String
+  description String?
+  visibility  GroupVisibility @default(PUBLIC)
+
+  createdById String
+  createdBy   User   @relation("GroupCreator", fields: [createdById], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  members GroupMember[]
+  matches Match[]
+  invites GroupInvite[]
+
+  @@index([visibility, createdAt])
+  @@index([name])
+  @@index([createdById])
+}
+
+model GroupInvite {
+  id String @id @default(uuid())
+
+  token String @unique
+
+  groupId String
+  group   Group  @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  createdById String
+  createdBy   User   @relation("GroupInviteCreator", fields: [createdById], references: [id])
+
+  expiresAt DateTime?
+  revokedAt DateTime?
+
+  uses    Int  @default(0)
+  maxUses Int?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([groupId])
+  @@index([createdById])
+  @@index([token])
+}
+
+model GroupMember {
+  id String @id @default(uuid())
+
+  groupId String
+  group   Group  @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  displayName String
+
+  rating           Float  @default(1000)
+  ratingDeviation  Float?
+  ratingVolatility Float?
+  ratingMu         Float?
+  ratingSigma      Float?
+  ratingAlgorithm  String @default("BEACH_ELO_V1")
+
+  role GroupMemberRole @default(MEMBER)
+
+  leftAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  matchParticipants MatchParticipant[]
+
+  @@unique([groupId, userId])
+  @@unique([id, groupId])
+  @@index([groupId])
+  @@index([userId])
+  @@index([groupId, rating])
+  @@index([groupId, displayName])
+  @@index([groupId, role])
 }
 
 model Match {
   id String @id @default(uuid())
 
-  teamAPlayer1Id String
-  teamAPlayer2Id String
-  teamBPlayer1Id String
-  teamBPlayer2Id String
-
-  teamAPlayer1 Player @relation("TeamAPlayer1", fields: [teamAPlayer1Id], references: [id])
-  teamAPlayer2 Player @relation("TeamAPlayer2", fields: [teamAPlayer2Id], references: [id])
-  teamBPlayer1 Player @relation("TeamBPlayer1", fields: [teamBPlayer1Id], references: [id])
-  teamBPlayer2 Player @relation("TeamBPlayer2", fields: [teamBPlayer2Id], references: [id])
+  groupId String
+  group   Group  @relation(fields: [groupId], references: [id], onDelete: Cascade)
 
   gamesA Int
   gamesB Int
 
-  ratingDeltaA Float
-  ratingDeltaB Float
+  winnerTeam MatchTeam?
 
+  teamAExpected Float?
+  teamBExpected Float?
+  teamAActual   Float?
+  teamBActual   Float?
+
+  teamARatingBefore Float?
+  teamBRatingBefore Float?
+  teamARatingAfter  Float?
+  teamBRatingAfter  Float?
+
+  ratingAlgorithm String @default("BEACH_ELO_V1")
+
+  playedAt  DateTime @default(now())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  participants MatchParticipant[]
+
+  @@unique([id, groupId])
+  @@index([groupId])
+  @@index([groupId, playedAt, createdAt])
+  @@index([groupId, winnerTeam])
+  @@index([groupId, ratingAlgorithm])
+}
+
+model MatchParticipant {
+  id String @id @default(uuid())
+
+  matchId String
+  groupId String
+
+  match Match @relation(fields: [matchId, groupId], references: [id, groupId], onDelete: Cascade)
+
+  groupMemberId String
+  groupMember   GroupMember @relation(fields: [groupMemberId, groupId], references: [id, groupId], onDelete: Restrict)
+
+  displayNameSnapshot String
+
+  team     MatchTeam
+  position Int
+
+  ratingBefore Float
+  ratingAfter  Float
+  ratingDelta  Float
+
+  ratingDeviationBefore  Float?
+  ratingDeviationAfter   Float?
+  ratingVolatilityBefore Float?
+  ratingVolatilityAfter  Float?
+
+  ratingMuBefore         Float?
+  ratingMuAfter          Float?
+  ratingSigmaBefore      Float?
+  ratingSigmaAfter       Float?
+
+  playedAt  DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([matchId, groupMemberId])
+  @@unique([matchId, team, position])
+  @@index([matchId])
+  @@index([groupId])
+  @@index([groupId, playedAt])
+  @@index([groupId, groupMemberId])
+  @@index([groupId, groupMemberId, playedAt])
+  @@index([groupMemberId])
+  @@index([groupMemberId, playedAt])
 }
