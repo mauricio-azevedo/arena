@@ -7,6 +7,7 @@ import { MatchesModule } from './matches/matches.module';
 import { RankingModule } from './ranking/ranking.module';
 import { GroupsModule } from './groups/groups.module';
 import { AuthModule } from './auth/auth.module';
+import { GroupInvitesModule } from './group-invites/group-invites.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { AuthModule } from './auth/auth.module';
     MatchesModule,
     RankingModule,
     AuthModule,
+    GroupInvitesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

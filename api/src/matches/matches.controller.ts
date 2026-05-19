@@ -6,7 +6,11 @@ import {
   Param,
   Patch,
   Post,
+  UseGuards,
 } from '@nestjs/common';
+import { CurrentUser } from '../auth/current-user.decorator';
+import type { AuthUser } from '../auth/auth.types';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { MatchesService } from './matches.service';
 
 type MatchBody = {
@@ -24,8 +28,13 @@ export class MatchesController {
   constructor(private readonly matchesService: MatchesService) {}
 
   @Post()
-  create(@Param('groupId') groupId: string, @Body() body: MatchBody) {
-    return this.matchesService.create(groupId, body);
+  @UseGuards(JwtAuthGuard)
+  create(
+    @Param('groupId') groupId: string,
+    @CurrentUser() user: AuthUser,
+    @Body() body: MatchBody,
+  ) {
+    return this.matchesService.create(groupId, user.sub, body);
   }
 
   @Get()
@@ -34,16 +43,23 @@ export class MatchesController {
   }
 
   @Patch(':id')
+  @UseGuards(JwtAuthGuard)
   update(
     @Param('groupId') groupId: string,
     @Param('id') id: string,
+    @CurrentUser() user: AuthUser,
     @Body() body: MatchBody,
   ) {
-    return this.matchesService.update(groupId, id, body);
+    return this.matchesService.update(groupId, id, user.sub, body);
   }
 
   @Delete(':id')
-  remove(@Param('groupId') groupId: string, @Param('id') id: string) {
-    return this.matchesService.remove(groupId, id);
+  @UseGuards(JwtAuthGuard)
+  remove(
+    @Param('groupId') groupId: string,
+    @Param('id') id: string,
+    @CurrentUser() user: AuthUser,
+  ) {
+    return this.matchesService.remove(groupId, id, user.sub);
   }
 }

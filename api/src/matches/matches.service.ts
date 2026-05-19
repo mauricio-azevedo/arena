@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -31,11 +32,12 @@ const RATING_ALGORITHM = 'BEACH_ELO_V1';
 export class MatchesService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(groupId: string, body: MatchBody) {
+  async create(groupId: string, userId: string, body: MatchBody) {
     this.validateMatchBody(body);
 
     return this.prisma.$transaction(async (tx) => {
       await this.ensureGroupExists(tx, groupId);
+      await this.ensureActiveGroupMember(tx, groupId, userId);
 
       const membersById = await this.getMembersById(tx, groupId, body);
       const playedAt = this.parsePlayedAt(body.playedAt);
@@ -96,7 +98,7 @@ export class MatchesService {
     });
   }
 
-  async update(groupId: string, id: string, body: MatchBody) {
+  async update(groupId: string, id: string, userId: string, body: MatchBody) {
     this.validateMatchBody(body);
 
     return this.prisma.$transaction(async (tx) => {
@@ -181,7 +183,7 @@ export class MatchesService {
     });
   }
 
-  async remove(groupId: string, id: string) {
+  async remove(groupId: string, id: string, userId: string) {
     return this.prisma.$transaction(async (tx) => {
       await this.ensureGroupExists(tx, groupId);
 
@@ -540,5 +542,28 @@ export class MatchesService {
         },
       },
     };
+  }
+
+  private async ensureActiveGroupMember(
+    tx: Prisma.TransactionClient,
+    groupId: string,
+    userId: string,
+  ) {
+    const membership = await tx.groupMember.findUnique({
+      where: {
+        groupId_userId: {
+          groupId,
+          userId,
+        },
+      },
+    });
+
+    if (!membership || membership.leftAt) {
+      throw new ForbiddenException(
+        'Only active group members can manage matches',
+      );
+    }
+
+    return membership;
   }
 }

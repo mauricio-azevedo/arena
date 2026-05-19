@@ -1,8 +1,10 @@
 import {
   BadRequestException,
+  ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { GroupMemberRole } from '../generated/prisma/enums';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
@@ -11,6 +13,7 @@ export class PlayersService {
 
   async create(
     groupId: string,
+    requesterUserId: string,
     body: { userId: string; displayName?: string },
   ) {
     if (!body.userId) {
@@ -25,6 +28,23 @@ export class PlayersService {
       throw new NotFoundException('Group not found');
     }
 
+    const requesterMembership = await this.prisma.groupMember.findUnique({
+      where: {
+        groupId_userId: {
+          groupId,
+          userId: requesterUserId,
+        },
+      },
+    });
+
+    if (!requesterMembership || requesterMembership.leftAt) {
+      throw new ForbiddenException('Only active group members can add players');
+    }
+
+    if (requesterMembership.role !== GroupMemberRole.ADMIN) {
+      throw new ForbiddenException('Only group admins can add players');
+    }
+
     const user = await this.prisma.user.findUnique({
       where: { id: body.userId },
     });
@@ -33,8 +53,31 @@ export class PlayersService {
       throw new NotFoundException('User not found');
     }
 
+    const existingMembership = await this.prisma.groupMember.findUnique({
+      where: {
+        groupId_userId: {
+          groupId,
+          userId: body.userId,
+        },
+      },
+    });
+
+    if (existingMembership && !existingMembership.leftAt) {
+      return existingMembership;
+    }
+
     const displayName =
       body.displayName?.trim() || `${user.firstName} ${user.lastName}`.trim();
+
+    if (existingMembership) {
+      return this.prisma.groupMember.update({
+        where: { id: existingMembership.id },
+        data: {
+          displayName,
+          leftAt: null,
+        },
+      });
+    }
 
     return this.prisma.groupMember.create({
       data: {
