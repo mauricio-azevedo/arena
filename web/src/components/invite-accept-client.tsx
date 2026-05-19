@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { acceptInvite } from '@/lib/api';
+import { acceptInvite, getMyGroups } from '@/lib/api';
 import type { GroupInvite } from '@/types/api';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -18,12 +18,35 @@ export function InviteAcceptClient({ invite }: Props) {
   const router = useRouter();
 
   const [authToken, setAuthToken] = useState<string | null>(null);
+  const [isCheckingMembership, setIsCheckingMembership] = useState(true);
+  const [alreadyMember, setAlreadyMember] = useState(false);
   const [isAccepting, setIsAccepting] = useState(false);
   const [error, setError] = useState('');
 
   useEffect(() => {
-    setAuthToken(window.localStorage.getItem(TOKEN_STORAGE_KEY));
-  }, []);
+    const storedToken = window.localStorage.getItem(TOKEN_STORAGE_KEY);
+    setAuthToken(storedToken);
+
+    if (!storedToken) {
+      setIsCheckingMembership(false);
+      return;
+    }
+
+    async function checkMembership(token: string) {
+      try {
+        const memberships = await getMyGroups(token);
+        const membership = memberships.find((item) => item.groupId === invite.groupId);
+
+        setAlreadyMember(Boolean(membership));
+      } catch {
+        setAlreadyMember(false);
+      } finally {
+        setIsCheckingMembership(false);
+      }
+    }
+
+    checkMembership(storedToken);
+  }, [invite.groupId]);
 
   async function handleAcceptInvite() {
     if (!authToken) {
@@ -52,6 +75,7 @@ export function InviteAcceptClient({ invite }: Props) {
         <CardContent className="space-y-4 p-4">
           <div className="space-y-1">
             <p className="text-sm text-muted-foreground">Você foi convidado para entrar em</p>
+
             <h1 className="text-2xl font-semibold tracking-tight">{group?.name ?? 'Grupo'}</h1>
 
             {group?.description && (
@@ -85,6 +109,20 @@ export function InviteAcceptClient({ invite }: Props) {
                   </Link>
                 </Button>
               </div>
+            </div>
+          ) : isCheckingMembership ? (
+            <Button disabled className="w-full">
+              Verificando convite...
+            </Button>
+          ) : alreadyMember ? (
+            <div className="space-y-3">
+              <p className="text-sm leading-6 text-muted-foreground">
+                Você já faz parte deste grupo.
+              </p>
+
+              <Button asChild className="w-full">
+                <Link href={`/groups/${invite.groupId}`}>Ir para o grupo</Link>
+              </Button>
             </div>
           ) : (
             <Button onClick={handleAcceptInvite} disabled={isAccepting} className="w-full">
