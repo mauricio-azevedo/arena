@@ -6,8 +6,6 @@ import type {
   GroupMember,
   Match,
   MyGroup,
-  Player,
-  UpdateMatchInput,
   User,
 } from '@/types/api';
 
@@ -81,6 +79,14 @@ export async function getGroups(): Promise<Group[]> {
   return parseResponse<Group[]>(response, 'Failed to fetch groups');
 }
 
+export async function getGroup(groupId: string): Promise<Group> {
+  const response = await fetch(`${API_BASE_URL}/groups/${groupId}`, {
+    cache: 'no-store',
+  });
+
+  return parseResponse<Group>(response, 'Failed to fetch group');
+}
+
 export async function getMyGroups(token: string): Promise<MyGroup[]> {
   const response = await fetch(`${API_BASE_URL}/me/groups`, {
     headers: authHeaders(token),
@@ -109,13 +115,9 @@ export async function createGroup(
   return parseResponse<Group>(response, 'Failed to create group');
 }
 
-export async function getGroup(groupId: string): Promise<Group> {
-  const response = await fetch(`${API_BASE_URL}/groups/${groupId}`, {
-    cache: 'no-store',
-  });
-
-  return parseResponse<Group>(response, 'Failed to fetch group');
-}
+/**
+ * Group members / ranking / matches
+ */
 
 export async function getGroupRanking(groupId: string): Promise<GroupMember[]> {
   const response = await fetch(`${API_BASE_URL}/groups/${groupId}/ranking`, {
@@ -140,6 +142,27 @@ export async function getGroupMatches(groupId: string): Promise<Match[]> {
 
   return parseResponse<Match[]>(response, 'Failed to fetch group matches');
 }
+
+export async function createGroupMatch(
+  token: string,
+  groupId: string,
+  input: CreateMatchInput,
+): Promise<Match> {
+  const response = await fetch(`${API_BASE_URL}/groups/${groupId}/matches`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      ...authHeaders(token),
+    },
+    body: JSON.stringify(input),
+  });
+
+  return parseResponse<Match>(response, 'Failed to create group match');
+}
+
+/**
+ * Invites
+ */
 
 export async function createGroupInvite(token: string, groupId: string): Promise<GroupInvite> {
   const response = await fetch(`${API_BASE_URL}/groups/${groupId}/invites`, {
@@ -183,86 +206,4 @@ export async function acceptInvite(
   });
 
   return parseResponse(response, 'Failed to accept invite');
-}
-
-export async function createGroupMatch(
-  token: string,
-  groupId: string,
-  input: CreateMatchInput,
-): Promise<Match> {
-  const response = await fetch(`${API_BASE_URL}/groups/${groupId}/matches`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      ...authHeaders(token),
-    },
-    body: JSON.stringify(input),
-  });
-
-  return parseResponse<Match>(response, 'Failed to create group match');
-}
-
-/**
- * Legacy API
- * Mantido temporariamente até migrarmos as telas antigas para grupos.
- */
-
-export async function getRanking(): Promise<Player[]> {
-  const response = await fetch(`${API_BASE_URL}/ranking`, {
-    cache: 'no-store',
-  });
-
-  return parseResponse<Player[]>(response, 'Failed to fetch ranking');
-}
-
-export async function createPlayer(name: string): Promise<Player> {
-  const response = await fetch(`${API_BASE_URL}/players`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ name }),
-  });
-
-  return parseResponse<Player>(response, 'Failed to create player');
-}
-
-export async function createMatch(input: CreateMatchInput): Promise<Match> {
-  const response = await fetch(`${API_BASE_URL}/matches`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(input),
-  });
-
-  return parseResponse<Match>(response, 'Failed to create match');
-}
-
-export async function getMatches(): Promise<Match[]> {
-  const response = await fetch(`${API_BASE_URL}/matches`, {
-    cache: 'no-store',
-  });
-
-  return parseResponse<Match[]>(response, 'Failed to fetch matches');
-}
-
-export async function updateMatch(id: string, input: UpdateMatchInput): Promise<Match> {
-  const response = await fetch(`${API_BASE_URL}/matches/${id}`, {
-    method: 'PATCH',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(input),
-  });
-
-  return parseResponse<Match>(response, 'Failed to update match');
-}
-
-export async function deleteMatch(id: string): Promise<{ success: boolean }> {
-  const response = await fetch(`${API_BASE_URL}/matches/${id}`, {
-    method: 'DELETE',
-  });
-
-  return parseResponse<{ success: boolean }>(response, 'Failed to delete match');
 }

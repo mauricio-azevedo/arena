@@ -11,7 +11,7 @@ export type Group = {
   id: string;
   name: string;
   description: string | null;
-  visibility: 'PUBLIC' | 'PRIVATE';
+  visibility: 'PUBLIC';
   createdById: string;
   createdAt: string;
   updatedAt: string;
@@ -74,16 +74,7 @@ export type AuthResponse = {
   accessToken: string;
 };
 
-// Tipos antigos mantidos temporariamente para não quebrar telas antigas.
-// Depois vamos remover ou substituir por GroupMember.
-export type Player = {
-  id: string;
-  name?: string;
-  displayName?: string;
-  rating: number;
-  createdAt: string;
-  updatedAt: string;
-};
+export type MatchTeam = 'TEAM_A' | 'TEAM_B';
 
 export type MatchParticipant = {
   id: string;
@@ -91,11 +82,21 @@ export type MatchParticipant = {
   groupId: string;
   groupMemberId: string;
   displayNameSnapshot: string;
-  team: 'TEAM_A' | 'TEAM_B';
+  team: MatchTeam;
   position: number;
   ratingBefore: number;
   ratingAfter: number;
   ratingDelta: number;
+
+  ratingDeviationBefore: number | null;
+  ratingDeviationAfter: number | null;
+  ratingVolatilityBefore: number | null;
+  ratingVolatilityAfter: number | null;
+  ratingMuBefore: number | null;
+  ratingMuAfter: number | null;
+  ratingSigmaBefore: number | null;
+  ratingSigmaAfter: number | null;
+
   playedAt: string;
   createdAt: string;
   updatedAt: string;
@@ -107,7 +108,7 @@ export type Match = {
   groupId: string;
   gamesA: number;
   gamesB: number;
-  winnerTeam: 'TEAM_A' | 'TEAM_B';
+  winnerTeam: MatchTeam;
   teamAExpected: number | null;
   teamBExpected: number | null;
   teamAActual: number | null;
@@ -121,18 +122,6 @@ export type Match = {
   createdAt: string;
   updatedAt: string;
   participants: MatchParticipant[];
-
-  // Campos antigos mantidos temporariamente para as telas legadas.
-  teamAPlayer1Id: string;
-  teamAPlayer2Id: string;
-  teamBPlayer1Id: string;
-  teamBPlayer2Id: string;
-  teamAPlayer1: Player;
-  teamAPlayer2: Player;
-  teamBPlayer1: Player;
-  teamBPlayer2: Player;
-  ratingDeltaA: number;
-  ratingDeltaB: number;
 };
 
 export type CreateMatchInput = {
@@ -144,5 +133,3 @@ export type CreateMatchInput = {
   gamesB: number;
   playedAt?: string;
 };
-
-export type UpdateMatchInput = CreateMatchInput;

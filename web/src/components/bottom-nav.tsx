@@ -2,23 +2,13 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { BarChart3, History, UsersRound } from 'lucide-react';
+import { UsersRound } from 'lucide-react';
 
 const items = [
   {
     href: '/groups',
     label: 'Grupos',
     icon: UsersRound,
-  },
-  {
-    href: '/ranking',
-    label: 'Ranking',
-    icon: BarChart3,
-  },
-  {
-    href: '/matches',
-    label: 'Partidas',
-    icon: History,
   },
 ];
 
@@ -27,11 +17,10 @@ export function BottomNav() {
 
   return (
     <nav className="fixed inset-x-0 bottom-0 z-50 border-t bg-background/95 backdrop-blur">
-      <div className="flex justify-center gap-8">
+      <div className="mx-auto flex h-16 max-w-md justify-center">
         {items.map((item) => {
           const Icon = item.icon;
-          const isActive =
-            pathname === item.href || (item.href !== '/groups' && pathname.startsWith(item.href));
+          const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
 
           return (
             <Link
