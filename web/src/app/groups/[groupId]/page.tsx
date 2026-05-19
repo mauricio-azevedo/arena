@@ -1,8 +1,8 @@
 import { notFound } from 'next/navigation';
 import { AppShell } from '@/components/app-shell';
-import { GroupDetailTabs } from '@/components/group-detail-tabs';
+import { GroupDetailTabs } from '@/features/groups/components/group-detail-tabs';
 import { PageHeader } from '@/components/page-header';
-import { GroupActions } from '@/components/group-actions';
+import { GroupActions } from '@/features/groups/components/group-actions';
 import { getGroup, getGroupMembers, getGroupRanking } from '@/features/groups/groups.api';
 import { getGroupMatches } from '@/features/matches/matches.api';
 

@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import { AddMatchForm } from '@/components/add-match-form';
+import { AddMatchForm } from '@/features/matches/components/add-match-form';
 import { AppShell } from '@/components/app-shell';
 import { PageHeader } from '@/components/page-header';
 import { getGroup, getGroupMembers } from '@/features/groups/groups.api';

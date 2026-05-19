@@ -1,5 +1,5 @@
 import { AppShell } from '@/components/app-shell';
-import { GroupInviteClient } from '@/components/group-invite-client';
+import { GroupInviteClient } from '@/features/invites/components/group-invite-client';
 import { PageHeader } from '@/components/page-header';
 
 type Props = {

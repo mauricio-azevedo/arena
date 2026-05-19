@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import type { GroupMember, Match } from '@/types/api';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { MatchesList } from '@/components/matches-list';
+import { MatchesList } from '@/features/matches/components/matches-list';
 import { useEffect, useState } from 'react';
 import { getMyGroups } from '@/features/groups/groups.api';
 

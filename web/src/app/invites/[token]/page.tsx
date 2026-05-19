@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
 import { AppShell } from '@/components/app-shell';
-import { InviteAcceptClient } from '@/components/invite-accept-client';
+import { InviteAcceptClient } from '@/features/invites/components/invite-accept-client';
 import { PageHeader } from '@/components/page-header';
 import { getInvite } from '@/features/invites/invites.api';
 

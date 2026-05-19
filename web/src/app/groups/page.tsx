@@ -1,5 +1,5 @@
 import { AppShell } from '@/components/app-shell';
-import { GroupsTabs } from '@/components/groups-tabs';
+import { GroupsTabs } from '@/features/groups/components/groups-tabs';
 import { PageHeader } from '@/components/page-header';
 import { getGroups } from '@/features/groups/groups.api';
 
