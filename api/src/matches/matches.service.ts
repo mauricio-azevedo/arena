@@ -52,7 +52,7 @@ export class MatchesService {
           playedAt,
           players: {
             create: [
-              this.buildParticipantCreate(
+              this.buildPlayerCreate(
                 groupId,
                 body.teamAPlayer1Id,
                 membersById,
@@ -60,7 +60,7 @@ export class MatchesService {
                 1,
                 playedAt,
               ),
-              this.buildParticipantCreate(
+              this.buildPlayerCreate(
                 groupId,
                 body.teamAPlayer2Id,
                 membersById,
@@ -68,7 +68,7 @@ export class MatchesService {
                 2,
                 playedAt,
               ),
-              this.buildParticipantCreate(
+              this.buildPlayerCreate(
                 groupId,
                 body.teamBPlayer1Id,
                 membersById,
@@ -76,7 +76,7 @@ export class MatchesService {
                 1,
                 playedAt,
               ),
-              this.buildParticipantCreate(
+              this.buildPlayerCreate(
                 groupId,
                 body.teamBPlayer2Id,
                 membersById,
@@ -137,7 +137,7 @@ export class MatchesService {
           playedAt,
           players: {
             create: [
-              this.buildParticipantCreate(
+              this.buildPlayerCreate(
                 groupId,
                 body.teamAPlayer1Id,
                 membersById,
@@ -145,7 +145,7 @@ export class MatchesService {
                 1,
                 playedAt,
               ),
-              this.buildParticipantCreate(
+              this.buildPlayerCreate(
                 groupId,
                 body.teamAPlayer2Id,
                 membersById,
@@ -153,7 +153,7 @@ export class MatchesService {
                 2,
                 playedAt,
               ),
-              this.buildParticipantCreate(
+              this.buildPlayerCreate(
                 groupId,
                 body.teamBPlayer1Id,
                 membersById,
@@ -161,7 +161,7 @@ export class MatchesService {
                 1,
                 playedAt,
               ),
-              this.buildParticipantCreate(
+              this.buildPlayerCreate(
                 groupId,
                 body.teamBPlayer2Id,
                 membersById,
@@ -317,7 +317,7 @@ export class MatchesService {
     return new Map(members.map((member) => [member.id, member]));
   }
 
-  private buildParticipantCreate(
+  private buildPlayerCreate(
     groupId: string,
     groupMemberId: string,
     membersById: Map<
@@ -407,22 +407,22 @@ export class MatchesService {
     });
 
     for (const match of matches) {
-      const teamAParticipants = match.players
-        .filter((participant) => participant.team === MatchTeam.TEAM_A)
+      const teamAPlayers = match.players
+        .filter((player) => player.team === MatchTeam.TEAM_A)
         .sort((a, b) => a.position - b.position);
 
-      const teamBParticipants = match.players
-        .filter((participant) => participant.team === MatchTeam.TEAM_B)
+      const teamBPlayers = match.players
+        .filter((player) => player.team === MatchTeam.TEAM_B)
         .sort((a, b) => a.position - b.position);
 
-      if (teamAParticipants.length !== 2 || teamBParticipants.length !== 2) {
-        throw new Error('Invalid match participants');
+      if (teamAPlayers.length !== 2 || teamBPlayers.length !== 2) {
+        throw new Error('Invalid match players');
       }
 
-      const teamAPlayer1 = membersById.get(teamAParticipants[0].groupMemberId);
-      const teamAPlayer2 = membersById.get(teamAParticipants[1].groupMemberId);
-      const teamBPlayer1 = membersById.get(teamBParticipants[0].groupMemberId);
-      const teamBPlayer2 = membersById.get(teamBParticipants[1].groupMemberId);
+      const teamAPlayer1 = membersById.get(teamAPlayers[0].groupMemberId);
+      const teamAPlayer2 = membersById.get(teamAPlayers[1].groupMemberId);
+      const teamBPlayer1 = membersById.get(teamBPlayers[0].groupMemberId);
+      const teamBPlayer2 = membersById.get(teamBPlayers[1].groupMemberId);
 
       if (!teamAPlayer1 || !teamAPlayer2 || !teamBPlayer1 || !teamBPlayer2) {
         throw new Error('Invalid match players');
@@ -452,25 +452,25 @@ export class MatchesService {
         updatedPlayers.map((player) => [player.id, player]),
       );
 
-      for (const participant of match.players) {
-        const before = this.getParticipantBeforeRating(
-          participant.groupMemberId,
-          teamAParticipants,
-          teamBParticipants,
+      for (const player of match.players) {
+        const before = this.getPlayerBeforeRating(
+          player.groupMemberId,
+          teamAPlayers,
+          teamBPlayers,
           teamAPlayer1,
           teamAPlayer2,
           teamBPlayer1,
           teamBPlayer2,
         );
 
-        const updatedPlayer = playerById.get(participant.groupMemberId);
+        const updatedPlayer = playerById.get(player.groupMemberId);
 
         if (!updatedPlayer) {
-          throw new Error('Invalid updated participant');
+          throw new Error('Invalid updated player');
         }
 
         await tx.matchPlayer.update({
-          where: { id: participant.id },
+          where: { id: player.id },
           data: {
             ratingBefore: before,
             ratingAfter: updatedPlayer.newRating,
@@ -518,32 +518,32 @@ export class MatchesService {
     }
   }
 
-  private getParticipantBeforeRating(
+  private getPlayerBeforeRating(
     groupMemberId: string,
-    teamAParticipants: { groupMemberId: string }[],
-    teamBParticipants: { groupMemberId: string }[],
+    teamAPlayers: { groupMemberId: string }[],
+    teamBPlayers: { groupMemberId: string }[],
     teamAPlayer1: RatingState,
     teamAPlayer2: RatingState,
     teamBPlayer1: RatingState,
     teamBPlayer2: RatingState,
   ) {
-    if (groupMemberId === teamAParticipants[0].groupMemberId) {
+    if (groupMemberId === teamAPlayers[0].groupMemberId) {
       return teamAPlayer1.rating;
     }
 
-    if (groupMemberId === teamAParticipants[1].groupMemberId) {
+    if (groupMemberId === teamAPlayers[1].groupMemberId) {
       return teamAPlayer2.rating;
     }
 
-    if (groupMemberId === teamBParticipants[0].groupMemberId) {
+    if (groupMemberId === teamBPlayers[0].groupMemberId) {
       return teamBPlayer1.rating;
     }
 
-    if (groupMemberId === teamBParticipants[1].groupMemberId) {
+    if (groupMemberId === teamBPlayers[1].groupMemberId) {
       return teamBPlayer2.rating;
     }
 
-    throw new Error('Invalid participant');
+    throw new Error('Invalid player');
   }
 
   private matchInclude() {

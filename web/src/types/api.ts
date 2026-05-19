@@ -76,7 +76,7 @@ export type AuthResponse = {
 
 export type MatchTeam = 'TEAM_A' | 'TEAM_B';
 
-export type MatchParticipant = {
+export type MatchPlayer = {
   id: string;
   matchId: string;
   groupId: string;
@@ -121,7 +121,7 @@ export type Match = {
   playedAt: string;
   createdAt: string;
   updatedAt: string;
-  participants: MatchParticipant[];
+  players: MatchPlayer[];
 };
 
 export type CreateMatchInput = {

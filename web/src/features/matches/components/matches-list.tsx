@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { MoreVertical, Pencil, Trash2 } from 'lucide-react';
-import type { Match, MatchParticipant } from '@/types/api';
+import type { Match, MatchPlayer } from '@/types/api';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import {
@@ -75,8 +75,8 @@ export function MatchCard({
   const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState('');
 
-  const teamA = getTeamParticipants(match, 'TEAM_A');
-  const teamB = getTeamParticipants(match, 'TEAM_B');
+  const teamA = getTeamPlayers(match, 'TEAM_A');
+  const teamB = getTeamPlayers(match, 'TEAM_B');
 
   const teamAWon = match.gamesA > match.gamesB;
   const winningTeam = teamAWon ? teamA : teamB;
@@ -228,28 +228,28 @@ function MatchTeam({
   );
 }
 
-function getTeamParticipants(match: Match, team: 'TEAM_A' | 'TEAM_B') {
-  return match.participants
-    .filter((participant) => participant.team === team)
+function getTeamPlayers(match: Match, team: 'TEAM_A' | 'TEAM_B') {
+  return match.players
+    .filter((player) => player.team === team)
     .sort((a, b) => a.position - b.position);
 }
 
-function formatTeamNames(participants: MatchParticipant[]) {
-  if (participants.length === 0) {
+function formatTeamNames(players: MatchPlayer[]) {
+  if (players.length === 0) {
     return 'Dupla não encontrada';
   }
 
-  return participants.map((participant) => participant.displayNameSnapshot).join(' / ');
+  return players.map((player) => player.displayNameSnapshot).join(' / ');
 }
 
-function getAverageDelta(participants: MatchParticipant[]) {
-  if (participants.length === 0) {
+function getAverageDelta(players: MatchPlayer[]) {
+  if (players.length === 0) {
     return 0;
   }
 
-  const total = participants.reduce((sum, participant) => sum + participant.ratingDelta, 0);
+  const total = players.reduce((sum, player) => sum + player.ratingDelta, 0);
 
-  return total / participants.length;
+  return total / players.length;
 }
 
 function formatDelta(delta: number) {

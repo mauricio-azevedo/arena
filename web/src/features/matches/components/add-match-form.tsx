@@ -33,9 +33,8 @@ type Props = {
 
 function getInitialMemberId(match: Match | undefined, team: 'TEAM_A' | 'TEAM_B', position: number) {
   return (
-    match?.participants.find(
-      (participant) => participant.team === team && participant.position === position,
-    )?.groupMemberId ?? ''
+    match?.players.find((player) => player.team === team && player.position === position)
+      ?.groupMemberId ?? ''
   );
 }
 
