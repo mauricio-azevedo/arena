@@ -1,10 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { createGroupInvite } from '@/lib/api';
 import type { GroupInvite } from '@/types/api';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { createGroupInvite } from '@/features/invites/invites.api';
 
 const TOKEN_STORAGE_KEY = 'beachrank_access_token';
 

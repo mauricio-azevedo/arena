@@ -2,7 +2,6 @@
 
 import { FormEvent, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { createGroupMatch, updateGroupMatch } from '@/lib/api';
 import type { GroupMember, Match } from '@/types/api';
 import { Button } from '@/components/ui/button';
 import {
@@ -23,6 +22,7 @@ import {
   CommandList,
 } from '@/components/ui/command';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { createGroupMatch, updateGroupMatch } from '@/features/matches/matches.api';
 
 const TOKEN_STORAGE_KEY = 'beachrank_access_token';
 

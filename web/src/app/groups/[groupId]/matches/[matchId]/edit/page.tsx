@@ -1,8 +1,9 @@
 import { notFound } from 'next/navigation';
-import { getGroup, getGroupMatch, getGroupMembers } from '@/lib/api';
 import { AddMatchForm } from '@/components/add-match-form';
 import { AppShell } from '@/components/app-shell';
 import { PageHeader } from '@/components/page-header';
+import { getGroup, getGroupMembers } from '@/features/groups/groups.api';
+import { getGroupMatch } from '@/features/matches/matches.api';
 
 type Props = {
   params: Promise<{

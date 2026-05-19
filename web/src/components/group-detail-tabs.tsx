@@ -7,7 +7,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { MatchesList } from '@/components/matches-list';
 import { useEffect, useState } from 'react';
-import { getMyGroups } from '@/lib/api';
+import { getMyGroups } from '@/features/groups/groups.api';
 
 type GroupTab = 'ranking' | 'matches' | 'members';
 

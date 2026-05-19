@@ -3,10 +3,11 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { acceptInvite, getMyGroups } from '@/lib/api';
 import type { GroupInvite } from '@/types/api';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { getMyGroups } from '@/features/groups/groups.api';
+import { acceptInvite } from '@/features/invites/invites.api';
 
 const TOKEN_STORAGE_KEY = 'beachrank_access_token';
 

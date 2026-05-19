@@ -2,10 +2,10 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { getMyGroups } from '@/lib/api';
 import type { Group, MyGroup } from '@/types/api';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { getMyGroups } from '@/features/groups/groups.api';
 
 type Props = {
   groups: Group[];

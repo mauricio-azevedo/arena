@@ -1,8 +1,8 @@
 import { notFound } from 'next/navigation';
-import { getInvite } from '@/lib/api';
 import { AppShell } from '@/components/app-shell';
 import { InviteAcceptClient } from '@/components/invite-accept-client';
 import { PageHeader } from '@/components/page-header';
+import { getInvite } from '@/features/invites/invites.api';
 
 type Props = {
   params: Promise<{

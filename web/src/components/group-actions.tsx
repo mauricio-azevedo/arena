@@ -2,8 +2,8 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { getMyGroups } from '@/lib/api';
 import { Button } from '@/components/ui/button';
+import { getMyGroups } from '@/features/groups/groups.api';
 
 const TOKEN_STORAGE_KEY = 'beachrank_access_token';
 

@@ -1,9 +1,10 @@
 import { notFound } from 'next/navigation';
-import { getGroup, getGroupMatches, getGroupMembers, getGroupRanking } from '@/lib/api';
 import { AppShell } from '@/components/app-shell';
 import { GroupDetailTabs } from '@/components/group-detail-tabs';
 import { PageHeader } from '@/components/page-header';
 import { GroupActions } from '@/components/group-actions';
+import { getGroup, getGroupMembers, getGroupRanking } from '@/features/groups/groups.api';
+import { getGroupMatches } from '@/features/matches/matches.api';
 
 type Props = {
   params: Promise<{

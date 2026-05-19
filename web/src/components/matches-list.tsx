@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { MoreVertical, Pencil, Trash2 } from 'lucide-react';
-import { deleteGroupMatch } from '@/lib/api';
 import type { Match, MatchParticipant } from '@/types/api';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -23,6 +22,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { deleteGroupMatch } from '@/features/matches/matches.api';
 
 const TOKEN_STORAGE_KEY = 'beachrank_access_token';
 
