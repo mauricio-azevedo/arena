@@ -8,7 +8,7 @@ import { GroupMemberRole } from '../generated/prisma/enums';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
-export class PlayersService {
+export class MembersService {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(

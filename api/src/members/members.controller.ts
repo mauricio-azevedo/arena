@@ -2,11 +2,11 @@ import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { CurrentUser } from '../auth/current-user.decorator';
 import type { AuthUser } from '../auth/auth.types';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { PlayersService } from './players.service';
+import { MembersService } from './members.service';
 
-@Controller('groups/:groupId/players')
-export class PlayersController {
-  constructor(private readonly playersService: PlayersService) {}
+@Controller('groups/:groupId/members')
+export class MembersController {
+  constructor(private readonly membersService: MembersService) {}
 
   @Post()
   @UseGuards(JwtAuthGuard)
@@ -15,11 +15,11 @@ export class PlayersController {
     @CurrentUser() user: AuthUser,
     @Body() body: { userId: string; displayName?: string },
   ) {
-    return this.playersService.create(groupId, user.sub, body);
+    return this.membersService.create(groupId, user.sub, body);
   }
 
   @Get()
   findAll(@Param('groupId') groupId: string) {
-    return this.playersService.findAll(groupId);
+    return this.membersService.findAll(groupId);
   }
 }
