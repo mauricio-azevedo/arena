@@ -7,10 +7,14 @@ import {
 import { randomBytes } from 'crypto';
 import { GroupMemberRole } from '../generated/prisma/enums';
 import { PrismaService } from '../prisma/prisma.service';
+import { FeedOrchestratorService } from '../feed/feed-orchestrator.service';
 
 @Injectable()
 export class GroupInvitesService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly feedOrchestrator: FeedOrchestratorService,
+  ) {}
 
   async create(
     groupId: string,
@@ -196,13 +200,27 @@ export class GroupInvitesService {
                 },
               });
 
-      if (!existingMembership || existingMembership.leftAt) {
+      const didJoinGroup =
+        !existingMembership || existingMembership.leftAt !== null;
+
+      if (didJoinGroup) {
         await tx.groupInvite.update({
           where: { id: invite.id },
           data: {
             uses: { increment: 1 },
           },
         });
+
+        await this.feedOrchestrator.createMemberJoinedItem(
+          {
+            groupId,
+            displayName: membership.displayName,
+            actorUserId: user.id,
+            actorGroupMemberId: membership.id,
+            occurredAt: new Date(),
+          },
+          tx,
+        );
       }
 
       return tx.groupMember.findUnique({

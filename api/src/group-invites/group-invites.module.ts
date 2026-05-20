@@ -4,9 +4,10 @@ import { PrismaModule } from '../prisma/prisma.module';
 import { GroupInvitesController } from './group-invites.controller';
 import { GroupInvitesService } from './group-invites.service';
 import { PublicInvitesController } from './public-invites.controller';
+import { FeedModule } from '../feed/feed.module';
 
 @Module({
-  imports: [PrismaModule, AuthModule],
+  imports: [PrismaModule, AuthModule, FeedModule],
   controllers: [GroupInvitesController, PublicInvitesController],
   providers: [GroupInvitesService],
 })
