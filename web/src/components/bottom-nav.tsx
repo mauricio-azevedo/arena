@@ -2,13 +2,28 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { UsersRound } from 'lucide-react';
+import { Home, Search, UserRound, UsersRound } from 'lucide-react';
 
 const items = [
+  {
+    href: '/',
+    label: 'Play',
+    icon: Home,
+  },
+  {
+    href: '/search',
+    label: 'Buscar',
+    icon: Search,
+  },
   {
     href: '/groups',
     label: 'Grupos',
     icon: UsersRound,
+  },
+  {
+    href: '/profile',
+    label: 'Perfil',
+    icon: UserRound,
   },
 ];
 
@@ -17,16 +32,19 @@ export function BottomNav() {
 
   return (
     <nav className="fixed inset-x-0 bottom-0 z-50 border-t bg-background/95 backdrop-blur">
-      <div className="mx-auto flex h-16 max-w-md justify-center">
+      <div className="mx-auto grid h-16 max-w-md grid-cols-4">
         {items.map((item) => {
           const Icon = item.icon;
-          const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
+          const isActive =
+            item.href === '/'
+              ? pathname === '/'
+              : pathname === item.href || pathname.startsWith(`${item.href}/`);
 
           return (
             <Link
               key={item.href}
               href={item.href}
-              className={`flex flex-col items-center justify-center gap-1 text-xs font-medium ${
+              className={`flex flex-col items-center justify-center gap-1 text-[11px] font-medium ${
                 isActive ? 'text-primary' : 'text-muted-foreground'
               }`}
             >
