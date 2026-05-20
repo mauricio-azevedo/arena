@@ -7,7 +7,7 @@ import { Home, Search, UserRound, UsersRound } from 'lucide-react';
 const items = [
   {
     href: '/',
-    label: 'Play',
+    label: 'Início',
     icon: Home,
   },
   {
@@ -44,12 +44,14 @@ export function BottomNav() {
             <Link
               key={item.href}
               href={item.href}
-              className={`flex flex-col items-center justify-center gap-1 text-[11px] font-medium ${
+              aria-label={item.label}
+              title={item.label}
+              className={`flex items-center justify-center ${
                 isActive ? 'text-primary' : 'text-muted-foreground'
               }`}
             >
               <Icon className="h-5 w-5" />
-              {item.label}
+              <span className="sr-only">{item.label}</span>
             </Link>
           );
         })}

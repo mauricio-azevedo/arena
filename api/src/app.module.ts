@@ -7,6 +7,7 @@ import { AuthModule } from './auth/auth.module';
 import { GroupInvitesModule } from './group-invites/group-invites.module';
 import { MeModule } from './me/me.module';
 import { MembersModule } from './members/members.module';
+import { FeedModule } from './feed/feed.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { MembersModule } from './members/members.module';
     AuthModule,
     GroupInvitesModule,
     MeModule,
+    FeedModule,
   ],
 })
 export class AppModule {}

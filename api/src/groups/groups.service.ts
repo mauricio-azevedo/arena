@@ -5,10 +5,14 @@ import {
 } from '@nestjs/common';
 import { GroupMemberRole } from '../generated/prisma/enums';
 import { PrismaService } from '../prisma/prisma.service';
+import { FeedOrchestratorService } from '../feed/feed-orchestrator.service';
 
 @Injectable()
 export class GroupsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly feedOrchestrator: FeedOrchestratorService,
+  ) {}
 
   async create(body: {
     name: string;
@@ -42,7 +46,7 @@ export class GroupsService {
         },
       });
 
-      await tx.groupMember.create({
+      const membership = await tx.groupMember.create({
         data: {
           groupId: group.id,
           userId: body.createdById,
@@ -50,6 +54,17 @@ export class GroupsService {
           role: GroupMemberRole.ADMIN,
         },
       });
+
+      await this.feedOrchestrator.createGroupCreatedItem(
+        {
+          groupId: group.id,
+          groupName: group.name,
+          actorUserId: creator.id,
+          actorGroupMemberId: membership.id,
+          occurredAt: group.createdAt,
+        },
+        tx,
+      );
 
       return tx.group.findUnique({
         where: { id: group.id },

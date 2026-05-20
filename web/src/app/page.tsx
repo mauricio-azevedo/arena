@@ -1,18 +1,15 @@
 import { AppShell } from '@/components/app-shell';
-import { PageHeader } from '@/components/page-header';
-import { Card, CardContent } from '@/components/ui/card';
+import { HomeFeed } from '@/features/feed/home-feed';
 
-export default function PlayPage() {
+export default function HomePage() {
   return (
     <AppShell>
       <div className="space-y-6">
-        <PageHeader title="Play" description="Acompanhe o que está acontecendo nos seus grupos." />
+        <header>
+          <h1 className="text-3xl font-semibold tracking-tight">BeachRank</h1>
+        </header>
 
-        <Card>
-          <CardContent className="p-4 text-sm text-muted-foreground">
-            Em breve: feed de atividades dos seus grupos.
-          </CardContent>
-        </Card>
+        <HomeFeed />
       </div>
     </AppShell>
   );

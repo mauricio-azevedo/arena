@@ -22,6 +22,14 @@ enum MatchTeam {
   TEAM_B
 }
 
+enum FeedItemType {
+  GROUP_CREATED
+  MEMBER_JOINED
+  MATCH_CLOSE
+  MATCH_BLOWOUT
+  UPSET_WIN
+}
+
 model User {
   id           String @id @default(uuid())
   firstName    String
@@ -35,6 +43,7 @@ model User {
   createdGroups  Group[]       @relation("GroupCreator")
   memberships    GroupMember[]
   createdInvites GroupInvite[] @relation("GroupInviteCreator")
+  feedItems      FeedItem[]    @relation("FeedItemActorUser")
 
   @@index([email])
 }
@@ -51,9 +60,10 @@ model Group {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  members GroupMember[]
-  matches Match[]
-  invites GroupInvite[]
+  members   GroupMember[]
+  matches   Match[]
+  invites   GroupInvite[]
+  feedItems FeedItem[]
 
   @@index([visibility, createdAt])
   @@index([name])
@@ -111,6 +121,7 @@ model GroupMember {
   updatedAt DateTime @updatedAt
 
   matchPlayers MatchPlayer[]
+  feedItems    FeedItem[]    @relation("FeedItemActorGroupMember")
 
   @@unique([groupId, userId])
   @@unique([id, groupId])
@@ -148,7 +159,8 @@ model Match {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  players MatchPlayer[]
+  players   MatchPlayer[]
+  feedItems FeedItem[]
 
   @@unique([id, groupId])
   @@index([groupId])
@@ -182,10 +194,10 @@ model MatchPlayer {
   ratingVolatilityBefore Float?
   ratingVolatilityAfter  Float?
 
-  ratingMuBefore         Float?
-  ratingMuAfter          Float?
-  ratingSigmaBefore      Float?
-  ratingSigmaAfter       Float?
+  ratingMuBefore    Float?
+  ratingMuAfter     Float?
+  ratingSigmaBefore Float?
+  ratingSigmaAfter  Float?
 
   playedAt  DateTime
   createdAt DateTime @default(now())
@@ -200,4 +212,37 @@ model MatchPlayer {
   @@index([groupId, groupMemberId, playedAt])
   @@index([groupMemberId])
   @@index([groupMemberId, playedAt])
+}
+
+model FeedItem {
+  id String @id @default(uuid())
+
+  type FeedItemType
+
+  groupId String
+  group   Group  @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  actorUserId String?
+  actorUser   User?   @relation("FeedItemActorUser", fields: [actorUserId], references: [id], onDelete: SetNull)
+
+  actorGroupMemberId String?
+  actorGroupMember   GroupMember? @relation("FeedItemActorGroupMember", fields: [actorGroupMemberId, groupId], references: [id, groupId])
+
+  matchId String?
+  match   Match?  @relation(fields: [matchId, groupId], references: [id, groupId], onDelete: Cascade)
+
+  importanceScore Int @default(0)
+
+  metadata Json
+
+  occurredAt DateTime
+  createdAt  DateTime @default(now())
+
+  @@unique([type, matchId])
+  @@index([groupId, occurredAt])
+  @@index([type, occurredAt])
+  @@index([importanceScore, occurredAt])
+  @@index([actorUserId, occurredAt])
+  @@index([actorGroupMemberId, occurredAt])
+  @@index([matchId])
 }
