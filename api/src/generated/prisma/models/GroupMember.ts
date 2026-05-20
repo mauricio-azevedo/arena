@@ -307,7 +307,7 @@ export type GroupMemberWhereInput = {
   group?: Prisma.XOR<Prisma.GroupScalarRelationFilter, Prisma.GroupWhereInput>
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   matchPlayers?: Prisma.MatchPlayerListRelationFilter
-  feedItems?: Prisma.FeedItemListRelationFilter
+  actorFeedItems?: Prisma.FeedItemListRelationFilter
 }
 
 export type GroupMemberOrderByWithRelationInput = {
@@ -328,7 +328,7 @@ export type GroupMemberOrderByWithRelationInput = {
   group?: Prisma.GroupOrderByWithRelationInput
   user?: Prisma.UserOrderByWithRelationInput
   matchPlayers?: Prisma.MatchPlayerOrderByRelationAggregateInput
-  feedItems?: Prisma.FeedItemOrderByRelationAggregateInput
+  actorFeedItems?: Prisma.FeedItemOrderByRelationAggregateInput
 }
 
 export type GroupMemberWhereUniqueInput = Prisma.AtLeast<{
@@ -354,7 +354,7 @@ export type GroupMemberWhereUniqueInput = Prisma.AtLeast<{
   group?: Prisma.XOR<Prisma.GroupScalarRelationFilter, Prisma.GroupWhereInput>
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   matchPlayers?: Prisma.MatchPlayerListRelationFilter
-  feedItems?: Prisma.FeedItemListRelationFilter
+  actorFeedItems?: Prisma.FeedItemListRelationFilter
 }, "id" | "groupId_userId" | "id_groupId">
 
 export type GroupMemberOrderByWithAggregationInput = {
@@ -415,7 +415,7 @@ export type GroupMemberCreateInput = {
   group: Prisma.GroupCreateNestedOneWithoutMembersInput
   user: Prisma.UserCreateNestedOneWithoutMembershipsInput
   matchPlayers?: Prisma.MatchPlayerCreateNestedManyWithoutGroupMemberInput
-  feedItems?: Prisma.FeedItemCreateNestedManyWithoutActorGroupMemberInput
+  actorFeedItems?: Prisma.FeedItemCreateNestedManyWithoutActorGroupMemberInput
 }
 
 export type GroupMemberUncheckedCreateInput = {
@@ -434,7 +434,7 @@ export type GroupMemberUncheckedCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   matchPlayers?: Prisma.MatchPlayerUncheckedCreateNestedManyWithoutGroupMemberInput
-  feedItems?: Prisma.FeedItemUncheckedCreateNestedManyWithoutActorGroupMemberInput
+  actorFeedItems?: Prisma.FeedItemUncheckedCreateNestedManyWithoutActorGroupMemberInput
 }
 
 export type GroupMemberUpdateInput = {
@@ -453,7 +453,7 @@ export type GroupMemberUpdateInput = {
   group?: Prisma.GroupUpdateOneRequiredWithoutMembersNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutMembershipsNestedInput
   matchPlayers?: Prisma.MatchPlayerUpdateManyWithoutGroupMemberNestedInput
-  feedItems?: Prisma.FeedItemUpdateManyWithoutActorGroupMemberNestedInput
+  actorFeedItems?: Prisma.FeedItemUpdateManyWithoutActorGroupMemberNestedInput
 }
 
 export type GroupMemberUncheckedUpdateInput = {
@@ -472,7 +472,7 @@ export type GroupMemberUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   matchPlayers?: Prisma.MatchPlayerUncheckedUpdateManyWithoutGroupMemberNestedInput
-  feedItems?: Prisma.FeedItemUncheckedUpdateManyWithoutActorGroupMemberNestedInput
+  actorFeedItems?: Prisma.FeedItemUncheckedUpdateManyWithoutActorGroupMemberNestedInput
 }
 
 export type GroupMemberCreateManyInput = {
@@ -739,20 +739,20 @@ export type GroupMemberUpdateOneRequiredWithoutMatchPlayersNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.GroupMemberUpdateToOneWithWhereWithoutMatchPlayersInput, Prisma.GroupMemberUpdateWithoutMatchPlayersInput>, Prisma.GroupMemberUncheckedUpdateWithoutMatchPlayersInput>
 }
 
-export type GroupMemberCreateNestedOneWithoutFeedItemsInput = {
-  create?: Prisma.XOR<Prisma.GroupMemberCreateWithoutFeedItemsInput, Prisma.GroupMemberUncheckedCreateWithoutFeedItemsInput>
-  connectOrCreate?: Prisma.GroupMemberCreateOrConnectWithoutFeedItemsInput
+export type GroupMemberCreateNestedOneWithoutActorFeedItemsInput = {
+  create?: Prisma.XOR<Prisma.GroupMemberCreateWithoutActorFeedItemsInput, Prisma.GroupMemberUncheckedCreateWithoutActorFeedItemsInput>
+  connectOrCreate?: Prisma.GroupMemberCreateOrConnectWithoutActorFeedItemsInput
   connect?: Prisma.GroupMemberWhereUniqueInput
 }
 
-export type GroupMemberUpdateOneWithoutFeedItemsNestedInput = {
-  create?: Prisma.XOR<Prisma.GroupMemberCreateWithoutFeedItemsInput, Prisma.GroupMemberUncheckedCreateWithoutFeedItemsInput>
-  connectOrCreate?: Prisma.GroupMemberCreateOrConnectWithoutFeedItemsInput
-  upsert?: Prisma.GroupMemberUpsertWithoutFeedItemsInput
+export type GroupMemberUpdateOneWithoutActorFeedItemsNestedInput = {
+  create?: Prisma.XOR<Prisma.GroupMemberCreateWithoutActorFeedItemsInput, Prisma.GroupMemberUncheckedCreateWithoutActorFeedItemsInput>
+  connectOrCreate?: Prisma.GroupMemberCreateOrConnectWithoutActorFeedItemsInput
+  upsert?: Prisma.GroupMemberUpsertWithoutActorFeedItemsInput
   disconnect?: Prisma.GroupMemberWhereInput | boolean
   delete?: Prisma.GroupMemberWhereInput | boolean
   connect?: Prisma.GroupMemberWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.GroupMemberUpdateToOneWithWhereWithoutFeedItemsInput, Prisma.GroupMemberUpdateWithoutFeedItemsInput>, Prisma.GroupMemberUncheckedUpdateWithoutFeedItemsInput>
+  update?: Prisma.XOR<Prisma.XOR<Prisma.GroupMemberUpdateToOneWithWhereWithoutActorFeedItemsInput, Prisma.GroupMemberUpdateWithoutActorFeedItemsInput>, Prisma.GroupMemberUncheckedUpdateWithoutActorFeedItemsInput>
 }
 
 export type GroupMemberCreateWithoutUserInput = {
@@ -770,7 +770,7 @@ export type GroupMemberCreateWithoutUserInput = {
   updatedAt?: Date | string
   group: Prisma.GroupCreateNestedOneWithoutMembersInput
   matchPlayers?: Prisma.MatchPlayerCreateNestedManyWithoutGroupMemberInput
-  feedItems?: Prisma.FeedItemCreateNestedManyWithoutActorGroupMemberInput
+  actorFeedItems?: Prisma.FeedItemCreateNestedManyWithoutActorGroupMemberInput
 }
 
 export type GroupMemberUncheckedCreateWithoutUserInput = {
@@ -788,7 +788,7 @@ export type GroupMemberUncheckedCreateWithoutUserInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   matchPlayers?: Prisma.MatchPlayerUncheckedCreateNestedManyWithoutGroupMemberInput
-  feedItems?: Prisma.FeedItemUncheckedCreateNestedManyWithoutActorGroupMemberInput
+  actorFeedItems?: Prisma.FeedItemUncheckedCreateNestedManyWithoutActorGroupMemberInput
 }
 
 export type GroupMemberCreateOrConnectWithoutUserInput = {
@@ -852,7 +852,7 @@ export type GroupMemberCreateWithoutGroupInput = {
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutMembershipsInput
   matchPlayers?: Prisma.MatchPlayerCreateNestedManyWithoutGroupMemberInput
-  feedItems?: Prisma.FeedItemCreateNestedManyWithoutActorGroupMemberInput
+  actorFeedItems?: Prisma.FeedItemCreateNestedManyWithoutActorGroupMemberInput
 }
 
 export type GroupMemberUncheckedCreateWithoutGroupInput = {
@@ -870,7 +870,7 @@ export type GroupMemberUncheckedCreateWithoutGroupInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   matchPlayers?: Prisma.MatchPlayerUncheckedCreateNestedManyWithoutGroupMemberInput
-  feedItems?: Prisma.FeedItemUncheckedCreateNestedManyWithoutActorGroupMemberInput
+  actorFeedItems?: Prisma.FeedItemUncheckedCreateNestedManyWithoutActorGroupMemberInput
 }
 
 export type GroupMemberCreateOrConnectWithoutGroupInput = {
@@ -914,7 +914,7 @@ export type GroupMemberCreateWithoutMatchPlayersInput = {
   updatedAt?: Date | string
   group: Prisma.GroupCreateNestedOneWithoutMembersInput
   user: Prisma.UserCreateNestedOneWithoutMembershipsInput
-  feedItems?: Prisma.FeedItemCreateNestedManyWithoutActorGroupMemberInput
+  actorFeedItems?: Prisma.FeedItemCreateNestedManyWithoutActorGroupMemberInput
 }
 
 export type GroupMemberUncheckedCreateWithoutMatchPlayersInput = {
@@ -932,7 +932,7 @@ export type GroupMemberUncheckedCreateWithoutMatchPlayersInput = {
   leftAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  feedItems?: Prisma.FeedItemUncheckedCreateNestedManyWithoutActorGroupMemberInput
+  actorFeedItems?: Prisma.FeedItemUncheckedCreateNestedManyWithoutActorGroupMemberInput
 }
 
 export type GroupMemberCreateOrConnectWithoutMatchPlayersInput = {
@@ -966,7 +966,7 @@ export type GroupMemberUpdateWithoutMatchPlayersInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   group?: Prisma.GroupUpdateOneRequiredWithoutMembersNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutMembershipsNestedInput
-  feedItems?: Prisma.FeedItemUpdateManyWithoutActorGroupMemberNestedInput
+  actorFeedItems?: Prisma.FeedItemUpdateManyWithoutActorGroupMemberNestedInput
 }
 
 export type GroupMemberUncheckedUpdateWithoutMatchPlayersInput = {
@@ -984,10 +984,10 @@ export type GroupMemberUncheckedUpdateWithoutMatchPlayersInput = {
   leftAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  feedItems?: Prisma.FeedItemUncheckedUpdateManyWithoutActorGroupMemberNestedInput
+  actorFeedItems?: Prisma.FeedItemUncheckedUpdateManyWithoutActorGroupMemberNestedInput
 }
 
-export type GroupMemberCreateWithoutFeedItemsInput = {
+export type GroupMemberCreateWithoutActorFeedItemsInput = {
   id?: string
   displayName: string
   rating?: number
@@ -1005,7 +1005,7 @@ export type GroupMemberCreateWithoutFeedItemsInput = {
   matchPlayers?: Prisma.MatchPlayerCreateNestedManyWithoutGroupMemberInput
 }
 
-export type GroupMemberUncheckedCreateWithoutFeedItemsInput = {
+export type GroupMemberUncheckedCreateWithoutActorFeedItemsInput = {
   id?: string
   groupId: string
   userId: string
@@ -1023,23 +1023,23 @@ export type GroupMemberUncheckedCreateWithoutFeedItemsInput = {
   matchPlayers?: Prisma.MatchPlayerUncheckedCreateNestedManyWithoutGroupMemberInput
 }
 
-export type GroupMemberCreateOrConnectWithoutFeedItemsInput = {
+export type GroupMemberCreateOrConnectWithoutActorFeedItemsInput = {
   where: Prisma.GroupMemberWhereUniqueInput
-  create: Prisma.XOR<Prisma.GroupMemberCreateWithoutFeedItemsInput, Prisma.GroupMemberUncheckedCreateWithoutFeedItemsInput>
+  create: Prisma.XOR<Prisma.GroupMemberCreateWithoutActorFeedItemsInput, Prisma.GroupMemberUncheckedCreateWithoutActorFeedItemsInput>
 }
 
-export type GroupMemberUpsertWithoutFeedItemsInput = {
-  update: Prisma.XOR<Prisma.GroupMemberUpdateWithoutFeedItemsInput, Prisma.GroupMemberUncheckedUpdateWithoutFeedItemsInput>
-  create: Prisma.XOR<Prisma.GroupMemberCreateWithoutFeedItemsInput, Prisma.GroupMemberUncheckedCreateWithoutFeedItemsInput>
+export type GroupMemberUpsertWithoutActorFeedItemsInput = {
+  update: Prisma.XOR<Prisma.GroupMemberUpdateWithoutActorFeedItemsInput, Prisma.GroupMemberUncheckedUpdateWithoutActorFeedItemsInput>
+  create: Prisma.XOR<Prisma.GroupMemberCreateWithoutActorFeedItemsInput, Prisma.GroupMemberUncheckedCreateWithoutActorFeedItemsInput>
   where?: Prisma.GroupMemberWhereInput
 }
 
-export type GroupMemberUpdateToOneWithWhereWithoutFeedItemsInput = {
+export type GroupMemberUpdateToOneWithWhereWithoutActorFeedItemsInput = {
   where?: Prisma.GroupMemberWhereInput
-  data: Prisma.XOR<Prisma.GroupMemberUpdateWithoutFeedItemsInput, Prisma.GroupMemberUncheckedUpdateWithoutFeedItemsInput>
+  data: Prisma.XOR<Prisma.GroupMemberUpdateWithoutActorFeedItemsInput, Prisma.GroupMemberUncheckedUpdateWithoutActorFeedItemsInput>
 }
 
-export type GroupMemberUpdateWithoutFeedItemsInput = {
+export type GroupMemberUpdateWithoutActorFeedItemsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   displayName?: Prisma.StringFieldUpdateOperationsInput | string
   rating?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -1057,7 +1057,7 @@ export type GroupMemberUpdateWithoutFeedItemsInput = {
   matchPlayers?: Prisma.MatchPlayerUpdateManyWithoutGroupMemberNestedInput
 }
 
-export type GroupMemberUncheckedUpdateWithoutFeedItemsInput = {
+export type GroupMemberUncheckedUpdateWithoutActorFeedItemsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   groupId?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1106,7 +1106,7 @@ export type GroupMemberUpdateWithoutUserInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   group?: Prisma.GroupUpdateOneRequiredWithoutMembersNestedInput
   matchPlayers?: Prisma.MatchPlayerUpdateManyWithoutGroupMemberNestedInput
-  feedItems?: Prisma.FeedItemUpdateManyWithoutActorGroupMemberNestedInput
+  actorFeedItems?: Prisma.FeedItemUpdateManyWithoutActorGroupMemberNestedInput
 }
 
 export type GroupMemberUncheckedUpdateWithoutUserInput = {
@@ -1124,7 +1124,7 @@ export type GroupMemberUncheckedUpdateWithoutUserInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   matchPlayers?: Prisma.MatchPlayerUncheckedUpdateManyWithoutGroupMemberNestedInput
-  feedItems?: Prisma.FeedItemUncheckedUpdateManyWithoutActorGroupMemberNestedInput
+  actorFeedItems?: Prisma.FeedItemUncheckedUpdateManyWithoutActorGroupMemberNestedInput
 }
 
 export type GroupMemberUncheckedUpdateManyWithoutUserInput = {
@@ -1174,7 +1174,7 @@ export type GroupMemberUpdateWithoutGroupInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutMembershipsNestedInput
   matchPlayers?: Prisma.MatchPlayerUpdateManyWithoutGroupMemberNestedInput
-  feedItems?: Prisma.FeedItemUpdateManyWithoutActorGroupMemberNestedInput
+  actorFeedItems?: Prisma.FeedItemUpdateManyWithoutActorGroupMemberNestedInput
 }
 
 export type GroupMemberUncheckedUpdateWithoutGroupInput = {
@@ -1192,7 +1192,7 @@ export type GroupMemberUncheckedUpdateWithoutGroupInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   matchPlayers?: Prisma.MatchPlayerUncheckedUpdateManyWithoutGroupMemberNestedInput
-  feedItems?: Prisma.FeedItemUncheckedUpdateManyWithoutActorGroupMemberNestedInput
+  actorFeedItems?: Prisma.FeedItemUncheckedUpdateManyWithoutActorGroupMemberNestedInput
 }
 
 export type GroupMemberUncheckedUpdateManyWithoutGroupInput = {
@@ -1218,12 +1218,12 @@ export type GroupMemberUncheckedUpdateManyWithoutGroupInput = {
 
 export type GroupMemberCountOutputType = {
   matchPlayers: number
-  feedItems: number
+  actorFeedItems: number
 }
 
 export type GroupMemberCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   matchPlayers?: boolean | GroupMemberCountOutputTypeCountMatchPlayersArgs
-  feedItems?: boolean | GroupMemberCountOutputTypeCountFeedItemsArgs
+  actorFeedItems?: boolean | GroupMemberCountOutputTypeCountActorFeedItemsArgs
 }
 
 /**
@@ -1246,7 +1246,7 @@ export type GroupMemberCountOutputTypeCountMatchPlayersArgs<ExtArgs extends runt
 /**
  * GroupMemberCountOutputType without action
  */
-export type GroupMemberCountOutputTypeCountFeedItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type GroupMemberCountOutputTypeCountActorFeedItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.FeedItemWhereInput
 }
 
@@ -1269,7 +1269,7 @@ export type GroupMemberSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   group?: boolean | Prisma.GroupDefaultArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   matchPlayers?: boolean | Prisma.GroupMember$matchPlayersArgs<ExtArgs>
-  feedItems?: boolean | Prisma.GroupMember$feedItemsArgs<ExtArgs>
+  actorFeedItems?: boolean | Prisma.GroupMember$actorFeedItemsArgs<ExtArgs>
   _count?: boolean | Prisma.GroupMemberCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["groupMember"]>
 
@@ -1333,7 +1333,7 @@ export type GroupMemberInclude<ExtArgs extends runtime.Types.Extensions.Internal
   group?: boolean | Prisma.GroupDefaultArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   matchPlayers?: boolean | Prisma.GroupMember$matchPlayersArgs<ExtArgs>
-  feedItems?: boolean | Prisma.GroupMember$feedItemsArgs<ExtArgs>
+  actorFeedItems?: boolean | Prisma.GroupMember$actorFeedItemsArgs<ExtArgs>
   _count?: boolean | Prisma.GroupMemberCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type GroupMemberIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1351,7 +1351,7 @@ export type $GroupMemberPayload<ExtArgs extends runtime.Types.Extensions.Interna
     group: Prisma.$GroupPayload<ExtArgs>
     user: Prisma.$UserPayload<ExtArgs>
     matchPlayers: Prisma.$MatchPlayerPayload<ExtArgs>[]
-    feedItems: Prisma.$FeedItemPayload<ExtArgs>[]
+    actorFeedItems: Prisma.$FeedItemPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1765,7 +1765,7 @@ export interface Prisma__GroupMemberClient<T, Null = never, ExtArgs extends runt
   group<T extends Prisma.GroupDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.GroupDefaultArgs<ExtArgs>>): Prisma.Prisma__GroupClient<runtime.Types.Result.GetResult<Prisma.$GroupPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   matchPlayers<T extends Prisma.GroupMember$matchPlayersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.GroupMember$matchPlayersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MatchPlayerPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  feedItems<T extends Prisma.GroupMember$feedItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.GroupMember$feedItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FeedItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  actorFeedItems<T extends Prisma.GroupMember$actorFeedItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.GroupMember$actorFeedItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FeedItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2234,9 +2234,9 @@ export type GroupMember$matchPlayersArgs<ExtArgs extends runtime.Types.Extension
 }
 
 /**
- * GroupMember.feedItems
+ * GroupMember.actorFeedItems
  */
-export type GroupMember$feedItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type GroupMember$actorFeedItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
    * Select specific fields to fetch from the FeedItem
    */

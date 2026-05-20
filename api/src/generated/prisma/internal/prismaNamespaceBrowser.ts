@@ -191,9 +191,12 @@ export type MatchPlayerScalarFieldEnum = (typeof MatchPlayerScalarFieldEnum)[key
 export const FeedItemScalarFieldEnum = {
   id: 'id',
   type: 'type',
+  scope: 'scope',
+  visibility: 'visibility',
   groupId: 'groupId',
   actorUserId: 'actorUserId',
   actorGroupMemberId: 'actorGroupMemberId',
+  subjectUserId: 'subjectUserId',
   matchId: 'matchId',
   importanceScore: 'importanceScore',
   metadata: 'metadata',

@@ -201,7 +201,8 @@ export type UserWhereInput = {
   createdGroups?: Prisma.GroupListRelationFilter
   memberships?: Prisma.GroupMemberListRelationFilter
   createdInvites?: Prisma.GroupInviteListRelationFilter
-  feedItems?: Prisma.FeedItemListRelationFilter
+  actorFeedItems?: Prisma.FeedItemListRelationFilter
+  subjectFeedItems?: Prisma.FeedItemListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -215,7 +216,8 @@ export type UserOrderByWithRelationInput = {
   createdGroups?: Prisma.GroupOrderByRelationAggregateInput
   memberships?: Prisma.GroupMemberOrderByRelationAggregateInput
   createdInvites?: Prisma.GroupInviteOrderByRelationAggregateInput
-  feedItems?: Prisma.FeedItemOrderByRelationAggregateInput
+  actorFeedItems?: Prisma.FeedItemOrderByRelationAggregateInput
+  subjectFeedItems?: Prisma.FeedItemOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -232,7 +234,8 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   createdGroups?: Prisma.GroupListRelationFilter
   memberships?: Prisma.GroupMemberListRelationFilter
   createdInvites?: Prisma.GroupInviteListRelationFilter
-  feedItems?: Prisma.FeedItemListRelationFilter
+  actorFeedItems?: Prisma.FeedItemListRelationFilter
+  subjectFeedItems?: Prisma.FeedItemListRelationFilter
 }, "id" | "email">
 
 export type UserOrderByWithAggregationInput = {
@@ -272,7 +275,8 @@ export type UserCreateInput = {
   createdGroups?: Prisma.GroupCreateNestedManyWithoutCreatedByInput
   memberships?: Prisma.GroupMemberCreateNestedManyWithoutUserInput
   createdInvites?: Prisma.GroupInviteCreateNestedManyWithoutCreatedByInput
-  feedItems?: Prisma.FeedItemCreateNestedManyWithoutActorUserInput
+  actorFeedItems?: Prisma.FeedItemCreateNestedManyWithoutActorUserInput
+  subjectFeedItems?: Prisma.FeedItemCreateNestedManyWithoutSubjectUserInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -286,7 +290,8 @@ export type UserUncheckedCreateInput = {
   createdGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutCreatedByInput
   memberships?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutUserInput
   createdInvites?: Prisma.GroupInviteUncheckedCreateNestedManyWithoutCreatedByInput
-  feedItems?: Prisma.FeedItemUncheckedCreateNestedManyWithoutActorUserInput
+  actorFeedItems?: Prisma.FeedItemUncheckedCreateNestedManyWithoutActorUserInput
+  subjectFeedItems?: Prisma.FeedItemUncheckedCreateNestedManyWithoutSubjectUserInput
 }
 
 export type UserUpdateInput = {
@@ -300,7 +305,8 @@ export type UserUpdateInput = {
   createdGroups?: Prisma.GroupUpdateManyWithoutCreatedByNestedInput
   memberships?: Prisma.GroupMemberUpdateManyWithoutUserNestedInput
   createdInvites?: Prisma.GroupInviteUpdateManyWithoutCreatedByNestedInput
-  feedItems?: Prisma.FeedItemUpdateManyWithoutActorUserNestedInput
+  actorFeedItems?: Prisma.FeedItemUpdateManyWithoutActorUserNestedInput
+  subjectFeedItems?: Prisma.FeedItemUpdateManyWithoutSubjectUserNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -314,7 +320,8 @@ export type UserUncheckedUpdateInput = {
   createdGroups?: Prisma.GroupUncheckedUpdateManyWithoutCreatedByNestedInput
   memberships?: Prisma.GroupMemberUncheckedUpdateManyWithoutUserNestedInput
   createdInvites?: Prisma.GroupInviteUncheckedUpdateManyWithoutCreatedByNestedInput
-  feedItems?: Prisma.FeedItemUncheckedUpdateManyWithoutActorUserNestedInput
+  actorFeedItems?: Prisma.FeedItemUncheckedUpdateManyWithoutActorUserNestedInput
+  subjectFeedItems?: Prisma.FeedItemUncheckedUpdateManyWithoutSubjectUserNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -437,20 +444,36 @@ export type UserUpdateOneRequiredWithoutMembershipsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutMembershipsInput, Prisma.UserUpdateWithoutMembershipsInput>, Prisma.UserUncheckedUpdateWithoutMembershipsInput>
 }
 
-export type UserCreateNestedOneWithoutFeedItemsInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutFeedItemsInput, Prisma.UserUncheckedCreateWithoutFeedItemsInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutFeedItemsInput
+export type UserCreateNestedOneWithoutActorFeedItemsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutActorFeedItemsInput, Prisma.UserUncheckedCreateWithoutActorFeedItemsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutActorFeedItemsInput
   connect?: Prisma.UserWhereUniqueInput
 }
 
-export type UserUpdateOneWithoutFeedItemsNestedInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutFeedItemsInput, Prisma.UserUncheckedCreateWithoutFeedItemsInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutFeedItemsInput
-  upsert?: Prisma.UserUpsertWithoutFeedItemsInput
+export type UserCreateNestedOneWithoutSubjectFeedItemsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutSubjectFeedItemsInput, Prisma.UserUncheckedCreateWithoutSubjectFeedItemsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutSubjectFeedItemsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneWithoutActorFeedItemsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutActorFeedItemsInput, Prisma.UserUncheckedCreateWithoutActorFeedItemsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutActorFeedItemsInput
+  upsert?: Prisma.UserUpsertWithoutActorFeedItemsInput
   disconnect?: Prisma.UserWhereInput | boolean
   delete?: Prisma.UserWhereInput | boolean
   connect?: Prisma.UserWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutFeedItemsInput, Prisma.UserUpdateWithoutFeedItemsInput>, Prisma.UserUncheckedUpdateWithoutFeedItemsInput>
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutActorFeedItemsInput, Prisma.UserUpdateWithoutActorFeedItemsInput>, Prisma.UserUncheckedUpdateWithoutActorFeedItemsInput>
+}
+
+export type UserUpdateOneWithoutSubjectFeedItemsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutSubjectFeedItemsInput, Prisma.UserUncheckedCreateWithoutSubjectFeedItemsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutSubjectFeedItemsInput
+  upsert?: Prisma.UserUpsertWithoutSubjectFeedItemsInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutSubjectFeedItemsInput, Prisma.UserUpdateWithoutSubjectFeedItemsInput>, Prisma.UserUncheckedUpdateWithoutSubjectFeedItemsInput>
 }
 
 export type UserCreateWithoutCreatedGroupsInput = {
@@ -463,7 +486,8 @@ export type UserCreateWithoutCreatedGroupsInput = {
   updatedAt?: Date | string
   memberships?: Prisma.GroupMemberCreateNestedManyWithoutUserInput
   createdInvites?: Prisma.GroupInviteCreateNestedManyWithoutCreatedByInput
-  feedItems?: Prisma.FeedItemCreateNestedManyWithoutActorUserInput
+  actorFeedItems?: Prisma.FeedItemCreateNestedManyWithoutActorUserInput
+  subjectFeedItems?: Prisma.FeedItemCreateNestedManyWithoutSubjectUserInput
 }
 
 export type UserUncheckedCreateWithoutCreatedGroupsInput = {
@@ -476,7 +500,8 @@ export type UserUncheckedCreateWithoutCreatedGroupsInput = {
   updatedAt?: Date | string
   memberships?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutUserInput
   createdInvites?: Prisma.GroupInviteUncheckedCreateNestedManyWithoutCreatedByInput
-  feedItems?: Prisma.FeedItemUncheckedCreateNestedManyWithoutActorUserInput
+  actorFeedItems?: Prisma.FeedItemUncheckedCreateNestedManyWithoutActorUserInput
+  subjectFeedItems?: Prisma.FeedItemUncheckedCreateNestedManyWithoutSubjectUserInput
 }
 
 export type UserCreateOrConnectWithoutCreatedGroupsInput = {
@@ -505,7 +530,8 @@ export type UserUpdateWithoutCreatedGroupsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   memberships?: Prisma.GroupMemberUpdateManyWithoutUserNestedInput
   createdInvites?: Prisma.GroupInviteUpdateManyWithoutCreatedByNestedInput
-  feedItems?: Prisma.FeedItemUpdateManyWithoutActorUserNestedInput
+  actorFeedItems?: Prisma.FeedItemUpdateManyWithoutActorUserNestedInput
+  subjectFeedItems?: Prisma.FeedItemUpdateManyWithoutSubjectUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCreatedGroupsInput = {
@@ -518,7 +544,8 @@ export type UserUncheckedUpdateWithoutCreatedGroupsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   memberships?: Prisma.GroupMemberUncheckedUpdateManyWithoutUserNestedInput
   createdInvites?: Prisma.GroupInviteUncheckedUpdateManyWithoutCreatedByNestedInput
-  feedItems?: Prisma.FeedItemUncheckedUpdateManyWithoutActorUserNestedInput
+  actorFeedItems?: Prisma.FeedItemUncheckedUpdateManyWithoutActorUserNestedInput
+  subjectFeedItems?: Prisma.FeedItemUncheckedUpdateManyWithoutSubjectUserNestedInput
 }
 
 export type UserCreateWithoutCreatedInvitesInput = {
@@ -531,7 +558,8 @@ export type UserCreateWithoutCreatedInvitesInput = {
   updatedAt?: Date | string
   createdGroups?: Prisma.GroupCreateNestedManyWithoutCreatedByInput
   memberships?: Prisma.GroupMemberCreateNestedManyWithoutUserInput
-  feedItems?: Prisma.FeedItemCreateNestedManyWithoutActorUserInput
+  actorFeedItems?: Prisma.FeedItemCreateNestedManyWithoutActorUserInput
+  subjectFeedItems?: Prisma.FeedItemCreateNestedManyWithoutSubjectUserInput
 }
 
 export type UserUncheckedCreateWithoutCreatedInvitesInput = {
@@ -544,7 +572,8 @@ export type UserUncheckedCreateWithoutCreatedInvitesInput = {
   updatedAt?: Date | string
   createdGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutCreatedByInput
   memberships?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutUserInput
-  feedItems?: Prisma.FeedItemUncheckedCreateNestedManyWithoutActorUserInput
+  actorFeedItems?: Prisma.FeedItemUncheckedCreateNestedManyWithoutActorUserInput
+  subjectFeedItems?: Prisma.FeedItemUncheckedCreateNestedManyWithoutSubjectUserInput
 }
 
 export type UserCreateOrConnectWithoutCreatedInvitesInput = {
@@ -573,7 +602,8 @@ export type UserUpdateWithoutCreatedInvitesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdGroups?: Prisma.GroupUpdateManyWithoutCreatedByNestedInput
   memberships?: Prisma.GroupMemberUpdateManyWithoutUserNestedInput
-  feedItems?: Prisma.FeedItemUpdateManyWithoutActorUserNestedInput
+  actorFeedItems?: Prisma.FeedItemUpdateManyWithoutActorUserNestedInput
+  subjectFeedItems?: Prisma.FeedItemUpdateManyWithoutSubjectUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCreatedInvitesInput = {
@@ -586,7 +616,8 @@ export type UserUncheckedUpdateWithoutCreatedInvitesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdGroups?: Prisma.GroupUncheckedUpdateManyWithoutCreatedByNestedInput
   memberships?: Prisma.GroupMemberUncheckedUpdateManyWithoutUserNestedInput
-  feedItems?: Prisma.FeedItemUncheckedUpdateManyWithoutActorUserNestedInput
+  actorFeedItems?: Prisma.FeedItemUncheckedUpdateManyWithoutActorUserNestedInput
+  subjectFeedItems?: Prisma.FeedItemUncheckedUpdateManyWithoutSubjectUserNestedInput
 }
 
 export type UserCreateWithoutMembershipsInput = {
@@ -599,7 +630,8 @@ export type UserCreateWithoutMembershipsInput = {
   updatedAt?: Date | string
   createdGroups?: Prisma.GroupCreateNestedManyWithoutCreatedByInput
   createdInvites?: Prisma.GroupInviteCreateNestedManyWithoutCreatedByInput
-  feedItems?: Prisma.FeedItemCreateNestedManyWithoutActorUserInput
+  actorFeedItems?: Prisma.FeedItemCreateNestedManyWithoutActorUserInput
+  subjectFeedItems?: Prisma.FeedItemCreateNestedManyWithoutSubjectUserInput
 }
 
 export type UserUncheckedCreateWithoutMembershipsInput = {
@@ -612,7 +644,8 @@ export type UserUncheckedCreateWithoutMembershipsInput = {
   updatedAt?: Date | string
   createdGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutCreatedByInput
   createdInvites?: Prisma.GroupInviteUncheckedCreateNestedManyWithoutCreatedByInput
-  feedItems?: Prisma.FeedItemUncheckedCreateNestedManyWithoutActorUserInput
+  actorFeedItems?: Prisma.FeedItemUncheckedCreateNestedManyWithoutActorUserInput
+  subjectFeedItems?: Prisma.FeedItemUncheckedCreateNestedManyWithoutSubjectUserInput
 }
 
 export type UserCreateOrConnectWithoutMembershipsInput = {
@@ -641,7 +674,8 @@ export type UserUpdateWithoutMembershipsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdGroups?: Prisma.GroupUpdateManyWithoutCreatedByNestedInput
   createdInvites?: Prisma.GroupInviteUpdateManyWithoutCreatedByNestedInput
-  feedItems?: Prisma.FeedItemUpdateManyWithoutActorUserNestedInput
+  actorFeedItems?: Prisma.FeedItemUpdateManyWithoutActorUserNestedInput
+  subjectFeedItems?: Prisma.FeedItemUpdateManyWithoutSubjectUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutMembershipsInput = {
@@ -654,10 +688,11 @@ export type UserUncheckedUpdateWithoutMembershipsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdGroups?: Prisma.GroupUncheckedUpdateManyWithoutCreatedByNestedInput
   createdInvites?: Prisma.GroupInviteUncheckedUpdateManyWithoutCreatedByNestedInput
-  feedItems?: Prisma.FeedItemUncheckedUpdateManyWithoutActorUserNestedInput
+  actorFeedItems?: Prisma.FeedItemUncheckedUpdateManyWithoutActorUserNestedInput
+  subjectFeedItems?: Prisma.FeedItemUncheckedUpdateManyWithoutSubjectUserNestedInput
 }
 
-export type UserCreateWithoutFeedItemsInput = {
+export type UserCreateWithoutActorFeedItemsInput = {
   id?: string
   firstName: string
   lastName: string
@@ -668,9 +703,10 @@ export type UserCreateWithoutFeedItemsInput = {
   createdGroups?: Prisma.GroupCreateNestedManyWithoutCreatedByInput
   memberships?: Prisma.GroupMemberCreateNestedManyWithoutUserInput
   createdInvites?: Prisma.GroupInviteCreateNestedManyWithoutCreatedByInput
+  subjectFeedItems?: Prisma.FeedItemCreateNestedManyWithoutSubjectUserInput
 }
 
-export type UserUncheckedCreateWithoutFeedItemsInput = {
+export type UserUncheckedCreateWithoutActorFeedItemsInput = {
   id?: string
   firstName: string
   lastName: string
@@ -681,25 +717,59 @@ export type UserUncheckedCreateWithoutFeedItemsInput = {
   createdGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutCreatedByInput
   memberships?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutUserInput
   createdInvites?: Prisma.GroupInviteUncheckedCreateNestedManyWithoutCreatedByInput
+  subjectFeedItems?: Prisma.FeedItemUncheckedCreateNestedManyWithoutSubjectUserInput
 }
 
-export type UserCreateOrConnectWithoutFeedItemsInput = {
+export type UserCreateOrConnectWithoutActorFeedItemsInput = {
   where: Prisma.UserWhereUniqueInput
-  create: Prisma.XOR<Prisma.UserCreateWithoutFeedItemsInput, Prisma.UserUncheckedCreateWithoutFeedItemsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutActorFeedItemsInput, Prisma.UserUncheckedCreateWithoutActorFeedItemsInput>
 }
 
-export type UserUpsertWithoutFeedItemsInput = {
-  update: Prisma.XOR<Prisma.UserUpdateWithoutFeedItemsInput, Prisma.UserUncheckedUpdateWithoutFeedItemsInput>
-  create: Prisma.XOR<Prisma.UserCreateWithoutFeedItemsInput, Prisma.UserUncheckedCreateWithoutFeedItemsInput>
+export type UserCreateWithoutSubjectFeedItemsInput = {
+  id?: string
+  firstName: string
+  lastName: string
+  email: string
+  passwordHash: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  createdGroups?: Prisma.GroupCreateNestedManyWithoutCreatedByInput
+  memberships?: Prisma.GroupMemberCreateNestedManyWithoutUserInput
+  createdInvites?: Prisma.GroupInviteCreateNestedManyWithoutCreatedByInput
+  actorFeedItems?: Prisma.FeedItemCreateNestedManyWithoutActorUserInput
+}
+
+export type UserUncheckedCreateWithoutSubjectFeedItemsInput = {
+  id?: string
+  firstName: string
+  lastName: string
+  email: string
+  passwordHash: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  createdGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutCreatedByInput
+  memberships?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutUserInput
+  createdInvites?: Prisma.GroupInviteUncheckedCreateNestedManyWithoutCreatedByInput
+  actorFeedItems?: Prisma.FeedItemUncheckedCreateNestedManyWithoutActorUserInput
+}
+
+export type UserCreateOrConnectWithoutSubjectFeedItemsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutSubjectFeedItemsInput, Prisma.UserUncheckedCreateWithoutSubjectFeedItemsInput>
+}
+
+export type UserUpsertWithoutActorFeedItemsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutActorFeedItemsInput, Prisma.UserUncheckedUpdateWithoutActorFeedItemsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutActorFeedItemsInput, Prisma.UserUncheckedCreateWithoutActorFeedItemsInput>
   where?: Prisma.UserWhereInput
 }
 
-export type UserUpdateToOneWithWhereWithoutFeedItemsInput = {
+export type UserUpdateToOneWithWhereWithoutActorFeedItemsInput = {
   where?: Prisma.UserWhereInput
-  data: Prisma.XOR<Prisma.UserUpdateWithoutFeedItemsInput, Prisma.UserUncheckedUpdateWithoutFeedItemsInput>
+  data: Prisma.XOR<Prisma.UserUpdateWithoutActorFeedItemsInput, Prisma.UserUncheckedUpdateWithoutActorFeedItemsInput>
 }
 
-export type UserUpdateWithoutFeedItemsInput = {
+export type UserUpdateWithoutActorFeedItemsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   firstName?: Prisma.StringFieldUpdateOperationsInput | string
   lastName?: Prisma.StringFieldUpdateOperationsInput | string
@@ -710,9 +780,10 @@ export type UserUpdateWithoutFeedItemsInput = {
   createdGroups?: Prisma.GroupUpdateManyWithoutCreatedByNestedInput
   memberships?: Prisma.GroupMemberUpdateManyWithoutUserNestedInput
   createdInvites?: Prisma.GroupInviteUpdateManyWithoutCreatedByNestedInput
+  subjectFeedItems?: Prisma.FeedItemUpdateManyWithoutSubjectUserNestedInput
 }
 
-export type UserUncheckedUpdateWithoutFeedItemsInput = {
+export type UserUncheckedUpdateWithoutActorFeedItemsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   firstName?: Prisma.StringFieldUpdateOperationsInput | string
   lastName?: Prisma.StringFieldUpdateOperationsInput | string
@@ -723,6 +794,46 @@ export type UserUncheckedUpdateWithoutFeedItemsInput = {
   createdGroups?: Prisma.GroupUncheckedUpdateManyWithoutCreatedByNestedInput
   memberships?: Prisma.GroupMemberUncheckedUpdateManyWithoutUserNestedInput
   createdInvites?: Prisma.GroupInviteUncheckedUpdateManyWithoutCreatedByNestedInput
+  subjectFeedItems?: Prisma.FeedItemUncheckedUpdateManyWithoutSubjectUserNestedInput
+}
+
+export type UserUpsertWithoutSubjectFeedItemsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutSubjectFeedItemsInput, Prisma.UserUncheckedUpdateWithoutSubjectFeedItemsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutSubjectFeedItemsInput, Prisma.UserUncheckedCreateWithoutSubjectFeedItemsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutSubjectFeedItemsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutSubjectFeedItemsInput, Prisma.UserUncheckedUpdateWithoutSubjectFeedItemsInput>
+}
+
+export type UserUpdateWithoutSubjectFeedItemsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdGroups?: Prisma.GroupUpdateManyWithoutCreatedByNestedInput
+  memberships?: Prisma.GroupMemberUpdateManyWithoutUserNestedInput
+  createdInvites?: Prisma.GroupInviteUpdateManyWithoutCreatedByNestedInput
+  actorFeedItems?: Prisma.FeedItemUpdateManyWithoutActorUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutSubjectFeedItemsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdGroups?: Prisma.GroupUncheckedUpdateManyWithoutCreatedByNestedInput
+  memberships?: Prisma.GroupMemberUncheckedUpdateManyWithoutUserNestedInput
+  createdInvites?: Prisma.GroupInviteUncheckedUpdateManyWithoutCreatedByNestedInput
+  actorFeedItems?: Prisma.FeedItemUncheckedUpdateManyWithoutActorUserNestedInput
 }
 
 
@@ -734,14 +845,16 @@ export type UserCountOutputType = {
   createdGroups: number
   memberships: number
   createdInvites: number
-  feedItems: number
+  actorFeedItems: number
+  subjectFeedItems: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   createdGroups?: boolean | UserCountOutputTypeCountCreatedGroupsArgs
   memberships?: boolean | UserCountOutputTypeCountMembershipsArgs
   createdInvites?: boolean | UserCountOutputTypeCountCreatedInvitesArgs
-  feedItems?: boolean | UserCountOutputTypeCountFeedItemsArgs
+  actorFeedItems?: boolean | UserCountOutputTypeCountActorFeedItemsArgs
+  subjectFeedItems?: boolean | UserCountOutputTypeCountSubjectFeedItemsArgs
 }
 
 /**
@@ -778,7 +891,14 @@ export type UserCountOutputTypeCountCreatedInvitesArgs<ExtArgs extends runtime.T
 /**
  * UserCountOutputType without action
  */
-export type UserCountOutputTypeCountFeedItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type UserCountOutputTypeCountActorFeedItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.FeedItemWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountSubjectFeedItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.FeedItemWhereInput
 }
 
@@ -794,7 +914,8 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   createdGroups?: boolean | Prisma.User$createdGroupsArgs<ExtArgs>
   memberships?: boolean | Prisma.User$membershipsArgs<ExtArgs>
   createdInvites?: boolean | Prisma.User$createdInvitesArgs<ExtArgs>
-  feedItems?: boolean | Prisma.User$feedItemsArgs<ExtArgs>
+  actorFeedItems?: boolean | Prisma.User$actorFeedItemsArgs<ExtArgs>
+  subjectFeedItems?: boolean | Prisma.User$subjectFeedItemsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -833,7 +954,8 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   createdGroups?: boolean | Prisma.User$createdGroupsArgs<ExtArgs>
   memberships?: boolean | Prisma.User$membershipsArgs<ExtArgs>
   createdInvites?: boolean | Prisma.User$createdInvitesArgs<ExtArgs>
-  feedItems?: boolean | Prisma.User$feedItemsArgs<ExtArgs>
+  actorFeedItems?: boolean | Prisma.User$actorFeedItemsArgs<ExtArgs>
+  subjectFeedItems?: boolean | Prisma.User$subjectFeedItemsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -845,7 +967,8 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     createdGroups: Prisma.$GroupPayload<ExtArgs>[]
     memberships: Prisma.$GroupMemberPayload<ExtArgs>[]
     createdInvites: Prisma.$GroupInvitePayload<ExtArgs>[]
-    feedItems: Prisma.$FeedItemPayload<ExtArgs>[]
+    actorFeedItems: Prisma.$FeedItemPayload<ExtArgs>[]
+    subjectFeedItems: Prisma.$FeedItemPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1252,7 +1375,8 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   createdGroups<T extends Prisma.User$createdGroupsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$createdGroupsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$GroupPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   memberships<T extends Prisma.User$membershipsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$membershipsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$GroupMemberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   createdInvites<T extends Prisma.User$createdInvitesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$createdInvitesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$GroupInvitePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  feedItems<T extends Prisma.User$feedItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$feedItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FeedItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  actorFeedItems<T extends Prisma.User$actorFeedItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$actorFeedItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FeedItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  subjectFeedItems<T extends Prisma.User$subjectFeedItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$subjectFeedItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FeedItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1754,9 +1878,33 @@ export type User$createdInvitesArgs<ExtArgs extends runtime.Types.Extensions.Int
 }
 
 /**
- * User.feedItems
+ * User.actorFeedItems
  */
-export type User$feedItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type User$actorFeedItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the FeedItem
+   */
+  select?: Prisma.FeedItemSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the FeedItem
+   */
+  omit?: Prisma.FeedItemOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.FeedItemInclude<ExtArgs> | null
+  where?: Prisma.FeedItemWhereInput
+  orderBy?: Prisma.FeedItemOrderByWithRelationInput | Prisma.FeedItemOrderByWithRelationInput[]
+  cursor?: Prisma.FeedItemWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.FeedItemScalarFieldEnum | Prisma.FeedItemScalarFieldEnum[]
+}
+
+/**
+ * User.subjectFeedItems
+ */
+export type User$subjectFeedItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
    * Select specific fields to fetch from the FeedItem
    */

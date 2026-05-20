@@ -37,9 +37,12 @@ export type FeedItemSumAggregateOutputType = {
 export type FeedItemMinAggregateOutputType = {
   id: string | null
   type: $Enums.FeedItemType | null
+  scope: $Enums.FeedItemScope | null
+  visibility: $Enums.FeedItemVisibility | null
   groupId: string | null
   actorUserId: string | null
   actorGroupMemberId: string | null
+  subjectUserId: string | null
   matchId: string | null
   importanceScore: number | null
   occurredAt: Date | null
@@ -49,9 +52,12 @@ export type FeedItemMinAggregateOutputType = {
 export type FeedItemMaxAggregateOutputType = {
   id: string | null
   type: $Enums.FeedItemType | null
+  scope: $Enums.FeedItemScope | null
+  visibility: $Enums.FeedItemVisibility | null
   groupId: string | null
   actorUserId: string | null
   actorGroupMemberId: string | null
+  subjectUserId: string | null
   matchId: string | null
   importanceScore: number | null
   occurredAt: Date | null
@@ -61,9 +67,12 @@ export type FeedItemMaxAggregateOutputType = {
 export type FeedItemCountAggregateOutputType = {
   id: number
   type: number
+  scope: number
+  visibility: number
   groupId: number
   actorUserId: number
   actorGroupMemberId: number
+  subjectUserId: number
   matchId: number
   importanceScore: number
   metadata: number
@@ -84,9 +93,12 @@ export type FeedItemSumAggregateInputType = {
 export type FeedItemMinAggregateInputType = {
   id?: true
   type?: true
+  scope?: true
+  visibility?: true
   groupId?: true
   actorUserId?: true
   actorGroupMemberId?: true
+  subjectUserId?: true
   matchId?: true
   importanceScore?: true
   occurredAt?: true
@@ -96,9 +108,12 @@ export type FeedItemMinAggregateInputType = {
 export type FeedItemMaxAggregateInputType = {
   id?: true
   type?: true
+  scope?: true
+  visibility?: true
   groupId?: true
   actorUserId?: true
   actorGroupMemberId?: true
+  subjectUserId?: true
   matchId?: true
   importanceScore?: true
   occurredAt?: true
@@ -108,9 +123,12 @@ export type FeedItemMaxAggregateInputType = {
 export type FeedItemCountAggregateInputType = {
   id?: true
   type?: true
+  scope?: true
+  visibility?: true
   groupId?: true
   actorUserId?: true
   actorGroupMemberId?: true
+  subjectUserId?: true
   matchId?: true
   importanceScore?: true
   metadata?: true
@@ -208,9 +226,12 @@ export type FeedItemGroupByArgs<ExtArgs extends runtime.Types.Extensions.Interna
 export type FeedItemGroupByOutputType = {
   id: string
   type: $Enums.FeedItemType
-  groupId: string
+  scope: $Enums.FeedItemScope
+  visibility: $Enums.FeedItemVisibility
+  groupId: string | null
   actorUserId: string | null
   actorGroupMemberId: string | null
+  subjectUserId: string | null
   matchId: string | null
   importanceScore: number
   metadata: runtime.JsonValue
@@ -244,26 +265,33 @@ export type FeedItemWhereInput = {
   NOT?: Prisma.FeedItemWhereInput | Prisma.FeedItemWhereInput[]
   id?: Prisma.StringFilter<"FeedItem"> | string
   type?: Prisma.EnumFeedItemTypeFilter<"FeedItem"> | $Enums.FeedItemType
-  groupId?: Prisma.StringFilter<"FeedItem"> | string
+  scope?: Prisma.EnumFeedItemScopeFilter<"FeedItem"> | $Enums.FeedItemScope
+  visibility?: Prisma.EnumFeedItemVisibilityFilter<"FeedItem"> | $Enums.FeedItemVisibility
+  groupId?: Prisma.StringNullableFilter<"FeedItem"> | string | null
   actorUserId?: Prisma.StringNullableFilter<"FeedItem"> | string | null
   actorGroupMemberId?: Prisma.StringNullableFilter<"FeedItem"> | string | null
+  subjectUserId?: Prisma.StringNullableFilter<"FeedItem"> | string | null
   matchId?: Prisma.StringNullableFilter<"FeedItem"> | string | null
   importanceScore?: Prisma.IntFilter<"FeedItem"> | number
   metadata?: Prisma.JsonFilter<"FeedItem">
   occurredAt?: Prisma.DateTimeFilter<"FeedItem"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"FeedItem"> | Date | string
-  group?: Prisma.XOR<Prisma.GroupScalarRelationFilter, Prisma.GroupWhereInput>
+  group?: Prisma.XOR<Prisma.GroupNullableScalarRelationFilter, Prisma.GroupWhereInput> | null
   actorUser?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   actorGroupMember?: Prisma.XOR<Prisma.GroupMemberNullableScalarRelationFilter, Prisma.GroupMemberWhereInput> | null
+  subjectUser?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   match?: Prisma.XOR<Prisma.MatchNullableScalarRelationFilter, Prisma.MatchWhereInput> | null
 }
 
 export type FeedItemOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   type?: Prisma.SortOrder
-  groupId?: Prisma.SortOrder
+  scope?: Prisma.SortOrder
+  visibility?: Prisma.SortOrder
+  groupId?: Prisma.SortOrderInput | Prisma.SortOrder
   actorUserId?: Prisma.SortOrderInput | Prisma.SortOrder
   actorGroupMemberId?: Prisma.SortOrderInput | Prisma.SortOrder
+  subjectUserId?: Prisma.SortOrderInput | Prisma.SortOrder
   matchId?: Prisma.SortOrderInput | Prisma.SortOrder
   importanceScore?: Prisma.SortOrder
   metadata?: Prisma.SortOrder
@@ -272,6 +300,7 @@ export type FeedItemOrderByWithRelationInput = {
   group?: Prisma.GroupOrderByWithRelationInput
   actorUser?: Prisma.UserOrderByWithRelationInput
   actorGroupMember?: Prisma.GroupMemberOrderByWithRelationInput
+  subjectUser?: Prisma.UserOrderByWithRelationInput
   match?: Prisma.MatchOrderByWithRelationInput
 }
 
@@ -282,26 +311,33 @@ export type FeedItemWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.FeedItemWhereInput[]
   NOT?: Prisma.FeedItemWhereInput | Prisma.FeedItemWhereInput[]
   type?: Prisma.EnumFeedItemTypeFilter<"FeedItem"> | $Enums.FeedItemType
-  groupId?: Prisma.StringFilter<"FeedItem"> | string
+  scope?: Prisma.EnumFeedItemScopeFilter<"FeedItem"> | $Enums.FeedItemScope
+  visibility?: Prisma.EnumFeedItemVisibilityFilter<"FeedItem"> | $Enums.FeedItemVisibility
+  groupId?: Prisma.StringNullableFilter<"FeedItem"> | string | null
   actorUserId?: Prisma.StringNullableFilter<"FeedItem"> | string | null
   actorGroupMemberId?: Prisma.StringNullableFilter<"FeedItem"> | string | null
+  subjectUserId?: Prisma.StringNullableFilter<"FeedItem"> | string | null
   matchId?: Prisma.StringNullableFilter<"FeedItem"> | string | null
   importanceScore?: Prisma.IntFilter<"FeedItem"> | number
   metadata?: Prisma.JsonFilter<"FeedItem">
   occurredAt?: Prisma.DateTimeFilter<"FeedItem"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"FeedItem"> | Date | string
-  group?: Prisma.XOR<Prisma.GroupScalarRelationFilter, Prisma.GroupWhereInput>
+  group?: Prisma.XOR<Prisma.GroupNullableScalarRelationFilter, Prisma.GroupWhereInput> | null
   actorUser?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   actorGroupMember?: Prisma.XOR<Prisma.GroupMemberNullableScalarRelationFilter, Prisma.GroupMemberWhereInput> | null
+  subjectUser?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   match?: Prisma.XOR<Prisma.MatchNullableScalarRelationFilter, Prisma.MatchWhereInput> | null
 }, "id" | "type_matchId">
 
 export type FeedItemOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   type?: Prisma.SortOrder
-  groupId?: Prisma.SortOrder
+  scope?: Prisma.SortOrder
+  visibility?: Prisma.SortOrder
+  groupId?: Prisma.SortOrderInput | Prisma.SortOrder
   actorUserId?: Prisma.SortOrderInput | Prisma.SortOrder
   actorGroupMemberId?: Prisma.SortOrderInput | Prisma.SortOrder
+  subjectUserId?: Prisma.SortOrderInput | Prisma.SortOrder
   matchId?: Prisma.SortOrderInput | Prisma.SortOrder
   importanceScore?: Prisma.SortOrder
   metadata?: Prisma.SortOrder
@@ -320,9 +356,12 @@ export type FeedItemScalarWhereWithAggregatesInput = {
   NOT?: Prisma.FeedItemScalarWhereWithAggregatesInput | Prisma.FeedItemScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"FeedItem"> | string
   type?: Prisma.EnumFeedItemTypeWithAggregatesFilter<"FeedItem"> | $Enums.FeedItemType
-  groupId?: Prisma.StringWithAggregatesFilter<"FeedItem"> | string
+  scope?: Prisma.EnumFeedItemScopeWithAggregatesFilter<"FeedItem"> | $Enums.FeedItemScope
+  visibility?: Prisma.EnumFeedItemVisibilityWithAggregatesFilter<"FeedItem"> | $Enums.FeedItemVisibility
+  groupId?: Prisma.StringNullableWithAggregatesFilter<"FeedItem"> | string | null
   actorUserId?: Prisma.StringNullableWithAggregatesFilter<"FeedItem"> | string | null
   actorGroupMemberId?: Prisma.StringNullableWithAggregatesFilter<"FeedItem"> | string | null
+  subjectUserId?: Prisma.StringNullableWithAggregatesFilter<"FeedItem"> | string | null
   matchId?: Prisma.StringNullableWithAggregatesFilter<"FeedItem"> | string | null
   importanceScore?: Prisma.IntWithAggregatesFilter<"FeedItem"> | number
   metadata?: Prisma.JsonWithAggregatesFilter<"FeedItem">
@@ -333,22 +372,28 @@ export type FeedItemScalarWhereWithAggregatesInput = {
 export type FeedItemCreateInput = {
   id?: string
   type: $Enums.FeedItemType
+  scope: $Enums.FeedItemScope
+  visibility: $Enums.FeedItemVisibility
   importanceScore?: number
   metadata: Prisma.JsonNullValueInput | runtime.InputJsonValue
   occurredAt: Date | string
   createdAt?: Date | string
-  group: Prisma.GroupCreateNestedOneWithoutFeedItemsInput
-  actorUser?: Prisma.UserCreateNestedOneWithoutFeedItemsInput
-  actorGroupMember?: Prisma.GroupMemberCreateNestedOneWithoutFeedItemsInput
+  group?: Prisma.GroupCreateNestedOneWithoutFeedItemsInput
+  actorUser?: Prisma.UserCreateNestedOneWithoutActorFeedItemsInput
+  actorGroupMember?: Prisma.GroupMemberCreateNestedOneWithoutActorFeedItemsInput
+  subjectUser?: Prisma.UserCreateNestedOneWithoutSubjectFeedItemsInput
   match?: Prisma.MatchCreateNestedOneWithoutFeedItemsInput
 }
 
 export type FeedItemUncheckedCreateInput = {
   id?: string
   type: $Enums.FeedItemType
-  groupId: string
+  scope: $Enums.FeedItemScope
+  visibility: $Enums.FeedItemVisibility
+  groupId?: string | null
   actorUserId?: string | null
   actorGroupMemberId?: string | null
+  subjectUserId?: string | null
   matchId?: string | null
   importanceScore?: number
   metadata: Prisma.JsonNullValueInput | runtime.InputJsonValue
@@ -359,22 +404,28 @@ export type FeedItemUncheckedCreateInput = {
 export type FeedItemUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumFeedItemTypeFieldUpdateOperationsInput | $Enums.FeedItemType
+  scope?: Prisma.EnumFeedItemScopeFieldUpdateOperationsInput | $Enums.FeedItemScope
+  visibility?: Prisma.EnumFeedItemVisibilityFieldUpdateOperationsInput | $Enums.FeedItemVisibility
   importanceScore?: Prisma.IntFieldUpdateOperationsInput | number
   metadata?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   occurredAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  group?: Prisma.GroupUpdateOneRequiredWithoutFeedItemsNestedInput
-  actorUser?: Prisma.UserUpdateOneWithoutFeedItemsNestedInput
-  actorGroupMember?: Prisma.GroupMemberUpdateOneWithoutFeedItemsNestedInput
+  group?: Prisma.GroupUpdateOneWithoutFeedItemsNestedInput
+  actorUser?: Prisma.UserUpdateOneWithoutActorFeedItemsNestedInput
+  actorGroupMember?: Prisma.GroupMemberUpdateOneWithoutActorFeedItemsNestedInput
+  subjectUser?: Prisma.UserUpdateOneWithoutSubjectFeedItemsNestedInput
   match?: Prisma.MatchUpdateOneWithoutFeedItemsNestedInput
 }
 
 export type FeedItemUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumFeedItemTypeFieldUpdateOperationsInput | $Enums.FeedItemType
-  groupId?: Prisma.StringFieldUpdateOperationsInput | string
+  scope?: Prisma.EnumFeedItemScopeFieldUpdateOperationsInput | $Enums.FeedItemScope
+  visibility?: Prisma.EnumFeedItemVisibilityFieldUpdateOperationsInput | $Enums.FeedItemVisibility
+  groupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   actorUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   actorGroupMemberId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subjectUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   matchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   importanceScore?: Prisma.IntFieldUpdateOperationsInput | number
   metadata?: Prisma.JsonNullValueInput | runtime.InputJsonValue
@@ -385,9 +436,12 @@ export type FeedItemUncheckedUpdateInput = {
 export type FeedItemCreateManyInput = {
   id?: string
   type: $Enums.FeedItemType
-  groupId: string
+  scope: $Enums.FeedItemScope
+  visibility: $Enums.FeedItemVisibility
+  groupId?: string | null
   actorUserId?: string | null
   actorGroupMemberId?: string | null
+  subjectUserId?: string | null
   matchId?: string | null
   importanceScore?: number
   metadata: Prisma.JsonNullValueInput | runtime.InputJsonValue
@@ -398,6 +452,8 @@ export type FeedItemCreateManyInput = {
 export type FeedItemUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumFeedItemTypeFieldUpdateOperationsInput | $Enums.FeedItemType
+  scope?: Prisma.EnumFeedItemScopeFieldUpdateOperationsInput | $Enums.FeedItemScope
+  visibility?: Prisma.EnumFeedItemVisibilityFieldUpdateOperationsInput | $Enums.FeedItemVisibility
   importanceScore?: Prisma.IntFieldUpdateOperationsInput | number
   metadata?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   occurredAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -407,9 +463,12 @@ export type FeedItemUpdateManyMutationInput = {
 export type FeedItemUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumFeedItemTypeFieldUpdateOperationsInput | $Enums.FeedItemType
-  groupId?: Prisma.StringFieldUpdateOperationsInput | string
+  scope?: Prisma.EnumFeedItemScopeFieldUpdateOperationsInput | $Enums.FeedItemScope
+  visibility?: Prisma.EnumFeedItemVisibilityFieldUpdateOperationsInput | $Enums.FeedItemVisibility
+  groupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   actorUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   actorGroupMemberId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subjectUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   matchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   importanceScore?: Prisma.IntFieldUpdateOperationsInput | number
   metadata?: Prisma.JsonNullValueInput | runtime.InputJsonValue
@@ -435,9 +494,12 @@ export type FeedItemTypeMatchIdCompoundUniqueInput = {
 export type FeedItemCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   type?: Prisma.SortOrder
+  scope?: Prisma.SortOrder
+  visibility?: Prisma.SortOrder
   groupId?: Prisma.SortOrder
   actorUserId?: Prisma.SortOrder
   actorGroupMemberId?: Prisma.SortOrder
+  subjectUserId?: Prisma.SortOrder
   matchId?: Prisma.SortOrder
   importanceScore?: Prisma.SortOrder
   metadata?: Prisma.SortOrder
@@ -452,9 +514,12 @@ export type FeedItemAvgOrderByAggregateInput = {
 export type FeedItemMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   type?: Prisma.SortOrder
+  scope?: Prisma.SortOrder
+  visibility?: Prisma.SortOrder
   groupId?: Prisma.SortOrder
   actorUserId?: Prisma.SortOrder
   actorGroupMemberId?: Prisma.SortOrder
+  subjectUserId?: Prisma.SortOrder
   matchId?: Prisma.SortOrder
   importanceScore?: Prisma.SortOrder
   occurredAt?: Prisma.SortOrder
@@ -464,9 +529,12 @@ export type FeedItemMaxOrderByAggregateInput = {
 export type FeedItemMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   type?: Prisma.SortOrder
+  scope?: Prisma.SortOrder
+  visibility?: Prisma.SortOrder
   groupId?: Prisma.SortOrder
   actorUserId?: Prisma.SortOrder
   actorGroupMemberId?: Prisma.SortOrder
+  subjectUserId?: Prisma.SortOrder
   matchId?: Prisma.SortOrder
   importanceScore?: Prisma.SortOrder
   occurredAt?: Prisma.SortOrder
@@ -484,10 +552,24 @@ export type FeedItemCreateNestedManyWithoutActorUserInput = {
   connect?: Prisma.FeedItemWhereUniqueInput | Prisma.FeedItemWhereUniqueInput[]
 }
 
+export type FeedItemCreateNestedManyWithoutSubjectUserInput = {
+  create?: Prisma.XOR<Prisma.FeedItemCreateWithoutSubjectUserInput, Prisma.FeedItemUncheckedCreateWithoutSubjectUserInput> | Prisma.FeedItemCreateWithoutSubjectUserInput[] | Prisma.FeedItemUncheckedCreateWithoutSubjectUserInput[]
+  connectOrCreate?: Prisma.FeedItemCreateOrConnectWithoutSubjectUserInput | Prisma.FeedItemCreateOrConnectWithoutSubjectUserInput[]
+  createMany?: Prisma.FeedItemCreateManySubjectUserInputEnvelope
+  connect?: Prisma.FeedItemWhereUniqueInput | Prisma.FeedItemWhereUniqueInput[]
+}
+
 export type FeedItemUncheckedCreateNestedManyWithoutActorUserInput = {
   create?: Prisma.XOR<Prisma.FeedItemCreateWithoutActorUserInput, Prisma.FeedItemUncheckedCreateWithoutActorUserInput> | Prisma.FeedItemCreateWithoutActorUserInput[] | Prisma.FeedItemUncheckedCreateWithoutActorUserInput[]
   connectOrCreate?: Prisma.FeedItemCreateOrConnectWithoutActorUserInput | Prisma.FeedItemCreateOrConnectWithoutActorUserInput[]
   createMany?: Prisma.FeedItemCreateManyActorUserInputEnvelope
+  connect?: Prisma.FeedItemWhereUniqueInput | Prisma.FeedItemWhereUniqueInput[]
+}
+
+export type FeedItemUncheckedCreateNestedManyWithoutSubjectUserInput = {
+  create?: Prisma.XOR<Prisma.FeedItemCreateWithoutSubjectUserInput, Prisma.FeedItemUncheckedCreateWithoutSubjectUserInput> | Prisma.FeedItemCreateWithoutSubjectUserInput[] | Prisma.FeedItemUncheckedCreateWithoutSubjectUserInput[]
+  connectOrCreate?: Prisma.FeedItemCreateOrConnectWithoutSubjectUserInput | Prisma.FeedItemCreateOrConnectWithoutSubjectUserInput[]
+  createMany?: Prisma.FeedItemCreateManySubjectUserInputEnvelope
   connect?: Prisma.FeedItemWhereUniqueInput | Prisma.FeedItemWhereUniqueInput[]
 }
 
@@ -505,6 +587,20 @@ export type FeedItemUpdateManyWithoutActorUserNestedInput = {
   deleteMany?: Prisma.FeedItemScalarWhereInput | Prisma.FeedItemScalarWhereInput[]
 }
 
+export type FeedItemUpdateManyWithoutSubjectUserNestedInput = {
+  create?: Prisma.XOR<Prisma.FeedItemCreateWithoutSubjectUserInput, Prisma.FeedItemUncheckedCreateWithoutSubjectUserInput> | Prisma.FeedItemCreateWithoutSubjectUserInput[] | Prisma.FeedItemUncheckedCreateWithoutSubjectUserInput[]
+  connectOrCreate?: Prisma.FeedItemCreateOrConnectWithoutSubjectUserInput | Prisma.FeedItemCreateOrConnectWithoutSubjectUserInput[]
+  upsert?: Prisma.FeedItemUpsertWithWhereUniqueWithoutSubjectUserInput | Prisma.FeedItemUpsertWithWhereUniqueWithoutSubjectUserInput[]
+  createMany?: Prisma.FeedItemCreateManySubjectUserInputEnvelope
+  set?: Prisma.FeedItemWhereUniqueInput | Prisma.FeedItemWhereUniqueInput[]
+  disconnect?: Prisma.FeedItemWhereUniqueInput | Prisma.FeedItemWhereUniqueInput[]
+  delete?: Prisma.FeedItemWhereUniqueInput | Prisma.FeedItemWhereUniqueInput[]
+  connect?: Prisma.FeedItemWhereUniqueInput | Prisma.FeedItemWhereUniqueInput[]
+  update?: Prisma.FeedItemUpdateWithWhereUniqueWithoutSubjectUserInput | Prisma.FeedItemUpdateWithWhereUniqueWithoutSubjectUserInput[]
+  updateMany?: Prisma.FeedItemUpdateManyWithWhereWithoutSubjectUserInput | Prisma.FeedItemUpdateManyWithWhereWithoutSubjectUserInput[]
+  deleteMany?: Prisma.FeedItemScalarWhereInput | Prisma.FeedItemScalarWhereInput[]
+}
+
 export type FeedItemUncheckedUpdateManyWithoutActorUserNestedInput = {
   create?: Prisma.XOR<Prisma.FeedItemCreateWithoutActorUserInput, Prisma.FeedItemUncheckedCreateWithoutActorUserInput> | Prisma.FeedItemCreateWithoutActorUserInput[] | Prisma.FeedItemUncheckedCreateWithoutActorUserInput[]
   connectOrCreate?: Prisma.FeedItemCreateOrConnectWithoutActorUserInput | Prisma.FeedItemCreateOrConnectWithoutActorUserInput[]
@@ -516,6 +612,20 @@ export type FeedItemUncheckedUpdateManyWithoutActorUserNestedInput = {
   connect?: Prisma.FeedItemWhereUniqueInput | Prisma.FeedItemWhereUniqueInput[]
   update?: Prisma.FeedItemUpdateWithWhereUniqueWithoutActorUserInput | Prisma.FeedItemUpdateWithWhereUniqueWithoutActorUserInput[]
   updateMany?: Prisma.FeedItemUpdateManyWithWhereWithoutActorUserInput | Prisma.FeedItemUpdateManyWithWhereWithoutActorUserInput[]
+  deleteMany?: Prisma.FeedItemScalarWhereInput | Prisma.FeedItemScalarWhereInput[]
+}
+
+export type FeedItemUncheckedUpdateManyWithoutSubjectUserNestedInput = {
+  create?: Prisma.XOR<Prisma.FeedItemCreateWithoutSubjectUserInput, Prisma.FeedItemUncheckedCreateWithoutSubjectUserInput> | Prisma.FeedItemCreateWithoutSubjectUserInput[] | Prisma.FeedItemUncheckedCreateWithoutSubjectUserInput[]
+  connectOrCreate?: Prisma.FeedItemCreateOrConnectWithoutSubjectUserInput | Prisma.FeedItemCreateOrConnectWithoutSubjectUserInput[]
+  upsert?: Prisma.FeedItemUpsertWithWhereUniqueWithoutSubjectUserInput | Prisma.FeedItemUpsertWithWhereUniqueWithoutSubjectUserInput[]
+  createMany?: Prisma.FeedItemCreateManySubjectUserInputEnvelope
+  set?: Prisma.FeedItemWhereUniqueInput | Prisma.FeedItemWhereUniqueInput[]
+  disconnect?: Prisma.FeedItemWhereUniqueInput | Prisma.FeedItemWhereUniqueInput[]
+  delete?: Prisma.FeedItemWhereUniqueInput | Prisma.FeedItemWhereUniqueInput[]
+  connect?: Prisma.FeedItemWhereUniqueInput | Prisma.FeedItemWhereUniqueInput[]
+  update?: Prisma.FeedItemUpdateWithWhereUniqueWithoutSubjectUserInput | Prisma.FeedItemUpdateWithWhereUniqueWithoutSubjectUserInput[]
+  updateMany?: Prisma.FeedItemUpdateManyWithWhereWithoutSubjectUserInput | Prisma.FeedItemUpdateManyWithWhereWithoutSubjectUserInput[]
   deleteMany?: Prisma.FeedItemScalarWhereInput | Prisma.FeedItemScalarWhereInput[]
 }
 
@@ -649,23 +759,37 @@ export type EnumFeedItemTypeFieldUpdateOperationsInput = {
   set?: $Enums.FeedItemType
 }
 
+export type EnumFeedItemScopeFieldUpdateOperationsInput = {
+  set?: $Enums.FeedItemScope
+}
+
+export type EnumFeedItemVisibilityFieldUpdateOperationsInput = {
+  set?: $Enums.FeedItemVisibility
+}
+
 export type FeedItemCreateWithoutActorUserInput = {
   id?: string
   type: $Enums.FeedItemType
+  scope: $Enums.FeedItemScope
+  visibility: $Enums.FeedItemVisibility
   importanceScore?: number
   metadata: Prisma.JsonNullValueInput | runtime.InputJsonValue
   occurredAt: Date | string
   createdAt?: Date | string
-  group: Prisma.GroupCreateNestedOneWithoutFeedItemsInput
-  actorGroupMember?: Prisma.GroupMemberCreateNestedOneWithoutFeedItemsInput
+  group?: Prisma.GroupCreateNestedOneWithoutFeedItemsInput
+  actorGroupMember?: Prisma.GroupMemberCreateNestedOneWithoutActorFeedItemsInput
+  subjectUser?: Prisma.UserCreateNestedOneWithoutSubjectFeedItemsInput
   match?: Prisma.MatchCreateNestedOneWithoutFeedItemsInput
 }
 
 export type FeedItemUncheckedCreateWithoutActorUserInput = {
   id?: string
   type: $Enums.FeedItemType
-  groupId: string
+  scope: $Enums.FeedItemScope
+  visibility: $Enums.FeedItemVisibility
+  groupId?: string | null
   actorGroupMemberId?: string | null
+  subjectUserId?: string | null
   matchId?: string | null
   importanceScore?: number
   metadata: Prisma.JsonNullValueInput | runtime.InputJsonValue
@@ -680,6 +804,46 @@ export type FeedItemCreateOrConnectWithoutActorUserInput = {
 
 export type FeedItemCreateManyActorUserInputEnvelope = {
   data: Prisma.FeedItemCreateManyActorUserInput | Prisma.FeedItemCreateManyActorUserInput[]
+  skipDuplicates?: boolean
+}
+
+export type FeedItemCreateWithoutSubjectUserInput = {
+  id?: string
+  type: $Enums.FeedItemType
+  scope: $Enums.FeedItemScope
+  visibility: $Enums.FeedItemVisibility
+  importanceScore?: number
+  metadata: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  occurredAt: Date | string
+  createdAt?: Date | string
+  group?: Prisma.GroupCreateNestedOneWithoutFeedItemsInput
+  actorUser?: Prisma.UserCreateNestedOneWithoutActorFeedItemsInput
+  actorGroupMember?: Prisma.GroupMemberCreateNestedOneWithoutActorFeedItemsInput
+  match?: Prisma.MatchCreateNestedOneWithoutFeedItemsInput
+}
+
+export type FeedItemUncheckedCreateWithoutSubjectUserInput = {
+  id?: string
+  type: $Enums.FeedItemType
+  scope: $Enums.FeedItemScope
+  visibility: $Enums.FeedItemVisibility
+  groupId?: string | null
+  actorUserId?: string | null
+  actorGroupMemberId?: string | null
+  matchId?: string | null
+  importanceScore?: number
+  metadata: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  occurredAt: Date | string
+  createdAt?: Date | string
+}
+
+export type FeedItemCreateOrConnectWithoutSubjectUserInput = {
+  where: Prisma.FeedItemWhereUniqueInput
+  create: Prisma.XOR<Prisma.FeedItemCreateWithoutSubjectUserInput, Prisma.FeedItemUncheckedCreateWithoutSubjectUserInput>
+}
+
+export type FeedItemCreateManySubjectUserInputEnvelope = {
+  data: Prisma.FeedItemCreateManySubjectUserInput | Prisma.FeedItemCreateManySubjectUserInput[]
   skipDuplicates?: boolean
 }
 
@@ -705,9 +869,12 @@ export type FeedItemScalarWhereInput = {
   NOT?: Prisma.FeedItemScalarWhereInput | Prisma.FeedItemScalarWhereInput[]
   id?: Prisma.StringFilter<"FeedItem"> | string
   type?: Prisma.EnumFeedItemTypeFilter<"FeedItem"> | $Enums.FeedItemType
-  groupId?: Prisma.StringFilter<"FeedItem"> | string
+  scope?: Prisma.EnumFeedItemScopeFilter<"FeedItem"> | $Enums.FeedItemScope
+  visibility?: Prisma.EnumFeedItemVisibilityFilter<"FeedItem"> | $Enums.FeedItemVisibility
+  groupId?: Prisma.StringNullableFilter<"FeedItem"> | string | null
   actorUserId?: Prisma.StringNullableFilter<"FeedItem"> | string | null
   actorGroupMemberId?: Prisma.StringNullableFilter<"FeedItem"> | string | null
+  subjectUserId?: Prisma.StringNullableFilter<"FeedItem"> | string | null
   matchId?: Prisma.StringNullableFilter<"FeedItem"> | string | null
   importanceScore?: Prisma.IntFilter<"FeedItem"> | number
   metadata?: Prisma.JsonFilter<"FeedItem">
@@ -715,23 +882,45 @@ export type FeedItemScalarWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"FeedItem"> | Date | string
 }
 
+export type FeedItemUpsertWithWhereUniqueWithoutSubjectUserInput = {
+  where: Prisma.FeedItemWhereUniqueInput
+  update: Prisma.XOR<Prisma.FeedItemUpdateWithoutSubjectUserInput, Prisma.FeedItemUncheckedUpdateWithoutSubjectUserInput>
+  create: Prisma.XOR<Prisma.FeedItemCreateWithoutSubjectUserInput, Prisma.FeedItemUncheckedCreateWithoutSubjectUserInput>
+}
+
+export type FeedItemUpdateWithWhereUniqueWithoutSubjectUserInput = {
+  where: Prisma.FeedItemWhereUniqueInput
+  data: Prisma.XOR<Prisma.FeedItemUpdateWithoutSubjectUserInput, Prisma.FeedItemUncheckedUpdateWithoutSubjectUserInput>
+}
+
+export type FeedItemUpdateManyWithWhereWithoutSubjectUserInput = {
+  where: Prisma.FeedItemScalarWhereInput
+  data: Prisma.XOR<Prisma.FeedItemUpdateManyMutationInput, Prisma.FeedItemUncheckedUpdateManyWithoutSubjectUserInput>
+}
+
 export type FeedItemCreateWithoutGroupInput = {
   id?: string
   type: $Enums.FeedItemType
+  scope: $Enums.FeedItemScope
+  visibility: $Enums.FeedItemVisibility
   importanceScore?: number
   metadata: Prisma.JsonNullValueInput | runtime.InputJsonValue
   occurredAt: Date | string
   createdAt?: Date | string
-  actorUser?: Prisma.UserCreateNestedOneWithoutFeedItemsInput
-  actorGroupMember?: Prisma.GroupMemberCreateNestedOneWithoutFeedItemsInput
+  actorUser?: Prisma.UserCreateNestedOneWithoutActorFeedItemsInput
+  actorGroupMember?: Prisma.GroupMemberCreateNestedOneWithoutActorFeedItemsInput
+  subjectUser?: Prisma.UserCreateNestedOneWithoutSubjectFeedItemsInput
   match?: Prisma.MatchCreateNestedOneWithoutFeedItemsInput
 }
 
 export type FeedItemUncheckedCreateWithoutGroupInput = {
   id?: string
   type: $Enums.FeedItemType
+  scope: $Enums.FeedItemScope
+  visibility: $Enums.FeedItemVisibility
   actorUserId?: string | null
   actorGroupMemberId?: string | null
+  subjectUserId?: string | null
   matchId?: string | null
   importanceScore?: number
   metadata: Prisma.JsonNullValueInput | runtime.InputJsonValue
@@ -768,19 +957,26 @@ export type FeedItemUpdateManyWithWhereWithoutGroupInput = {
 export type FeedItemCreateWithoutActorGroupMemberInput = {
   id?: string
   type: $Enums.FeedItemType
+  scope: $Enums.FeedItemScope
+  visibility: $Enums.FeedItemVisibility
   importanceScore?: number
   metadata: Prisma.JsonNullValueInput | runtime.InputJsonValue
   occurredAt: Date | string
   createdAt?: Date | string
-  group: Prisma.GroupCreateNestedOneWithoutFeedItemsInput
-  actorUser?: Prisma.UserCreateNestedOneWithoutFeedItemsInput
+  group?: Prisma.GroupCreateNestedOneWithoutFeedItemsInput
+  actorUser?: Prisma.UserCreateNestedOneWithoutActorFeedItemsInput
+  subjectUser?: Prisma.UserCreateNestedOneWithoutSubjectFeedItemsInput
   match?: Prisma.MatchCreateNestedOneWithoutFeedItemsInput
 }
 
 export type FeedItemUncheckedCreateWithoutActorGroupMemberInput = {
   id?: string
   type: $Enums.FeedItemType
+  scope: $Enums.FeedItemScope
+  visibility: $Enums.FeedItemVisibility
+  groupId?: string | null
   actorUserId?: string | null
+  subjectUserId?: string | null
   matchId?: string | null
   importanceScore?: number
   metadata: Prisma.JsonNullValueInput | runtime.InputJsonValue
@@ -817,20 +1013,27 @@ export type FeedItemUpdateManyWithWhereWithoutActorGroupMemberInput = {
 export type FeedItemCreateWithoutMatchInput = {
   id?: string
   type: $Enums.FeedItemType
+  scope: $Enums.FeedItemScope
+  visibility: $Enums.FeedItemVisibility
   importanceScore?: number
   metadata: Prisma.JsonNullValueInput | runtime.InputJsonValue
   occurredAt: Date | string
   createdAt?: Date | string
-  group: Prisma.GroupCreateNestedOneWithoutFeedItemsInput
-  actorUser?: Prisma.UserCreateNestedOneWithoutFeedItemsInput
-  actorGroupMember?: Prisma.GroupMemberCreateNestedOneWithoutFeedItemsInput
+  group?: Prisma.GroupCreateNestedOneWithoutFeedItemsInput
+  actorUser?: Prisma.UserCreateNestedOneWithoutActorFeedItemsInput
+  actorGroupMember?: Prisma.GroupMemberCreateNestedOneWithoutActorFeedItemsInput
+  subjectUser?: Prisma.UserCreateNestedOneWithoutSubjectFeedItemsInput
 }
 
 export type FeedItemUncheckedCreateWithoutMatchInput = {
   id?: string
   type: $Enums.FeedItemType
+  scope: $Enums.FeedItemScope
+  visibility: $Enums.FeedItemVisibility
+  groupId?: string | null
   actorUserId?: string | null
   actorGroupMemberId?: string | null
+  subjectUserId?: string | null
   importanceScore?: number
   metadata: Prisma.JsonNullValueInput | runtime.InputJsonValue
   occurredAt: Date | string
@@ -866,7 +1069,25 @@ export type FeedItemUpdateManyWithWhereWithoutMatchInput = {
 export type FeedItemCreateManyActorUserInput = {
   id?: string
   type: $Enums.FeedItemType
-  groupId: string
+  scope: $Enums.FeedItemScope
+  visibility: $Enums.FeedItemVisibility
+  groupId?: string | null
+  actorGroupMemberId?: string | null
+  subjectUserId?: string | null
+  matchId?: string | null
+  importanceScore?: number
+  metadata: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  occurredAt: Date | string
+  createdAt?: Date | string
+}
+
+export type FeedItemCreateManySubjectUserInput = {
+  id?: string
+  type: $Enums.FeedItemType
+  scope: $Enums.FeedItemScope
+  visibility: $Enums.FeedItemVisibility
+  groupId?: string | null
+  actorUserId?: string | null
   actorGroupMemberId?: string | null
   matchId?: string | null
   importanceScore?: number
@@ -878,20 +1099,26 @@ export type FeedItemCreateManyActorUserInput = {
 export type FeedItemUpdateWithoutActorUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumFeedItemTypeFieldUpdateOperationsInput | $Enums.FeedItemType
+  scope?: Prisma.EnumFeedItemScopeFieldUpdateOperationsInput | $Enums.FeedItemScope
+  visibility?: Prisma.EnumFeedItemVisibilityFieldUpdateOperationsInput | $Enums.FeedItemVisibility
   importanceScore?: Prisma.IntFieldUpdateOperationsInput | number
   metadata?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   occurredAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  group?: Prisma.GroupUpdateOneRequiredWithoutFeedItemsNestedInput
-  actorGroupMember?: Prisma.GroupMemberUpdateOneWithoutFeedItemsNestedInput
+  group?: Prisma.GroupUpdateOneWithoutFeedItemsNestedInput
+  actorGroupMember?: Prisma.GroupMemberUpdateOneWithoutActorFeedItemsNestedInput
+  subjectUser?: Prisma.UserUpdateOneWithoutSubjectFeedItemsNestedInput
   match?: Prisma.MatchUpdateOneWithoutFeedItemsNestedInput
 }
 
 export type FeedItemUncheckedUpdateWithoutActorUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumFeedItemTypeFieldUpdateOperationsInput | $Enums.FeedItemType
-  groupId?: Prisma.StringFieldUpdateOperationsInput | string
+  scope?: Prisma.EnumFeedItemScopeFieldUpdateOperationsInput | $Enums.FeedItemScope
+  visibility?: Prisma.EnumFeedItemVisibilityFieldUpdateOperationsInput | $Enums.FeedItemVisibility
+  groupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   actorGroupMemberId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subjectUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   matchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   importanceScore?: Prisma.IntFieldUpdateOperationsInput | number
   metadata?: Prisma.JsonNullValueInput | runtime.InputJsonValue
@@ -902,7 +1129,55 @@ export type FeedItemUncheckedUpdateWithoutActorUserInput = {
 export type FeedItemUncheckedUpdateManyWithoutActorUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumFeedItemTypeFieldUpdateOperationsInput | $Enums.FeedItemType
-  groupId?: Prisma.StringFieldUpdateOperationsInput | string
+  scope?: Prisma.EnumFeedItemScopeFieldUpdateOperationsInput | $Enums.FeedItemScope
+  visibility?: Prisma.EnumFeedItemVisibilityFieldUpdateOperationsInput | $Enums.FeedItemVisibility
+  groupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  actorGroupMemberId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subjectUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  matchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  importanceScore?: Prisma.IntFieldUpdateOperationsInput | number
+  metadata?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  occurredAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type FeedItemUpdateWithoutSubjectUserInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumFeedItemTypeFieldUpdateOperationsInput | $Enums.FeedItemType
+  scope?: Prisma.EnumFeedItemScopeFieldUpdateOperationsInput | $Enums.FeedItemScope
+  visibility?: Prisma.EnumFeedItemVisibilityFieldUpdateOperationsInput | $Enums.FeedItemVisibility
+  importanceScore?: Prisma.IntFieldUpdateOperationsInput | number
+  metadata?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  occurredAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  group?: Prisma.GroupUpdateOneWithoutFeedItemsNestedInput
+  actorUser?: Prisma.UserUpdateOneWithoutActorFeedItemsNestedInput
+  actorGroupMember?: Prisma.GroupMemberUpdateOneWithoutActorFeedItemsNestedInput
+  match?: Prisma.MatchUpdateOneWithoutFeedItemsNestedInput
+}
+
+export type FeedItemUncheckedUpdateWithoutSubjectUserInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumFeedItemTypeFieldUpdateOperationsInput | $Enums.FeedItemType
+  scope?: Prisma.EnumFeedItemScopeFieldUpdateOperationsInput | $Enums.FeedItemScope
+  visibility?: Prisma.EnumFeedItemVisibilityFieldUpdateOperationsInput | $Enums.FeedItemVisibility
+  groupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  actorUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  actorGroupMemberId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  matchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  importanceScore?: Prisma.IntFieldUpdateOperationsInput | number
+  metadata?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  occurredAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type FeedItemUncheckedUpdateManyWithoutSubjectUserInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumFeedItemTypeFieldUpdateOperationsInput | $Enums.FeedItemType
+  scope?: Prisma.EnumFeedItemScopeFieldUpdateOperationsInput | $Enums.FeedItemScope
+  visibility?: Prisma.EnumFeedItemVisibilityFieldUpdateOperationsInput | $Enums.FeedItemVisibility
+  groupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  actorUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   actorGroupMemberId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   matchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   importanceScore?: Prisma.IntFieldUpdateOperationsInput | number
@@ -914,8 +1189,11 @@ export type FeedItemUncheckedUpdateManyWithoutActorUserInput = {
 export type FeedItemCreateManyGroupInput = {
   id?: string
   type: $Enums.FeedItemType
+  scope: $Enums.FeedItemScope
+  visibility: $Enums.FeedItemVisibility
   actorUserId?: string | null
   actorGroupMemberId?: string | null
+  subjectUserId?: string | null
   matchId?: string | null
   importanceScore?: number
   metadata: Prisma.JsonNullValueInput | runtime.InputJsonValue
@@ -926,20 +1204,26 @@ export type FeedItemCreateManyGroupInput = {
 export type FeedItemUpdateWithoutGroupInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumFeedItemTypeFieldUpdateOperationsInput | $Enums.FeedItemType
+  scope?: Prisma.EnumFeedItemScopeFieldUpdateOperationsInput | $Enums.FeedItemScope
+  visibility?: Prisma.EnumFeedItemVisibilityFieldUpdateOperationsInput | $Enums.FeedItemVisibility
   importanceScore?: Prisma.IntFieldUpdateOperationsInput | number
   metadata?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   occurredAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  actorUser?: Prisma.UserUpdateOneWithoutFeedItemsNestedInput
-  actorGroupMember?: Prisma.GroupMemberUpdateOneWithoutFeedItemsNestedInput
+  actorUser?: Prisma.UserUpdateOneWithoutActorFeedItemsNestedInput
+  actorGroupMember?: Prisma.GroupMemberUpdateOneWithoutActorFeedItemsNestedInput
+  subjectUser?: Prisma.UserUpdateOneWithoutSubjectFeedItemsNestedInput
   match?: Prisma.MatchUpdateOneWithoutFeedItemsNestedInput
 }
 
 export type FeedItemUncheckedUpdateWithoutGroupInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumFeedItemTypeFieldUpdateOperationsInput | $Enums.FeedItemType
+  scope?: Prisma.EnumFeedItemScopeFieldUpdateOperationsInput | $Enums.FeedItemScope
+  visibility?: Prisma.EnumFeedItemVisibilityFieldUpdateOperationsInput | $Enums.FeedItemVisibility
   actorUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   actorGroupMemberId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subjectUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   matchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   importanceScore?: Prisma.IntFieldUpdateOperationsInput | number
   metadata?: Prisma.JsonNullValueInput | runtime.InputJsonValue
@@ -950,8 +1234,11 @@ export type FeedItemUncheckedUpdateWithoutGroupInput = {
 export type FeedItemUncheckedUpdateManyWithoutGroupInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumFeedItemTypeFieldUpdateOperationsInput | $Enums.FeedItemType
+  scope?: Prisma.EnumFeedItemScopeFieldUpdateOperationsInput | $Enums.FeedItemScope
+  visibility?: Prisma.EnumFeedItemVisibilityFieldUpdateOperationsInput | $Enums.FeedItemVisibility
   actorUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   actorGroupMemberId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subjectUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   matchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   importanceScore?: Prisma.IntFieldUpdateOperationsInput | number
   metadata?: Prisma.JsonNullValueInput | runtime.InputJsonValue
@@ -962,7 +1249,11 @@ export type FeedItemUncheckedUpdateManyWithoutGroupInput = {
 export type FeedItemCreateManyActorGroupMemberInput = {
   id?: string
   type: $Enums.FeedItemType
+  scope: $Enums.FeedItemScope
+  visibility: $Enums.FeedItemVisibility
+  groupId?: string | null
   actorUserId?: string | null
+  subjectUserId?: string | null
   matchId?: string | null
   importanceScore?: number
   metadata: Prisma.JsonNullValueInput | runtime.InputJsonValue
@@ -973,19 +1264,26 @@ export type FeedItemCreateManyActorGroupMemberInput = {
 export type FeedItemUpdateWithoutActorGroupMemberInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumFeedItemTypeFieldUpdateOperationsInput | $Enums.FeedItemType
+  scope?: Prisma.EnumFeedItemScopeFieldUpdateOperationsInput | $Enums.FeedItemScope
+  visibility?: Prisma.EnumFeedItemVisibilityFieldUpdateOperationsInput | $Enums.FeedItemVisibility
   importanceScore?: Prisma.IntFieldUpdateOperationsInput | number
   metadata?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   occurredAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  group?: Prisma.GroupUpdateOneRequiredWithoutFeedItemsNestedInput
-  actorUser?: Prisma.UserUpdateOneWithoutFeedItemsNestedInput
+  group?: Prisma.GroupUpdateOneWithoutFeedItemsNestedInput
+  actorUser?: Prisma.UserUpdateOneWithoutActorFeedItemsNestedInput
+  subjectUser?: Prisma.UserUpdateOneWithoutSubjectFeedItemsNestedInput
   match?: Prisma.MatchUpdateOneWithoutFeedItemsNestedInput
 }
 
 export type FeedItemUncheckedUpdateWithoutActorGroupMemberInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumFeedItemTypeFieldUpdateOperationsInput | $Enums.FeedItemType
+  scope?: Prisma.EnumFeedItemScopeFieldUpdateOperationsInput | $Enums.FeedItemScope
+  visibility?: Prisma.EnumFeedItemVisibilityFieldUpdateOperationsInput | $Enums.FeedItemVisibility
+  groupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   actorUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subjectUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   matchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   importanceScore?: Prisma.IntFieldUpdateOperationsInput | number
   metadata?: Prisma.JsonNullValueInput | runtime.InputJsonValue
@@ -996,7 +1294,11 @@ export type FeedItemUncheckedUpdateWithoutActorGroupMemberInput = {
 export type FeedItemUncheckedUpdateManyWithoutActorGroupMemberInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumFeedItemTypeFieldUpdateOperationsInput | $Enums.FeedItemType
+  scope?: Prisma.EnumFeedItemScopeFieldUpdateOperationsInput | $Enums.FeedItemScope
+  visibility?: Prisma.EnumFeedItemVisibilityFieldUpdateOperationsInput | $Enums.FeedItemVisibility
+  groupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   actorUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subjectUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   matchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   importanceScore?: Prisma.IntFieldUpdateOperationsInput | number
   metadata?: Prisma.JsonNullValueInput | runtime.InputJsonValue
@@ -1007,8 +1309,12 @@ export type FeedItemUncheckedUpdateManyWithoutActorGroupMemberInput = {
 export type FeedItemCreateManyMatchInput = {
   id?: string
   type: $Enums.FeedItemType
+  scope: $Enums.FeedItemScope
+  visibility: $Enums.FeedItemVisibility
+  groupId?: string | null
   actorUserId?: string | null
   actorGroupMemberId?: string | null
+  subjectUserId?: string | null
   importanceScore?: number
   metadata: Prisma.JsonNullValueInput | runtime.InputJsonValue
   occurredAt: Date | string
@@ -1018,20 +1324,27 @@ export type FeedItemCreateManyMatchInput = {
 export type FeedItemUpdateWithoutMatchInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumFeedItemTypeFieldUpdateOperationsInput | $Enums.FeedItemType
+  scope?: Prisma.EnumFeedItemScopeFieldUpdateOperationsInput | $Enums.FeedItemScope
+  visibility?: Prisma.EnumFeedItemVisibilityFieldUpdateOperationsInput | $Enums.FeedItemVisibility
   importanceScore?: Prisma.IntFieldUpdateOperationsInput | number
   metadata?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   occurredAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  group?: Prisma.GroupUpdateOneRequiredWithoutFeedItemsNestedInput
-  actorUser?: Prisma.UserUpdateOneWithoutFeedItemsNestedInput
-  actorGroupMember?: Prisma.GroupMemberUpdateOneWithoutFeedItemsNestedInput
+  group?: Prisma.GroupUpdateOneWithoutFeedItemsNestedInput
+  actorUser?: Prisma.UserUpdateOneWithoutActorFeedItemsNestedInput
+  actorGroupMember?: Prisma.GroupMemberUpdateOneWithoutActorFeedItemsNestedInput
+  subjectUser?: Prisma.UserUpdateOneWithoutSubjectFeedItemsNestedInput
 }
 
 export type FeedItemUncheckedUpdateWithoutMatchInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumFeedItemTypeFieldUpdateOperationsInput | $Enums.FeedItemType
+  scope?: Prisma.EnumFeedItemScopeFieldUpdateOperationsInput | $Enums.FeedItemScope
+  visibility?: Prisma.EnumFeedItemVisibilityFieldUpdateOperationsInput | $Enums.FeedItemVisibility
+  groupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   actorUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   actorGroupMemberId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subjectUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   importanceScore?: Prisma.IntFieldUpdateOperationsInput | number
   metadata?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   occurredAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1041,8 +1354,12 @@ export type FeedItemUncheckedUpdateWithoutMatchInput = {
 export type FeedItemUncheckedUpdateManyWithoutMatchInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumFeedItemTypeFieldUpdateOperationsInput | $Enums.FeedItemType
+  scope?: Prisma.EnumFeedItemScopeFieldUpdateOperationsInput | $Enums.FeedItemScope
+  visibility?: Prisma.EnumFeedItemVisibilityFieldUpdateOperationsInput | $Enums.FeedItemVisibility
+  groupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   actorUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   actorGroupMemberId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subjectUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   importanceScore?: Prisma.IntFieldUpdateOperationsInput | number
   metadata?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   occurredAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1054,60 +1371,75 @@ export type FeedItemUncheckedUpdateManyWithoutMatchInput = {
 export type FeedItemSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   type?: boolean
+  scope?: boolean
+  visibility?: boolean
   groupId?: boolean
   actorUserId?: boolean
   actorGroupMemberId?: boolean
+  subjectUserId?: boolean
   matchId?: boolean
   importanceScore?: boolean
   metadata?: boolean
   occurredAt?: boolean
   createdAt?: boolean
-  group?: boolean | Prisma.GroupDefaultArgs<ExtArgs>
+  group?: boolean | Prisma.FeedItem$groupArgs<ExtArgs>
   actorUser?: boolean | Prisma.FeedItem$actorUserArgs<ExtArgs>
   actorGroupMember?: boolean | Prisma.FeedItem$actorGroupMemberArgs<ExtArgs>
+  subjectUser?: boolean | Prisma.FeedItem$subjectUserArgs<ExtArgs>
   match?: boolean | Prisma.FeedItem$matchArgs<ExtArgs>
 }, ExtArgs["result"]["feedItem"]>
 
 export type FeedItemSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   type?: boolean
+  scope?: boolean
+  visibility?: boolean
   groupId?: boolean
   actorUserId?: boolean
   actorGroupMemberId?: boolean
+  subjectUserId?: boolean
   matchId?: boolean
   importanceScore?: boolean
   metadata?: boolean
   occurredAt?: boolean
   createdAt?: boolean
-  group?: boolean | Prisma.GroupDefaultArgs<ExtArgs>
+  group?: boolean | Prisma.FeedItem$groupArgs<ExtArgs>
   actorUser?: boolean | Prisma.FeedItem$actorUserArgs<ExtArgs>
   actorGroupMember?: boolean | Prisma.FeedItem$actorGroupMemberArgs<ExtArgs>
+  subjectUser?: boolean | Prisma.FeedItem$subjectUserArgs<ExtArgs>
   match?: boolean | Prisma.FeedItem$matchArgs<ExtArgs>
 }, ExtArgs["result"]["feedItem"]>
 
 export type FeedItemSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   type?: boolean
+  scope?: boolean
+  visibility?: boolean
   groupId?: boolean
   actorUserId?: boolean
   actorGroupMemberId?: boolean
+  subjectUserId?: boolean
   matchId?: boolean
   importanceScore?: boolean
   metadata?: boolean
   occurredAt?: boolean
   createdAt?: boolean
-  group?: boolean | Prisma.GroupDefaultArgs<ExtArgs>
+  group?: boolean | Prisma.FeedItem$groupArgs<ExtArgs>
   actorUser?: boolean | Prisma.FeedItem$actorUserArgs<ExtArgs>
   actorGroupMember?: boolean | Prisma.FeedItem$actorGroupMemberArgs<ExtArgs>
+  subjectUser?: boolean | Prisma.FeedItem$subjectUserArgs<ExtArgs>
   match?: boolean | Prisma.FeedItem$matchArgs<ExtArgs>
 }, ExtArgs["result"]["feedItem"]>
 
 export type FeedItemSelectScalar = {
   id?: boolean
   type?: boolean
+  scope?: boolean
+  visibility?: boolean
   groupId?: boolean
   actorUserId?: boolean
   actorGroupMemberId?: boolean
+  subjectUserId?: boolean
   matchId?: boolean
   importanceScore?: boolean
   metadata?: boolean
@@ -1115,40 +1447,47 @@ export type FeedItemSelectScalar = {
   createdAt?: boolean
 }
 
-export type FeedItemOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "type" | "groupId" | "actorUserId" | "actorGroupMemberId" | "matchId" | "importanceScore" | "metadata" | "occurredAt" | "createdAt", ExtArgs["result"]["feedItem"]>
+export type FeedItemOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "type" | "scope" | "visibility" | "groupId" | "actorUserId" | "actorGroupMemberId" | "subjectUserId" | "matchId" | "importanceScore" | "metadata" | "occurredAt" | "createdAt", ExtArgs["result"]["feedItem"]>
 export type FeedItemInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  group?: boolean | Prisma.GroupDefaultArgs<ExtArgs>
+  group?: boolean | Prisma.FeedItem$groupArgs<ExtArgs>
   actorUser?: boolean | Prisma.FeedItem$actorUserArgs<ExtArgs>
   actorGroupMember?: boolean | Prisma.FeedItem$actorGroupMemberArgs<ExtArgs>
+  subjectUser?: boolean | Prisma.FeedItem$subjectUserArgs<ExtArgs>
   match?: boolean | Prisma.FeedItem$matchArgs<ExtArgs>
 }
 export type FeedItemIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  group?: boolean | Prisma.GroupDefaultArgs<ExtArgs>
+  group?: boolean | Prisma.FeedItem$groupArgs<ExtArgs>
   actorUser?: boolean | Prisma.FeedItem$actorUserArgs<ExtArgs>
   actorGroupMember?: boolean | Prisma.FeedItem$actorGroupMemberArgs<ExtArgs>
+  subjectUser?: boolean | Prisma.FeedItem$subjectUserArgs<ExtArgs>
   match?: boolean | Prisma.FeedItem$matchArgs<ExtArgs>
 }
 export type FeedItemIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  group?: boolean | Prisma.GroupDefaultArgs<ExtArgs>
+  group?: boolean | Prisma.FeedItem$groupArgs<ExtArgs>
   actorUser?: boolean | Prisma.FeedItem$actorUserArgs<ExtArgs>
   actorGroupMember?: boolean | Prisma.FeedItem$actorGroupMemberArgs<ExtArgs>
+  subjectUser?: boolean | Prisma.FeedItem$subjectUserArgs<ExtArgs>
   match?: boolean | Prisma.FeedItem$matchArgs<ExtArgs>
 }
 
 export type $FeedItemPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "FeedItem"
   objects: {
-    group: Prisma.$GroupPayload<ExtArgs>
+    group: Prisma.$GroupPayload<ExtArgs> | null
     actorUser: Prisma.$UserPayload<ExtArgs> | null
     actorGroupMember: Prisma.$GroupMemberPayload<ExtArgs> | null
+    subjectUser: Prisma.$UserPayload<ExtArgs> | null
     match: Prisma.$MatchPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     type: $Enums.FeedItemType
-    groupId: string
+    scope: $Enums.FeedItemScope
+    visibility: $Enums.FeedItemVisibility
+    groupId: string | null
     actorUserId: string | null
     actorGroupMemberId: string | null
+    subjectUserId: string | null
     matchId: string | null
     importanceScore: number
     metadata: runtime.JsonValue
@@ -1548,9 +1887,10 @@ readonly fields: FeedItemFieldRefs;
  */
 export interface Prisma__FeedItemClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  group<T extends Prisma.GroupDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.GroupDefaultArgs<ExtArgs>>): Prisma.Prisma__GroupClient<runtime.Types.Result.GetResult<Prisma.$GroupPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  group<T extends Prisma.FeedItem$groupArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.FeedItem$groupArgs<ExtArgs>>): Prisma.Prisma__GroupClient<runtime.Types.Result.GetResult<Prisma.$GroupPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   actorUser<T extends Prisma.FeedItem$actorUserArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.FeedItem$actorUserArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   actorGroupMember<T extends Prisma.FeedItem$actorGroupMemberArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.FeedItem$actorGroupMemberArgs<ExtArgs>>): Prisma.Prisma__GroupMemberClient<runtime.Types.Result.GetResult<Prisma.$GroupMemberPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  subjectUser<T extends Prisma.FeedItem$subjectUserArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.FeedItem$subjectUserArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   match<T extends Prisma.FeedItem$matchArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.FeedItem$matchArgs<ExtArgs>>): Prisma.Prisma__MatchClient<runtime.Types.Result.GetResult<Prisma.$MatchPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -1583,9 +1923,12 @@ export interface Prisma__FeedItemClient<T, Null = never, ExtArgs extends runtime
 export interface FeedItemFieldRefs {
   readonly id: Prisma.FieldRef<"FeedItem", 'String'>
   readonly type: Prisma.FieldRef<"FeedItem", 'FeedItemType'>
+  readonly scope: Prisma.FieldRef<"FeedItem", 'FeedItemScope'>
+  readonly visibility: Prisma.FieldRef<"FeedItem", 'FeedItemVisibility'>
   readonly groupId: Prisma.FieldRef<"FeedItem", 'String'>
   readonly actorUserId: Prisma.FieldRef<"FeedItem", 'String'>
   readonly actorGroupMemberId: Prisma.FieldRef<"FeedItem", 'String'>
+  readonly subjectUserId: Prisma.FieldRef<"FeedItem", 'String'>
   readonly matchId: Prisma.FieldRef<"FeedItem", 'String'>
   readonly importanceScore: Prisma.FieldRef<"FeedItem", 'Int'>
   readonly metadata: Prisma.FieldRef<"FeedItem", 'Json'>
@@ -1992,6 +2335,25 @@ export type FeedItemDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Inte
 }
 
 /**
+ * FeedItem.group
+ */
+export type FeedItem$groupArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Group
+   */
+  select?: Prisma.GroupSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Group
+   */
+  omit?: Prisma.GroupOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.GroupInclude<ExtArgs> | null
+  where?: Prisma.GroupWhereInput
+}
+
+/**
  * FeedItem.actorUser
  */
 export type FeedItem$actorUserArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2027,6 +2389,25 @@ export type FeedItem$actorGroupMemberArgs<ExtArgs extends runtime.Types.Extensio
    */
   include?: Prisma.GroupMemberInclude<ExtArgs> | null
   where?: Prisma.GroupMemberWhereInput
+}
+
+/**
+ * FeedItem.subjectUser
+ */
+export type FeedItem$subjectUserArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the User
+   */
+  select?: Prisma.UserSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the User
+   */
+  omit?: Prisma.UserOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
+  where?: Prisma.UserWhereInput
 }
 
 /**

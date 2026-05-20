@@ -30,6 +30,18 @@ enum FeedItemType {
   UPSET_WIN
 }
 
+enum FeedItemScope {
+  GROUP
+  USER
+}
+
+enum FeedItemVisibility {
+  GROUP_MEMBERS
+  SOCIAL_CIRCLE
+  PUBLIC
+  PRIVATE
+}
+
 model User {
   id           String @id @default(uuid())
   firstName    String
@@ -40,10 +52,11 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  createdGroups  Group[]       @relation("GroupCreator")
-  memberships    GroupMember[]
-  createdInvites GroupInvite[] @relation("GroupInviteCreator")
-  feedItems      FeedItem[]    @relation("FeedItemActorUser")
+  createdGroups    Group[]       @relation("GroupCreator")
+  memberships      GroupMember[]
+  createdInvites   GroupInvite[] @relation("GroupInviteCreator")
+  actorFeedItems   FeedItem[]    @relation("FeedItemActorUser")
+  subjectFeedItems FeedItem[]    @relation("FeedItemSubjectUser")
 
   @@index([email])
 }
@@ -120,8 +133,8 @@ model GroupMember {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  matchPlayers MatchPlayer[]
-  feedItems    FeedItem[]    @relation("FeedItemActorGroupMember")
+  matchPlayers   MatchPlayer[]
+  actorFeedItems FeedItem[]    @relation("FeedItemActorGroupMember")
 
   @@unique([groupId, userId])
   @@unique([id, groupId])
@@ -217,19 +230,24 @@ model MatchPlayer {
 model FeedItem {
   id String @id @default(uuid())
 
-  type FeedItemType
+  type       FeedItemType
+  scope      FeedItemScope
+  visibility FeedItemVisibility
 
-  groupId String
-  group   Group  @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  groupId String?
+  group   Group?  @relation(fields: [groupId], references: [id], onDelete: Cascade)
 
   actorUserId String?
   actorUser   User?   @relation("FeedItemActorUser", fields: [actorUserId], references: [id], onDelete: SetNull)
 
   actorGroupMemberId String?
-  actorGroupMember   GroupMember? @relation("FeedItemActorGroupMember", fields: [actorGroupMemberId, groupId], references: [id, groupId])
+  actorGroupMember   GroupMember? @relation("FeedItemActorGroupMember", fields: [actorGroupMemberId], references: [id], onDelete: SetNull)
+
+  subjectUserId String?
+  subjectUser   User?   @relation("FeedItemSubjectUser", fields: [subjectUserId], references: [id], onDelete: Cascade)
 
   matchId String?
-  match   Match?  @relation(fields: [matchId, groupId], references: [id, groupId], onDelete: Cascade)
+  match   Match?  @relation(fields: [matchId], references: [id], onDelete: Cascade)
 
   importanceScore Int @default(0)
 
@@ -239,10 +257,13 @@ model FeedItem {
   createdAt  DateTime @default(now())
 
   @@unique([type, matchId])
+  @@index([scope, occurredAt])
+  @@index([visibility, occurredAt])
   @@index([groupId, occurredAt])
   @@index([type, occurredAt])
   @@index([importanceScore, occurredAt])
   @@index([actorUserId, occurredAt])
+  @@index([subjectUserId, occurredAt])
   @@index([actorGroupMemberId, occurredAt])
   @@index([matchId])
 }

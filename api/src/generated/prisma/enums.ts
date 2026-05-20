@@ -41,3 +41,21 @@ export const FeedItemType = {
 } as const
 
 export type FeedItemType = (typeof FeedItemType)[keyof typeof FeedItemType]
+
+
+export const FeedItemScope = {
+  GROUP: 'GROUP',
+  USER: 'USER'
+} as const
+
+export type FeedItemScope = (typeof FeedItemScope)[keyof typeof FeedItemScope]
+
+
+export const FeedItemVisibility = {
+  GROUP_MEMBERS: 'GROUP_MEMBERS',
+  SOCIAL_CIRCLE: 'SOCIAL_CIRCLE',
+  PUBLIC: 'PUBLIC',
+  PRIVATE: 'PRIVATE'
+} as const
+
+export type FeedItemVisibility = (typeof FeedItemVisibility)[keyof typeof FeedItemVisibility]

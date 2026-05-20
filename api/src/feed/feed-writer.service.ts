@@ -13,9 +13,12 @@ export class FeedWriterService {
     return tx.feedItem.create({
       data: {
         type: draft.type,
-        groupId: draft.groupId,
+        scope: draft.scope,
+        visibility: draft.visibility,
+        groupId: draft.groupId ?? null,
         actorUserId: draft.actorUserId ?? null,
         actorGroupMemberId: draft.actorGroupMemberId ?? null,
+        subjectUserId: draft.subjectUserId ?? null,
         matchId: draft.matchId ?? null,
         importanceScore: draft.importanceScore,
         metadata: draft.metadata,

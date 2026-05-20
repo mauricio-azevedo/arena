@@ -1082,9 +1082,12 @@ export type MatchPlayerScalarFieldEnum = (typeof MatchPlayerScalarFieldEnum)[key
 export const FeedItemScalarFieldEnum = {
   id: 'id',
   type: 'type',
+  scope: 'scope',
+  visibility: 'visibility',
   groupId: 'groupId',
   actorUserId: 'actorUserId',
   actorGroupMemberId: 'actorGroupMemberId',
+  subjectUserId: 'subjectUserId',
   matchId: 'matchId',
   importanceScore: 'importanceScore',
   metadata: 'metadata',
@@ -1250,6 +1253,34 @@ export type EnumFeedItemTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$Pri
  * Reference to a field of type 'FeedItemType[]'
  */
 export type ListEnumFeedItemTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'FeedItemType[]'>
+    
+
+
+/**
+ * Reference to a field of type 'FeedItemScope'
+ */
+export type EnumFeedItemScopeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'FeedItemScope'>
+    
+
+
+/**
+ * Reference to a field of type 'FeedItemScope[]'
+ */
+export type ListEnumFeedItemScopeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'FeedItemScope[]'>
+    
+
+
+/**
+ * Reference to a field of type 'FeedItemVisibility'
+ */
+export type EnumFeedItemVisibilityFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'FeedItemVisibility'>
+    
+
+
+/**
+ * Reference to a field of type 'FeedItemVisibility[]'
+ */
+export type ListEnumFeedItemVisibilityFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'FeedItemVisibility[]'>
     
 
 
