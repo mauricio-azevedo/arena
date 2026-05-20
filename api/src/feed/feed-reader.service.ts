@@ -18,15 +18,55 @@ export class FeedReaderService {
 
     const groupIds = memberships.map((membership) => membership.groupId);
 
-    if (groupIds.length === 0) {
-      return [];
-    }
+    const connectedMemberships = groupIds.length
+      ? await this.prisma.groupMember.findMany({
+          where: {
+            groupId: {
+              in: groupIds,
+            },
+            userId: {
+              not: userId,
+            },
+            leftAt: null,
+          },
+          select: {
+            userId: true,
+          },
+        })
+      : [];
+
+    const connectedUserIds = [
+      ...new Set(connectedMemberships.map((membership) => membership.userId)),
+    ];
 
     const items = await this.prisma.feedItem.findMany({
       where: {
-        groupId: {
-          in: groupIds,
-        },
+        OR: [
+          {
+            visibility: 'GROUP_MEMBERS',
+            groupId: {
+              in: groupIds,
+            },
+          },
+          {
+            visibility: 'SOCIAL_CIRCLE',
+            OR: [
+              {
+                actorUserId: userId,
+              },
+              {
+                groupId: {
+                  in: groupIds,
+                },
+              },
+              {
+                actorUserId: {
+                  in: connectedUserIds,
+                },
+              },
+            ],
+          },
+        ],
       },
       orderBy: [
         {
@@ -52,12 +92,20 @@ export class FeedReaderService {
             lastName: true,
           },
         },
+        subjectUser: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+          },
+        },
       },
     });
 
     return items.map((item) => ({
       ...item,
       isActorCurrentUser: item.actorUserId === userId,
+      isSubjectCurrentUser: item.subjectUserId === userId,
     }));
   }
 }
