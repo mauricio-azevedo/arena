@@ -1,9 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { FeedScoreService } from './feed-score.service';
 
 @Injectable()
 export class FeedReaderService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly feedScore: FeedScoreService,
+  ) {}
 
   async findUserFeed(userId: string) {
     const memberships = await this.prisma.groupMember.findMany({
@@ -76,7 +80,7 @@ export class FeedReaderService {
           occurredAt: 'desc',
         },
       ],
-      take: 30,
+      take: 100,
       include: {
         group: {
           select: {
@@ -102,10 +106,23 @@ export class FeedReaderService {
       },
     });
 
-    return items.map((item) => ({
-      ...item,
-      isActorCurrentUser: item.actorUserId === userId,
-      isSubjectCurrentUser: item.subjectUserId === userId,
-    }));
+    return items
+      .map((item) => ({
+        ...item,
+        isActorCurrentUser: item.actorUserId === userId,
+        isSubjectCurrentUser: item.subjectUserId === userId,
+        feedScore: this.feedScore.calculateFeedScore({
+          importanceScore: item.importanceScore,
+          occurredAt: item.occurredAt,
+        }),
+      }))
+      .sort((a, b) => {
+        if (b.feedScore !== a.feedScore) {
+          return b.feedScore - a.feedScore;
+        }
+
+        return b.occurredAt.getTime() - a.occurredAt.getTime();
+      })
+      .slice(0, 30);
   }
 }

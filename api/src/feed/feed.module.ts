@@ -7,6 +7,7 @@ import { FeedController } from './feed.controller';
 import { FeedReaderService } from './feed-reader.service';
 import { AuthModule } from '../auth/auth.module';
 import { MemberJoinedFeedItemGenerator } from './generators/member-joined-feed-item.generator';
+import { FeedScoreService } from './feed-score.service';
 
 @Module({
   imports: [PrismaModule, AuthModule],
@@ -17,6 +18,7 @@ import { MemberJoinedFeedItemGenerator } from './generators/member-joined-feed-i
     FeedOrchestratorService,
     GroupCreatedFeedItemGenerator,
     MemberJoinedFeedItemGenerator,
+    FeedScoreService,
   ],
   exports: [FeedOrchestratorService],
 })
