@@ -38,11 +38,11 @@ export class MembersService {
     });
 
     if (!requesterMembership || requesterMembership.leftAt) {
-      throw new ForbiddenException('Only active group members can add players');
+      throw new ForbiddenException('Only active group members can add members');
     }
 
     if (requesterMembership.role !== GroupMemberRole.ADMIN) {
-      throw new ForbiddenException('Only group admins can add players');
+      throw new ForbiddenException('Only group admins can add members');
     }
 
     const user = await this.prisma.user.findUnique({
