@@ -350,6 +350,7 @@ export type MatchWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"Match"> | Date | string
   group?: Prisma.XOR<Prisma.GroupScalarRelationFilter, Prisma.GroupWhereInput>
   players?: Prisma.MatchPlayerListRelationFilter
+  feedItems?: Prisma.FeedItemListRelationFilter
 }
 
 export type MatchOrderByWithRelationInput = {
@@ -372,6 +373,7 @@ export type MatchOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   group?: Prisma.GroupOrderByWithRelationInput
   players?: Prisma.MatchPlayerOrderByRelationAggregateInput
+  feedItems?: Prisma.FeedItemOrderByRelationAggregateInput
 }
 
 export type MatchWhereUniqueInput = Prisma.AtLeast<{
@@ -398,6 +400,7 @@ export type MatchWhereUniqueInput = Prisma.AtLeast<{
   updatedAt?: Prisma.DateTimeFilter<"Match"> | Date | string
   group?: Prisma.XOR<Prisma.GroupScalarRelationFilter, Prisma.GroupWhereInput>
   players?: Prisma.MatchPlayerListRelationFilter
+  feedItems?: Prisma.FeedItemListRelationFilter
 }, "id" | "id_groupId">
 
 export type MatchOrderByWithAggregationInput = {
@@ -467,6 +470,7 @@ export type MatchCreateInput = {
   updatedAt?: Date | string
   group: Prisma.GroupCreateNestedOneWithoutMatchesInput
   players?: Prisma.MatchPlayerCreateNestedManyWithoutMatchInput
+  feedItems?: Prisma.FeedItemCreateNestedManyWithoutMatchInput
 }
 
 export type MatchUncheckedCreateInput = {
@@ -488,6 +492,7 @@ export type MatchUncheckedCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   players?: Prisma.MatchPlayerUncheckedCreateNestedManyWithoutMatchInput
+  feedItems?: Prisma.FeedItemUncheckedCreateNestedManyWithoutMatchInput
 }
 
 export type MatchUpdateInput = {
@@ -509,6 +514,7 @@ export type MatchUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   group?: Prisma.GroupUpdateOneRequiredWithoutMatchesNestedInput
   players?: Prisma.MatchPlayerUpdateManyWithoutMatchNestedInput
+  feedItems?: Prisma.FeedItemUpdateManyWithoutMatchNestedInput
 }
 
 export type MatchUncheckedUpdateInput = {
@@ -530,6 +536,7 @@ export type MatchUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   players?: Prisma.MatchPlayerUncheckedUpdateManyWithoutMatchNestedInput
+  feedItems?: Prisma.FeedItemUncheckedUpdateManyWithoutMatchNestedInput
 }
 
 export type MatchCreateManyInput = {
@@ -697,6 +704,11 @@ export type MatchScalarRelationFilter = {
   isNot?: Prisma.MatchWhereInput
 }
 
+export type MatchNullableScalarRelationFilter = {
+  is?: Prisma.MatchWhereInput | null
+  isNot?: Prisma.MatchWhereInput | null
+}
+
 export type MatchCreateNestedManyWithoutGroupInput = {
   create?: Prisma.XOR<Prisma.MatchCreateWithoutGroupInput, Prisma.MatchUncheckedCreateWithoutGroupInput> | Prisma.MatchCreateWithoutGroupInput[] | Prisma.MatchUncheckedCreateWithoutGroupInput[]
   connectOrCreate?: Prisma.MatchCreateOrConnectWithoutGroupInput | Prisma.MatchCreateOrConnectWithoutGroupInput[]
@@ -757,6 +769,22 @@ export type MatchUpdateOneRequiredWithoutPlayersNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.MatchUpdateToOneWithWhereWithoutPlayersInput, Prisma.MatchUpdateWithoutPlayersInput>, Prisma.MatchUncheckedUpdateWithoutPlayersInput>
 }
 
+export type MatchCreateNestedOneWithoutFeedItemsInput = {
+  create?: Prisma.XOR<Prisma.MatchCreateWithoutFeedItemsInput, Prisma.MatchUncheckedCreateWithoutFeedItemsInput>
+  connectOrCreate?: Prisma.MatchCreateOrConnectWithoutFeedItemsInput
+  connect?: Prisma.MatchWhereUniqueInput
+}
+
+export type MatchUpdateOneWithoutFeedItemsNestedInput = {
+  create?: Prisma.XOR<Prisma.MatchCreateWithoutFeedItemsInput, Prisma.MatchUncheckedCreateWithoutFeedItemsInput>
+  connectOrCreate?: Prisma.MatchCreateOrConnectWithoutFeedItemsInput
+  upsert?: Prisma.MatchUpsertWithoutFeedItemsInput
+  disconnect?: Prisma.MatchWhereInput | boolean
+  delete?: Prisma.MatchWhereInput | boolean
+  connect?: Prisma.MatchWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.MatchUpdateToOneWithWhereWithoutFeedItemsInput, Prisma.MatchUpdateWithoutFeedItemsInput>, Prisma.MatchUncheckedUpdateWithoutFeedItemsInput>
+}
+
 export type MatchCreateWithoutGroupInput = {
   id?: string
   gamesA: number
@@ -775,6 +803,7 @@ export type MatchCreateWithoutGroupInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   players?: Prisma.MatchPlayerCreateNestedManyWithoutMatchInput
+  feedItems?: Prisma.FeedItemCreateNestedManyWithoutMatchInput
 }
 
 export type MatchUncheckedCreateWithoutGroupInput = {
@@ -795,6 +824,7 @@ export type MatchUncheckedCreateWithoutGroupInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   players?: Prisma.MatchPlayerUncheckedCreateNestedManyWithoutMatchInput
+  feedItems?: Prisma.FeedItemUncheckedCreateNestedManyWithoutMatchInput
 }
 
 export type MatchCreateOrConnectWithoutGroupInput = {
@@ -864,6 +894,7 @@ export type MatchCreateWithoutPlayersInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   group: Prisma.GroupCreateNestedOneWithoutMatchesInput
+  feedItems?: Prisma.FeedItemCreateNestedManyWithoutMatchInput
 }
 
 export type MatchUncheckedCreateWithoutPlayersInput = {
@@ -884,6 +915,7 @@ export type MatchUncheckedCreateWithoutPlayersInput = {
   playedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
+  feedItems?: Prisma.FeedItemUncheckedCreateNestedManyWithoutMatchInput
 }
 
 export type MatchCreateOrConnectWithoutPlayersInput = {
@@ -920,6 +952,7 @@ export type MatchUpdateWithoutPlayersInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   group?: Prisma.GroupUpdateOneRequiredWithoutMatchesNestedInput
+  feedItems?: Prisma.FeedItemUpdateManyWithoutMatchNestedInput
 }
 
 export type MatchUncheckedUpdateWithoutPlayersInput = {
@@ -940,6 +973,107 @@ export type MatchUncheckedUpdateWithoutPlayersInput = {
   playedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  feedItems?: Prisma.FeedItemUncheckedUpdateManyWithoutMatchNestedInput
+}
+
+export type MatchCreateWithoutFeedItemsInput = {
+  id?: string
+  gamesA: number
+  gamesB: number
+  winnerTeam?: $Enums.MatchTeam | null
+  teamAExpected?: number | null
+  teamBExpected?: number | null
+  teamAActual?: number | null
+  teamBActual?: number | null
+  teamARatingBefore?: number | null
+  teamBRatingBefore?: number | null
+  teamARatingAfter?: number | null
+  teamBRatingAfter?: number | null
+  ratingAlgorithm?: string
+  playedAt?: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  group: Prisma.GroupCreateNestedOneWithoutMatchesInput
+  players?: Prisma.MatchPlayerCreateNestedManyWithoutMatchInput
+}
+
+export type MatchUncheckedCreateWithoutFeedItemsInput = {
+  id?: string
+  groupId: string
+  gamesA: number
+  gamesB: number
+  winnerTeam?: $Enums.MatchTeam | null
+  teamAExpected?: number | null
+  teamBExpected?: number | null
+  teamAActual?: number | null
+  teamBActual?: number | null
+  teamARatingBefore?: number | null
+  teamBRatingBefore?: number | null
+  teamARatingAfter?: number | null
+  teamBRatingAfter?: number | null
+  ratingAlgorithm?: string
+  playedAt?: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  players?: Prisma.MatchPlayerUncheckedCreateNestedManyWithoutMatchInput
+}
+
+export type MatchCreateOrConnectWithoutFeedItemsInput = {
+  where: Prisma.MatchWhereUniqueInput
+  create: Prisma.XOR<Prisma.MatchCreateWithoutFeedItemsInput, Prisma.MatchUncheckedCreateWithoutFeedItemsInput>
+}
+
+export type MatchUpsertWithoutFeedItemsInput = {
+  update: Prisma.XOR<Prisma.MatchUpdateWithoutFeedItemsInput, Prisma.MatchUncheckedUpdateWithoutFeedItemsInput>
+  create: Prisma.XOR<Prisma.MatchCreateWithoutFeedItemsInput, Prisma.MatchUncheckedCreateWithoutFeedItemsInput>
+  where?: Prisma.MatchWhereInput
+}
+
+export type MatchUpdateToOneWithWhereWithoutFeedItemsInput = {
+  where?: Prisma.MatchWhereInput
+  data: Prisma.XOR<Prisma.MatchUpdateWithoutFeedItemsInput, Prisma.MatchUncheckedUpdateWithoutFeedItemsInput>
+}
+
+export type MatchUpdateWithoutFeedItemsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  gamesA?: Prisma.IntFieldUpdateOperationsInput | number
+  gamesB?: Prisma.IntFieldUpdateOperationsInput | number
+  winnerTeam?: Prisma.NullableEnumMatchTeamFieldUpdateOperationsInput | $Enums.MatchTeam | null
+  teamAExpected?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamBExpected?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamAActual?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamBActual?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamARatingBefore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamBRatingBefore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamARatingAfter?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamBRatingAfter?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  ratingAlgorithm?: Prisma.StringFieldUpdateOperationsInput | string
+  playedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  group?: Prisma.GroupUpdateOneRequiredWithoutMatchesNestedInput
+  players?: Prisma.MatchPlayerUpdateManyWithoutMatchNestedInput
+}
+
+export type MatchUncheckedUpdateWithoutFeedItemsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  groupId?: Prisma.StringFieldUpdateOperationsInput | string
+  gamesA?: Prisma.IntFieldUpdateOperationsInput | number
+  gamesB?: Prisma.IntFieldUpdateOperationsInput | number
+  winnerTeam?: Prisma.NullableEnumMatchTeamFieldUpdateOperationsInput | $Enums.MatchTeam | null
+  teamAExpected?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamBExpected?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamAActual?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamBActual?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamARatingBefore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamBRatingBefore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamARatingAfter?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamBRatingAfter?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  ratingAlgorithm?: Prisma.StringFieldUpdateOperationsInput | string
+  playedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  players?: Prisma.MatchPlayerUncheckedUpdateManyWithoutMatchNestedInput
 }
 
 export type MatchCreateManyGroupInput = {
@@ -979,6 +1113,7 @@ export type MatchUpdateWithoutGroupInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   players?: Prisma.MatchPlayerUpdateManyWithoutMatchNestedInput
+  feedItems?: Prisma.FeedItemUpdateManyWithoutMatchNestedInput
 }
 
 export type MatchUncheckedUpdateWithoutGroupInput = {
@@ -999,6 +1134,7 @@ export type MatchUncheckedUpdateWithoutGroupInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   players?: Prisma.MatchPlayerUncheckedUpdateManyWithoutMatchNestedInput
+  feedItems?: Prisma.FeedItemUncheckedUpdateManyWithoutMatchNestedInput
 }
 
 export type MatchUncheckedUpdateManyWithoutGroupInput = {
@@ -1027,10 +1163,12 @@ export type MatchUncheckedUpdateManyWithoutGroupInput = {
 
 export type MatchCountOutputType = {
   players: number
+  feedItems: number
 }
 
 export type MatchCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   players?: boolean | MatchCountOutputTypeCountPlayersArgs
+  feedItems?: boolean | MatchCountOutputTypeCountFeedItemsArgs
 }
 
 /**
@@ -1048,6 +1186,13 @@ export type MatchCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extens
  */
 export type MatchCountOutputTypeCountPlayersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.MatchPlayerWhereInput
+}
+
+/**
+ * MatchCountOutputType without action
+ */
+export type MatchCountOutputTypeCountFeedItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.FeedItemWhereInput
 }
 
 
@@ -1071,6 +1216,7 @@ export type MatchSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   updatedAt?: boolean
   group?: boolean | Prisma.GroupDefaultArgs<ExtArgs>
   players?: boolean | Prisma.Match$playersArgs<ExtArgs>
+  feedItems?: boolean | Prisma.Match$feedItemsArgs<ExtArgs>
   _count?: boolean | Prisma.MatchCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["match"]>
 
@@ -1140,6 +1286,7 @@ export type MatchOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = ru
 export type MatchInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   group?: boolean | Prisma.GroupDefaultArgs<ExtArgs>
   players?: boolean | Prisma.Match$playersArgs<ExtArgs>
+  feedItems?: boolean | Prisma.Match$feedItemsArgs<ExtArgs>
   _count?: boolean | Prisma.MatchCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type MatchIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1154,6 +1301,7 @@ export type $MatchPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   objects: {
     group: Prisma.$GroupPayload<ExtArgs>
     players: Prisma.$MatchPlayerPayload<ExtArgs>[]
+    feedItems: Prisma.$FeedItemPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1569,6 +1717,7 @@ export interface Prisma__MatchClient<T, Null = never, ExtArgs extends runtime.Ty
   readonly [Symbol.toStringTag]: "PrismaPromise"
   group<T extends Prisma.GroupDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.GroupDefaultArgs<ExtArgs>>): Prisma.Prisma__GroupClient<runtime.Types.Result.GetResult<Prisma.$GroupPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   players<T extends Prisma.Match$playersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Match$playersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MatchPlayerPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  feedItems<T extends Prisma.Match$feedItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Match$feedItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FeedItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2037,6 +2186,30 @@ export type Match$playersArgs<ExtArgs extends runtime.Types.Extensions.InternalA
   take?: number
   skip?: number
   distinct?: Prisma.MatchPlayerScalarFieldEnum | Prisma.MatchPlayerScalarFieldEnum[]
+}
+
+/**
+ * Match.feedItems
+ */
+export type Match$feedItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the FeedItem
+   */
+  select?: Prisma.FeedItemSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the FeedItem
+   */
+  omit?: Prisma.FeedItemOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.FeedItemInclude<ExtArgs> | null
+  where?: Prisma.FeedItemWhereInput
+  orderBy?: Prisma.FeedItemOrderByWithRelationInput | Prisma.FeedItemOrderByWithRelationInput[]
+  cursor?: Prisma.FeedItemWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.FeedItemScalarFieldEnum | Prisma.FeedItemScalarFieldEnum[]
 }
 
 /**

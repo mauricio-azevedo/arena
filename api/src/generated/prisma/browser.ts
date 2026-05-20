@@ -47,3 +47,8 @@ export type Match = Prisma.MatchModel
  * 
  */
 export type MatchPlayer = Prisma.MatchPlayerModel
+/**
+ * Model FeedItem
+ * 
+ */
+export type FeedItem = Prisma.FeedItemModel

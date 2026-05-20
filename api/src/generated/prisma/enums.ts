@@ -30,3 +30,14 @@ export const MatchTeam = {
 } as const
 
 export type MatchTeam = (typeof MatchTeam)[keyof typeof MatchTeam]
+
+
+export const FeedItemType = {
+  GROUP_CREATED: 'GROUP_CREATED',
+  MEMBER_JOINED: 'MEMBER_JOINED',
+  MATCH_CLOSE: 'MATCH_CLOSE',
+  MATCH_BLOWOUT: 'MATCH_BLOWOUT',
+  UPSET_WIN: 'UPSET_WIN'
+} as const
+
+export type FeedItemType = (typeof FeedItemType)[keyof typeof FeedItemType]

@@ -389,7 +389,8 @@ export const ModelName = {
   GroupInvite: 'GroupInvite',
   GroupMember: 'GroupMember',
   Match: 'Match',
-  MatchPlayer: 'MatchPlayer'
+  MatchPlayer: 'MatchPlayer',
+  FeedItem: 'FeedItem'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -405,7 +406,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "group" | "groupInvite" | "groupMember" | "match" | "matchPlayer"
+    modelProps: "user" | "group" | "groupInvite" | "groupMember" | "match" | "matchPlayer" | "feedItem"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -853,6 +854,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    FeedItem: {
+      payload: Prisma.$FeedItemPayload<ExtArgs>
+      fields: Prisma.FeedItemFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.FeedItemFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeedItemPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.FeedItemFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeedItemPayload>
+        }
+        findFirst: {
+          args: Prisma.FeedItemFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeedItemPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.FeedItemFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeedItemPayload>
+        }
+        findMany: {
+          args: Prisma.FeedItemFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeedItemPayload>[]
+        }
+        create: {
+          args: Prisma.FeedItemCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeedItemPayload>
+        }
+        createMany: {
+          args: Prisma.FeedItemCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.FeedItemCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeedItemPayload>[]
+        }
+        delete: {
+          args: Prisma.FeedItemDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeedItemPayload>
+        }
+        update: {
+          args: Prisma.FeedItemUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeedItemPayload>
+        }
+        deleteMany: {
+          args: Prisma.FeedItemDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.FeedItemUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.FeedItemUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeedItemPayload>[]
+        }
+        upsert: {
+          args: Prisma.FeedItemUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeedItemPayload>
+        }
+        aggregate: {
+          args: Prisma.FeedItemAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateFeedItem>
+        }
+        groupBy: {
+          args: Prisma.FeedItemGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.FeedItemGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.FeedItemCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.FeedItemCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -1004,12 +1079,35 @@ export const MatchPlayerScalarFieldEnum = {
 export type MatchPlayerScalarFieldEnum = (typeof MatchPlayerScalarFieldEnum)[keyof typeof MatchPlayerScalarFieldEnum]
 
 
+export const FeedItemScalarFieldEnum = {
+  id: 'id',
+  type: 'type',
+  groupId: 'groupId',
+  actorUserId: 'actorUserId',
+  actorGroupMemberId: 'actorGroupMemberId',
+  matchId: 'matchId',
+  importanceScore: 'importanceScore',
+  metadata: 'metadata',
+  occurredAt: 'occurredAt',
+  createdAt: 'createdAt'
+} as const
+
+export type FeedItemScalarFieldEnum = (typeof FeedItemScalarFieldEnum)[keyof typeof FeedItemScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
 } as const
 
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
+
+
+export const JsonNullValueInput = {
+  JsonNull: JsonNull
+} as const
+
+export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
 
 
 export const QueryMode = {
@@ -1026,6 +1124,15 @@ export const NullsOrder = {
 } as const
 
 export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
+export const JsonNullValueFilter = {
+  DbNull: DbNull,
+  JsonNull: JsonNull,
+  AnyNull: AnyNull
+} as const
+
+export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
 
 
 
@@ -1129,6 +1236,34 @@ export type EnumMatchTeamFieldRefInput<$PrismaModel> = FieldRefInputType<$Prisma
  * Reference to a field of type 'MatchTeam[]'
  */
 export type ListEnumMatchTeamFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'MatchTeam[]'>
+    
+
+
+/**
+ * Reference to a field of type 'FeedItemType'
+ */
+export type EnumFeedItemTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'FeedItemType'>
+    
+
+
+/**
+ * Reference to a field of type 'FeedItemType[]'
+ */
+export type ListEnumFeedItemTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'FeedItemType[]'>
+    
+
+
+/**
+ * Reference to a field of type 'Json'
+ */
+export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
+    
+
+
+/**
+ * Reference to a field of type 'QueryMode'
+ */
+export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
     
 
 /**
@@ -1247,6 +1382,7 @@ export type GlobalOmitConfig = {
   groupMember?: Prisma.GroupMemberOmit
   match?: Prisma.MatchOmit
   matchPlayer?: Prisma.MatchPlayerOmit
+  feedItem?: Prisma.FeedItemOmit
 }
 
 /* Types for Logging */

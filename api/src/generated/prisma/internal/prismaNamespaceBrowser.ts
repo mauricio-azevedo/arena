@@ -56,7 +56,8 @@ export const ModelName = {
   GroupInvite: 'GroupInvite',
   GroupMember: 'GroupMember',
   Match: 'Match',
-  MatchPlayer: 'MatchPlayer'
+  MatchPlayer: 'MatchPlayer',
+  FeedItem: 'FeedItem'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -187,12 +188,35 @@ export const MatchPlayerScalarFieldEnum = {
 export type MatchPlayerScalarFieldEnum = (typeof MatchPlayerScalarFieldEnum)[keyof typeof MatchPlayerScalarFieldEnum]
 
 
+export const FeedItemScalarFieldEnum = {
+  id: 'id',
+  type: 'type',
+  groupId: 'groupId',
+  actorUserId: 'actorUserId',
+  actorGroupMemberId: 'actorGroupMemberId',
+  matchId: 'matchId',
+  importanceScore: 'importanceScore',
+  metadata: 'metadata',
+  occurredAt: 'occurredAt',
+  createdAt: 'createdAt'
+} as const
+
+export type FeedItemScalarFieldEnum = (typeof FeedItemScalarFieldEnum)[keyof typeof FeedItemScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
 } as const
 
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
+
+
+export const JsonNullValueInput = {
+  JsonNull: JsonNull
+} as const
+
+export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
 
 
 export const QueryMode = {
@@ -209,4 +233,13 @@ export const NullsOrder = {
 } as const
 
 export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
+export const JsonNullValueFilter = {
+  DbNull: DbNull,
+  JsonNull: JsonNull,
+  AnyNull: AnyNull
+} as const
+
+export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
 
