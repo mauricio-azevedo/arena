@@ -4,9 +4,9 @@ import type { ProfileSummaryMatch } from '../types/profile-summary-match.type';
 import {
   formatProfileMatchResult,
   formatProfileMatchScore,
-  formatProfileMatchTeams,
 } from '../../../helpers/profile-match-format.helper';
 import { formatProfileRelativeDate } from '../../../helpers/profile-date-format.helper';
+import { ProfileMatchPlayersInline } from '@/features/profile/components/profile-match-players-inline';
 
 type Props = {
   matches: ProfileSummaryMatch[];
@@ -44,7 +44,6 @@ export function RecentMatchesSection({ matches, onViewAll }: Props) {
 }
 
 function RecentMatchRow({ match }: { match: ProfileSummaryMatch }) {
-  const teams = formatProfileMatchTeams(match);
   const result = formatProfileMatchResult(match.result);
   const isWin = match.result === 'WIN';
 
@@ -60,7 +59,8 @@ function RecentMatchRow({ match }: { match: ProfileSummaryMatch }) {
 
       <div className="min-w-0 flex-1 space-y-1">
         <p className="text-sm font-semibold leading-5">
-          {teams.teamA} {formatProfileMatchScore(match)} {teams.teamB}
+          <ProfileMatchPlayersInline players={match.teamA} /> {formatProfileMatchScore(match)}{' '}
+          <ProfileMatchPlayersInline players={match.teamB} />
         </p>
 
         <p className="truncate text-xs text-muted-foreground">
