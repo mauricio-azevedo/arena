@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
 import { AppShell } from '@/components/app-shell';
+import { BackButton } from '@/components/back-button';
 import { GroupDetailTabs } from '@/features/groups/components/group-detail-tabs';
 import { PageHeader } from '@/components/page-header';
 import { GroupActions } from '@/features/groups/components/group-actions';
@@ -33,6 +34,8 @@ export default async function GroupDetailPage({ params, searchParams }: Props) {
       <AppShell>
         <div className="space-y-6">
           <div className="space-y-4">
+            <BackButton href="/groups" />
+
             <PageHeader
               title={group.name}
               description={group.description ?? 'Grupo público do BeachRank.'}
