@@ -1,7 +1,16 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { MoreHorizontal } from 'lucide-react';
+import { LogoutButton } from '@/features/auth/components/logout-button';
 import { getAccessToken } from '@/lib/auth';
+import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { getProfileSummary } from './api/profile.api';
 import { getPublicProfileSummary } from './api/profile-user.api';
 import type { ProfileSummary } from './tabs/summary/types/profile-summary.type';
@@ -81,7 +90,33 @@ export function Profile({ userId }: Props) {
 
   return (
     <div className="space-y-6">
-      <ProfileHeader user={summary.user} isPublicProfile={isPublicProfile} />
+      <div className="relative">
+        <ProfileHeader user={summary.user} isPublicProfile={isPublicProfile} />
+
+        {!isPublicProfile && (
+          <div className="absolute right-4 top-4">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon-sm"
+                  className="border border-white/15 bg-white/12 text-primary-foreground shadow-sm backdrop-blur-sm hover:bg-white/20 hover:text-primary-foreground"
+                >
+                  <MoreHorizontal className="h-4 w-4" />
+                  <span className="sr-only">Abrir opções do perfil</span>
+                </Button>
+              </DropdownMenuTrigger>
+
+              <DropdownMenuContent align="end" className="w-48">
+                <DropdownMenuLabel>Conta</DropdownMenuLabel>
+                <LogoutButton className="w-full justify-start border-0 bg-transparent px-2 text-destructive shadow-none hover:bg-destructive/10 hover:text-destructive" />
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        )}
+      </div>
+
       <ProfileTabs activeTab={activeTab} onChange={setActiveTab} />
       {activeTab === 'summary' && (
         <ProfileSummaryTab

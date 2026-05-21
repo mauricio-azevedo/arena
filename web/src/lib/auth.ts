@@ -13,10 +13,18 @@ export function getAccessToken() {
 }
 
 export function setAccessToken(token: string) {
+  if (typeof window === 'undefined') {
+    return;
+  }
+
   window.localStorage.setItem(ACCESS_TOKEN_STORAGE_KEY, token);
 }
 
 export function removeAccessToken() {
+  if (typeof window === 'undefined') {
+    return;
+  }
+
   window.localStorage.removeItem(ACCESS_TOKEN_STORAGE_KEY);
 }
 
@@ -34,7 +42,7 @@ export function getUserIdFromAccessToken(token: string) {
   try {
     const [, payload] = token.split('.');
 
-    if (!payload) {
+    if (!payload || typeof window === 'undefined') {
       return null;
     }
 
