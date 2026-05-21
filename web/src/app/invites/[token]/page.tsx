@@ -3,7 +3,7 @@ import { AppShell } from '@/components/app-shell';
 import { BackButton } from '@/components/back-button';
 import { InviteAcceptClient } from '@/features/invites/components/invite-accept-client';
 import { PageHeader } from '@/components/page-header';
-import { getInvite } from '@/features/invites/invites.api';
+import { getInvite } from '@/features/invites/api/invites.api';
 
 type Props = {
   params: Promise<{
