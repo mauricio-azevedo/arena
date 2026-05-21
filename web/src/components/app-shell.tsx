@@ -120,17 +120,27 @@ export function AppShell({ children }: AppShellProps) {
       <div className="pointer-events-none fixed inset-x-0 top-0 -z-10 h-48 bg-gradient-to-b from-background via-background/80 to-transparent" />
 
       <div className="mx-auto w-full max-w-md space-y-6">
-        {shouldHoldContent ? <AccessGuardLoadingState accessState={accessState} /> : children}
+        {shouldHoldContent ? <AccessGuardSkeleton /> : children}
       </div>
       <BottomNav />
     </main>
   );
 }
 
-function AccessGuardLoadingState({ accessState }: { accessState: AccessState }) {
+function AccessGuardSkeleton() {
   return (
-    <div className="rounded-3xl border bg-card/90 p-4 text-sm leading-6 text-muted-foreground shadow-[0_14px_45px_rgba(84,54,20,0.08)] backdrop-blur-sm">
-      {accessState === 'redirecting' ? 'Redirecionando...' : 'Verificando acesso...'}
+    <div
+      role="status"
+      aria-live="polite"
+      aria-busy="true"
+      className="space-y-4 rounded-3xl border bg-card/70 p-4 shadow-[0_14px_45px_rgba(84,54,20,0.08)] backdrop-blur-sm"
+    >
+      <span className="sr-only">Carregando página</span>
+      <div className="h-24 animate-pulse rounded-[1.35rem] bg-muted/70" />
+      <div className="space-y-2">
+        <div className="h-3 w-2/3 animate-pulse rounded-full bg-muted" />
+        <div className="h-3 w-1/2 animate-pulse rounded-full bg-muted/80" />
+      </div>
     </div>
   );
 }
