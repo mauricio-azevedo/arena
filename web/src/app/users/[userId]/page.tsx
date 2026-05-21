@@ -1,4 +1,5 @@
 import { AppShell } from '@/components/app-shell';
+import { BackButton } from '@/components/back-button';
 import { Profile } from '@/features/profile/profile';
 
 type Props = {
@@ -8,11 +9,14 @@ type Props = {
 };
 
 export default async function UserProfilePage({ params }: Props) {
-  const { userId } = await params;
+  const routeParams = await params;
 
   return (
     <AppShell>
-      <Profile userId={userId} />
+      <div className="space-y-6">
+        <BackButton href="/groups" />
+        <Profile userId={routeParams.userId} />
+      </div>
     </AppShell>
   );
 }

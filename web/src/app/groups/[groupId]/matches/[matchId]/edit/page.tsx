@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation';
 import { AddMatchForm } from '@/features/matches/components/add-match-form';
 import { AppShell } from '@/components/app-shell';
+import { BackButton } from '@/components/back-button';
 import { PageHeader } from '@/components/page-header';
 import { getGroup, getGroupMembers } from '@/features/groups/groups.api';
 import { getGroupMatch } from '@/features/matches/matches.api';
@@ -24,9 +25,11 @@ export default async function EditGroupMatchPage({ params }: Props) {
 
     return (
       <AppShell>
-        <PageHeader title="Corrigir partida" description={group.name} />
-
-        <AddMatchForm groupId={group.id} members={members} match={match} />
+        <div className="space-y-6">
+          <BackButton href={['', 'groups', group.id].join('/')} />
+          <PageHeader title="Corrigir partida" description={group.name} />
+          <AddMatchForm groupId={group.id} members={members} match={match} />
+        </div>
       </AppShell>
     );
   } catch {
