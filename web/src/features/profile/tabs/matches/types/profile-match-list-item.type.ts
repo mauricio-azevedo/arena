@@ -1,4 +1,5 @@
-import { ProfileMatchResult } from '@/features/profile/enums/profile-match-result.enum';
+import type { ProfileMatchResult } from '../../../enums/profile-match-result.enum';
+import type { ProfileMatchPlayer } from '../../summary/types/profile-summary-match.type';
 
 export type ProfileMatchListItem = {
   id: string;
@@ -11,8 +12,8 @@ export type ProfileMatchListItem = {
   winnerTeam: 'TEAM_A' | 'TEAM_B' | null;
   result: ProfileMatchResult;
 
-  teamA: string[];
-  teamB: string[];
+  teamA: ProfileMatchPlayer[];
+  teamB: ProfileMatchPlayer[];
 
   ratingBefore: number;
   ratingAfter: number;
