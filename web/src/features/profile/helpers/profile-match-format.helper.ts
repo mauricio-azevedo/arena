@@ -1,0 +1,16 @@
+import type { ProfileSummaryMatch } from '../types/profile-summary-match.type';
+
+export function formatProfileMatchScore(match: ProfileSummaryMatch) {
+  return `${match.gamesA}–${match.gamesB}`;
+}
+
+export function formatProfileMatchTeams(match: ProfileSummaryMatch) {
+  return {
+    teamA: match.teamA.join(' / '),
+    teamB: match.teamB.join(' / '),
+  };
+}
+
+export function formatProfileMatchResult(result: ProfileSummaryMatch['result']) {
+  return result === 'WIN' ? 'Vitória' : 'Derrota';
+}
