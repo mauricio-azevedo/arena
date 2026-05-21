@@ -1,5 +1,5 @@
 import { MyGroupsList } from '@/features/groups/components/my-groups-list';
-import { getPublicProfileGroups } from '@/features/profile/profile-user.api';
+import { getPublicProfileGroups } from '@/features/profile/api/profile-user.api';
 
 type Props = {
   userId?: string;

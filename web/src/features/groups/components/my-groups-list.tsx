@@ -8,6 +8,7 @@ import { getMyGroups } from '@/features/groups/groups.api';
 import { getAccessToken } from '@/lib/auth';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { getGroupInitials } from '@/features/groups/helpers/group-initials.helper';
 
 type Props = {
   loadGroups?: () => Promise<MyGroup[]>;
@@ -197,14 +198,4 @@ function EmptyPublicGroupsState() {
       </CardContent>
     </Card>
   );
-}
-
-function getGroupInitials(name: string) {
-  return name
-    .split(' ')
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0])
-    .join('')
-    .toUpperCase();
 }

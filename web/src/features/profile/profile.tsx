@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { getAccessToken } from '@/lib/auth';
-import { getProfileSummary } from './profile.api';
-import { getPublicProfileSummary } from './profile-user.api';
+import { getProfileSummary } from './api/profile.api';
+import { getPublicProfileSummary } from './api/profile-user.api';
 import type { ProfileSummary } from './tabs/summary/types/profile-summary.type';
 import { ProfileErrorState } from './components/profile-error-state';
 import { ProfileHeader } from './components/profile-header';
@@ -14,7 +14,7 @@ import { ProfileGroupsTab } from './tabs/groups/profile-groups-tab';
 import { ProfileMatchesTab } from './tabs/matches/profile-matches-tab';
 import { ProfileStatsTab } from './tabs/stats/profile-stats-tab';
 import { ProfileSummaryTab } from './tabs/summary/profile-summary-tab';
-import { ProfileTab } from '@/features/profile/types/profile-tab.type';
+import type { ProfileTab } from '@/features/profile/types/profile-tab.type';
 
 type Props = {
   userId?: string;

@@ -1,7 +1,7 @@
 import { apiRequest } from '@/lib/api-client';
 import type { MyGroup } from '@/types/api';
-import type { ProfileSummary } from './tabs/summary/types/profile-summary.type';
-import type { ProfileMatchListItem } from './tabs/matches/types/profile-match-list-item.type';
+import type { ProfileSummary } from '../tabs/summary/types/profile-summary.type';
+import type { ProfileMatchListItem } from '../tabs/matches/types/profile-match-list-item.type';
 
 export function getPublicProfileSummary(userId: string): Promise<ProfileSummary> {
   return apiRequest<ProfileSummary>(`/users/${userId}/profile/summary`, {

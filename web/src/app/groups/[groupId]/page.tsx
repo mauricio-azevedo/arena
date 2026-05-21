@@ -4,8 +4,8 @@ import { BackButton } from '@/components/back-button';
 import { GroupDetailTabs } from '@/features/groups/components/group-detail-tabs';
 import { PageHeader } from '@/components/page-header';
 import { GroupActions } from '@/features/groups/components/group-actions';
-import { getGroup, getGroupMembers, getGroupRanking } from '@/features/groups/groups.api';
-import { getGroupMatches } from '@/features/matches/matches.api';
+import { getGroup, getGroupMembers, getGroupRanking } from '@/features/groups/api/groups.api';
+import { getGroupMatches } from '@/features/matches/api/matches.api';
 
 type Props = {
   params: Promise<{

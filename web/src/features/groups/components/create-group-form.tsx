@@ -2,7 +2,7 @@
 
 import { FormEvent, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { createGroup } from '@/features/groups/groups.api';
+import { createGroup } from '@/features/groups/api/groups.api';
 import { getAccessToken } from '@/lib/auth';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';

@@ -1,6 +1,6 @@
 import { apiRequest } from '@/lib/api-client';
 import type { MyGroup } from '@/types/api';
-import type { ProfileSummary } from './tabs/summary/types/profile-summary.type';
+import type { ProfileSummary } from '../tabs/summary/types/profile-summary.type';
 
 export function getProfileSummary(token: string): Promise<ProfileSummary> {
   return apiRequest<ProfileSummary>('/me/profile/summary', {
