@@ -66,14 +66,66 @@ function CardAction({ className, ...props }: React.ComponentProps<'div'>) {
   );
 }
 
-function CardContent({ className, ...props }: React.ComponentProps<'div'>) {
+function CardContent({
+  className,
+  children,
+  ...props
+}: React.ComponentProps<'div'>) {
+  const loadingLabel = getLoadingLabel(children);
+
+  if (loadingLabel) {
+    return (
+      <div
+        data-slot="card-content"
+        role="status"
+        aria-live="polite"
+        aria-busy="true"
+        className={cn('px-4 group-data-[size=sm]/card:px-3', className)}
+        {...props}
+      >
+        <span className="sr-only">{loadingLabel}</span>
+        <LoadingContentSkeleton />
+      </div>
+    );
+  }
+
   return (
     <div
       data-slot="card-content"
       className={cn('px-4 group-data-[size=sm]/card:px-3', className)}
       {...props}
-    />
+    >
+      {children}
+    </div>
   );
+}
+
+function LoadingContentSkeleton() {
+  return (
+    <div className="min-w-0 flex-1 space-y-3">
+      <div className="h-4 w-2/3 animate-pulse rounded-full bg-muted" />
+      <div className="space-y-2">
+        <div className="h-3 w-full animate-pulse rounded-full bg-muted/80" />
+        <div className="h-3 w-1/2 animate-pulse rounded-full bg-muted/70" />
+      </div>
+    </div>
+  );
+}
+
+function getLoadingLabel(children: React.ReactNode) {
+  const nodes = React.Children.toArray(children);
+
+  if (nodes.length !== 1 || typeof nodes[0] !== 'string') {
+    return null;
+  }
+
+  const text = nodes[0].trim();
+
+  if (/^(Carregando|Verificando)\b/i.test(text)) {
+    return text;
+  }
+
+  return null;
 }
 
 function CardFooter({ className, ...props }: React.ComponentProps<'div'>) {
