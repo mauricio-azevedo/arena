@@ -23,6 +23,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { deleteGroupMatch } from '@/features/matches/matches.api';
+import { UserNameLink } from '@/features/users/components/user-name-link';
 import { getAccessToken } from '@/lib/auth';
 
 type MatchesListProps = {
@@ -153,9 +154,9 @@ export function MatchCard({
         <CardContent className="p-4 pr-11">
           <div className="flex items-center justify-between gap-4">
             <div className="min-w-0 flex-1 space-y-3">
-              <MatchTeam names={formatTeamNames(teamA)} score={match.gamesA} isWinner={teamAWon} />
+              <MatchTeam players={teamA} score={match.gamesA} isWinner={teamAWon} />
 
-              <MatchTeam names={formatTeamNames(teamB)} score={match.gamesB} isWinner={!teamAWon} />
+              <MatchTeam players={teamB} score={match.gamesB} isWinner={!teamAWon} />
 
               <p className="text-xs text-muted-foreground">{formatDate(match.playedAt)}</p>
             </div>
@@ -203,11 +204,11 @@ export function MatchCard({
 }
 
 function MatchTeam({
-  names,
+  players,
   score,
   isWinner,
 }: {
-  names: string;
+  players: MatchPlayer[];
   score: number;
   isWinner: boolean;
 }) {
@@ -222,9 +223,26 @@ function MatchTeam({
       </div>
 
       <p className={`truncate text-sm ${isWinner ? 'font-semibold' : 'text-muted-foreground'}`}>
-        {names}
+        <MatchPlayerNames players={players} />
       </p>
     </div>
+  );
+}
+
+function MatchPlayerNames({ players }: { players: MatchPlayer[] }) {
+  if (players.length === 0) {
+    return <>Dupla não encontrada</>;
+  }
+
+  return (
+    <>
+      {players.map((player, index) => (
+        <span key={player.id}>
+          {index > 0 && ' / '}
+          <UserNameLink userId={player.groupMember?.userId}>{player.displayNameSnapshot}</UserNameLink>
+        </span>
+      ))}
+    </>
   );
 }
 
@@ -232,14 +250,6 @@ function getTeamPlayers(match: Match, team: 'TEAM_A' | 'TEAM_B') {
   return match.players
     .filter((player) => player.team === team)
     .sort((a, b) => a.position - b.position);
-}
-
-function formatTeamNames(players: MatchPlayer[]) {
-  if (players.length === 0) {
-    return 'Dupla não encontrada';
-  }
-
-  return players.map((player) => player.displayNameSnapshot).join(' / ');
 }
 
 function getAverageDelta(players: MatchPlayer[]) {
