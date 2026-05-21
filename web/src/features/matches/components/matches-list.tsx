@@ -22,7 +22,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { deleteGroupMatch } from '@/features/matches/matches.api';
+import { deleteGroupMatch } from '@/features/matches/api/matches.api';
 import { UserNameLink } from '@/features/users/components/user-name-link';
 import { getAccessToken } from '@/lib/auth';
 
