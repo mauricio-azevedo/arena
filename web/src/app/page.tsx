@@ -1,4 +1,5 @@
 import { Activity, Trophy, UsersRound } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import { AppShell } from '@/components/app-shell';
 import { HomeFeed } from '@/features/feed/home-feed';
 
@@ -46,7 +47,7 @@ export default function HomePage() {
   );
 }
 
-function HeroMetric({ icon: Icon, label }: { icon: typeof UsersRound; label: string }) {
+function HeroMetric({ icon: Icon, label }: { icon: LucideIcon; label: string }) {
   return (
     <div className="rounded-2xl border border-white/16 bg-white/12 p-3 backdrop-blur-sm">
       <Icon className="h-4 w-4" />
