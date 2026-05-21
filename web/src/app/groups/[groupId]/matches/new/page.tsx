@@ -3,7 +3,7 @@ import { AddMatchForm } from '@/features/matches/components/add-match-form';
 import { AppShell } from '@/components/app-shell';
 import { BackButton } from '@/components/back-button';
 import { PageHeader } from '@/components/page-header';
-import { getGroup, getGroupMembers } from '@/features/groups/groups.api';
+import { getGroup, getGroupMembers } from '@/features/groups/api/groups.api';
 
 type Props = {
   params: Promise<{
