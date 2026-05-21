@@ -23,7 +23,7 @@ export class MeController {
   @Get('profile/summary')
   @UseGuards(JwtAuthGuard)
   getProfileSummary(@CurrentUser() user: AuthUser) {
-    return this.profileSummary.getProfileSummary(user.sub);
+    return this.profileSummary.getProfileSummary(user.sub, { includeEmail: true });
   }
 
   @Get('profile/matches')
