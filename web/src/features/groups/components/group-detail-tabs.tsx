@@ -7,6 +7,7 @@ import { MatchesList } from '@/features/matches/components/matches-list';
 import { useEffect, useState } from 'react';
 import { getMyGroups } from '@/features/groups/groups.api';
 import { getAccessToken } from '@/lib/auth';
+import { UserNameLink } from '@/features/users/components/user-name-link';
 
 type GroupTab = 'ranking' | 'matches' | 'members';
 
@@ -105,7 +106,9 @@ function RankingTab({ ranking }: { ranking: GroupMember[] }) {
               </span>
 
               <div>
-                <p className="font-medium">{member.displayName}</p>
+                <p className="font-medium">
+                  <UserNameLink userId={member.userId}>{member.displayName}</UserNameLink>
+                </p>
                 <p className="text-xs text-muted-foreground">
                   {member.role === 'ADMIN' ? 'Admin' : 'Membro'}
                 </p>
@@ -157,7 +160,9 @@ function MembersTab({ members }: { members: GroupMember[] }) {
         <Card key={member.id}>
           <CardContent className="p-4">
             <div>
-              <p className="font-medium">{member.displayName}</p>
+              <p className="font-medium">
+                <UserNameLink userId={member.userId}>{member.displayName}</UserNameLink>
+              </p>
               <p className="text-xs text-muted-foreground">
                 {member.role === 'ADMIN' ? 'Admin' : 'Membro'}
               </p>
