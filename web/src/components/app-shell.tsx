@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, useMemo, useState, type ReactNode } from 'react';
-import { usePathname, useRouter } from 'next/navigation';
+import { useEffect, useMemo, useState, type MouseEvent, type ReactNode } from 'react';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { BottomNav } from '@/components/bottom-nav';
 import { getMyGroups } from '@/features/groups/api/groups.api';
 import { getAccessToken } from '@/lib/auth';
@@ -31,12 +31,15 @@ type RouteAccess =
 export function AppShell({ children }: AppShellProps) {
   const pathname = usePathname();
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const currentPathname = pathname ?? '/';
+  const currentSearch = searchParams.toString();
   const routeAccess = useMemo(() => getRouteAccess(currentPathname), [currentPathname]);
   const [accessState, setAccessState] = useState<AccessState>(
     routeAccess.requiresCheck ? 'checking' : 'allowed',
   );
+  const [isRoutePending, setIsRoutePending] = useState(false);
 
   useEffect(() => {
     let isCurrent = true;
@@ -112,18 +115,62 @@ export function AppShell({ children }: AppShellProps) {
     };
   }, [routeAccess, router]);
 
+  useEffect(() => {
+    setIsRoutePending(false);
+  }, [currentPathname, currentSearch]);
+
+  useEffect(() => {
+    if (!isRoutePending) {
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      setIsRoutePending(false);
+    }, 8000);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [isRoutePending]);
+
+  function handleShellClick(event: MouseEvent<HTMLElement>) {
+    const anchor = (event.target as Element | null)?.closest('a[href]');
+
+    if (!anchor || !isInternalNavigationClick(event, anchor)) {
+      return;
+    }
+
+    setIsRoutePending(true);
+  }
+
   const shouldHoldContent = routeAccess.requiresCheck && accessState !== 'allowed';
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-background px-4 pb-28 pt-5 text-foreground">
+    <main
+      onClickCapture={handleShellClick}
+      className="relative min-h-screen overflow-hidden bg-background px-4 pb-28 pt-5 text-foreground"
+    >
       <div className="pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,color-mix(in_oklch,var(--primary)_18%,transparent),transparent_34%),radial-gradient(circle_at_bottom_right,color-mix(in_oklch,var(--accent)_28%,transparent),transparent_38%)]" />
       <div className="pointer-events-none fixed inset-x-0 top-0 -z-10 h-48 bg-gradient-to-b from-background via-background/80 to-transparent" />
+
+      {isRoutePending && <RoutePendingIndicator />}
 
       <div className="mx-auto w-full max-w-md space-y-6">
         {shouldHoldContent ? <AccessGuardSkeleton /> : children}
       </div>
       <BottomNav />
     </main>
+  );
+}
+
+function RoutePendingIndicator() {
+  return (
+    <div
+      role="status"
+      aria-live="polite"
+      className="pointer-events-none fixed inset-x-0 top-0 z-[60] h-1 overflow-hidden bg-primary/10"
+    >
+      <span className="sr-only">Carregando página</span>
+      <div className="h-full w-1/2 animate-[route-progress_1s_ease-in-out_infinite] rounded-r-full bg-primary shadow-[0_0_18px_color-mix(in_oklch,var(--primary)_55%,transparent)]" />
+    </div>
   );
 }
 
@@ -206,6 +253,39 @@ function getRouteAccess(pathname: string): RouteAccess {
     kind: 'public',
     requiresCheck: false,
   };
+}
+
+function isInternalNavigationClick(event: MouseEvent, anchor: Element) {
+  if (
+    event.defaultPrevented ||
+    event.button !== 0 ||
+    event.metaKey ||
+    event.ctrlKey ||
+    event.shiftKey ||
+    event.altKey
+  ) {
+    return false;
+  }
+
+  const href = anchor.getAttribute('href');
+  const target = anchor.getAttribute('target');
+  const download = anchor.getAttribute('download');
+
+  if (!href || target || download || href.startsWith('#')) {
+    return false;
+  }
+
+  if (typeof window === 'undefined') {
+    return false;
+  }
+
+  const nextUrl = new URL(href, window.location.href);
+
+  if (nextUrl.origin !== window.location.origin) {
+    return false;
+  }
+
+  return nextUrl.pathname + nextUrl.search !== window.location.pathname + window.location.search;
 }
 
 function normalizePathname(pathname: string) {
