@@ -3,9 +3,9 @@ import { ProfileMatchListItem } from '@/features/profile/tabs/matches/types/prof
 import {
   formatProfileMatchResult,
   formatProfileMatchScore,
-  formatProfileMatchTeams,
 } from '@/features/profile/helpers/profile-match-format.helper';
 import { formatProfileRelativeDate } from '@/features/profile/helpers/profile-date-format.helper';
+import { ProfileMatchPlayersInline } from '@/features/profile/components/profile-match-players-inline';
 
 type Props = {
   matches: ProfileMatchListItem[];
@@ -32,7 +32,6 @@ export function ProfileMatchesList({ matches }: Props) {
 }
 
 function ProfileMatchCard({ match }: { match: ProfileMatchListItem }) {
-  const teams = formatProfileMatchTeams(match);
   const result = formatProfileMatchResult(match.result);
   const isWin = match.result === 'WIN';
 
@@ -42,7 +41,8 @@ function ProfileMatchCard({ match }: { match: ProfileMatchListItem }) {
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
             <p className="text-sm font-semibold leading-5">
-              {teams.teamA} {formatProfileMatchScore(match)} {teams.teamB}
+              <ProfileMatchPlayersInline players={match.teamA} /> {formatProfileMatchScore(match)}{' '}
+              <ProfileMatchPlayersInline players={match.teamB} />
             </p>
 
             <p className="mt-1 text-xs text-muted-foreground">
