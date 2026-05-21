@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { Sparkles } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import type { FeedItem } from '../types/feed-item.type';
 import type { GroupCreatedFeedMetadata } from '../types/group-created-feed-metadata.type';
@@ -16,18 +17,21 @@ export function FeedItemCard({ item }: Props) {
   const title = item.group?.name ?? 'BeachRank';
 
   return (
-    <Card className="transition active:scale-[0.99]">
-      <CardContent className="space-y-3 p-4">
+    <Card className="transition-transform active:scale-[0.99]">
+      <CardContent className="p-4">
         <div className="flex items-start gap-3">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-muted text-sm font-semibold">
+          <div className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-primary/16 to-accent text-sm font-bold text-primary ring-1 ring-primary/10">
             {getGroupInitials(title)}
+            <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sm">
+              <Sparkles className="h-3 w-3" />
+            </span>
           </div>
 
-          <div className="min-w-0 flex-1">
+          <div className="min-w-0 flex-1 space-y-1.5">
             <div className="flex items-center gap-2">
               <Link
                 href={getFeedItemHref(item)}
-                className="truncate text-sm font-medium underline-offset-4 hover:underline"
+                className="truncate text-sm font-semibold tracking-[-0.01em] underline-offset-4 hover:underline"
               >
                 {title}
               </Link>
@@ -36,7 +40,7 @@ export function FeedItemCard({ item }: Props) {
               </p>
             </div>
 
-            <p className="mt-1 text-sm leading-5">
+            <p className="text-sm leading-6 text-muted-foreground">
               <FeedItemText item={item} />
             </p>
           </div>

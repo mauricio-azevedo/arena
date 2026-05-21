@@ -12,14 +12,14 @@ export function ProfileSummaryStatsGrid({ stats }: Props) {
       <StatCard
         icon={<CircleDot className="h-5 w-5" />}
         value={stats.matchesPlayed}
-        label="partidas"
+        label="Partidas"
       />
-      <StatCard icon={<Trophy className="h-5 w-5" />} value={stats.wins} label="vitórias" />
-      <StatCard icon={<X className="h-5 w-5" />} value={stats.losses} label="derrotas" />
+      <StatCard icon={<Trophy className="h-5 w-5" />} value={stats.wins} label="Vitórias" />
+      <StatCard icon={<X className="h-5 w-5" />} value={stats.losses} label="Derrotas" />
       <StatCard
         icon={<Percent className="h-5 w-5" />}
         value={`${stats.winRate}%`}
-        label="aproveitamento"
+        label="Aproveitamento"
       />
     </section>
   );
@@ -35,15 +35,17 @@ function StatCard({
   label: string;
 }) {
   return (
-    <Card className="rounded-2xl">
-      <CardContent className="space-y-4 p-5">
-        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted text-muted-foreground">
+    <Card>
+      <CardContent className="space-y-4 p-4">
+        <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary/12 text-primary">
           {icon}
         </div>
 
         <div>
-          <p className="text-3xl font-semibold tracking-tight">{value}</p>
-          <p className="mt-1 text-sm text-muted-foreground">{label}</p>
+          <p className="text-3xl font-semibold tracking-[-0.055em]">{value}</p>
+          <p className="mt-1 text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+            {label}
+          </p>
         </div>
       </CardContent>
     </Card>

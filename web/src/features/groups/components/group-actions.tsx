@@ -36,12 +36,12 @@ export function GroupActions({ groupId }: Props) {
 
   return (
     <div className={isAdmin ? 'grid grid-cols-2 gap-2' : 'grid grid-cols-1 gap-2'}>
-      <Button asChild>
+      <Button asChild size="lg">
         <Link href={`/groups/${groupId}/matches/new`}>Nova partida</Link>
       </Button>
 
       {isAdmin && (
-        <Button asChild variant="outline">
+        <Button asChild variant="outline" size="lg">
           <Link href={`/groups/${groupId}/invite`}>Convidar</Link>
         </Button>
       )}

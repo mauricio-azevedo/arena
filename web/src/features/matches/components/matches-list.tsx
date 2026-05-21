@@ -45,8 +45,8 @@ export function MatchesList({
     return (
       <Card>
         <CardContent className="space-y-2 p-4">
-          <p className="text-sm font-medium">{emptyTitle}</p>
-          <p className="text-sm text-muted-foreground">{emptyDescription}</p>
+          <p className="text-sm font-semibold">{emptyTitle}</p>
+          <p className="text-sm leading-6 text-muted-foreground">{emptyDescription}</p>
         </CardContent>
       </Card>
     );
@@ -115,10 +115,10 @@ export function MatchCard({
     <>
       <Card className="relative">
         {showActions && (
-          <div className="absolute right-2 top-2">
+          <div className="absolute right-3 top-3">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-8 w-8">
+                <Button variant="ghost" size="icon-sm">
                   <MoreVertical className="h-4 w-4" />
                   <span className="sr-only">Abrir opções</span>
                 </Button>
@@ -151,23 +151,26 @@ export function MatchCard({
           </div>
         )}
 
-        <CardContent className="p-4 pr-11">
-          <div className="flex items-center justify-between gap-4">
-            <div className="min-w-0 flex-1 space-y-3">
-              <MatchTeam players={teamA} score={match.gamesA} isWinner={teamAWon} />
-
-              <MatchTeam players={teamB} score={match.gamesB} isWinner={!teamAWon} />
-
-              <p className="text-xs text-muted-foreground">{formatDate(match.playedAt)}</p>
+        <CardContent className="space-y-4 p-4 pr-12">
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary/80">
+                Partida
+              </p>
+              <p className="mt-1 text-xs text-muted-foreground">{formatDate(match.playedAt)}</p>
             </div>
 
-            <div className="shrink-0 text-right">
-              <p className="text-3xl font-semibold tracking-tight">
+            <div className="text-right">
+              <p className="text-3xl font-semibold tracking-[-0.06em]">
                 {match.gamesA}–{match.gamesB}
               </p>
-
-              <p className="mt-1 text-xs text-muted-foreground">{formatDelta(winningDelta)}</p>
+              <p className="mt-0.5 text-xs font-medium text-primary">{formatDelta(winningDelta)}</p>
             </div>
+          </div>
+
+          <div className="space-y-2.5">
+            <MatchTeam players={teamA} score={match.gamesA} isWinner={teamAWon} />
+            <MatchTeam players={teamB} score={match.gamesB} isWinner={!teamAWon} />
           </div>
         </CardContent>
       </Card>
@@ -213,10 +216,14 @@ function MatchTeam({
   isWinner: boolean;
 }) {
   return (
-    <div className="flex min-w-0 items-center gap-3">
+    <div
+      className={`flex min-w-0 items-center gap-3 rounded-2xl border px-3 py-2.5 ${
+        isWinner ? 'bg-primary/10 ring-1 ring-primary/20' : 'bg-muted/35'
+      }`}
+    >
       <div
-        className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-sm font-semibold ${
-          isWinner ? 'bg-foreground text-background' : 'bg-muted text-muted-foreground'
+        className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-bold ${
+          isWinner ? 'bg-primary text-primary-foreground' : 'bg-background text-muted-foreground'
         }`}
       >
         {score}
