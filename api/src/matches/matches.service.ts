@@ -25,6 +25,25 @@ type RatingState = {
   rating: number;
 };
 
+type PlayerRatingSnapshot = {
+  ratingBefore: number;
+  ratingAfter: number;
+  ratingDelta: number;
+};
+
+type MatchRatingSnapshot = {
+  teamAExpected: number;
+  teamBExpected: number;
+  teamAActual: number;
+  teamBActual: number;
+  teamARatingBefore: number;
+  teamBRatingBefore: number;
+  teamARatingAfter: number;
+  teamBRatingAfter: number;
+  playerRatingsByMemberId: Map<string, PlayerRatingSnapshot>;
+  updatedMembers: Array<{ id: string; rating: number }>;
+};
+
 const INITIAL_RATING = 1000;
 const RATING_ALGORITHM = 'BEACH_ELO_V1';
 
@@ -41,6 +60,11 @@ export class MatchesService {
 
       const membersById = await this.getMembersById(tx, groupId, body);
       const playedAt = this.parsePlayedAt(body.playedAt);
+      const canUseAppendOnlyRatingUpdate =
+        await this.canUseAppendOnlyRatingUpdate(tx, groupId, playedAt);
+      const ratingSnapshot = canUseAppendOnlyRatingUpdate
+        ? this.calculateCurrentMatchRatings(body, membersById)
+        : null;
 
       const match = await tx.match.create({
         data: {
@@ -50,6 +74,18 @@ export class MatchesService {
           winnerTeam: this.getWinnerTeam(body),
           ratingAlgorithm: RATING_ALGORITHM,
           playedAt,
+          ...(ratingSnapshot
+            ? {
+                teamAExpected: ratingSnapshot.teamAExpected,
+                teamBExpected: ratingSnapshot.teamBExpected,
+                teamAActual: ratingSnapshot.teamAActual,
+                teamBActual: ratingSnapshot.teamBActual,
+                teamARatingBefore: ratingSnapshot.teamARatingBefore,
+                teamBRatingBefore: ratingSnapshot.teamBRatingBefore,
+                teamARatingAfter: ratingSnapshot.teamARatingAfter,
+                teamBRatingAfter: ratingSnapshot.teamBRatingAfter,
+              }
+            : {}),
           players: {
             create: [
               this.buildPlayerCreate(
@@ -59,6 +95,7 @@ export class MatchesService {
                 MatchTeam.TEAM_A,
                 1,
                 playedAt,
+                ratingSnapshot?.playerRatingsByMemberId.get(body.teamAPlayer1Id),
               ),
               this.buildPlayerCreate(
                 groupId,
@@ -67,6 +104,7 @@ export class MatchesService {
                 MatchTeam.TEAM_A,
                 2,
                 playedAt,
+                ratingSnapshot?.playerRatingsByMemberId.get(body.teamAPlayer2Id),
               ),
               this.buildPlayerCreate(
                 groupId,
@@ -75,6 +113,7 @@ export class MatchesService {
                 MatchTeam.TEAM_B,
                 1,
                 playedAt,
+                ratingSnapshot?.playerRatingsByMemberId.get(body.teamBPlayer1Id),
               ),
               this.buildPlayerCreate(
                 groupId,
@@ -83,13 +122,18 @@ export class MatchesService {
                 MatchTeam.TEAM_B,
                 2,
                 playedAt,
+                ratingSnapshot?.playerRatingsByMemberId.get(body.teamBPlayer2Id),
               ),
             ],
           },
         },
       });
 
-      await this.recalculateRatings(tx, groupId);
+      if (ratingSnapshot) {
+        await this.updateGroupMemberRatings(tx, ratingSnapshot.updatedMembers);
+      } else {
+        await this.recalculateRatings(tx, groupId);
+      }
 
       return tx.match.findUnique({
         where: { id: match.id },
@@ -327,6 +371,7 @@ export class MatchesService {
     team: MatchTeam,
     position: number,
     playedAt: Date,
+    ratingSnapshot?: PlayerRatingSnapshot,
   ) {
     const member = membersById.get(groupMemberId);
 
@@ -348,9 +393,9 @@ export class MatchesService {
       displayNameSnapshot: member.displayName,
       team,
       position,
-      ratingBefore: 0,
-      ratingAfter: 0,
-      ratingDelta: 0,
+      ratingBefore: ratingSnapshot?.ratingBefore ?? 0,
+      ratingAfter: ratingSnapshot?.ratingAfter ?? 0,
+      ratingDelta: ratingSnapshot?.ratingDelta ?? 0,
       playedAt,
     };
   }
@@ -371,6 +416,121 @@ export class MatchesService {
 
   private getWinnerTeam(body: MatchBody) {
     return body.gamesA > body.gamesB ? MatchTeam.TEAM_A : MatchTeam.TEAM_B;
+  }
+
+  private async canUseAppendOnlyRatingUpdate(
+    tx: Prisma.TransactionClient,
+    groupId: string,
+    playedAt: Date,
+  ) {
+    const latestMatch = await tx.match.findFirst({
+      where: { groupId },
+      orderBy: [{ playedAt: 'desc' }, { createdAt: 'desc' }],
+      select: { playedAt: true },
+    });
+
+    if (!latestMatch) {
+      return true;
+    }
+
+    return playedAt.getTime() >= latestMatch.playedAt.getTime();
+  }
+
+  private calculateCurrentMatchRatings(
+    body: MatchBody,
+    membersById: Map<string, { id: string; displayName: string; rating: number }>,
+  ): MatchRatingSnapshot {
+    const teamAPlayer1 = this.getRatingState(body.teamAPlayer1Id, membersById);
+    const teamAPlayer2 = this.getRatingState(body.teamAPlayer2Id, membersById);
+    const teamBPlayer1 = this.getRatingState(body.teamBPlayer1Id, membersById);
+    const teamBPlayer2 = this.getRatingState(body.teamBPlayer2Id, membersById);
+
+    const teamARatingBefore = (teamAPlayer1.rating + teamAPlayer2.rating) / 2;
+    const teamBRatingBefore = (teamBPlayer1.rating + teamBPlayer2.rating) / 2;
+
+    const result = calculateBeachRating({
+      teamA: [teamAPlayer1, teamAPlayer2],
+      teamB: [teamBPlayer1, teamBPlayer2],
+      gamesA: body.gamesA,
+      gamesB: body.gamesB,
+    });
+
+    const updatedPlayers = [...result.teamA.players, ...result.teamB.players];
+    const playersBeforeById = new Map(
+      [teamAPlayer1, teamAPlayer2, teamBPlayer1, teamBPlayer2].map((player) => [
+        player.id,
+        player.rating,
+      ]),
+    );
+    const playerRatingsByMemberId = new Map<string, PlayerRatingSnapshot>();
+
+    for (const player of updatedPlayers) {
+      const ratingBefore = playersBeforeById.get(player.id);
+
+      if (ratingBefore === undefined) {
+        throw new Error('Invalid updated player');
+      }
+
+      playerRatingsByMemberId.set(player.id, {
+        ratingBefore,
+        ratingAfter: player.newRating,
+        ratingDelta: player.newRating - ratingBefore,
+      });
+    }
+
+    return {
+      teamAExpected: result.teamA.expected,
+      teamBExpected: result.teamB.expected,
+      teamAActual: result.teamA.actual,
+      teamBActual: result.teamB.actual,
+      teamARatingBefore,
+      teamBRatingBefore,
+      teamARatingAfter:
+        (result.teamA.players[0].newRating + result.teamA.players[1].newRating) /
+        2,
+      teamBRatingAfter:
+        (result.teamB.players[0].newRating + result.teamB.players[1].newRating) /
+        2,
+      playerRatingsByMemberId,
+      updatedMembers: updatedPlayers.map((player) => ({
+        id: player.id,
+        rating: player.newRating,
+      })),
+    };
+  }
+
+  private getRatingState(
+    groupMemberId: string,
+    membersById: Map<string, { id: string; displayName: string; rating: number }>,
+  ): RatingState {
+    const member = membersById.get(groupMemberId);
+
+    if (!member) {
+      throw new NotFoundException(
+        'One or more members were not found in this group',
+      );
+    }
+
+    return {
+      id: member.id,
+      name: member.displayName,
+      rating: member.rating,
+    };
+  }
+
+  private async updateGroupMemberRatings(
+    tx: Prisma.TransactionClient,
+    members: Array<{ id: string; rating: number }>,
+  ) {
+    for (const member of members) {
+      await tx.groupMember.update({
+        where: { id: member.id },
+        data: {
+          rating: member.rating,
+          ratingAlgorithm: RATING_ALGORITHM,
+        },
+      });
+    }
   }
 
   private async recalculateRatings(
