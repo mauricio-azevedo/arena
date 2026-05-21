@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { getMyGroups } from '@/features/groups/groups.api';
+import { getMyGroups } from '@/features/groups/api/groups.api';
 import { getAccessToken } from '@/lib/auth';
 
 type Props = {

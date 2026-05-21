@@ -6,8 +6,8 @@ import { useRouter } from 'next/navigation';
 import type { GroupInvite } from '@/types/api';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { getMyGroups } from '@/features/groups/groups.api';
-import { acceptInvite } from '@/features/invites/invites.api';
+import { getMyGroups } from '@/features/groups/api/groups.api';
+import { acceptInvite } from '@/features/invites/api/invites.api';
 import { getAccessToken } from '@/lib/auth';
 
 type Props = {

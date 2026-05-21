@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import type { GroupMember, Match } from '@/types/api';
 import { Card, CardContent } from '@/components/ui/card';
 import { MatchesList } from '@/features/matches/components/matches-list';
-import { getMyGroups } from '@/features/groups/groups.api';
+import { getMyGroups } from '@/features/groups/api/groups.api';
 import { getAccessToken } from '@/lib/auth';
 import { UserNameLink } from '@/features/users/components/user-name-link';
 

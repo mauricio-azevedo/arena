@@ -22,7 +22,7 @@ import {
   CommandList,
 } from '@/components/ui/command';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { createGroupMatch, updateGroupMatch } from '@/features/matches/matches.api';
+import { createGroupMatch, updateGroupMatch } from '@/features/matches/api/matches.api';
 import { getAccessToken } from '@/lib/auth';
 
 type Props = {
