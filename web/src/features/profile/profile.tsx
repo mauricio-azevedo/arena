@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { getAccessToken } from '@/lib/auth';
 import { getProfileSummary } from './profile.api';
+import { getPublicProfileSummary } from './profile-user.api';
 import type { ProfileSummary } from './tabs/summary/types/profile-summary.type';
 import { ProfileErrorState } from './components/profile-error-state';
 import { ProfileHeader } from './components/profile-header';
@@ -15,44 +16,58 @@ import { ProfileStatsTab } from './tabs/stats/profile-stats-tab';
 import { ProfileSummaryTab } from './tabs/summary/profile-summary-tab';
 import { ProfileTab } from '@/features/profile/types/profile-tab.type';
 
-export function Profile() {
+type Props = {
+  userId?: string;
+};
+
+export function Profile({ userId }: Props) {
   const [summary, setSummary] = useState<ProfileSummary | null>(null);
   const [activeTab, setActiveTab] = useState<ProfileTab>('summary');
   const [isLoading, setIsLoading] = useState(true);
   const [hasToken, setHasToken] = useState(false);
   const [error, setError] = useState('');
 
+  const isPublicProfile = Boolean(userId);
+
   useEffect(() => {
     const token = getAccessToken();
 
-    if (!token) {
+    if (!token && !isPublicProfile) {
       setHasToken(false);
       setIsLoading(false);
       return;
     }
 
-    setHasToken(true);
+    setHasToken(Boolean(token));
 
-    async function loadProfile(authToken: string) {
+    async function loadProfile() {
       try {
         setError('');
-        const data = await getProfileSummary(authToken);
+
+        const data = userId
+          ? await getPublicProfileSummary(userId)
+          : await getProfileSummary(token as string);
+
         setSummary(data);
       } catch {
-        setError('Não foi possível carregar seu perfil agora.');
+        setError(
+          isPublicProfile
+            ? 'Não foi possível carregar este perfil agora.'
+            : 'Não foi possível carregar seu perfil agora.',
+        );
       } finally {
         setIsLoading(false);
       }
     }
 
-    loadProfile(token);
-  }, []);
+    loadProfile();
+  }, [isPublicProfile, userId]);
 
   if (isLoading) {
     return <ProfileLoadingState />;
   }
 
-  if (!hasToken) {
+  if (!hasToken && !isPublicProfile) {
     return <ProfileSignedOutState />;
   }
 
@@ -66,7 +81,7 @@ export function Profile() {
 
   return (
     <div className="space-y-6">
-      <ProfileHeader user={summary.user} />
+      <ProfileHeader user={summary.user} isPublicProfile={isPublicProfile} />
       <ProfileTabs activeTab={activeTab} onChange={setActiveTab} />
       {activeTab === 'summary' && (
         <ProfileSummaryTab
@@ -76,8 +91,8 @@ export function Profile() {
         />
       )}
 
-      {activeTab === 'matches' && <ProfileMatchesTab />}
-      {activeTab === 'groups' && <ProfileGroupsTab />}
+      {activeTab === 'matches' && <ProfileMatchesTab userId={userId} />}
+      {activeTab === 'groups' && <ProfileGroupsTab userId={userId} />}
       {activeTab === 'stats' && <ProfileStatsTab />}
     </div>
   );

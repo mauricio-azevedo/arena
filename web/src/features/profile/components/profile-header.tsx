@@ -2,9 +2,10 @@ import type { ProfileUser } from '../types/profile-user.type';
 
 type Props = {
   user: ProfileUser;
+  isPublicProfile?: boolean;
 };
 
-export function ProfileHeader({ user }: Props) {
+export function ProfileHeader({ user, isPublicProfile = false }: Props) {
   const fullName = `${user.firstName} ${user.lastName}`.trim();
   const initials = `${user.firstName[0] ?? ''}${user.lastName[0] ?? ''}`.toUpperCase();
 
@@ -17,7 +18,11 @@ export function ProfileHeader({ user }: Props) {
 
         <div className="min-w-0">
           <h1 className="truncate text-2xl font-semibold tracking-tight">{fullName}</h1>
-          <p className="truncate text-sm text-muted-foreground">{user.email}</p>
+          {user.email ? (
+            <p className="truncate text-sm text-muted-foreground">{user.email}</p>
+          ) : isPublicProfile ? (
+            <p className="truncate text-sm text-muted-foreground">Perfil de jogador</p>
+          ) : null}
         </div>
       </div>
     </header>

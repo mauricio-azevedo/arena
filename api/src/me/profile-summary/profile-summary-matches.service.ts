@@ -7,11 +7,11 @@ import type { ProfileSummaryMatch } from '../types/profile-summary-match.type';
 export class ProfileSummaryMatchesService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findRecentMatches(userId: string): Promise<ProfileSummaryMatch[]> {
+  async findRecentMatches(profileUserId: string): Promise<ProfileSummaryMatch[]> {
     const matchPlayers = await this.prisma.matchPlayer.findMany({
       where: {
         groupMember: {
-          userId,
+          userId: profileUserId,
           leftAt: null,
         },
       },
@@ -25,6 +25,13 @@ export class ProfileSummaryMatchesService {
             group: true,
             players: {
               orderBy: [{ team: 'asc' }, { position: 'asc' }],
+              include: {
+                groupMember: {
+                  select: {
+                    userId: true,
+                  },
+                },
+              },
             },
           },
         },
@@ -35,11 +42,17 @@ export class ProfileSummaryMatchesService {
       const match = matchPlayer.match;
       const teamA = match.players
         .filter((player) => player.team === MatchTeam.TEAM_A)
-        .map((player) => player.displayNameSnapshot);
+        .map((player) => ({
+          userId: player.groupMember.userId,
+          displayName: player.displayNameSnapshot,
+        }));
 
       const teamB = match.players
         .filter((player) => player.team === MatchTeam.TEAM_B)
-        .map((player) => player.displayNameSnapshot);
+        .map((player) => ({
+          userId: player.groupMember.userId,
+          displayName: player.displayNameSnapshot,
+        }));
 
       return {
         id: match.id,

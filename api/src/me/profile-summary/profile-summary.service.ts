@@ -14,7 +14,10 @@ export class ProfileSummaryService {
     private readonly groups: ProfileSummaryGroupsService,
   ) {}
 
-  async getProfileSummary(userId: string): Promise<ProfileSummaryResponse> {
+  async getProfileSummary(
+    userId: string,
+    options: { includeEmail?: boolean } = {},
+  ): Promise<ProfileSummaryResponse> {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
       select: {
@@ -36,7 +39,10 @@ export class ProfileSummaryService {
     ]);
 
     return {
-      user,
+      user: {
+        ...user,
+        email: options.includeEmail ? user.email : null,
+      },
       stats,
       recentMatches,
       recentGroups,
