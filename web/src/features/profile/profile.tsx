@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { LogoutButton } from '@/features/auth/components/logout-button';
 import { getAccessToken } from '@/lib/auth';
 import { getProfileSummary } from './api/profile.api';
 import { getPublicProfileSummary } from './api/profile-user.api';
@@ -82,6 +83,13 @@ export function Profile({ userId }: Props) {
   return (
     <div className="space-y-6">
       <ProfileHeader user={summary.user} isPublicProfile={isPublicProfile} />
+
+      {!isPublicProfile && (
+        <div className="flex justify-end">
+          <LogoutButton />
+        </div>
+      )}
+
       <ProfileTabs activeTab={activeTab} onChange={setActiveTab} />
       {activeTab === 'summary' && (
         <ProfileSummaryTab
