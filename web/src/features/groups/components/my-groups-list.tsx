@@ -9,7 +9,12 @@ import { getAccessToken } from '@/lib/auth';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 
-export function MyGroupsList() {
+type Props = {
+  loadGroups?: () => Promise<MyGroup[]>;
+  ratingLabel?: string;
+};
+
+export function MyGroupsList({ loadGroups, ratingLabel = 'Você' }: Props) {
   const [token, setToken] = useState<string | null>(null);
   const [myGroups, setMyGroups] = useState<MyGroup[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -19,27 +24,27 @@ export function MyGroupsList() {
     const storedToken = getAccessToken();
     setToken(storedToken);
 
-    if (!storedToken) {
+    if (!storedToken && !loadGroups) {
       setIsLoading(false);
       return;
     }
 
-    async function loadMyGroups(authToken: string) {
+    async function load() {
       try {
         setError('');
-        const data = await getMyGroups(authToken);
+        const data = loadGroups ? await loadGroups() : await getMyGroups(storedToken as string);
         setMyGroups(data);
       } catch {
-        setError('Não foi possível carregar seus grupos.');
+        setError('Não foi possível carregar os grupos.');
       } finally {
         setIsLoading(false);
       }
     }
 
-    loadMyGroups(storedToken);
-  }, []);
+    load();
+  }, [loadGroups]);
 
-  if (!token) {
+  if (!token && !loadGroups) {
     return <SignedOutGroupsState />;
   }
 
@@ -47,7 +52,7 @@ export function MyGroupsList() {
     return (
       <Card>
         <CardContent className="p-4 text-sm text-muted-foreground">
-          Carregando seus grupos...
+          Carregando grupos...
         </CardContent>
       </Card>
     );
@@ -65,19 +70,19 @@ export function MyGroupsList() {
   }
 
   if (myGroups.length === 0) {
-    return <EmptyGroupsState />;
+    return loadGroups ? <EmptyPublicGroupsState /> : <EmptyGroupsState />;
   }
 
   return (
     <section className="space-y-3">
       {myGroups.map((membership) => (
-        <MyGroupCard key={membership.id} membership={membership} />
+        <MyGroupCard key={membership.id} membership={membership} ratingLabel={ratingLabel} />
       ))}
     </section>
   );
 }
 
-function MyGroupCard({ membership }: { membership: MyGroup }) {
+function MyGroupCard({ membership, ratingLabel }: { membership: MyGroup; ratingLabel: string }) {
   const group = membership.group;
 
   return (
@@ -109,7 +114,9 @@ function MyGroupCard({ membership }: { membership: MyGroup }) {
           <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs text-muted-foreground">
             <span>{group._count?.members ?? 0} membros</span>
             <span>{group._count?.matches ?? 0} partidas</span>
-            <span>Você · {membership.rating.toFixed(1)}</span>
+            <span>
+              {ratingLabel} · {membership.rating.toFixed(1)}
+            </span>
           </div>
         </CardContent>
       </Card>
@@ -159,6 +166,16 @@ function EmptyGroupsState() {
             Criar grupo
           </Link>
         </Button>
+      </CardContent>
+    </Card>
+  );
+}
+
+function EmptyPublicGroupsState() {
+  return (
+    <Card>
+      <CardContent className="p-4 text-sm text-muted-foreground">
+        Este jogador ainda não participa de grupos.
       </CardContent>
     </Card>
   );
