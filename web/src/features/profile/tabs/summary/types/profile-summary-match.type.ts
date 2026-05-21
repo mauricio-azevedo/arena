@@ -1,5 +1,10 @@
 import type { ProfileMatchResult } from '../../../enums/profile-match-result.enum';
 
+export type ProfileMatchPlayer = {
+  userId: string;
+  displayName: string;
+};
+
 export type ProfileSummaryMatch = {
   id: string;
   groupId: string;
@@ -9,6 +14,6 @@ export type ProfileSummaryMatch = {
   gamesB: number;
   winnerTeam: 'TEAM_A' | 'TEAM_B' | null;
   result: ProfileMatchResult;
-  teamA: string[];
-  teamB: string[];
+  teamA: ProfileMatchPlayer[];
+  teamB: ProfileMatchPlayer[];
 };
