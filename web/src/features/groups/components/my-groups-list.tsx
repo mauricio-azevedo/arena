@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { ChevronRight, Plus } from 'lucide-react';
+import { ChevronRight, Plus, UsersRound } from 'lucide-react';
 import type { MyGroup } from '@/types/api';
 import { getMyGroups } from '@/features/groups/groups.api';
 import { getAccessToken } from '@/lib/auth';
@@ -51,7 +51,8 @@ export function MyGroupsList({ loadGroups, ratingLabel = 'Você' }: Props) {
   if (isLoading) {
     return (
       <Card>
-        <CardContent className="p-4 text-sm text-muted-foreground">
+        <CardContent className="flex items-center gap-3 p-4 text-sm text-muted-foreground">
+          <div className="h-2 w-2 animate-pulse rounded-full bg-primary" />
           Carregando grupos...
         </CardContent>
       </Card>
@@ -62,8 +63,8 @@ export function MyGroupsList({ loadGroups, ratingLabel = 'Você' }: Props) {
     return (
       <Card>
         <CardContent className="space-y-2 p-4">
-          <p className="text-sm font-medium">Algo deu errado</p>
-          <p className="text-sm text-muted-foreground">{error}</p>
+          <p className="text-sm font-semibold">Algo deu errado</p>
+          <p className="text-sm leading-6 text-muted-foreground">{error}</p>
         </CardContent>
       </Card>
     );
@@ -87,22 +88,26 @@ function MyGroupCard({ membership, ratingLabel }: { membership: MyGroup; ratingL
 
   return (
     <Link href={`/groups/${group.id}`} className="block">
-      <Card className="transition active:scale-[0.99]">
-        <CardContent className="space-y-3 p-4">
-          <div className="flex items-start justify-between gap-3">
-            <div className="min-w-0">
+      <Card className="transition-transform active:scale-[0.99]">
+        <CardContent className="space-y-4 p-4">
+          <div className="flex items-start gap-3">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-primary/16 to-accent text-sm font-bold text-primary ring-1 ring-primary/10">
+              {getGroupInitials(group.name)}
+            </div>
+
+            <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2">
-                <h2 className="truncate font-medium">{group.name}</h2>
+                <h2 className="truncate text-base font-semibold tracking-[-0.02em]">{group.name}</h2>
 
                 {membership.role === 'ADMIN' && (
-                  <span className="rounded-full border px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
+                  <span className="rounded-full border bg-background/70 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-primary">
                     Admin
                   </span>
                 )}
               </div>
 
               {group.description && (
-                <p className="mt-1 line-clamp-2 text-sm leading-5 text-muted-foreground">
+                <p className="mt-1 line-clamp-2 text-sm leading-6 text-muted-foreground">
                   {group.description}
                 </p>
               )}
@@ -111,12 +116,10 @@ function MyGroupCard({ membership, ratingLabel }: { membership: MyGroup; ratingL
             <ChevronRight className="mt-1 h-4 w-4 shrink-0 text-muted-foreground" />
           </div>
 
-          <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs text-muted-foreground">
-            <span>{group._count?.members ?? 0} membros</span>
-            <span>{group._count?.matches ?? 0} partidas</span>
-            <span>
-              {ratingLabel} · {membership.rating.toFixed(1)}
-            </span>
+          <div className="grid grid-cols-3 gap-2 text-xs">
+            <GroupMetric label="Membros" value={group._count?.members ?? 0} />
+            <GroupMetric label="Partidas" value={group._count?.matches ?? 0} />
+            <GroupMetric label={ratingLabel} value={membership.rating.toFixed(0)} />
           </div>
         </CardContent>
       </Card>
@@ -124,12 +127,24 @@ function MyGroupCard({ membership, ratingLabel }: { membership: MyGroup; ratingL
   );
 }
 
+function GroupMetric({ label, value }: { label: string; value: string | number }) {
+  return (
+    <div className="rounded-2xl bg-muted/60 px-3 py-2">
+      <p className="font-semibold text-foreground">{value}</p>
+      <p className="mt-0.5 truncate text-[11px] text-muted-foreground">{label}</p>
+    </div>
+  );
+}
+
 function SignedOutGroupsState() {
   return (
     <Card>
       <CardContent className="space-y-4 p-4">
-        <div className="space-y-1">
-          <p className="text-sm font-medium">Entre para ver seus grupos</p>
+        <div className="space-y-2">
+          <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary/12 text-primary">
+            <UsersRound className="h-5 w-5" />
+          </div>
+          <p className="text-sm font-semibold">Entre para ver seus grupos</p>
           <p className="text-sm leading-6 text-muted-foreground">
             Seus grupos aparecem aqui quando você entra na sua conta.
           </p>
@@ -153,8 +168,11 @@ function EmptyGroupsState() {
   return (
     <Card>
       <CardContent className="space-y-4 p-4">
-        <div className="space-y-1">
-          <p className="text-sm font-medium">Você ainda não tem grupos</p>
+        <div className="space-y-2">
+          <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary/12 text-primary">
+            <UsersRound className="h-5 w-5" />
+          </div>
+          <p className="text-sm font-semibold">Você ainda não tem grupos</p>
           <p className="text-sm leading-6 text-muted-foreground">
             Crie um grupo ou entre por um convite para começar.
           </p>
@@ -174,9 +192,19 @@ function EmptyGroupsState() {
 function EmptyPublicGroupsState() {
   return (
     <Card>
-      <CardContent className="p-4 text-sm text-muted-foreground">
+      <CardContent className="p-4 text-sm leading-6 text-muted-foreground">
         Este jogador ainda não participa de grupos.
       </CardContent>
     </Card>
   );
+}
+
+function getGroupInitials(name: string) {
+  return name
+    .split(' ')
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0])
+    .join('')
+    .toUpperCase();
 }
