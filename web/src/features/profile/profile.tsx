@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { LogoutButton } from '@/features/auth/components/logout-button';
 import { getAccessToken } from '@/lib/auth';
 import { getProfileSummary } from './api/profile.api';
 import { getPublicProfileSummary } from './api/profile-user.api';
@@ -11,6 +10,7 @@ import { ProfileHeader } from './components/profile-header';
 import { ProfileLoadingState } from './components/profile-loading-state';
 import { ProfileSignedOutState } from './components/profile-signed-out-state';
 import { ProfileTabs } from './components/profile-tabs';
+import { ProfileAccountSection } from './sections/profile-account-section';
 import { ProfileGroupsTab } from './tabs/groups/profile-groups-tab';
 import { ProfileMatchesTab } from './tabs/matches/profile-matches-tab';
 import { ProfileStatsTab } from './tabs/stats/profile-stats-tab';
@@ -83,13 +83,6 @@ export function Profile({ userId }: Props) {
   return (
     <div className="space-y-6">
       <ProfileHeader user={summary.user} isPublicProfile={isPublicProfile} />
-
-      {!isPublicProfile && (
-        <div className="flex justify-end">
-          <LogoutButton />
-        </div>
-      )}
-
       <ProfileTabs activeTab={activeTab} onChange={setActiveTab} />
       {activeTab === 'summary' && (
         <ProfileSummaryTab
@@ -102,6 +95,7 @@ export function Profile({ userId }: Props) {
       {activeTab === 'matches' && <ProfileMatchesTab userId={userId} />}
       {activeTab === 'groups' && <ProfileGroupsTab userId={userId} />}
       {activeTab === 'stats' && <ProfileStatsTab />}
+      {!isPublicProfile && <ProfileAccountSection />}
     </div>
   );
 }
