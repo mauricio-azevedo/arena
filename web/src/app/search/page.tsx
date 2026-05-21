@@ -1,4 +1,5 @@
 import { Search, Sparkles, UsersRound } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import { AppShell } from '@/components/app-shell';
 import { PageHeader } from '@/components/page-header';
 import { Card, CardContent } from '@/components/ui/card';
@@ -38,7 +39,7 @@ export default function SearchPage() {
   );
 }
 
-function SearchPreviewItem({ icon: Icon, label }: { icon: typeof Search; label: string }) {
+function SearchPreviewItem({ icon: Icon, label }: { icon: LucideIcon; label: string }) {
   return (
     <div className="rounded-2xl bg-muted/60 p-3">
       <Icon className="h-4 w-4 text-primary" />
