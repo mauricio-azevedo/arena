@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { ChevronRight, Plus, UsersRound } from 'lucide-react';
 import type { MyGroup } from '@/types/api';
-import { getMyGroups } from '@/features/groups/groups.api';
+import { getMyGroups } from '@/features/groups/api/groups.api';
 import { getAccessToken } from '@/lib/auth';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
