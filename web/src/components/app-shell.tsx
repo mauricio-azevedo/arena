@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState, type MouseEvent, type ReactNode } from 'react';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { BottomNav } from '@/components/bottom-nav';
 import { getMyGroups } from '@/features/groups/api/groups.api';
 import { getAccessToken } from '@/lib/auth';
@@ -31,10 +31,8 @@ type RouteAccess =
 export function AppShell({ children }: AppShellProps) {
   const pathname = usePathname();
   const router = useRouter();
-  const searchParams = useSearchParams();
 
   const currentPathname = pathname ?? '/';
-  const currentSearch = searchParams.toString();
   const routeAccess = useMemo(() => getRouteAccess(currentPathname), [currentPathname]);
   const [accessState, setAccessState] = useState<AccessState>(
     routeAccess.requiresCheck ? 'checking' : 'allowed',
@@ -117,7 +115,7 @@ export function AppShell({ children }: AppShellProps) {
 
   useEffect(() => {
     setIsRoutePending(false);
-  }, [currentPathname, currentSearch]);
+  }, [currentPathname]);
 
   useEffect(() => {
     if (!isRoutePending) {
