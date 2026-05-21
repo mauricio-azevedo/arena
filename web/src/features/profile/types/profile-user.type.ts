@@ -1,4 +1,4 @@
-export type ProfileSummaryUser = {
+export type ProfileUser = {
   id: string;
   firstName: string;
   lastName: string;

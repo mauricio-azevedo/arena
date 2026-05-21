@@ -1,7 +1,7 @@
-import type { ProfileSummaryUser } from '../types/profile-summary-user.type';
+import type { ProfileUser } from '../types/profile-user.type';
 
 type Props = {
-  user: ProfileSummaryUser;
+  user: ProfileUser;
 };
 
 export function ProfileHeader({ user }: Props) {

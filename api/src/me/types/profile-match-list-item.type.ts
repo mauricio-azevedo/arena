@@ -1,14 +1,21 @@
+import type { MatchTeam } from '../../generated/prisma/enums';
 import type { ProfileSummaryMatchResult } from './profile-summary-match-result.type';
 
-export type ProfileSummaryMatch = {
+export type ProfileMatchListItem = {
   id: string;
   groupId: string;
   groupName: string;
-  playedAt: string;
+  playedAt: Date;
+
   gamesA: number;
   gamesB: number;
-  winnerTeam: 'TEAM_A' | 'TEAM_B' | null;
+  winnerTeam: MatchTeam | null;
   result: ProfileSummaryMatchResult;
+
   teamA: string[];
   teamB: string[];
+
+  ratingBefore: number;
+  ratingAfter: number;
+  ratingDelta: number;
 };

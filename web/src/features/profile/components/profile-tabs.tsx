@@ -1,4 +1,4 @@
-type ProfileTab = 'summary' | 'matches' | 'groups' | 'stats';
+import { ProfileTab } from '@/features/profile/types/profile-tab.type';
 
 type Props = {
   activeTab: ProfileTab;

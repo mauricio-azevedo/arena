@@ -5,8 +5,8 @@ import {
   formatProfileMatchResult,
   formatProfileMatchScore,
   formatProfileMatchTeams,
-} from '../helpers/profile-match-format.helper';
-import { formatProfileRelativeDate } from '../helpers/profile-date-format.helper';
+} from '../../../helpers/profile-match-format.helper';
+import { formatProfileRelativeDate } from '../../../helpers/profile-date-format.helper';
 
 type Props = {
   matches: ProfileSummaryMatch[];

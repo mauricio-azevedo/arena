@@ -3,18 +3,17 @@
 import { useEffect, useState } from 'react';
 import { getAccessToken } from '@/lib/auth';
 import { getProfileSummary } from './profile.api';
-import type { ProfileSummary } from './types/profile-summary.type';
+import type { ProfileSummary } from './tabs/summary/types/profile-summary.type';
 import { ProfileErrorState } from './components/profile-error-state';
 import { ProfileHeader } from './components/profile-header';
 import { ProfileLoadingState } from './components/profile-loading-state';
 import { ProfileSignedOutState } from './components/profile-signed-out-state';
 import { ProfileTabs } from './components/profile-tabs';
-import { ProfileGroupsTab } from './tabs/profile-groups-tab';
-import { ProfileMatchesTab } from './tabs/profile-matches-tab';
-import { ProfileStatsTab } from './tabs/profile-stats-tab';
-import { ProfileSummaryTab } from './tabs/profile-summary-tab';
-
-type ProfileTab = 'summary' | 'matches' | 'groups' | 'stats';
+import { ProfileGroupsTab } from './tabs/groups/profile-groups-tab';
+import { ProfileMatchesTab } from './tabs/matches/profile-matches-tab';
+import { ProfileStatsTab } from './tabs/stats/profile-stats-tab';
+import { ProfileSummaryTab } from './tabs/summary/profile-summary-tab';
+import { ProfileTab } from '@/features/profile/types/profile-tab.type';
 
 export function Profile() {
   const [summary, setSummary] = useState<ProfileSummary | null>(null);
@@ -69,11 +68,14 @@ export function Profile() {
     <div className="space-y-6">
       <ProfileHeader user={summary.user} />
       <ProfileTabs activeTab={activeTab} onChange={setActiveTab} />
-      <ProfileSummaryTab
-        summary={summary}
-        onViewAllMatches={() => setActiveTab('matches')}
-        onViewAllGroups={() => setActiveTab('groups')}
-      />
+      {activeTab === 'summary' && (
+        <ProfileSummaryTab
+          summary={summary}
+          onViewAllMatches={() => setActiveTab('matches')}
+          onViewAllGroups={() => setActiveTab('groups')}
+        />
+      )}
+
       {activeTab === 'matches' && <ProfileMatchesTab />}
       {activeTab === 'groups' && <ProfileGroupsTab />}
       {activeTab === 'stats' && <ProfileStatsTab />}

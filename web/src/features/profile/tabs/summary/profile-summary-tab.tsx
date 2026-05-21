@@ -1,7 +1,7 @@
-import { ProfileSummaryStatsGrid } from '@/features/profile/components/profile-summary-stats-grid';
-import { ProfileSummary } from '@/features/profile/types/profile-summary.type';
-import { RecentGroupsSection } from '@/features/profile/sections/recent-groups-section';
-import { RecentMatchesSection } from '@/features/profile/sections/recent-matches-section';
+import { ProfileSummaryStatsGrid } from '@/features/profile/tabs/summary/sections/profile-summary-stats-grid';
+import { ProfileSummary } from '@/features/profile/tabs/summary/types/profile-summary.type';
+import { RecentGroupsSection } from '@/features/profile/tabs/summary/sections/recent-groups-section';
+import { RecentMatchesSection } from '@/features/profile/tabs/summary/sections/recent-matches-section';
 
 type Props = {
   summary: ProfileSummary;

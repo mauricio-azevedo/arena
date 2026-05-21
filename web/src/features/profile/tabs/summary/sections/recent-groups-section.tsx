@@ -1,7 +1,7 @@
 import { ChevronRight } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import type { ProfileSummaryGroup } from '../types/profile-summary-group.type';
-import { formatProfileRelativeDate } from '../helpers/profile-date-format.helper';
+import { formatProfileRelativeDate } from '../../../helpers/profile-date-format.helper';
 
 type Props = {
   groups: ProfileSummaryGroup[];

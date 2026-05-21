@@ -7,6 +7,7 @@ import { ProfileSummaryStatsService } from './profile-summary/profile-summary-st
 import { ProfileSummaryMatchesService } from './profile-summary/profile-summary-matches.service';
 import { ProfileSummaryGroupsService } from './profile-summary/profile-summary-groups.service';
 import { ProfileSummaryService } from './profile-summary/profile-summary.service';
+import { ProfileMatchesService } from './profile-matches/profile-matches.service';
 
 @Module({
   imports: [PrismaModule, AuthModule],
@@ -17,6 +18,7 @@ import { ProfileSummaryService } from './profile-summary/profile-summary.service
     ProfileSummaryStatsService,
     ProfileSummaryMatchesService,
     ProfileSummaryGroupsService,
+    ProfileMatchesService,
   ],
 })
 export class MeModule {}

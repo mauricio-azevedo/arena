@@ -1,4 +1,4 @@
-import type { ProfileSummaryMatch } from '../types/profile-summary-match.type';
+import type { ProfileSummaryMatch } from '../tabs/summary/types/profile-summary-match.type';
 
 export function formatProfileMatchScore(match: ProfileSummaryMatch) {
   return `${match.gamesA}–${match.gamesB}`;
