@@ -5,8 +5,8 @@ import { getAccessToken } from '@/lib/auth';
 import { Card, CardContent } from '@/components/ui/card';
 import type { ProfileMatchListItem } from './types/profile-match-list-item.type';
 import { ProfileMatchesList } from './sections/profile-matches-list';
-import { getProfileMatches } from '@/features/profile/tabs/matches/profile-matches.api';
-import { getPublicProfileMatches } from '@/features/profile/profile-user.api';
+import { getProfileMatches } from './api/profile-matches.api';
+import { getPublicProfileMatches } from '@/features/profile/api/profile-user.api';
 
 type Props = {
   userId?: string;
