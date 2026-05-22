@@ -32,6 +32,32 @@ export function getDestinationLabel(href: string) {
   return 'Anterior';
 }
 
+export function getReturnAwareHref(href: string, returnTo: string) {
+  const safeReturnTo = getSafeInternalHref(returnTo);
+
+  if (!safeReturnTo) {
+    return href;
+  }
+
+  const separator = href.includes('?') ? '&' : '?';
+  return `${href}${separator}returnTo=${encodeURIComponent(safeReturnTo)}`;
+}
+
+export function getSafeInternalHref(href: string | undefined, fallback = '/') {
+  if (!href || !href.startsWith('/') || href.startsWith('//')) {
+    return fallback;
+  }
+
+  return href;
+}
+
+export function getPathWithSearch(pathname: string | null, searchParams: URLSearchParams) {
+  const currentPathname = pathname || '/';
+  const search = searchParams.toString();
+
+  return `${currentPathname}${search ? `?${search}` : ''}`;
+}
+
 function getPathname(href: string) {
   const withoutHash = href.split('#')[0] ?? href;
   const pathname = withoutHash.split('?')[0] || '/';
