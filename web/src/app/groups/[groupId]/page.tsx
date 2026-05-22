@@ -7,16 +7,17 @@ type Props = {
   }>;
   searchParams: Promise<{
     tab?: string;
+    returnTo?: string;
   }>;
 };
 
 export default async function GroupDetailPage({ params, searchParams }: Props) {
   const { groupId } = await params;
-  const { tab } = await searchParams;
+  const { tab, returnTo } = await searchParams;
 
   return (
     <AppShell>
-      <GroupDetail groupId={groupId} tab={tab} />
+      <GroupDetail groupId={groupId} tab={tab} returnTo={returnTo} />
     </AppShell>
   );
 }
