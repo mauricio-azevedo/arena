@@ -4,8 +4,6 @@ import { useEffect, useState } from 'react';
 import type { GroupMember, Match } from '@/types/api';
 import { Card, CardContent } from '@/components/ui/card';
 import { MatchesList } from '@/features/matches/components/matches-list';
-import { getMyGroups } from '@/features/groups/api/groups.api';
-import { getAccessToken } from '@/lib/auth';
 import { UserNameLink } from '@/features/users/components/user-name-link';
 
 type GroupTab = 'ranking' | 'matches' | 'members';
@@ -16,6 +14,7 @@ type Props = {
   ranking: GroupMember[];
   members: GroupMember[];
   matches: Match[];
+  canManageMatches: boolean;
 };
 
 const tabs: { value: GroupTab; label: string }[] = [
@@ -24,35 +23,19 @@ const tabs: { value: GroupTab; label: string }[] = [
   { value: 'members', label: 'Membros' },
 ];
 
-export function GroupDetailTabs({ groupId, activeTab, ranking, members, matches }: Props) {
+export function GroupDetailTabs({
+  groupId,
+  activeTab,
+  ranking,
+  members,
+  matches,
+  canManageMatches,
+}: Props) {
   const [selectedTab, setSelectedTab] = useState<GroupTab>(activeTab);
-  const [canManageMatches, setCanManageMatches] = useState(false);
 
   useEffect(() => {
     setSelectedTab(activeTab);
   }, [activeTab]);
-
-  useEffect(() => {
-    const token = getAccessToken();
-
-    if (!token) {
-      setCanManageMatches(false);
-      return;
-    }
-
-    async function checkMembership(userToken: string) {
-      try {
-        const memberships = await getMyGroups(userToken);
-        const membership = memberships.find((item) => item.groupId === groupId);
-
-        setCanManageMatches(Boolean(membership));
-      } catch {
-        setCanManageMatches(false);
-      }
-    }
-
-    checkMembership(token);
-  }, [groupId]);
 
   function setTab(tab: GroupTab) {
     setSelectedTab(tab);
