@@ -14,7 +14,7 @@ export class MembersService {
   async create(
     groupId: string,
     requesterUserId: string,
-    body: { userId: string; displayName?: string },
+    body: { userId: string },
   ) {
     if (!body.userId) {
       throw new BadRequestException('User is required');
@@ -63,29 +63,24 @@ export class MembersService {
     });
 
     if (existingMembership && !existingMembership.leftAt) {
-      return existingMembership;
+      return this.findOne(existingMembership.id);
     }
 
-    const displayName =
-      body.displayName?.trim() || `${user.firstName} ${user.lastName}`.trim();
+    const membership = existingMembership
+      ? await this.prisma.groupMember.update({
+          where: { id: existingMembership.id },
+          data: {
+            leftAt: null,
+          },
+        })
+      : await this.prisma.groupMember.create({
+          data: {
+            groupId,
+            userId: body.userId,
+          },
+        });
 
-    if (existingMembership) {
-      return this.prisma.groupMember.update({
-        where: { id: existingMembership.id },
-        data: {
-          displayName,
-          leftAt: null,
-        },
-      });
-    }
-
-    return this.prisma.groupMember.create({
-      data: {
-        groupId,
-        userId: body.userId,
-        displayName,
-      },
-    });
+    return this.findOne(membership.id);
   }
 
   async findAll(groupId: string) {
@@ -102,17 +97,32 @@ export class MembersService {
         groupId,
         leftAt: null,
       },
-      orderBy: [{ rating: 'desc' }, { displayName: 'asc' }],
-      include: {
-        user: {
-          select: {
-            id: true,
-            firstName: true,
-            lastName: true,
-            email: true,
-          },
+      orderBy: [
+        { rating: 'desc' },
+        { user: { firstName: 'asc' } },
+        { user: { lastName: 'asc' } },
+      ],
+      include: this.memberInclude(),
+    });
+  }
+
+  private findOne(id: string) {
+    return this.prisma.groupMember.findUnique({
+      where: { id },
+      include: this.memberInclude(),
+    });
+  }
+
+  private memberInclude() {
+    return {
+      user: {
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          email: true,
         },
       },
-    });
+    };
   }
 }
