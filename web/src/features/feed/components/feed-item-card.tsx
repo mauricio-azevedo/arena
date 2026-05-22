@@ -57,6 +57,8 @@ export function FeedItemCard({ item }: Props) {
 
 function DominantWinFeedCard({ item }: { item: FeedItem }) {
   const metadata = item.metadata as DominantWinFeedMetadata;
+  const winnerScore = Math.max(metadata.gamesA, metadata.gamesB);
+  const loserScore = Math.min(metadata.gamesA, metadata.gamesB);
 
   return (
     <Card className="border-primary/20 bg-gradient-to-br from-card via-card to-primary/8 transition-transform active:scale-[0.99]">
@@ -83,7 +85,7 @@ function DominantWinFeedCard({ item }: { item: FeedItem }) {
               <FeedPlayerNames players={metadata.winners} /> venceram{' '}
               <FeedPlayerNames players={metadata.losers} /> por{' '}
               <span className="font-semibold text-foreground">
-                {metadata.gamesA}–{metadata.gamesB}
+                {winnerScore}–{loserScore}
               </span>
               {item.group?.name ? <> no {item.group.name}.</> : <>.</>}
             </p>
