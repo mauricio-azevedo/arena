@@ -8,6 +8,7 @@ import { FeedReaderService } from './feed-reader.service';
 import { AuthModule } from '../auth/auth.module';
 import { MemberJoinedFeedItemGenerator } from './generators/member-joined-feed-item.generator';
 import { MatchBlowoutFeedItemGenerator } from './generators/match-blowout-feed-item.generator';
+import { MatchCloseFeedItemGenerator } from './generators/match-close-feed-item.generator';
 import { FeedScoreService } from './feed-score.service';
 
 @Module({
@@ -20,6 +21,7 @@ import { FeedScoreService } from './feed-score.service';
     GroupCreatedFeedItemGenerator,
     MemberJoinedFeedItemGenerator,
     MatchBlowoutFeedItemGenerator,
+    MatchCloseFeedItemGenerator,
     FeedScoreService,
   ],
   exports: [FeedOrchestratorService],
