@@ -1,7 +1,6 @@
 'use client';
 
 import { FormEvent, ReactNode, useEffect, useMemo, useState } from 'react';
-import { AccountAccessCard } from './components/account-access-card';
 import { BackButton } from '@/components/back-button';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -172,8 +171,6 @@ export function Account() {
           </form>
         </CardContent>
       </Card>
-
-      <AccountAccessCard />
     </div>
   );
 }
