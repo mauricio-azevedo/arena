@@ -30,7 +30,7 @@ Feed events should not:
 | `GROUP_CREATED` | Group created | group creation | `SOCIAL_CIRCLE` | implemented |
 | `MEMBER_JOINED` | Member joined | invite acceptance / membership activation | `GROUP_MEMBERS` | implemented |
 | `MATCH_BLOWOUT` | Atropelo! | match create/update | `GROUP_MEMBERS` | implemented |
-| `MATCH_CLOSE` | TBD | match create/update | TBD | planned |
+| `MATCH_CLOSE` | No detalhe! | match create/update | `GROUP_MEMBERS` | implemented |
 | `UPSET_WIN` | TBD | match create/update | TBD | planned |
 
 ## Shared feed item fields
@@ -234,24 +234,102 @@ When a match is deleted:
 
 This keeps match data, rating updates, and feed event generation consistent.
 
-## Planned event: `MATCH_CLOSE`
+## Event: `MATCH_CLOSE`
 
-Potential UI names:
+### UI name
 
-- `No detalhe!`
-- `Jogo decidido no detalhe`
+`No detalhe!`
 
-Candidate generation rule:
+### Product meaning
 
-- `7-6` always generates;
-- `7-5` may generate with lower importance in the future.
+A match decided by the smallest supported margin in a tie-break-like score.
 
-Open decisions:
+### Generation rule
 
-- final UI title;
-- importance score;
-- whether `7-5` qualifies;
-- whether match duration or rating delta should affect relevance.
+A match generates `MATCH_CLOSE` when:
+
+- the winning team scored exactly `7` games; and
+- the losing team scored exactly `6` games.
+
+### Examples
+
+| Stored score | Winner | Generates? | UI score |
+|---|---:|---:|---:|
+| `7-6` | Team A | yes | `7-6` |
+| `6-7` | Team B | yes | `7-6` |
+| `7-5` | Team A | no | — |
+| `6-4` | Team A | no | — |
+| `6-1` | Team A | no | — |
+
+The frontend must display the score from the winning team's perspective, not necessarily the stored Team A / Team B perspective.
+
+### Visibility
+
+`GROUP_MEMBERS`.
+
+### Importance score
+
+- `7-6`: `55`
+
+### Metadata
+
+Backend input type:
+
+```ts
+type MatchCloseFeedInput = {
+  groupId: string;
+  matchId: string;
+  winnerTeam: MatchTeam;
+  gamesA: number;
+  gamesB: number;
+  winners: MatchCloseFeedPlayer[];
+  losers: MatchCloseFeedPlayer[];
+  occurredAt: Date;
+};
+```
+
+Frontend metadata type:
+
+```ts
+type CloseMatchFeedMetadata = {
+  winnerTeam: 'TEAM_A' | 'TEAM_B';
+  gamesA: number;
+  gamesB: number;
+  winners: Array<{
+    groupMemberId: string;
+    userId: string;
+    displayName: string;
+  }>;
+  losers: Array<{
+    groupMemberId: string;
+    userId: string;
+    displayName: string;
+  }>;
+};
+```
+
+### Lifecycle
+
+When a match is created:
+
+- if it matches the No detalhe rule, create a `MATCH_CLOSE` feed item;
+- otherwise do not create one.
+
+When a match is updated:
+
+- if it becomes No detalhe, create the item;
+- if it remains No detalhe, update the item;
+- if it stops being No detalhe, delete the item.
+
+When a match is deleted:
+
+- the feed item is removed through match cascade.
+
+### Consistency rule
+
+`MATCH_CLOSE` is synchronized inside the same transaction as the match write.
+
+This keeps match data, rating updates, and feed event generation consistent.
 
 ## Planned event: `UPSET_WIN`
 
