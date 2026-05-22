@@ -19,7 +19,7 @@ export default async function UserProfilePage({ params, searchParams }: Props) {
   return (
     <AppShell>
       <div className="space-y-6">
-        <BackButton href={fallbackHref} />
+        <BackButton href={fallbackHref} preferHref={Boolean(query.returnTo)} />
         <Profile userId={routeParams.userId} />
       </div>
     </AppShell>
