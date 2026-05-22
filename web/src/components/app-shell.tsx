@@ -155,7 +155,7 @@ function getRouteAccess(pathname: string): RouteAccess {
     };
   }
 
-  if (normalizedPathname === '/profile') {
+  if (normalizedPathname === '/profile' || normalizedPathname === '/account') {
     return {
       kind: 'auth',
       requiresCheck: true,
