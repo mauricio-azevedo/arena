@@ -10,9 +10,8 @@ type Props = {
   preferHref?: boolean;
 };
 
-export function BackButton({ href, label, preferHref = false }: Props) {
+export function BackButton({ href, label = 'Voltar', preferHref = false }: Props) {
   const router = useRouter();
-  const visibleLabel = label ?? getDestinationLabel(href);
 
   function handleClick() {
     if (preferHref) {
@@ -31,31 +30,9 @@ export function BackButton({ href, label, preferHref = false }: Props) {
   return (
     <Button type="button" variant="ghost" size="sm" onClick={handleClick} className="w-fit px-0">
       <ArrowLeft className="mr-1 h-4 w-4" />
-      {visibleLabel}
+      {label}
     </Button>
   );
-}
-
-function getDestinationLabel(href: string) {
-  const pathname = href.split('?')[0];
-
-  if (pathname === '/groups') {
-    return 'Grupos';
-  }
-
-  if (pathname === '/profile') {
-    return 'Perfil';
-  }
-
-  if (pathname === '/profile/settings') {
-    return 'Configurações';
-  }
-
-  if (pathname.startsWith('/groups/')) {
-    return 'Grupo';
-  }
-
-  return 'Anterior';
 }
 
 function canSafelyGoBack() {

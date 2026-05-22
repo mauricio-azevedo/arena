@@ -20,7 +20,7 @@ export async function EditGroupMatch({ groupId, matchId }: Props) {
 
     return (
       <div className="space-y-6">
-        <BackButton href={['', 'groups', group.id].join('/')} label="Grupo" />
+        <BackButton href={['', 'groups', group.id].join('/')} />
         <PageHeader title="Corrigir partida" description={group.name} />
         <AddMatchForm groupId={group.id} members={members} match={match} />
       </div>

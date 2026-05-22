@@ -13,7 +13,7 @@ export default function EditGroupMatchLoading() {
       >
         <span className="sr-only">Carregando correção de partida</span>
 
-        <BackButton href="/groups" label="Grupos" />
+        <BackButton href="/groups" />
 
         <div className="space-y-2">
           <div className="h-8 w-44 animate-pulse rounded-full bg-muted" />
