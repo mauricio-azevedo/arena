@@ -95,6 +95,9 @@ For each changed area:
 - Successful match appears in group matches.
 - Successful match affects ranking/rating.
 - Normal new match creation is fast enough for good UX.
+- After saving a match, the submit button does not return to an idle state before navigation starts.
+- After saving a match, the user is sent to the group's Matches tab.
+- The destination loading state appears in the group context when match list data is pending.
 
 ### Edit match
 
@@ -103,6 +106,7 @@ For each changed area:
 - Edited score updates rating snapshots.
 - Edited score recalculates group ratings when needed.
 - Match-derived feed events are created/updated/removed as needed.
+- After saving an edit, the user is sent to the group's Matches tab.
 
 ### Delete match
 
@@ -136,12 +140,9 @@ For each changed area:
 - Clicking another user's name opens their profile.
 - Public profile resembles own profile where appropriate.
 - Private/self-only controls are not shown for another user.
+- Public profile route has a contextual skeleton while profile data is pending.
 - Back navigation returns to the expected previous context.
-
-Known issues currently tracked:
-
-- Back from public profile opened from group match list may return to general Groups instead of group Matches context.
-- Opening public profile from group match list may show only global loading feedback instead of destination skeleton.
+- Opening a public profile from a group match list returns to `/groups/:groupId?tab=matches`.
 
 ## Feed
 

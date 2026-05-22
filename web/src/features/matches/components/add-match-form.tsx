@@ -113,10 +113,8 @@ export function AddMatchForm({ groupId, members, match }: Props) {
       }
 
       router.push(`/groups/${groupId}?tab=matches`);
-      router.refresh();
     } catch {
       setMessage('Não foi possível salvar. Verifique se você faz parte deste grupo.');
-    } finally {
       setIsSubmitting(false);
     }
   }
