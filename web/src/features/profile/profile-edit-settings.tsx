@@ -2,13 +2,13 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/button';
 import { getAccessToken } from '@/lib/auth';
 import { getProfileSummary } from './api/profile.api';
 import { ProfileEditCard } from './components/profile-edit-card';
 import { ProfileErrorState } from './components/profile-error-state';
 import { ProfileLoadingState } from './components/profile-loading-state';
 import { ProfileSignedOutState } from './components/profile-signed-out-state';
+import { SettingsBackLink } from './components/settings-back-link';
 import type { ProfileSummary } from './tabs/summary/types/profile-summary.type';
 import type { ProfileUser } from './types/profile-user.type';
 
@@ -78,15 +78,8 @@ export function ProfileEditSettings() {
 
   return (
     <div className="space-y-6">
-      <header className="space-y-2">
-        <Button
-          type="button"
-          variant="ghost"
-          className="-ml-3 h-9 px-3 text-sm text-muted-foreground"
-          onClick={() => router.push('/profile/settings')}
-        >
-          Voltar para configurações
-        </Button>
+      <header className="space-y-3">
+        <SettingsBackLink href="/profile/settings">Configurações</SettingsBackLink>
 
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary/75">
