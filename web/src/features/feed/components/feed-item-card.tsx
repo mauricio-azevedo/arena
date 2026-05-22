@@ -45,12 +45,7 @@ export function FeedItemCard({ item }: Props) {
 
           <div className="min-w-0 flex-1 space-y-1.5">
             <div className="flex items-center gap-2">
-              <Link
-                href={getFeedItemHref(item)}
-                className="truncate text-sm font-semibold tracking-[-0.01em] underline-offset-4 hover:underline"
-              >
-                {title}
-              </Link>
+              <FeedItemTitle item={item}>{title}</FeedItemTitle>
               <p className="shrink-0 text-xs text-muted-foreground">
                 {formatFeedItemTime(item.occurredAt)}
               </p>
@@ -81,12 +76,9 @@ function DominantWinFeedCard({ item }: { item: FeedItem }) {
 
           <div className="min-w-0 flex-1 space-y-2">
             <div className="flex items-center gap-2">
-              <Link
-                href={getFeedItemHref(item)}
-                className="truncate text-sm font-semibold tracking-[-0.01em] underline-offset-4 hover:underline"
-              >
+              <p className="truncate text-sm font-semibold tracking-[-0.01em] text-foreground">
                 Atropelo!
-              </Link>
+              </p>
               <p className="shrink-0 text-xs text-muted-foreground">
                 {formatFeedItemTime(item.occurredAt)}
               </p>
@@ -98,7 +90,7 @@ function DominantWinFeedCard({ item }: { item: FeedItem }) {
               <span className="font-semibold text-foreground">
                 {winnerScore}–{loserScore}
               </span>
-              {item.group?.name ? <> no {item.group.name}.</> : <>.</>}
+              <FeedGroupSuffix item={item} />
             </p>
           </div>
         </div>
@@ -122,12 +114,9 @@ function CloseMatchFeedCard({ item }: { item: FeedItem }) {
 
           <div className="min-w-0 flex-1 space-y-2">
             <div className="flex items-center gap-2">
-              <Link
-                href={getFeedItemHref(item)}
-                className="truncate text-sm font-semibold tracking-[-0.01em] underline-offset-4 hover:underline"
-              >
+              <p className="truncate text-sm font-semibold tracking-[-0.01em] text-foreground">
                 No detalhe!
-              </Link>
+              </p>
               <p className="shrink-0 text-xs text-muted-foreground">
                 {formatFeedItemTime(item.occurredAt)}
               </p>
@@ -139,12 +128,23 @@ function CloseMatchFeedCard({ item }: { item: FeedItem }) {
               <span className="font-semibold text-foreground">
                 {winnerScore}–{loserScore}
               </span>
-              {item.group?.name ? <> no {item.group.name}.</> : <>.</>}
+              <FeedGroupSuffix item={item} />
             </p>
           </div>
         </div>
       </CardContent>
     </Card>
+  );
+}
+
+function FeedItemTitle({ item, children }: { item: FeedItem; children: string }) {
+  return (
+    <Link
+      href={getFeedItemHref(item)}
+      className="truncate text-sm font-semibold tracking-[-0.01em] underline-offset-4 hover:underline"
+    >
+      {children}
+    </Link>
   );
 }
 
@@ -155,7 +155,7 @@ function FeedItemText({ item }: { item: FeedItem }) {
     return (
       <>
         <FeedActorName item={item} /> criou o grupo{' '}
-        {metadata.groupName ?? item.group?.name ?? 'um grupo'}.
+        <FeedGroupLink item={item}>{metadata.groupName ?? item.group?.name ?? 'um grupo'}</FeedGroupLink>.
       </>
     );
   }
@@ -164,7 +164,14 @@ function FeedItemText({ item }: { item: FeedItem }) {
     const metadata = item.metadata as MemberJoinedFeedMetadata;
 
     if (item.isActorCurrentUser) {
-      return <>Você entrou no grupo {item.group?.name ?? 'um grupo'}.</>;
+      return (
+        <>
+          <UserNameLink userId={item.actorUserId} variant="feed">
+            Você
+          </UserNameLink>{' '}
+          entrou no grupo <FeedGroupLink item={item}>{item.group?.name ?? 'um grupo'}</FeedGroupLink>.
+        </>
+      );
     }
 
     return (
@@ -172,7 +179,7 @@ function FeedItemText({ item }: { item: FeedItem }) {
         <UserNameLink userId={item.subjectUserId ?? item.actorUserId} variant="feed">
           {metadata.displayName ?? getActorName(item)}
         </UserNameLink>{' '}
-        entrou no grupo.
+        entrou no grupo <FeedGroupLink item={item}>{item.group?.name ?? 'um grupo'}</FeedGroupLink>.
       </>
     );
   }
@@ -195,9 +202,41 @@ function FeedPlayerNames({ players }: { players: FeedPlayer[] }) {
   );
 }
 
+function FeedGroupSuffix({ item }: { item: FeedItem }) {
+  if (!item.group?.name) {
+    return <>.</>;
+  }
+
+  return (
+    <>
+      {' '}no <FeedGroupLink item={item}>{item.group.name}</FeedGroupLink>.
+    </>
+  );
+}
+
+function FeedGroupLink({ item, children }: { item: FeedItem; children: string }) {
+  if (!item.group?.id) {
+    return <span className="font-semibold text-foreground">{children}</span>;
+  }
+
+  return (
+    <Link
+      href={`/groups/${item.group.id}`}
+      className="font-semibold text-primary underline decoration-primary/30 decoration-1 underline-offset-[3px] focus-visible:rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+      onClick={(event) => event.stopPropagation()}
+    >
+      {children}
+    </Link>
+  );
+}
+
 function FeedActorName({ item }: { item: FeedItem }) {
   if (item.isActorCurrentUser) {
-    return <>Você</>;
+    return (
+      <UserNameLink userId={item.actorUserId} variant="feed">
+        Você
+      </UserNameLink>
+    );
   }
 
   return (
