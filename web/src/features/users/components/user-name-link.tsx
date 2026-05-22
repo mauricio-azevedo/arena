@@ -17,9 +17,11 @@ export function UserNameLink({ userId, children, className, returnTo }: Props) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [currentReturnTo, setCurrentReturnTo] = useState('');
 
   useEffect(() => {
     setCurrentUserId(getCurrentUserIdFromAccessToken());
+    setCurrentReturnTo(`${window.location.pathname}${window.location.search}`);
   }, []);
 
   const href = useMemo(() => {
@@ -29,10 +31,10 @@ export function UserNameLink({ userId, children, className, returnTo }: Props) {
 
     const search = searchParams.toString();
     const fallbackReturnTo = `${pathname}${search ? `?${search}` : ''}`;
-    const targetReturnTo = returnTo ?? fallbackReturnTo;
+    const targetReturnTo = returnTo ?? currentReturnTo ?? fallbackReturnTo;
 
     return `/users/${userId}?returnTo=${encodeURIComponent(targetReturnTo)}`;
-  }, [pathname, returnTo, searchParams, userId]);
+  }, [currentReturnTo, pathname, returnTo, searchParams, userId]);
 
   if (!userId || userId === currentUserId) {
     return <span className={className}>{children}</span>;
