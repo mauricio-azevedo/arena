@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { FormEvent, ReactNode, useEffect, useMemo, useState } from 'react';
 import { BackButton } from '@/components/back-button';
 import { Button } from '@/components/ui/button';
@@ -19,6 +20,7 @@ export function Account() {
   const [email, setEmail] = useState('');
   const [securityCheck, setSecurityCheck] = useState('');
   const [isLoading, setIsLoading] = useState(true);
+  const [hasSession, setHasSession] = useState(false);
   const [status, setStatus] = useState<Status>('idle');
   const [message, setMessage] = useState('');
 
@@ -27,9 +29,12 @@ export function Account() {
     const token = getAccessToken();
 
     if (!token) {
+      setHasSession(false);
       setIsLoading(false);
       return;
     }
+
+    setHasSession(true);
 
     async function loadAccount(userToken: string) {
       try {
@@ -119,6 +124,10 @@ export function Account() {
     return <AccountLoadingState />;
   }
 
+  if (!hasSession) {
+    return <AccountSignedOutState />;
+  }
+
   return (
     <div className="space-y-6">
       <BackButton href="/profile" />
@@ -189,6 +198,25 @@ function AccountMessage({ status, children }: { status: Status; children: ReactN
     <p className={status === 'error' ? 'text-sm text-destructive' : 'text-sm text-muted-foreground'}>
       {children}
     </p>
+  );
+}
+
+function AccountSignedOutState() {
+  return (
+    <div className="space-y-6">
+      <BackButton href="/profile" />
+      <Card>
+        <CardContent className="space-y-3 p-4">
+          <p className="text-sm font-semibold">Entre para editar sua conta</p>
+          <p className="text-sm leading-6 text-muted-foreground">
+            Você precisa estar logado para atualizar seus dados.
+          </p>
+          <Button asChild className="w-full">
+            <Link href="/login?redirect=/account">Entrar</Link>
+          </Button>
+        </CardContent>
+      </Card>
+    </div>
   );
 }
 
