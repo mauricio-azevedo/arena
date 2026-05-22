@@ -14,7 +14,7 @@ export async function NewGroupMatch({ groupId }: Props) {
 
     return (
       <div className="space-y-6">
-        <BackButton href={['', 'groups', group.id].join('/')} />
+        <BackButton href={['', 'groups', group.id].join('/')} label="Grupo" />
         <PageHeader title="Registrar partida" description={group.name} />
         <AddMatchForm groupId={group.id} members={members} />
       </div>
