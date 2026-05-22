@@ -56,7 +56,7 @@ export function FeedItemCard({ item }: Props) {
               </p>
             </div>
 
-            <p className="text-sm leading-6 text-muted-foreground">
+            <p className="text-sm leading-7 text-muted-foreground">
               <FeedItemText item={item} />
             </p>
           </div>
@@ -92,7 +92,7 @@ function DominantWinFeedCard({ item }: { item: FeedItem }) {
               </p>
             </div>
 
-            <p className="text-sm leading-6 text-muted-foreground">
+            <p className="text-sm leading-7 text-muted-foreground">
               <FeedPlayerNames players={metadata.winners} /> venceram{' '}
               <FeedPlayerNames players={metadata.losers} /> por{' '}
               <span className="font-semibold text-foreground">
@@ -133,7 +133,7 @@ function CloseMatchFeedCard({ item }: { item: FeedItem }) {
               </p>
             </div>
 
-            <p className="text-sm leading-6 text-muted-foreground">
+            <p className="text-sm leading-7 text-muted-foreground">
               <FeedPlayerNames players={metadata.winners} /> venceram{' '}
               <FeedPlayerNames players={metadata.losers} /> no detalhe por{' '}
               <span className="font-semibold text-foreground">
@@ -169,7 +169,7 @@ function FeedItemText({ item }: { item: FeedItem }) {
 
     return (
       <>
-        <UserNameLink userId={item.subjectUserId ?? item.actorUserId}>
+        <UserNameLink userId={item.subjectUserId ?? item.actorUserId} variant="feed">
           {metadata.displayName ?? getActorName(item)}
         </UserNameLink>{' '}
         entrou no grupo.
@@ -185,8 +185,10 @@ function FeedPlayerNames({ players }: { players: FeedPlayer[] }) {
     <>
       {players.map((player, index) => (
         <span key={player.groupMemberId}>
-          {index > 0 && ' / '}
-          <UserNameLink userId={player.userId}>{player.displayName}</UserNameLink>
+          {index > 0 && ' e '}
+          <UserNameLink userId={player.userId} variant="feed">
+            {player.displayName}
+          </UserNameLink>
         </span>
       ))}
     </>
@@ -198,7 +200,11 @@ function FeedActorName({ item }: { item: FeedItem }) {
     return <>Você</>;
   }
 
-  return <UserNameLink userId={item.actorUserId}>{getActorName(item)}</UserNameLink>;
+  return (
+    <UserNameLink userId={item.actorUserId} variant="feed">
+      {getActorName(item)}
+    </UserNameLink>
+  );
 }
 
 function getActorName(item: FeedItem) {
