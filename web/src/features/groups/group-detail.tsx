@@ -94,7 +94,7 @@ export function GroupDetail({ groupId, tab }: Props) {
   return (
     <div className="space-y-6">
       <div className="space-y-4">
-        <BackButton href="/groups" />
+        <BackButton href="/groups" label="Grupos" />
 
         <PageHeader
           title={data.group.name}
@@ -119,7 +119,7 @@ export function GroupDetail({ groupId, tab }: Props) {
 function GroupDetailErrorState() {
   return (
     <div className="space-y-6">
-      <BackButton href="/groups" />
+      <BackButton href="/groups" label="Grupos" />
 
       <Card>
         <CardContent className="space-y-2 p-4">
