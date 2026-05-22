@@ -10,13 +10,17 @@ type Props = {
   groupId: string;
 };
 
+type AdminState = 'checking' | 'admin' | 'member';
+
 export function GroupActions({ groupId }: Props) {
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [adminState, setAdminState] = useState<AdminState>('checking');
 
   useEffect(() => {
+    let isCurrent = true;
     const token = getAccessToken();
 
     if (!token) {
+      setAdminState('member');
       return;
     }
 
@@ -25,14 +29,32 @@ export function GroupActions({ groupId }: Props) {
         const memberships = await getMyGroups(userToken);
         const membership = memberships.find((item) => item.groupId === groupId);
 
-        setIsAdmin(membership?.role === 'ADMIN');
+        if (!isCurrent) {
+          return;
+        }
+
+        setAdminState(membership?.role === 'ADMIN' ? 'admin' : 'member');
       } catch {
-        setIsAdmin(false);
+        if (!isCurrent) {
+          return;
+        }
+
+        setAdminState('member');
       }
     }
 
     checkAdmin(token);
+
+    return () => {
+      isCurrent = false;
+    };
   }, [groupId]);
+
+  if (adminState === 'checking') {
+    return <GroupActionsCheckingState groupId={groupId} />;
+  }
+
+  const isAdmin = adminState === 'admin';
 
   return (
     <div className={isAdmin ? 'grid grid-cols-2 gap-2' : 'grid grid-cols-1 gap-2'}>
@@ -45,6 +67,18 @@ export function GroupActions({ groupId }: Props) {
           <Link href={`/groups/${groupId}/invite`}>Convidar</Link>
         </Button>
       )}
+    </div>
+  );
+}
+
+function GroupActionsCheckingState({ groupId }: { groupId: string }) {
+  return (
+    <div className="grid grid-cols-2 gap-2" aria-busy="true">
+      <Button asChild size="lg">
+        <Link href={`/groups/${groupId}/matches/new`}>Nova partida</Link>
+      </Button>
+
+      <div className="h-11 animate-pulse rounded-2xl border bg-muted/65" aria-hidden="true" />
     </div>
   );
 }
