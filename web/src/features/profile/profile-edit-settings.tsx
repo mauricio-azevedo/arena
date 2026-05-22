@@ -2,12 +2,12 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { BackButton } from '@/components/back-button';
 import { getAccessToken } from '@/lib/auth';
 import { getProfileSummary } from './api/profile.api';
 import { ProfileEditCard } from './components/profile-edit-card';
 import { ProfileErrorState } from './components/profile-error-state';
 import { ProfileSignedOutState } from './components/profile-signed-out-state';
-import { SettingsBackLink } from './components/settings-back-link';
 import type { ProfileSummary } from './tabs/summary/types/profile-summary.type';
 import type { ProfileUser } from './types/profile-user.type';
 
@@ -78,7 +78,7 @@ export function ProfileEditSettings() {
   return (
     <div className="space-y-6">
       <header className="space-y-3">
-        <SettingsBackLink href="/profile/settings">Configurações</SettingsBackLink>
+        <BackButton href="/profile/settings" />
 
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary/75">
