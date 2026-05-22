@@ -196,7 +196,6 @@ export class GroupInvitesService {
                 data: {
                   groupId,
                   userId: body.userId,
-                  displayName: `${user.firstName} ${user.lastName}`.trim(),
                 },
               });
 
@@ -214,7 +213,7 @@ export class GroupInvitesService {
         await this.feedOrchestrator.createMemberJoinedItem(
           {
             groupId,
-            displayName: membership.displayName,
+            displayName: this.getUserDisplayName(user),
             actorUserId: user.id,
             actorGroupMemberId: membership.id,
             occurredAt: new Date(),
@@ -253,5 +252,9 @@ export class GroupInvitesService {
     }
 
     return this.accept(invite.groupId, token, body);
+  }
+
+  private getUserDisplayName(user: { firstName: string; lastName: string }) {
+    return `${user.firstName} ${user.lastName}`.trim();
   }
 }
