@@ -1,10 +1,11 @@
-import { Controller, Get, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Patch, UseGuards } from '@nestjs/common';
 import { CurrentUser } from '../auth/current-user.decorator';
 import type { AuthUser } from '../auth/auth.types';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { MeService } from './me.service';
 import { ProfileSummaryService } from './profile-summary/profile-summary.service';
 import { ProfileMatchesService } from './profile-matches/profile-matches.service';
+import type { UpdateProfileInput } from './types/update-profile-input.type';
 
 @Controller('me')
 export class MeController {
@@ -24,6 +25,15 @@ export class MeController {
   @UseGuards(JwtAuthGuard)
   getProfileSummary(@CurrentUser() user: AuthUser) {
     return this.profileSummary.getProfileSummary(user.sub, { includeEmail: true });
+  }
+
+  @Patch('profile')
+  @UseGuards(JwtAuthGuard)
+  updateProfile(
+    @CurrentUser() user: AuthUser,
+    @Body() body: UpdateProfileInput,
+  ) {
+    return this.meService.updateProfile(user.sub, body);
   }
 
   @Get('profile/matches')
