@@ -206,9 +206,9 @@ For each changed area:
 
 ## Navigation and loading UX
 
-- Internal link click shows immediate feedback.
+- Internal link click shows immediate feedback through destination skeletons or local action states.
 - Destination screen appears quickly when route-level loading exists.
-- Global top bar does not replace contextual skeleton when destination skeleton should exist.
+- Global top loading bars do not flash during normal navigation.
 - Skeleton resembles destination layout.
 - Skeleton has accessible `sr-only` loading text.
 - Structural navigation controls appear immediately in loading states.
