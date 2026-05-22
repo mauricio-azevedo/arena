@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { KeyRound, MoreHorizontal, Pencil } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { MoreHorizontal, Settings } from 'lucide-react';
 import { LogoutButton } from '@/features/auth/components/logout-button';
 import { getAccessToken } from '@/lib/auth';
 import { Button } from '@/components/ui/button';
@@ -16,11 +17,9 @@ import {
 import { getProfileSummary } from './api/profile.api';
 import { getPublicProfileSummary } from './api/profile-user.api';
 import type { ProfileSummary } from './tabs/summary/types/profile-summary.type';
-import { ProfileEditCard } from './components/profile-edit-card';
 import { ProfileErrorState } from './components/profile-error-state';
 import { ProfileHeader } from './components/profile-header';
 import { ProfileLoadingState } from './components/profile-loading-state';
-import { ProfileSecurityCard } from './components/profile-security-card';
 import { ProfileSignedOutState } from './components/profile-signed-out-state';
 import { ProfileTabs } from './components/profile-tabs';
 import { ProfileGroupsTab } from './tabs/groups/profile-groups-tab';
@@ -28,29 +27,24 @@ import { ProfileMatchesTab } from './tabs/matches/profile-matches-tab';
 import { ProfileStatsTab } from './tabs/stats/profile-stats-tab';
 import { ProfileSummaryTab } from './tabs/summary/profile-summary-tab';
 import type { ProfileTab } from '@/features/profile/types/profile-tab.type';
-import type { ProfileUser } from './types/profile-user.type';
 
 type Props = {
   userId?: string;
 };
 
-type AccountPanel = 'profile' | 'security' | null;
-
 export function Profile({ userId }: Props) {
+  const router = useRouter();
+
   const [summary, setSummary] = useState<ProfileSummary | null>(null);
   const [activeTab, setActiveTab] = useState<ProfileTab>('summary');
   const [isLoading, setIsLoading] = useState(true);
   const [hasToken, setHasToken] = useState(false);
-  const [accessToken, setAccessToken] = useState<string | null>(null);
-  const [accountPanel, setAccountPanel] = useState<AccountPanel>(null);
   const [error, setError] = useState('');
 
   const isPublicProfile = Boolean(userId);
 
   useEffect(() => {
     const token = getAccessToken();
-    setAccessToken(token);
-    setAccountPanel(null);
 
     if (!token && !isPublicProfile) {
       setHasToken(false);
@@ -82,26 +76,6 @@ export function Profile({ userId }: Props) {
 
     loadProfile();
   }, [isPublicProfile, userId]);
-
-  function handleProfileSaved(user: ProfileUser) {
-    setSummary((currentSummary) => {
-      if (!currentSummary) {
-        return currentSummary;
-      }
-
-      return {
-        ...currentSummary,
-        user: {
-          ...currentSummary.user,
-          ...user,
-        },
-      };
-    });
-  }
-
-  function toggleAccountPanel(panel: Exclude<AccountPanel, null>) {
-    setAccountPanel((currentPanel) => (currentPanel === panel ? null : panel));
-  }
 
   if (isLoading) {
     return <ProfileLoadingState />;
@@ -141,13 +115,9 @@ export function Profile({ userId }: Props) {
 
               <DropdownMenuContent align="end" className="w-52">
                 <DropdownMenuLabel>Conta</DropdownMenuLabel>
-                <DropdownMenuItem onSelect={() => toggleAccountPanel('profile')}>
-                  <Pencil className="h-4 w-4" />
-                  {accountPanel === 'profile' ? 'Fechar edição' : 'Editar perfil'}
-                </DropdownMenuItem>
-                <DropdownMenuItem onSelect={() => toggleAccountPanel('security')}>
-                  <KeyRound className="h-4 w-4" />
-                  {accountPanel === 'security' ? 'Fechar segurança' : 'Segurança da conta'}
+                <DropdownMenuItem onSelect={() => router.push('/profile/settings')}>
+                  <Settings className="h-4 w-4" />
+                  Configurações
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <LogoutButton className="w-full justify-start border-0 bg-transparent px-2 text-destructive shadow-none hover:bg-destructive/10 hover:text-destructive" />
@@ -156,20 +126,6 @@ export function Profile({ userId }: Props) {
           </div>
         )}
       </div>
-
-      {!isPublicProfile && accountPanel === 'profile' && accessToken && (
-        <ProfileEditCard
-          token={accessToken}
-          user={summary.user}
-          onCancel={() => setAccountPanel(null)}
-          onSaved={handleProfileSaved}
-          onTokenRefreshed={setAccessToken}
-        />
-      )}
-
-      {!isPublicProfile && accountPanel === 'security' && accessToken && (
-        <ProfileSecurityCard token={accessToken} onCancel={() => setAccountPanel(null)} />
-      )}
 
       <ProfileTabs activeTab={activeTab} onChange={setActiveTab} />
       {activeTab === 'summary' && (
