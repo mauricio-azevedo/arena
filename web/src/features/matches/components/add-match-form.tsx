@@ -11,7 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Check, ChevronsUpDown, X } from 'lucide-react';
+import { Check, ChevronsUpDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
   Command,
@@ -129,8 +129,9 @@ export function AddMatchForm({ groupId, members, match }: Props) {
 
   return (
     <form onSubmit={handleSubmit} className="mt-6 space-y-4">
-      <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3">
+      <div className="space-y-3">
         <TeamSection
+          title="Dupla A"
           scoreLabel="A"
           scoreValue={gamesA}
           onScoreChange={setGamesA}
@@ -143,11 +144,8 @@ export function AddMatchForm({ groupId, members, match }: Props) {
           onPlayer2Change={setTeamAPlayer2Id}
         />
 
-        <div className="flex items-center justify-center text-muted-foreground">
-          <X className="size-5" aria-hidden="true" />
-        </div>
-
         <TeamSection
+          title="Dupla B"
           scoreLabel="B"
           scoreValue={gamesB}
           onScoreChange={setGamesB}
@@ -175,6 +173,7 @@ export function AddMatchForm({ groupId, members, match }: Props) {
 }
 
 type TeamSectionProps = {
+  title: string;
   scoreLabel: string;
   scoreValue: string;
   onScoreChange: (value: string) => void;
@@ -188,6 +187,7 @@ type TeamSectionProps = {
 };
 
 function TeamSection({
+  title,
   scoreLabel,
   scoreValue,
   onScoreChange,
@@ -200,7 +200,28 @@ function TeamSection({
   onPlayer2Change,
 }: TeamSectionProps) {
   return (
-    <div className="space-y-3">
+    <section
+      className={cn(
+        'rounded-[1.5rem] border bg-card/80 p-3 shadow-sm transition-colors',
+        isWinner && 'border-primary/40 bg-primary/5',
+      )}
+    >
+      <div className="mb-3 flex items-center justify-between gap-3">
+        <div className="min-w-0">
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+            {title}
+          </p>
+          {isWinner && <p className="mt-1 text-xs font-medium text-primary">Vencendo</p>}
+        </div>
+
+        <ScoreInput
+          label={scoreLabel}
+          value={scoreValue}
+          onChange={onScoreChange}
+          isWinner={isWinner}
+        />
+      </div>
+
       <div className="space-y-2">
         <PlayerSelect
           value={player1Id}
@@ -218,14 +239,7 @@ function TeamSection({
           placeholder="Jogador 2"
         />
       </div>
-
-      <ScoreInput
-        label={scoreLabel}
-        value={scoreValue}
-        onChange={onScoreChange}
-        isWinner={isWinner}
-      />
-    </div>
+    </section>
   );
 }
 
@@ -322,10 +336,9 @@ function ScoreInput({ label, value, onChange, isWinner }: ScoreInputProps) {
       <SelectTrigger
         aria-label={`Placar ${label}`}
         className={cn(
-          'relative h-14! w-full justify-center text-3xl font-semibold',
-          '[&>svg]:absolute [&>svg]:right-3 [&>svg]:top-1/2 [&>svg]:-translate-y-1/2',
-          isWinner && 'border-foreground',
-          'mb-0',
+          'relative h-12 w-20 justify-center rounded-2xl text-2xl font-semibold tabular-nums',
+          '[&>svg]:absolute [&>svg]:right-2.5 [&>svg]:top-1/2 [&>svg]:-translate-y-1/2',
+          isWinner && 'border-primary bg-background text-foreground shadow-sm',
         )}
       >
         <SelectValue />
