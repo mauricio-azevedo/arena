@@ -74,13 +74,13 @@ export class FeedReaderService {
       },
       orderBy: [
         {
-          importanceScore: 'desc',
-        },
-        {
           occurredAt: 'desc',
         },
+        {
+          createdAt: 'desc',
+        },
       ],
-      take: 100,
+      take: 30,
       include: {
         group: {
           select: {
@@ -106,23 +106,14 @@ export class FeedReaderService {
       },
     });
 
-    return items
-      .map((item) => ({
-        ...item,
-        isActorCurrentUser: item.actorUserId === userId,
-        isSubjectCurrentUser: item.subjectUserId === userId,
-        feedScore: this.feedScore.calculateFeedScore({
-          importanceScore: item.importanceScore,
-          occurredAt: item.occurredAt,
-        }),
-      }))
-      .sort((a, b) => {
-        if (b.feedScore !== a.feedScore) {
-          return b.feedScore - a.feedScore;
-        }
-
-        return b.occurredAt.getTime() - a.occurredAt.getTime();
-      })
-      .slice(0, 30);
+    return items.map((item) => ({
+      ...item,
+      isActorCurrentUser: item.actorUserId === userId,
+      isSubjectCurrentUser: item.subjectUserId === userId,
+      feedScore: this.feedScore.calculateFeedScore({
+        importanceScore: item.importanceScore,
+        occurredAt: item.occurredAt,
+      }),
+    }));
   }
 }
