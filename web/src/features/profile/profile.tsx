@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { MoreHorizontal } from 'lucide-react';
 import { LogoutButton } from '@/features/auth/components/logout-button';
@@ -8,7 +9,9 @@ import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuItem,
   DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { getProfileSummary } from './api/profile.api';
@@ -108,8 +111,14 @@ export function Profile({ userId }: Props) {
                 </Button>
               </DropdownMenuTrigger>
 
-              <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuContent align="end" className="w-52">
                 <DropdownMenuLabel>Conta</DropdownMenuLabel>
+                <DropdownMenuItem asChild>
+                  <Link href="/account" className="w-full">
+                    Editar dados
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
                 <LogoutButton className="w-full justify-start border-0 bg-transparent px-2 text-destructive shadow-none hover:bg-destructive/10 hover:text-destructive" />
               </DropdownMenuContent>
             </DropdownMenu>
