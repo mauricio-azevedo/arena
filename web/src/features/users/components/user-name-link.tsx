@@ -19,7 +19,7 @@ type Props = {
 const linkVariantClassNames: Record<UserNameLinkVariant, string> = {
   default: 'underline-offset-4 hover:underline',
   feed:
-    'font-semibold text-primary underline decoration-primary/30 decoration-1 underline-offset-[3px] focus-visible:rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+    'font-semibold text-secondary-foreground underline decoration-primary/35 decoration-1 underline-offset-[3px] focus-visible:rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
 };
 
 export function UserNameLink({ userId, children, className, returnTo, variant = 'default' }: Props) {
