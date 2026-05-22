@@ -13,7 +13,7 @@ export default function InviteLoading() {
       >
         <span className="sr-only">Carregando convite</span>
 
-        <BackButton href="/groups" label="Grupos" />
+        <BackButton href="/groups" />
 
         <div className="space-y-2">
           <div className="h-8 w-52 animate-pulse rounded-full bg-muted" />
