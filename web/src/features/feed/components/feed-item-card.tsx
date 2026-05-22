@@ -1,9 +1,10 @@
 import Link from 'next/link';
-import { Sparkles } from 'lucide-react';
+import { Flame, Sparkles } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import type { FeedItem } from '../types/feed-item.type';
 import type { GroupCreatedFeedMetadata } from '../types/group-created-feed-metadata.type';
 import type { MemberJoinedFeedMetadata } from '../types/member-joined-feed-metadata.type';
+import type { DominantWinFeedMetadata, DominantWinFeedPlayer } from '../types/dominant-win-feed-metadata.type';
 import { getGroupInitials } from '../helpers/feed-item-style.helper';
 import { formatFeedItemTime } from '../helpers/feed-item-time.helper';
 import { getFeedItemHref } from '@/features/feed/helpers/feed-item-link.helper';
@@ -14,6 +15,10 @@ type Props = {
 };
 
 export function FeedItemCard({ item }: Props) {
+  if (item.type === 'MATCH_BLOWOUT') {
+    return <DominantWinFeedCard item={item} />;
+  }
+
   const title = item.group?.name ?? 'BeachRank';
 
   return (
@@ -42,6 +47,47 @@ export function FeedItemCard({ item }: Props) {
 
             <p className="text-sm leading-6 text-muted-foreground">
               <FeedItemText item={item} />
+            </p>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function DominantWinFeedCard({ item }: { item: FeedItem }) {
+  const metadata = item.metadata as DominantWinFeedMetadata;
+  const winnerScore = Math.max(metadata.gamesA, metadata.gamesB);
+  const loserScore = Math.min(metadata.gamesA, metadata.gamesB);
+
+  return (
+    <Card className="border-primary/20 bg-gradient-to-br from-card via-card to-primary/8 transition-transform active:scale-[0.99]">
+      <CardContent className="p-4">
+        <div className="flex items-start gap-3">
+          <div className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-primary/12 text-primary ring-1 ring-primary/15">
+            <Flame className="h-5 w-5" />
+          </div>
+
+          <div className="min-w-0 flex-1 space-y-2">
+            <div className="flex items-center gap-2">
+              <Link
+                href={getFeedItemHref(item)}
+                className="truncate text-sm font-semibold tracking-[-0.01em] underline-offset-4 hover:underline"
+              >
+                Atropelo!
+              </Link>
+              <p className="shrink-0 text-xs text-muted-foreground">
+                {formatFeedItemTime(item.occurredAt)}
+              </p>
+            </div>
+
+            <p className="text-sm leading-6 text-muted-foreground">
+              <FeedPlayerNames players={metadata.winners} /> venceram{' '}
+              <FeedPlayerNames players={metadata.losers} /> por{' '}
+              <span className="font-semibold text-foreground">
+                {winnerScore}–{loserScore}
+              </span>
+              {item.group?.name ? <> no {item.group.name}.</> : <>.</>}
             </p>
           </div>
         </div>
@@ -80,6 +126,19 @@ function FeedItemText({ item }: { item: FeedItem }) {
   }
 
   return <>Novo momento no grupo.</>;
+}
+
+function FeedPlayerNames({ players }: { players: DominantWinFeedPlayer[] }) {
+  return (
+    <>
+      {players.map((player, index) => (
+        <span key={player.groupMemberId}>
+          {index > 0 && ' / '}
+          <UserNameLink userId={player.userId}>{player.displayName}</UserNameLink>
+        </span>
+      ))}
+    </>
+  );
 }
 
 function FeedActorName({ item }: { item: FeedItem }) {

@@ -8,6 +8,7 @@ import { MatchTeam } from '../generated/prisma/enums';
 import { PrismaService } from '../prisma/prisma.service';
 import { calculateBeachRating } from '../rating/calculate-beach-rating';
 import type { Prisma } from '../generated/prisma/client';
+import { FeedOrchestratorService } from '../feed/feed-orchestrator.service';
 
 type MatchBody = {
   teamAPlayer1Id: string;
@@ -17,6 +18,13 @@ type MatchBody = {
   gamesA: number;
   gamesB: number;
   playedAt?: string;
+};
+
+type MatchMember = {
+  id: string;
+  userId: string;
+  displayName: string;
+  rating: number;
 };
 
 type RatingState = {
@@ -49,7 +57,10 @@ const RATING_ALGORITHM = 'BEACH_ELO_V1';
 
 @Injectable()
 export class MatchesService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly feed: FeedOrchestratorService,
+  ) {}
 
   async create(groupId: string, userId: string, body: MatchBody) {
     this.validateMatchBody(body);
@@ -135,6 +146,8 @@ export class MatchesService {
         await this.recalculateRatings(tx, groupId);
       }
 
+      await this.syncMatchBlowoutFeedItem(tx, groupId, match.id, body, membersById, playedAt);
+
       return tx.match.findUnique({
         where: { id: match.id },
         include: this.matchInclude(),
@@ -219,6 +232,7 @@ export class MatchesService {
       });
 
       await this.recalculateRatings(tx, groupId);
+      await this.syncMatchBlowoutFeedItem(tx, groupId, id, body, membersById, playedAt);
 
       return tx.match.findUnique({
         where: { id },
@@ -347,6 +361,7 @@ export class MatchesService {
       },
       select: {
         id: true,
+        userId: true,
         displayName: true,
         rating: true,
       },
@@ -364,10 +379,7 @@ export class MatchesService {
   private buildPlayerCreate(
     groupId: string,
     groupMemberId: string,
-    membersById: Map<
-      string,
-      { id: string; displayName: string; rating: number }
-    >,
+    membersById: Map<string, MatchMember>,
     team: MatchTeam,
     position: number,
     playedAt: Date,
@@ -418,6 +430,56 @@ export class MatchesService {
     return body.gamesA > body.gamesB ? MatchTeam.TEAM_A : MatchTeam.TEAM_B;
   }
 
+  private syncMatchBlowoutFeedItem(
+    tx: Prisma.TransactionClient,
+    groupId: string,
+    matchId: string,
+    body: MatchBody,
+    membersById: Map<string, MatchMember>,
+    playedAt: Date,
+  ) {
+    const winnerTeam = this.getWinnerTeam(body);
+    const teamA = [body.teamAPlayer1Id, body.teamAPlayer2Id].map((id) =>
+      this.getMatchBlowoutFeedPlayer(id, membersById),
+    );
+    const teamB = [body.teamBPlayer1Id, body.teamBPlayer2Id].map((id) =>
+      this.getMatchBlowoutFeedPlayer(id, membersById),
+    );
+
+    return this.feed.syncMatchBlowoutItem(
+      {
+        groupId,
+        matchId,
+        winnerTeam,
+        gamesA: body.gamesA,
+        gamesB: body.gamesB,
+        winners: winnerTeam === MatchTeam.TEAM_A ? teamA : teamB,
+        losers: winnerTeam === MatchTeam.TEAM_A ? teamB : teamA,
+        occurredAt: playedAt,
+      },
+      tx,
+    );
+  }
+
+  private getMatchBlowoutFeedPlayer(
+    groupMemberId: string,
+    membersById: Map<string, MatchMember>,
+  ) {
+    const member = membersById.get(groupMemberId);
+
+    if (!member) {
+      throw new NotFoundException(
+        'One or more members were not found in this group',
+      );
+    }
+
+    return {
+      groupMemberId: member.id,
+      userId: member.userId,
+      displayName: member.displayName,
+    };
+  }
+
   private async canUseAppendOnlyRatingUpdate(
     tx: Prisma.TransactionClient,
     groupId: string,
@@ -438,7 +500,7 @@ export class MatchesService {
 
   private calculateCurrentMatchRatings(
     body: MatchBody,
-    membersById: Map<string, { id: string; displayName: string; rating: number }>,
+    membersById: Map<string, MatchMember>,
   ): MatchRatingSnapshot {
     const teamAPlayer1 = this.getRatingState(body.teamAPlayer1Id, membersById);
     const teamAPlayer2 = this.getRatingState(body.teamAPlayer2Id, membersById);
@@ -501,7 +563,7 @@ export class MatchesService {
 
   private getRatingState(
     groupMemberId: string,
-    membersById: Map<string, { id: string; displayName: string; rating: number }>,
+    membersById: Map<string, MatchMember>,
   ): RatingState {
     const member = membersById.get(groupMemberId);
 

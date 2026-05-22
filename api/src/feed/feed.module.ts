@@ -7,6 +7,7 @@ import { FeedController } from './feed.controller';
 import { FeedReaderService } from './feed-reader.service';
 import { AuthModule } from '../auth/auth.module';
 import { MemberJoinedFeedItemGenerator } from './generators/member-joined-feed-item.generator';
+import { MatchBlowoutFeedItemGenerator } from './generators/match-blowout-feed-item.generator';
 import { FeedScoreService } from './feed-score.service';
 
 @Module({
@@ -18,6 +19,7 @@ import { FeedScoreService } from './feed-score.service';
     FeedOrchestratorService,
     GroupCreatedFeedItemGenerator,
     MemberJoinedFeedItemGenerator,
+    MatchBlowoutFeedItemGenerator,
     FeedScoreService,
   ],
   exports: [FeedOrchestratorService],
