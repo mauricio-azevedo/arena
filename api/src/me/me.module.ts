@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import { AuthModule } from '../auth/auth.module';
 import { PrismaModule } from '../prisma/prisma.module';
 import { MeController } from './me.controller';
@@ -14,6 +15,7 @@ import { ProfileMatchesService } from './profile-matches/profile-matches.service
   controllers: [MeController],
   providers: [
     MeService,
+    JwtService,
     ProfileSummaryService,
     ProfileSummaryStatsService,
     ProfileSummaryMatchesService,
