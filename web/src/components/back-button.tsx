@@ -7,12 +7,18 @@ import { Button } from '@/components/ui/button';
 type Props = {
   href: string;
   label?: string;
+  preferHref?: boolean;
 };
 
-export function BackButton({ href, label = 'Voltar' }: Props) {
+export function BackButton({ href, label = 'Voltar', preferHref = false }: Props) {
   const router = useRouter();
 
   function handleClick() {
+    if (preferHref) {
+      router.push(href);
+      return;
+    }
+
     if (canSafelyGoBack()) {
       router.back();
       return;
