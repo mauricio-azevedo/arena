@@ -61,7 +61,6 @@ export type MatchPlayerMinAggregateOutputType = {
   matchId: string | null
   groupId: string | null
   groupMemberId: string | null
-  displayNameSnapshot: string | null
   team: $Enums.MatchTeam | null
   position: number | null
   ratingBefore: number | null
@@ -85,7 +84,6 @@ export type MatchPlayerMaxAggregateOutputType = {
   matchId: string | null
   groupId: string | null
   groupMemberId: string | null
-  displayNameSnapshot: string | null
   team: $Enums.MatchTeam | null
   position: number | null
   ratingBefore: number | null
@@ -109,7 +107,6 @@ export type MatchPlayerCountAggregateOutputType = {
   matchId: number
   groupId: number
   groupMemberId: number
-  displayNameSnapshot: number
   team: number
   position: number
   ratingBefore: number
@@ -165,7 +162,6 @@ export type MatchPlayerMinAggregateInputType = {
   matchId?: true
   groupId?: true
   groupMemberId?: true
-  displayNameSnapshot?: true
   team?: true
   position?: true
   ratingBefore?: true
@@ -189,7 +185,6 @@ export type MatchPlayerMaxAggregateInputType = {
   matchId?: true
   groupId?: true
   groupMemberId?: true
-  displayNameSnapshot?: true
   team?: true
   position?: true
   ratingBefore?: true
@@ -213,7 +208,6 @@ export type MatchPlayerCountAggregateInputType = {
   matchId?: true
   groupId?: true
   groupMemberId?: true
-  displayNameSnapshot?: true
   team?: true
   position?: true
   ratingBefore?: true
@@ -324,7 +318,6 @@ export type MatchPlayerGroupByOutputType = {
   matchId: string
   groupId: string
   groupMemberId: string
-  displayNameSnapshot: string
   team: $Enums.MatchTeam
   position: number
   ratingBefore: number
@@ -371,7 +364,6 @@ export type MatchPlayerWhereInput = {
   matchId?: Prisma.StringFilter<"MatchPlayer"> | string
   groupId?: Prisma.StringFilter<"MatchPlayer"> | string
   groupMemberId?: Prisma.StringFilter<"MatchPlayer"> | string
-  displayNameSnapshot?: Prisma.StringFilter<"MatchPlayer"> | string
   team?: Prisma.EnumMatchTeamFilter<"MatchPlayer"> | $Enums.MatchTeam
   position?: Prisma.IntFilter<"MatchPlayer"> | number
   ratingBefore?: Prisma.FloatFilter<"MatchPlayer"> | number
@@ -397,7 +389,6 @@ export type MatchPlayerOrderByWithRelationInput = {
   matchId?: Prisma.SortOrder
   groupId?: Prisma.SortOrder
   groupMemberId?: Prisma.SortOrder
-  displayNameSnapshot?: Prisma.SortOrder
   team?: Prisma.SortOrder
   position?: Prisma.SortOrder
   ratingBefore?: Prisma.SortOrder
@@ -428,7 +419,6 @@ export type MatchPlayerWhereUniqueInput = Prisma.AtLeast<{
   matchId?: Prisma.StringFilter<"MatchPlayer"> | string
   groupId?: Prisma.StringFilter<"MatchPlayer"> | string
   groupMemberId?: Prisma.StringFilter<"MatchPlayer"> | string
-  displayNameSnapshot?: Prisma.StringFilter<"MatchPlayer"> | string
   team?: Prisma.EnumMatchTeamFilter<"MatchPlayer"> | $Enums.MatchTeam
   position?: Prisma.IntFilter<"MatchPlayer"> | number
   ratingBefore?: Prisma.FloatFilter<"MatchPlayer"> | number
@@ -454,7 +444,6 @@ export type MatchPlayerOrderByWithAggregationInput = {
   matchId?: Prisma.SortOrder
   groupId?: Prisma.SortOrder
   groupMemberId?: Prisma.SortOrder
-  displayNameSnapshot?: Prisma.SortOrder
   team?: Prisma.SortOrder
   position?: Prisma.SortOrder
   ratingBefore?: Prisma.SortOrder
@@ -486,7 +475,6 @@ export type MatchPlayerScalarWhereWithAggregatesInput = {
   matchId?: Prisma.StringWithAggregatesFilter<"MatchPlayer"> | string
   groupId?: Prisma.StringWithAggregatesFilter<"MatchPlayer"> | string
   groupMemberId?: Prisma.StringWithAggregatesFilter<"MatchPlayer"> | string
-  displayNameSnapshot?: Prisma.StringWithAggregatesFilter<"MatchPlayer"> | string
   team?: Prisma.EnumMatchTeamWithAggregatesFilter<"MatchPlayer"> | $Enums.MatchTeam
   position?: Prisma.IntWithAggregatesFilter<"MatchPlayer"> | number
   ratingBefore?: Prisma.FloatWithAggregatesFilter<"MatchPlayer"> | number
@@ -507,7 +495,6 @@ export type MatchPlayerScalarWhereWithAggregatesInput = {
 
 export type MatchPlayerCreateInput = {
   id?: string
-  displayNameSnapshot: string
   team: $Enums.MatchTeam
   position: number
   ratingBefore: number
@@ -533,7 +520,6 @@ export type MatchPlayerUncheckedCreateInput = {
   matchId: string
   groupId: string
   groupMemberId: string
-  displayNameSnapshot: string
   team: $Enums.MatchTeam
   position: number
   ratingBefore: number
@@ -554,7 +540,6 @@ export type MatchPlayerUncheckedCreateInput = {
 
 export type MatchPlayerUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  displayNameSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   team?: Prisma.EnumMatchTeamFieldUpdateOperationsInput | $Enums.MatchTeam
   position?: Prisma.IntFieldUpdateOperationsInput | number
   ratingBefore?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -580,7 +565,6 @@ export type MatchPlayerUncheckedUpdateInput = {
   matchId?: Prisma.StringFieldUpdateOperationsInput | string
   groupId?: Prisma.StringFieldUpdateOperationsInput | string
   groupMemberId?: Prisma.StringFieldUpdateOperationsInput | string
-  displayNameSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   team?: Prisma.EnumMatchTeamFieldUpdateOperationsInput | $Enums.MatchTeam
   position?: Prisma.IntFieldUpdateOperationsInput | number
   ratingBefore?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -604,7 +588,6 @@ export type MatchPlayerCreateManyInput = {
   matchId: string
   groupId: string
   groupMemberId: string
-  displayNameSnapshot: string
   team: $Enums.MatchTeam
   position: number
   ratingBefore: number
@@ -625,7 +608,6 @@ export type MatchPlayerCreateManyInput = {
 
 export type MatchPlayerUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  displayNameSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   team?: Prisma.EnumMatchTeamFieldUpdateOperationsInput | $Enums.MatchTeam
   position?: Prisma.IntFieldUpdateOperationsInput | number
   ratingBefore?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -649,7 +631,6 @@ export type MatchPlayerUncheckedUpdateManyInput = {
   matchId?: Prisma.StringFieldUpdateOperationsInput | string
   groupId?: Prisma.StringFieldUpdateOperationsInput | string
   groupMemberId?: Prisma.StringFieldUpdateOperationsInput | string
-  displayNameSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   team?: Prisma.EnumMatchTeamFieldUpdateOperationsInput | $Enums.MatchTeam
   position?: Prisma.IntFieldUpdateOperationsInput | number
   ratingBefore?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -694,7 +675,6 @@ export type MatchPlayerCountOrderByAggregateInput = {
   matchId?: Prisma.SortOrder
   groupId?: Prisma.SortOrder
   groupMemberId?: Prisma.SortOrder
-  displayNameSnapshot?: Prisma.SortOrder
   team?: Prisma.SortOrder
   position?: Prisma.SortOrder
   ratingBefore?: Prisma.SortOrder
@@ -733,7 +713,6 @@ export type MatchPlayerMaxOrderByAggregateInput = {
   matchId?: Prisma.SortOrder
   groupId?: Prisma.SortOrder
   groupMemberId?: Prisma.SortOrder
-  displayNameSnapshot?: Prisma.SortOrder
   team?: Prisma.SortOrder
   position?: Prisma.SortOrder
   ratingBefore?: Prisma.SortOrder
@@ -757,7 +736,6 @@ export type MatchPlayerMinOrderByAggregateInput = {
   matchId?: Prisma.SortOrder
   groupId?: Prisma.SortOrder
   groupMemberId?: Prisma.SortOrder
-  displayNameSnapshot?: Prisma.SortOrder
   team?: Prisma.SortOrder
   position?: Prisma.SortOrder
   ratingBefore?: Prisma.SortOrder
@@ -881,7 +859,6 @@ export type EnumMatchTeamFieldUpdateOperationsInput = {
 
 export type MatchPlayerCreateWithoutGroupMemberInput = {
   id?: string
-  displayNameSnapshot: string
   team: $Enums.MatchTeam
   position: number
   ratingBefore: number
@@ -904,7 +881,6 @@ export type MatchPlayerCreateWithoutGroupMemberInput = {
 export type MatchPlayerUncheckedCreateWithoutGroupMemberInput = {
   id?: string
   matchId: string
-  displayNameSnapshot: string
   team: $Enums.MatchTeam
   position: number
   ratingBefore: number
@@ -957,7 +933,6 @@ export type MatchPlayerScalarWhereInput = {
   matchId?: Prisma.StringFilter<"MatchPlayer"> | string
   groupId?: Prisma.StringFilter<"MatchPlayer"> | string
   groupMemberId?: Prisma.StringFilter<"MatchPlayer"> | string
-  displayNameSnapshot?: Prisma.StringFilter<"MatchPlayer"> | string
   team?: Prisma.EnumMatchTeamFilter<"MatchPlayer"> | $Enums.MatchTeam
   position?: Prisma.IntFilter<"MatchPlayer"> | number
   ratingBefore?: Prisma.FloatFilter<"MatchPlayer"> | number
@@ -978,7 +953,6 @@ export type MatchPlayerScalarWhereInput = {
 
 export type MatchPlayerCreateWithoutMatchInput = {
   id?: string
-  displayNameSnapshot: string
   team: $Enums.MatchTeam
   position: number
   ratingBefore: number
@@ -1001,7 +975,6 @@ export type MatchPlayerCreateWithoutMatchInput = {
 export type MatchPlayerUncheckedCreateWithoutMatchInput = {
   id?: string
   groupMemberId: string
-  displayNameSnapshot: string
   team: $Enums.MatchTeam
   position: number
   ratingBefore: number
@@ -1049,7 +1022,6 @@ export type MatchPlayerUpdateManyWithWhereWithoutMatchInput = {
 export type MatchPlayerCreateManyGroupMemberInput = {
   id?: string
   matchId: string
-  displayNameSnapshot: string
   team: $Enums.MatchTeam
   position: number
   ratingBefore: number
@@ -1070,7 +1042,6 @@ export type MatchPlayerCreateManyGroupMemberInput = {
 
 export type MatchPlayerUpdateWithoutGroupMemberInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  displayNameSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   team?: Prisma.EnumMatchTeamFieldUpdateOperationsInput | $Enums.MatchTeam
   position?: Prisma.IntFieldUpdateOperationsInput | number
   ratingBefore?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -1093,7 +1064,6 @@ export type MatchPlayerUpdateWithoutGroupMemberInput = {
 export type MatchPlayerUncheckedUpdateWithoutGroupMemberInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   matchId?: Prisma.StringFieldUpdateOperationsInput | string
-  displayNameSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   team?: Prisma.EnumMatchTeamFieldUpdateOperationsInput | $Enums.MatchTeam
   position?: Prisma.IntFieldUpdateOperationsInput | number
   ratingBefore?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -1115,7 +1085,6 @@ export type MatchPlayerUncheckedUpdateWithoutGroupMemberInput = {
 export type MatchPlayerUncheckedUpdateManyWithoutGroupMemberInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   matchId?: Prisma.StringFieldUpdateOperationsInput | string
-  displayNameSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   team?: Prisma.EnumMatchTeamFieldUpdateOperationsInput | $Enums.MatchTeam
   position?: Prisma.IntFieldUpdateOperationsInput | number
   ratingBefore?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -1137,7 +1106,6 @@ export type MatchPlayerUncheckedUpdateManyWithoutGroupMemberInput = {
 export type MatchPlayerCreateManyMatchInput = {
   id?: string
   groupMemberId: string
-  displayNameSnapshot: string
   team: $Enums.MatchTeam
   position: number
   ratingBefore: number
@@ -1158,7 +1126,6 @@ export type MatchPlayerCreateManyMatchInput = {
 
 export type MatchPlayerUpdateWithoutMatchInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  displayNameSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   team?: Prisma.EnumMatchTeamFieldUpdateOperationsInput | $Enums.MatchTeam
   position?: Prisma.IntFieldUpdateOperationsInput | number
   ratingBefore?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -1181,7 +1148,6 @@ export type MatchPlayerUpdateWithoutMatchInput = {
 export type MatchPlayerUncheckedUpdateWithoutMatchInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   groupMemberId?: Prisma.StringFieldUpdateOperationsInput | string
-  displayNameSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   team?: Prisma.EnumMatchTeamFieldUpdateOperationsInput | $Enums.MatchTeam
   position?: Prisma.IntFieldUpdateOperationsInput | number
   ratingBefore?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -1203,7 +1169,6 @@ export type MatchPlayerUncheckedUpdateWithoutMatchInput = {
 export type MatchPlayerUncheckedUpdateManyWithoutMatchInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   groupMemberId?: Prisma.StringFieldUpdateOperationsInput | string
-  displayNameSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   team?: Prisma.EnumMatchTeamFieldUpdateOperationsInput | $Enums.MatchTeam
   position?: Prisma.IntFieldUpdateOperationsInput | number
   ratingBefore?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -1229,7 +1194,6 @@ export type MatchPlayerSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   matchId?: boolean
   groupId?: boolean
   groupMemberId?: boolean
-  displayNameSnapshot?: boolean
   team?: boolean
   position?: boolean
   ratingBefore?: boolean
@@ -1255,7 +1219,6 @@ export type MatchPlayerSelectCreateManyAndReturn<ExtArgs extends runtime.Types.E
   matchId?: boolean
   groupId?: boolean
   groupMemberId?: boolean
-  displayNameSnapshot?: boolean
   team?: boolean
   position?: boolean
   ratingBefore?: boolean
@@ -1281,7 +1244,6 @@ export type MatchPlayerSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.E
   matchId?: boolean
   groupId?: boolean
   groupMemberId?: boolean
-  displayNameSnapshot?: boolean
   team?: boolean
   position?: boolean
   ratingBefore?: boolean
@@ -1307,7 +1269,6 @@ export type MatchPlayerSelectScalar = {
   matchId?: boolean
   groupId?: boolean
   groupMemberId?: boolean
-  displayNameSnapshot?: boolean
   team?: boolean
   position?: boolean
   ratingBefore?: boolean
@@ -1326,7 +1287,7 @@ export type MatchPlayerSelectScalar = {
   updatedAt?: boolean
 }
 
-export type MatchPlayerOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "matchId" | "groupId" | "groupMemberId" | "displayNameSnapshot" | "team" | "position" | "ratingBefore" | "ratingAfter" | "ratingDelta" | "ratingDeviationBefore" | "ratingDeviationAfter" | "ratingVolatilityBefore" | "ratingVolatilityAfter" | "ratingMuBefore" | "ratingMuAfter" | "ratingSigmaBefore" | "ratingSigmaAfter" | "playedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["matchPlayer"]>
+export type MatchPlayerOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "matchId" | "groupId" | "groupMemberId" | "team" | "position" | "ratingBefore" | "ratingAfter" | "ratingDelta" | "ratingDeviationBefore" | "ratingDeviationAfter" | "ratingVolatilityBefore" | "ratingVolatilityAfter" | "ratingMuBefore" | "ratingMuAfter" | "ratingSigmaBefore" | "ratingSigmaAfter" | "playedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["matchPlayer"]>
 export type MatchPlayerInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   match?: boolean | Prisma.MatchDefaultArgs<ExtArgs>
   groupMember?: boolean | Prisma.GroupMemberDefaultArgs<ExtArgs>
@@ -1351,7 +1312,6 @@ export type $MatchPlayerPayload<ExtArgs extends runtime.Types.Extensions.Interna
     matchId: string
     groupId: string
     groupMemberId: string
-    displayNameSnapshot: string
     team: $Enums.MatchTeam
     position: number
     ratingBefore: number
@@ -1797,7 +1757,6 @@ export interface MatchPlayerFieldRefs {
   readonly matchId: Prisma.FieldRef<"MatchPlayer", 'String'>
   readonly groupId: Prisma.FieldRef<"MatchPlayer", 'String'>
   readonly groupMemberId: Prisma.FieldRef<"MatchPlayer", 'String'>
-  readonly displayNameSnapshot: Prisma.FieldRef<"MatchPlayer", 'String'>
   readonly team: Prisma.FieldRef<"MatchPlayer", 'MatchTeam'>
   readonly position: Prisma.FieldRef<"MatchPlayer", 'Int'>
   readonly ratingBefore: Prisma.FieldRef<"MatchPlayer", 'Float'>
