@@ -98,10 +98,6 @@ export function ProfileSecurityCard({ token, onCancel }: Props) {
 
           <div className="min-w-0 flex-1">
             <h2 className="font-semibold tracking-[-0.02em]">Alterar senha</h2>
-            <p className="mt-1 text-sm leading-6 text-muted-foreground">
-              Use uma senha nova para proteger sua conta. Ela não altera seu e-mail nem seus dados
-              do perfil.
-            </p>
           </div>
         </div>
 
@@ -154,11 +150,7 @@ export function ProfileSecurityCard({ token, onCancel }: Props) {
             disabled={isSubmitting}
           />
 
-          <PasswordGuidance
-            newPassword={newPassword}
-            confirmPassword={confirmPassword}
-            validation={validation}
-          />
+          <PasswordGuidance newPassword={newPassword} validation={validation} />
 
           {error && (
             <p className="rounded-2xl bg-destructive/10 px-3 py-2 text-sm leading-6 text-destructive">
@@ -240,15 +232,12 @@ function PasswordField({
 
 function PasswordGuidance({
   newPassword,
-  confirmPassword,
   validation,
 }: {
   newPassword: string;
-  confirmPassword: string;
   validation: ReturnType<typeof validatePasswordForm>;
 }) {
   const hasTypedNewPassword = Boolean(newPassword);
-  const hasTypedConfirmation = Boolean(confirmPassword);
 
   return (
     <div className="space-y-1 rounded-2xl bg-muted/45 px-3 py-2 text-xs leading-5 text-muted-foreground">
@@ -256,16 +245,6 @@ function PasswordGuidance({
         className={hasTypedNewPassword && validation.hasMinimumLength ? 'text-primary' : undefined}
       >
         Pelo menos {MIN_PASSWORD_LENGTH} caracteres.
-      </p>
-
-      <p
-        className={hasTypedNewPassword && validation.isWithinByteLimit ? 'text-primary' : undefined}
-      >
-        Até {MAX_PASSWORD_BYTES} bytes.
-      </p>
-
-      <p className={hasTypedConfirmation && validation.passwordsMatch ? 'text-primary' : undefined}>
-        A confirmação precisa ser igual à nova senha.
       </p>
     </div>
   );
