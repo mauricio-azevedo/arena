@@ -20,7 +20,7 @@ export default async function InvitePage({ params }: Props) {
     return (
       <AppShell>
         <div className="space-y-6">
-          <BackButton href="/groups" />
+          <BackButton href="/groups" label="Grupos" />
           <PageHeader
             title="Convite para grupo"
             description="Entre no grupo para registrar partidas e acompanhar o ranking."
