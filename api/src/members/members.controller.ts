@@ -13,7 +13,7 @@ export class MembersController {
   create(
     @Param('groupId') groupId: string,
     @CurrentUser() user: AuthUser,
-    @Body() body: { userId: string; displayName?: string },
+    @Body() body: { userId: string },
   ) {
     return this.membersService.create(groupId, user.sub, body);
   }
