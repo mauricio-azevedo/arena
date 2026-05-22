@@ -13,6 +13,7 @@ import {
 } from '@/features/groups/api/groups.api';
 import { getGroupMatches } from '@/features/matches/api/matches.api';
 import { getAccessToken } from '@/lib/auth';
+import { getDestinationLabel, getSafeInternalHref } from '@/lib/route-labels';
 import type { Group, GroupMember, Match, MyGroup } from '@/types/api';
 import { GroupDetailLoadingState } from '@/features/groups/components/group-detail-loading-state';
 import { Card, CardContent } from '@/components/ui/card';
@@ -20,6 +21,7 @@ import { Card, CardContent } from '@/components/ui/card';
 type Props = {
   groupId: string;
   tab?: string;
+  returnTo?: string;
 };
 
 type GroupDetailData = {
@@ -30,10 +32,12 @@ type GroupDetailData = {
   membership: MyGroup | null;
 };
 
-export function GroupDetail({ groupId, tab }: Props) {
+export function GroupDetail({ groupId, tab, returnTo }: Props) {
   const activeTab = tab === 'matches' || tab === 'members' || tab === 'ranking' ? tab : 'ranking';
   const [data, setData] = useState<GroupDetailData | null>(null);
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
+  const backHref = getSafeInternalHref(returnTo, '/groups');
+  const backLabel = getDestinationLabel(backHref);
 
   useEffect(() => {
     let isCurrent = true;
@@ -85,7 +89,7 @@ export function GroupDetail({ groupId, tab }: Props) {
   }
 
   if (status === 'error' || !data) {
-    return <GroupDetailErrorState />;
+    return <GroupDetailErrorState backHref={backHref} backLabel={backLabel} />;
   }
 
   const isAdmin = data.membership?.role === 'ADMIN';
@@ -94,7 +98,7 @@ export function GroupDetail({ groupId, tab }: Props) {
   return (
     <div className="space-y-6">
       <div className="space-y-4">
-        <BackButton href="/groups" label="Grupos" />
+        <BackButton href={backHref} label={backLabel} preferHref={Boolean(returnTo)} />
 
         <PageHeader
           title={data.group.name}
@@ -116,10 +120,10 @@ export function GroupDetail({ groupId, tab }: Props) {
   );
 }
 
-function GroupDetailErrorState() {
+function GroupDetailErrorState({ backHref, backLabel }: { backHref: string; backLabel: string }) {
   return (
     <div className="space-y-6">
-      <BackButton href="/groups" label="Grupos" />
+      <BackButton href={backHref} label={backLabel} preferHref />
 
       <Card>
         <CardContent className="space-y-2 p-4">
