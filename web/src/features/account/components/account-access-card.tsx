@@ -13,6 +13,10 @@ export function AccountAccessCard() {
   const [nextValue, setNextValue] = useState('');
   const [confirmValue, setConfirmValue] = useState('');
 
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+  }
+
   return (
     <Card>
       <CardContent className="space-y-4 p-4">
@@ -23,7 +27,7 @@ export function AccountAccessCard() {
           </p>
         </div>
 
-        <form className="space-y-3">
+        <form onSubmit={handleSubmit} className="space-y-3">
           <label className="space-y-1.5 text-sm font-medium">
             <span>{label} atual</span>
             <Input type={hiddenType} value={currentValue} onChange={(event) => setCurrentValue(event.target.value)} />
@@ -39,7 +43,7 @@ export function AccountAccessCard() {
             <Input type={hiddenType} value={confirmValue} onChange={(event) => setConfirmValue(event.target.value)} />
           </label>
 
-          <Button type="button" variant="outline" className="h-11 w-full">
+          <Button type="submit" variant="outline" className="h-11 w-full">
             Atualizar {label.toLowerCase()}
           </Button>
         </form>
