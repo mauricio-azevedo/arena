@@ -183,6 +183,21 @@ Known issues currently tracked:
 - Winner and loser names are correct and clickable where appropriate.
 - Feed item is visible to group members.
 
+### No detalhe event (`MATCH_CLOSE`)
+
+- Creating a `7-6` match creates a `No detalhe!` feed item.
+- Creating a `6-7` match creates a `No detalhe!` feed item.
+- Creating a `7-5` match does not create a `No detalhe!` feed item.
+- Creating a `6-4` match does not create a `No detalhe!` feed item.
+- Team A winning `7-6` displays `7-6`.
+- Team B winning `6-7` displays `7-6`.
+- Editing a non-close match into `7-6` or `6-7` creates the feed item.
+- Editing a close match from `7-6` to `6-7` updates the feed item.
+- Editing a close match into `7-5` removes the feed item.
+- Deleting the match removes the feed item.
+- Winner and loser names are correct and clickable where appropriate.
+- Feed item is visible to group members.
+
 ## Navigation and loading UX
 
 - Internal link click shows immediate feedback.
