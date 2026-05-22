@@ -1,39 +1,12 @@
-'use client';
-
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { getMyGroups } from '@/features/groups/api/groups.api';
-import { getAccessToken } from '@/lib/auth';
 
 type Props = {
   groupId: string;
+  isAdmin: boolean;
 };
 
-export function GroupActions({ groupId }: Props) {
-  const [isAdmin, setIsAdmin] = useState(false);
-
-  useEffect(() => {
-    const token = getAccessToken();
-
-    if (!token) {
-      return;
-    }
-
-    async function checkAdmin(userToken: string) {
-      try {
-        const memberships = await getMyGroups(userToken);
-        const membership = memberships.find((item) => item.groupId === groupId);
-
-        setIsAdmin(membership?.role === 'ADMIN');
-      } catch {
-        setIsAdmin(false);
-      }
-    }
-
-    checkAdmin(token);
-  }, [groupId]);
-
+export function GroupActions({ groupId, isAdmin }: Props) {
   return (
     <div className={isAdmin ? 'grid grid-cols-2 gap-2' : 'grid grid-cols-1 gap-2'}>
       <Button asChild size="lg">
