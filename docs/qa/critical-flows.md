@@ -37,9 +37,26 @@ For each changed area:
 - User is redirected to a safe public/auth screen.
 - Protected screens are no longer accessible after logout.
 
+### Account settings
+
+- Signed-in user can open account settings from the profile header menu.
+- `/account` requires login.
+- Account settings show a contextual loading skeleton while user data loads.
+- User can update first name and last name.
+- Updating name updates the profile header.
+- Updating name updates active group member display names.
+- User can update email after confirming their current credential.
+- Updating email refreshes the stored access token.
+- Duplicate email is rejected clearly.
+- Invalid email is rejected clearly.
+- Submitting empty name/email is rejected clearly.
+- Signed-out user does not see private account data.
+- Back button returns to profile.
+
 ## Access protection
 
 - `/profile` requires login.
+- `/account` requires login.
 - `/groups/new` requires login.
 - `/groups/:groupId/matches/new` requires group membership.
 - `/groups/:groupId/matches/:matchId/edit` requires group membership.
