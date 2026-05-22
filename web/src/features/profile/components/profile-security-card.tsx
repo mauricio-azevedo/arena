@@ -24,6 +24,15 @@ export function ProfileSecurityCard({ onCancel }: Props) {
           </div>
         </div>
 
+        <div className="rounded-2xl border border-dashed bg-muted/35 p-4 text-sm leading-6 text-muted-foreground">
+          <p className="font-medium text-foreground">Placeholder do formulário de segurança</p>
+          <p className="mt-1">
+            A estrutura visual e a navegação já estão separadas. O formulário final deve chamar o
+            client de API em <code>profile-password.api.ts</code> e tratar sucesso, erro e limpeza dos
+            campos neste card.
+          </p>
+        </div>
+
         <Button type="button" variant="outline" onClick={onCancel} className="w-full">
           Voltar
         </Button>
