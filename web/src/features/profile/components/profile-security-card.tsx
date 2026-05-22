@@ -91,7 +91,7 @@ export function ProfileSecurityCard({ token, onCancel }: Props) {
   return (
     <Card className="border-primary/15 bg-card/95 shadow-[0_18px_55px_rgba(84,54,20,0.12)]">
       <CardContent className="space-y-4 p-4">
-        <div className="flex items-start gap-3">
+        <div className="flex items-center gap-3">
           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-primary/12 text-primary">
             <LockKeyhole className="h-5 w-5" />
           </div>
