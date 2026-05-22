@@ -9,7 +9,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import type { UpdatePasswordInput } from './types/update-password-input.type';
 
 const MIN_PASSWORD_LENGTH = 6;
-const MAX_PASSWORD_LENGTH = 72;
+const MAX_PASSWORD_BYTES = 72;
 const SALT_ROUNDS = 10;
 const PASSWORD_UPDATE_FIELDS = ['currentPassword', 'newPassword'] as const;
 
@@ -88,26 +88,42 @@ export class MePasswordService {
     }
 
     return {
-      currentPassword: this.normalizePasswordField(body.currentPassword, 'Current password'),
-      newPassword: this.normalizePasswordField(body.newPassword, 'New password'),
+      currentPassword: this.normalizeCurrentPassword(body.currentPassword),
+      newPassword: this.normalizeNewPassword(body.newPassword),
     };
   }
 
-  private normalizePasswordField(value: unknown, label: string) {
+  private normalizeCurrentPassword(value: unknown) {
     if (typeof value !== 'string') {
-      throw new BadRequestException(`${label} must be a string`);
+      throw new BadRequestException('Current password must be a string');
     }
 
     if (!value) {
-      throw new BadRequestException(`${label} is required`);
+      throw new BadRequestException('Current password is required');
+    }
+
+    return value;
+  }
+
+  private normalizeNewPassword(value: unknown) {
+    if (typeof value !== 'string') {
+      throw new BadRequestException('New password must be a string');
+    }
+
+    if (!value) {
+      throw new BadRequestException('New password is required');
     }
 
     if (value.length < MIN_PASSWORD_LENGTH) {
-      throw new BadRequestException(`${label} must have at least ${MIN_PASSWORD_LENGTH} characters`);
+      throw new BadRequestException(
+        `New password must have at least ${MIN_PASSWORD_LENGTH} characters`,
+      );
     }
 
-    if (value.length > MAX_PASSWORD_LENGTH) {
-      throw new BadRequestException(`${label} must have at most ${MAX_PASSWORD_LENGTH} characters`);
+    if (Buffer.byteLength(value, 'utf8') > MAX_PASSWORD_BYTES) {
+      throw new BadRequestException(
+        `New password must have at most ${MAX_PASSWORD_BYTES} bytes`,
+      );
     }
 
     return value;
