@@ -56,7 +56,7 @@ export function FeedItemCard({ item }: Props) {
               </p>
             </div>
 
-            <p className="text-sm leading-7 text-muted-foreground">
+            <p className="text-sm leading-6 text-muted-foreground">
               <FeedItemText item={item} />
             </p>
           </div>
@@ -92,7 +92,7 @@ function DominantWinFeedCard({ item }: { item: FeedItem }) {
               </p>
             </div>
 
-            <p className="text-sm leading-7 text-muted-foreground">
+            <p className="text-sm leading-6 text-muted-foreground">
               <FeedPlayerNames players={metadata.winners} /> venceram{' '}
               <FeedPlayerNames players={metadata.losers} /> por{' '}
               <span className="font-semibold text-foreground">
@@ -133,7 +133,7 @@ function CloseMatchFeedCard({ item }: { item: FeedItem }) {
               </p>
             </div>
 
-            <p className="text-sm leading-7 text-muted-foreground">
+            <p className="text-sm leading-6 text-muted-foreground">
               <FeedPlayerNames players={metadata.winners} /> venceram{' '}
               <FeedPlayerNames players={metadata.losers} /> no detalhe por{' '}
               <span className="font-semibold text-foreground">
