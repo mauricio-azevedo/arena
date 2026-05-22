@@ -129,7 +129,7 @@ export function AddMatchForm({ groupId, members, match }: Props) {
 
   return (
     <form onSubmit={handleSubmit} className="mt-6 space-y-4">
-      <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3">
+      <div className="space-y-3">
         <TeamSection
           scoreLabel="A"
           scoreValue={gamesA}
@@ -200,32 +200,36 @@ function TeamSection({
   onPlayer2Change,
 }: TeamSectionProps) {
   return (
-    <div className="space-y-3">
-      <div className="space-y-2">
-        <PlayerSelect
-          value={player1Id}
-          onChange={onPlayer1Change}
-          members={members}
-          selectedPlayerIds={selectedPlayerIds}
-          placeholder="Jogador 1"
-        />
+    <section>
+      <div className="flex items-stretch gap-3">
+        <div className="flex-1 space-y-2">
+          <PlayerSelect
+            value={player1Id}
+            onChange={onPlayer1Change}
+            members={members}
+            selectedPlayerIds={selectedPlayerIds}
+            placeholder="Jogador 1"
+          />
 
-        <PlayerSelect
-          value={player2Id}
-          onChange={onPlayer2Change}
-          members={members}
-          selectedPlayerIds={selectedPlayerIds}
-          placeholder="Jogador 2"
-        />
+          <PlayerSelect
+            value={player2Id}
+            onChange={onPlayer2Change}
+            members={members}
+            selectedPlayerIds={selectedPlayerIds}
+            placeholder="Jogador 2"
+          />
+        </div>
+
+        <div className="flex self-stretch">
+          <ScoreInput
+            label={scoreLabel}
+            value={scoreValue}
+            onChange={onScoreChange}
+            isWinner={isWinner}
+          />
+        </div>
       </div>
-
-      <ScoreInput
-        label={scoreLabel}
-        value={scoreValue}
-        onChange={onScoreChange}
-        isWinner={isWinner}
-      />
-    </div>
+    </section>
   );
 }
 
@@ -322,10 +326,10 @@ function ScoreInput({ label, value, onChange, isWinner }: ScoreInputProps) {
       <SelectTrigger
         aria-label={`Placar ${label}`}
         className={cn(
-          'relative h-14! w-full justify-center text-3xl font-semibold',
-          '[&>svg]:absolute [&>svg]:right-3 [&>svg]:top-1/2 [&>svg]:-translate-y-1/2',
-          isWinner && 'border-foreground',
-          'mb-0',
+          'relative h-auto min-h-full w-20 rounded-2xl text-4xl font-semibold tabular-nums',
+          'justify-center',
+          '[&>svg]:absolute [&>svg]:right-2.5 [&>svg]:top-1/2 [&>svg]:-translate-y-1/2',
+          isWinner && 'border-primary bg-background text-foreground shadow-sm',
         )}
       >
         <SelectValue />
