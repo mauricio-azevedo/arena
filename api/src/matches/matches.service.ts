@@ -146,7 +146,7 @@ export class MatchesService {
         await this.recalculateRatings(tx, groupId);
       }
 
-      await this.syncMatchBlowoutFeedItem(tx, groupId, match.id, body, membersById, playedAt);
+      await this.syncMatchFeedItems(tx, groupId, match.id, body, membersById, playedAt);
 
       return tx.match.findUnique({
         where: { id: match.id },
@@ -232,7 +232,7 @@ export class MatchesService {
       });
 
       await this.recalculateRatings(tx, groupId);
-      await this.syncMatchBlowoutFeedItem(tx, groupId, id, body, membersById, playedAt);
+      await this.syncMatchFeedItems(tx, groupId, id, body, membersById, playedAt);
 
       return tx.match.findUnique({
         where: { id },
@@ -430,7 +430,7 @@ export class MatchesService {
     return body.gamesA > body.gamesB ? MatchTeam.TEAM_A : MatchTeam.TEAM_B;
   }
 
-  private syncMatchBlowoutFeedItem(
+  private async syncMatchFeedItems(
     tx: Prisma.TransactionClient,
     groupId: string,
     matchId: string,
@@ -440,28 +440,27 @@ export class MatchesService {
   ) {
     const winnerTeam = this.getWinnerTeam(body);
     const teamA = [body.teamAPlayer1Id, body.teamAPlayer2Id].map((id) =>
-      this.getMatchBlowoutFeedPlayer(id, membersById),
+      this.getMatchFeedPlayer(id, membersById),
     );
     const teamB = [body.teamBPlayer1Id, body.teamBPlayer2Id].map((id) =>
-      this.getMatchBlowoutFeedPlayer(id, membersById),
+      this.getMatchFeedPlayer(id, membersById),
     );
+    const input = {
+      groupId,
+      matchId,
+      winnerTeam,
+      gamesA: body.gamesA,
+      gamesB: body.gamesB,
+      winners: winnerTeam === MatchTeam.TEAM_A ? teamA : teamB,
+      losers: winnerTeam === MatchTeam.TEAM_A ? teamB : teamA,
+      occurredAt: playedAt,
+    };
 
-    return this.feed.syncMatchBlowoutItem(
-      {
-        groupId,
-        matchId,
-        winnerTeam,
-        gamesA: body.gamesA,
-        gamesB: body.gamesB,
-        winners: winnerTeam === MatchTeam.TEAM_A ? teamA : teamB,
-        losers: winnerTeam === MatchTeam.TEAM_A ? teamB : teamA,
-        occurredAt: playedAt,
-      },
-      tx,
-    );
+    await this.feed.syncMatchBlowoutItem(input, tx);
+    await this.feed.syncMatchCloseItem(input, tx);
   }
 
-  private getMatchBlowoutFeedPlayer(
+  private getMatchFeedPlayer(
     groupMemberId: string,
     membersById: Map<string, MatchMember>,
   ) {

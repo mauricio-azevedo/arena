@@ -179,6 +179,7 @@ Match-derived feed events should be synchronized after match/rating writes withi
 Examples:
 
 - `MATCH_BLOWOUT` / `Atropelo!`
+- `MATCH_CLOSE` / `No detalhe!`
 
 Why after rating writes?
 
