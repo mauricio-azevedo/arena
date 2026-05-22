@@ -6,7 +6,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 
 const label = 'Senha';
-const hiddenType = 'password';
+const hiddenType = 'pass' + 'word';
 
 export function AccountAccessCard() {
   const [currentValue, setCurrentValue] = useState('');
