@@ -28,7 +28,7 @@ export class MeController {
     return this.meService.updateAccount(user.sub, body);
   }
 
-  @Patch('account/password')
+  @Patch('account/credential')
   @UseGuards(JwtAuthGuard)
   changePassword(@CurrentUser() user: AuthUser, @Body() body: ChangePasswordDto) {
     return this.meService.changePassword(user.sub, body);
