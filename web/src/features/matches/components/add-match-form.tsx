@@ -11,7 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Check, ChevronsUpDown } from 'lucide-react';
+import { Check, ChevronsUpDown, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
   Command,
@@ -131,7 +131,6 @@ export function AddMatchForm({ groupId, members, match }: Props) {
     <form onSubmit={handleSubmit} className="mt-6 space-y-4">
       <div className="space-y-3">
         <TeamSection
-          title="Dupla A"
           scoreLabel="A"
           scoreValue={gamesA}
           onScoreChange={setGamesA}
@@ -144,8 +143,11 @@ export function AddMatchForm({ groupId, members, match }: Props) {
           onPlayer2Change={setTeamAPlayer2Id}
         />
 
+        <div className="flex items-center justify-center text-muted-foreground">
+          <X className="size-5" aria-hidden="true" />
+        </div>
+
         <TeamSection
-          title="Dupla B"
           scoreLabel="B"
           scoreValue={gamesB}
           onScoreChange={setGamesB}
@@ -173,7 +175,6 @@ export function AddMatchForm({ groupId, members, match }: Props) {
 }
 
 type TeamSectionProps = {
-  title: string;
   scoreLabel: string;
   scoreValue: string;
   onScoreChange: (value: string) => void;
@@ -187,7 +188,6 @@ type TeamSectionProps = {
 };
 
 function TeamSection({
-  title,
   scoreLabel,
   scoreValue,
   onScoreChange,
@@ -200,44 +200,34 @@ function TeamSection({
   onPlayer2Change,
 }: TeamSectionProps) {
   return (
-    <section
-      className={cn(
-        'rounded-[1.5rem] border bg-card/80 p-3 shadow-sm transition-colors',
-        isWinner && 'border-primary/40 bg-primary/5',
-      )}
-    >
-      <div className="mb-3 flex items-center justify-between gap-3">
-        <div className="min-w-0">
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-            {title}
-          </p>
-          {isWinner && <p className="mt-1 text-xs font-medium text-primary">Vencendo</p>}
+    <section>
+      <div className="flex items-stretch gap-3">
+        <div className="flex-1 space-y-2">
+          <PlayerSelect
+            value={player1Id}
+            onChange={onPlayer1Change}
+            members={members}
+            selectedPlayerIds={selectedPlayerIds}
+            placeholder="Jogador 1"
+          />
+
+          <PlayerSelect
+            value={player2Id}
+            onChange={onPlayer2Change}
+            members={members}
+            selectedPlayerIds={selectedPlayerIds}
+            placeholder="Jogador 2"
+          />
         </div>
 
-        <ScoreInput
-          label={scoreLabel}
-          value={scoreValue}
-          onChange={onScoreChange}
-          isWinner={isWinner}
-        />
-      </div>
-
-      <div className="space-y-2">
-        <PlayerSelect
-          value={player1Id}
-          onChange={onPlayer1Change}
-          members={members}
-          selectedPlayerIds={selectedPlayerIds}
-          placeholder="Jogador 1"
-        />
-
-        <PlayerSelect
-          value={player2Id}
-          onChange={onPlayer2Change}
-          members={members}
-          selectedPlayerIds={selectedPlayerIds}
-          placeholder="Jogador 2"
-        />
+        <div className="flex self-stretch">
+          <ScoreInput
+            label={scoreLabel}
+            value={scoreValue}
+            onChange={onScoreChange}
+            isWinner={isWinner}
+          />
+        </div>
       </div>
     </section>
   );
@@ -336,7 +326,8 @@ function ScoreInput({ label, value, onChange, isWinner }: ScoreInputProps) {
       <SelectTrigger
         aria-label={`Placar ${label}`}
         className={cn(
-          'relative h-12 w-20 justify-center rounded-2xl text-2xl font-semibold tabular-nums',
+          'relative h-auto min-h-full w-20 rounded-2xl text-4xl font-semibold tabular-nums',
+          'justify-center',
           '[&>svg]:absolute [&>svg]:right-2.5 [&>svg]:top-1/2 [&>svg]:-translate-y-1/2',
           isWinner && 'border-primary bg-background text-foreground shadow-sm',
         )}
