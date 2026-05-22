@@ -2,6 +2,7 @@
 
 import { ChevronRight, KeyRound, UserRound } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import type { ReactNode } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { getAccessToken } from '@/lib/auth';
@@ -50,7 +51,8 @@ export function ProfileSettings() {
           icon={<KeyRound className="h-5 w-5" />}
           title="Alterar senha"
           description="Troque sua senha em uma tela própria."
-          onClick={() => router.push('/profile/settings/password')}
+          badge="Em breve"
+          disabled
         />
       </section>
     </div>
@@ -62,14 +64,23 @@ function SettingsOption({
   title,
   description,
   onClick,
+  badge,
+  disabled = false,
 }: {
-  icon: React.ReactNode;
+  icon: ReactNode;
   title: string;
   description: string;
-  onClick: () => void;
+  onClick?: () => void;
+  badge?: string;
+  disabled?: boolean;
 }) {
   return (
-    <button type="button" onClick={onClick} className="w-full text-left">
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      className="w-full text-left disabled:cursor-not-allowed disabled:opacity-70"
+    >
       <Card className="transition-colors hover:bg-muted/35">
         <CardContent className="flex items-center gap-4 p-4">
           <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-primary/12 text-primary">
@@ -77,11 +88,18 @@ function SettingsOption({
           </div>
 
           <div className="min-w-0 flex-1">
-            <p className="font-semibold tracking-[-0.02em]">{title}</p>
+            <div className="flex items-center gap-2">
+              <p className="font-semibold tracking-[-0.02em]">{title}</p>
+              {badge && (
+                <span className="rounded-full bg-muted px-2 py-0.5 text-[11px] font-semibold text-muted-foreground">
+                  {badge}
+                </span>
+              )}
+            </div>
             <p className="mt-1 text-sm leading-5 text-muted-foreground">{description}</p>
           </div>
 
-          <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground" />
+          {!disabled && <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground" />}
         </CardContent>
       </Card>
     </button>
