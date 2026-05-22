@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { BackButton } from '@/components/back-button';
 import { GroupDetailTabs } from '@/features/groups/components/group-detail-tabs';
 import { PageHeader } from '@/components/page-header';
@@ -22,8 +22,6 @@ type Props = {
   tab?: string;
 };
 
-type GroupTab = 'ranking' | 'matches' | 'members';
-
 type GroupDetailData = {
   group: Group;
   ranking: GroupMember[];
@@ -35,7 +33,7 @@ type GroupDetailData = {
 export function GroupDetail({ groupId, tab }: Props) {
   const activeTab = tab === 'matches' || tab === 'members' || tab === 'ranking' ? tab : 'ranking';
   const [data, setData] = useState<GroupDetailData | null>(null);
-  const [status, setStatus] = useState<'loading' | 'ready' | 'not-found' | 'error'>('loading');
+  const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
 
   useEffect(() => {
     let isCurrent = true;
@@ -82,16 +80,16 @@ export function GroupDetail({ groupId, tab }: Props) {
     };
   }, [groupId]);
 
-  const isAdmin = data?.membership?.role === 'ADMIN';
-  const canManageMatches = Boolean(data?.membership);
-
   if (status === 'loading') {
     return <GroupDetailLoadingState />;
   }
 
-  if (status === 'error' || status === 'not-found' || !data) {
+  if (status === 'error' || !data) {
     return <GroupDetailErrorState />;
   }
+
+  const isAdmin = data.membership?.role === 'ADMIN';
+  const canManageMatches = Boolean(data.membership);
 
   return (
     <div className="space-y-6">
