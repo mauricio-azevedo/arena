@@ -168,7 +168,7 @@ export function Profile({ userId }: Props) {
       )}
 
       {!isPublicProfile && accountPanel === 'security' && accessToken && (
-        <ProfileSecurityCard onCancel={() => setAccountPanel(null)} />
+        <ProfileSecurityCard token={accessToken} onCancel={() => setAccountPanel(null)} />
       )}
 
       <ProfileTabs activeTab={activeTab} onChange={setActiveTab} />
