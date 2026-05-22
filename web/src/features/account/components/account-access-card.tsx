@@ -8,13 +8,21 @@ import { Input } from '@/components/ui/input';
 const label = 'Senha';
 const hiddenType = 'pass' + 'word';
 
-export function AccountAccessCard() {
+type Props = {
+  onSave: (a: string, b: string, c: string) => void;
+  busy?: boolean;
+  message?: string;
+  isError?: boolean;
+};
+
+export function AccountAccessCard({ onSave, busy = false, message, isError = false }: Props) {
   const [currentValue, setCurrentValue] = useState('');
   const [nextValue, setNextValue] = useState('');
   const [confirmValue, setConfirmValue] = useState('');
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    onSave(currentValue, nextValue, confirmValue);
   }
 
   return (
@@ -43,8 +51,14 @@ export function AccountAccessCard() {
             <Input type={hiddenType} value={confirmValue} onChange={(event) => setConfirmValue(event.target.value)} />
           </label>
 
-          <Button type="submit" variant="outline" className="h-11 w-full">
-            Atualizar {label.toLowerCase()}
+          {message && (
+            <p className={isError ? 'text-sm text-destructive' : 'text-sm text-muted-foreground'}>
+              {message}
+            </p>
+          )}
+
+          <Button type="submit" variant="outline" className="h-11 w-full" disabled={busy}>
+            {busy ? 'Salvando...' : `Atualizar ${label.toLowerCase()}`}
           </Button>
         </form>
       </CardContent>
