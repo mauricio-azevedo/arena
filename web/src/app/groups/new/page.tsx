@@ -7,7 +7,7 @@ export default function NewGroupPage() {
   return (
     <AppShell>
       <div className="space-y-6">
-        <BackButton href="/groups" />
+        <BackButton href="/groups" label="Grupos" />
         <PageHeader
           title="Criar grupo"
           description="Monte um grupo para registrar partidas e acompanhar o ranking da galera."
