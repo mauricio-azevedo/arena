@@ -20,6 +20,15 @@ type NormalizedUpdateProfileInput = {
   email?: string;
 };
 
+type ProfileUser = {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
 @Injectable()
 export class MeService {
   constructor(
@@ -193,7 +202,7 @@ export class MeService {
     }
   }
 
-  private buildProfileResponse(user: ReturnType<MeService['userSelect']> extends infer T ? never : never) {
+  private buildProfileResponse(user: ProfileUser) {
     return {
       user,
       accessToken: this.signToken(user.id, user.email),
