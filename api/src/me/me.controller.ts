@@ -6,7 +6,6 @@ import { MeService } from './me.service';
 import { ProfileSummaryService } from './profile-summary/profile-summary.service';
 import { ProfileMatchesService } from './profile-matches/profile-matches.service';
 import type { UpdateAccountDto } from './dto/update-account.dto';
-import type { ChangePasswordDto } from './dto/change-password.dto';
 
 @Controller('me')
 export class MeController {
@@ -26,12 +25,6 @@ export class MeController {
   @UseGuards(JwtAuthGuard)
   updateAccount(@CurrentUser() user: AuthUser, @Body() body: UpdateAccountDto) {
     return this.meService.updateAccount(user.sub, body);
-  }
-
-  @Patch('account/credential')
-  @UseGuards(JwtAuthGuard)
-  changePassword(@CurrentUser() user: AuthUser, @Body() body: ChangePasswordDto) {
-    return this.meService.changePassword(user.sub, body);
   }
 
   @Get('profile/summary')
