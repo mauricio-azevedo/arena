@@ -110,6 +110,10 @@ export class MeService {
         throw new ConflictException('Email already in use');
       }
 
+      if (this.isRecordNotFoundError(error)) {
+        throw new UnauthorizedException('Invalid token');
+      }
+
       throw error;
     }
   }
@@ -220,6 +224,13 @@ export class MeService {
     return (
       error instanceof Prisma.PrismaClientKnownRequestError &&
       error.code === 'P2002'
+    );
+  }
+
+  private isRecordNotFoundError(error: unknown) {
+    return (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === 'P2025'
     );
   }
 
