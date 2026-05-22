@@ -15,7 +15,7 @@ export default async function GroupInvitePage({ params }: Props) {
   return (
     <AppShell>
       <div className="space-y-6">
-        <BackButton href={['', 'groups', groupId].join('/')} />
+        <BackButton href={['', 'groups', groupId].join('/')} label="Grupo" />
         <PageHeader
           title="Convidar pessoas"
           description="Gere um link para chamar pessoas para este grupo."
