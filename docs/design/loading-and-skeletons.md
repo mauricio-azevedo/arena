@@ -44,7 +44,8 @@ The loading screen should:
 
 - use `AppShell` when appropriate;
 - resemble the destination screen layout;
-- use skeleton blocks instead of visible technical text;
+- render structural navigation controls immediately;
+- use skeleton blocks only for content that depends on loading data;
 - include accessible screen-reader text.
 
 Example use case:
@@ -107,6 +108,30 @@ Good examples:
 - group detail skeleton with header, action buttons, tabs, and ranking rows;
 - profile skeleton with profile hero, tabs, stat cards, and summary sections.
 
+### Keep structural navigation real
+
+Back buttons and other structural navigation controls should appear immediately in loading screens.
+
+These controls are part of the screen frame, not loaded content.
+
+Prefer:
+
+```txt
+[← Voltar]
+[skeleton for title/content/actions that depend on data]
+```
+
+Avoid:
+
+```txt
+[skeleton shaped like back button]
+[skeleton for content]
+```
+
+This keeps the user in control even while the destination content is loading.
+
+Only use a skeleton for a navigation control if the control itself truly cannot exist without loaded data. When in doubt, render the real control with a safe fallback destination.
+
 ### Keep skeletons quiet
 
 Skeletons should reduce anxiety, not draw too much attention.
@@ -150,8 +175,9 @@ Do not remove accessible labels just because visible loading text is not shown.
 
 | Scenario | Pattern |
 |---|---|
-| Navigating to group detail | Route-level `loading.tsx` with group-detail skeleton |
-| Navigating to public profile | Route-level profile skeleton when server data is pending |
+| Navigating to group detail | Real back button plus route-level `loading.tsx` with group-detail skeleton |
+| Navigating to public profile | Real back button plus route-level profile skeleton when server data is pending |
+| Navigating to match create/edit | Real back button plus form-shaped skeleton |
 | Switching tabs with already-loaded data | Local selected tab state; do not trigger server navigation |
 | Switching tabs that fetch client-side data | Switch tab immediately, show tab-content skeleton |
 | Saving forms | Button loading state and disabled duplicate submit |
@@ -204,6 +230,14 @@ This makes the tap feel delayed.
 
 Fix with route-level loading or destination skeleton.
 
+### Skeleton back button
+
+A screen-level loading state renders a fake back button skeleton instead of the real back button.
+
+This makes the screen feel blocked and removes an available escape hatch.
+
+Fix by rendering the real `BackButton` immediately and skeletonizing only the loading content.
+
 ### Text-only loading cards
 
 A card that only says `Carregando grupos...` feels unfinished.
@@ -223,6 +257,8 @@ For every new screen or slow transition, verify:
 - tapping a link gives immediate feedback;
 - the destination context appears quickly;
 - skeleton resembles the final screen;
+- structural navigation controls appear immediately;
+- back button is real and usable while content loads;
 - no protected/private content flashes before auth checks finish;
 - loading text is not visible unless intentional;
 - screen-reader label exists for loading states;

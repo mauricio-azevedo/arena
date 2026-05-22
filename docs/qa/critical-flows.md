@@ -62,6 +62,7 @@ For each changed area:
 - Group detail page loads header, description, actions, tabs, ranking, matches, and members.
 - Opening group from list/profile does not leave user stuck on the previous screen.
 - Route-level skeleton appears while group detail data loads.
+- Back button is real and usable while group detail content loads.
 - Back button behavior is reasonable from group detail.
 
 ### Group tabs
@@ -80,6 +81,7 @@ For each changed area:
 - Signed-out user is redirected appropriately.
 - Generated invite can be accepted by another user.
 - Invite usage count updates correctly.
+- Invite screens show a real back button while content loads.
 - Revoked/expired/maxed invite behavior is handled if applicable.
 
 ## Matches
@@ -95,6 +97,7 @@ For each changed area:
 - Successful match appears in group matches.
 - Successful match affects ranking/rating.
 - Normal new match creation is fast enough for good UX.
+- New match loading state shows a real back button while form data loads.
 - After saving a match, the submit button does not return to an idle state before navigation starts.
 - After saving a match, the user is sent to the group's Matches tab.
 - The destination loading state appears in the group context when match list data is pending.
@@ -106,6 +109,7 @@ For each changed area:
 - Edited score updates rating snapshots.
 - Edited score recalculates group ratings when needed.
 - Match-derived feed events are created/updated/removed as needed.
+- Edit match loading state shows a real back button while form data loads.
 - After saving an edit, the user is sent to the group's Matches tab.
 
 ### Delete match
@@ -141,6 +145,7 @@ For each changed area:
 - Public profile resembles own profile where appropriate.
 - Private/self-only controls are not shown for another user.
 - Public profile route has a contextual skeleton while profile data is pending.
+- Public profile loading state shows a real back button while profile content loads.
 - Back navigation returns to the expected previous context.
 - Opening a public profile from a group match list returns to `/groups/:groupId?tab=matches`.
 
@@ -206,6 +211,8 @@ For each changed area:
 - Global top bar does not replace contextual skeleton when destination skeleton should exist.
 - Skeleton resembles destination layout.
 - Skeleton has accessible `sr-only` loading text.
+- Structural navigation controls appear immediately in loading states.
+- Back buttons are real and usable while destination content loads.
 - Browser back returns to expected context for key flows.
 
 ## Search
