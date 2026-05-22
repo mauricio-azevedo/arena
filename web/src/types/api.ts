@@ -27,7 +27,6 @@ export type GroupMember = {
   id: string;
   groupId: string;
   userId: string;
-  displayName: string;
   rating: number;
   ratingDeviation: number | null;
   ratingVolatility: number | null;
@@ -46,7 +45,6 @@ export type MyGroup = {
   id: string;
   role: GroupMemberRole;
   rating: number;
-  displayName: string;
   groupId: string;
   createdAt: string;
   updatedAt: string;
@@ -81,7 +79,6 @@ export type MatchPlayer = {
   matchId: string;
   groupId: string;
   groupMemberId: string;
-  displayNameSnapshot: string;
   team: MatchTeam;
   position: number;
   ratingBefore: number;

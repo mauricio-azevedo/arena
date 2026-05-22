@@ -19,10 +19,13 @@ export class RankingService {
         groupId,
         leftAt: null,
       },
-      orderBy: [{ rating: 'desc' }, { displayName: 'asc' }],
+      orderBy: [
+        { rating: 'desc' },
+        { user: { firstName: 'asc' } },
+        { user: { lastName: 'asc' } },
+      ],
       select: {
         id: true,
-        displayName: true,
         rating: true,
         ratingDeviation: true,
         ratingVolatility: true,

@@ -18,7 +18,6 @@ export class MeService {
         id: true,
         role: true,
         rating: true,
-        displayName: true,
         groupId: true,
         createdAt: true,
         updatedAt: true,

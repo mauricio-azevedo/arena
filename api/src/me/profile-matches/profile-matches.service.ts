@@ -28,6 +28,12 @@ export class ProfileMatchesService {
                 groupMember: {
                   select: {
                     userId: true,
+                    user: {
+                      select: {
+                        firstName: true,
+                        lastName: true,
+                      },
+                    },
                   },
                 },
               },
@@ -44,14 +50,14 @@ export class ProfileMatchesService {
         .filter((player) => player.team === MatchTeam.TEAM_A)
         .map((player) => ({
           userId: player.groupMember.userId,
-          displayName: player.displayNameSnapshot,
+          displayName: this.getUserDisplayName(player.groupMember.user),
         }));
 
       const teamB = match.players
         .filter((player) => player.team === MatchTeam.TEAM_B)
         .map((player) => ({
           userId: player.groupMember.userId,
-          displayName: player.displayNameSnapshot,
+          displayName: this.getUserDisplayName(player.groupMember.user),
         }));
 
       return {
@@ -73,5 +79,9 @@ export class ProfileMatchesService {
         ratingDelta: matchPlayer.ratingDelta,
       };
     });
+  }
+
+  private getUserDisplayName(user: { firstName: string; lastName: string }) {
+    return `${user.firstName} ${user.lastName}`.trim();
   }
 }

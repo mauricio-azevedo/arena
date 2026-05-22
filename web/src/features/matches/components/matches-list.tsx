@@ -246,7 +246,7 @@ function MatchPlayerNames({ players }: { players: MatchPlayer[] }) {
       {players.map((player, index) => (
         <span key={player.id}>
           {index > 0 && ' / '}
-          <UserNameLink userId={player.groupMember?.userId}>{player.displayNameSnapshot}</UserNameLink>
+          <UserNameLink userId={player.groupMember?.userId}>{getPlayerDisplayName(player)}</UserNameLink>
         </span>
       ))}
     </>
@@ -278,4 +278,14 @@ function formatDate(date: string) {
     day: '2-digit',
     month: 'short',
   });
+}
+
+function getPlayerDisplayName(player: MatchPlayer) {
+  const user = player.groupMember?.user;
+
+  if (!user) {
+    return 'Jogador';
+  }
+
+  return `${user.firstName} ${user.lastName}`.trim();
 }

@@ -362,8 +362,13 @@ export class MatchesService {
       select: {
         id: true,
         userId: true,
-        displayName: true,
         rating: true,
+        user: {
+          select: {
+            firstName: true,
+            lastName: true,
+          },
+        },
       },
     });
 
@@ -373,7 +378,17 @@ export class MatchesService {
       );
     }
 
-    return new Map(members.map((member) => [member.id, member]));
+    return new Map(
+      members.map((member) => [
+        member.id,
+        {
+          id: member.id,
+          userId: member.userId,
+          displayName: this.getUserDisplayName(member.user),
+          rating: member.rating,
+        },
+      ]),
+    );
   }
 
   private buildPlayerCreate(
@@ -402,7 +417,6 @@ export class MatchesService {
           },
         },
       },
-      displayNameSnapshot: member.displayName,
       team,
       position,
       ratingBefore: ratingSnapshot?.ratingBefore ?? 0,
@@ -602,7 +616,12 @@ export class MatchesService {
       where: { groupId },
       select: {
         id: true,
-        displayName: true,
+        user: {
+          select: {
+            firstName: true,
+            lastName: true,
+          },
+        },
       },
     });
 
@@ -611,7 +630,7 @@ export class MatchesService {
         member.id,
         {
           id: member.id,
-          name: member.displayName,
+          name: this.getUserDisplayName(member.user),
           rating: INITIAL_RATING,
         },
       ]),
@@ -810,5 +829,9 @@ export class MatchesService {
     }
 
     return membership;
+  }
+
+  private getUserDisplayName(user: { firstName: string; lastName: string }) {
+    return `${user.firstName} ${user.lastName}`.trim();
   }
 }

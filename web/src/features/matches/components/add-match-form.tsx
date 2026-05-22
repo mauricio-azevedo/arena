@@ -259,7 +259,7 @@ function PlayerSelect({
           className="h-12 w-full justify-between font-normal"
         >
           <span className="truncate">
-            {selectedMember ? selectedMember.displayName : placeholder}
+            {selectedMember ? getMemberDisplayName(selectedMember) : placeholder}
           </span>
 
           <ChevronsUpDown className="size-4 shrink-0 opacity-50" />
@@ -275,13 +275,14 @@ function PlayerSelect({
 
             <CommandGroup>
               {members.map((member) => {
+                const memberDisplayName = getMemberDisplayName(member);
                 const isSelected = member.id === value;
                 const isSelectedElsewhere = selectedPlayerIds.includes(member.id) && !isSelected;
 
                 return (
                   <CommandItem
                     key={member.id}
-                    value={member.displayName}
+                    value={memberDisplayName}
                     disabled={isSelectedElsewhere}
                     onSelect={() => {
                       if (isSelectedElsewhere) return;
@@ -290,7 +291,7 @@ function PlayerSelect({
                       setOpen(false);
                     }}
                   >
-                    <span className="truncate">{member.displayName}</span>
+                    <span className="truncate">{memberDisplayName}</span>
 
                     <Check
                       className={cn('ml-auto size-4', isSelected ? 'opacity-100' : 'opacity-0')}
@@ -346,4 +347,12 @@ function getWinner(gamesA: number, gamesB: number) {
   if (gamesA === gamesB) return null;
 
   return gamesA > gamesB ? 'A' : 'B';
+}
+
+function getMemberDisplayName(member: GroupMember) {
+  if (!member.user) {
+    return 'Jogador';
+  }
+
+  return `${member.user.firstName} ${member.user.lastName}`.trim();
 }

@@ -117,8 +117,6 @@ model GroupMember {
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  displayName String
-
   rating           Float  @default(1000)
   ratingDeviation  Float?
   ratingVolatility Float?
@@ -141,7 +139,6 @@ model GroupMember {
   @@index([groupId])
   @@index([userId])
   @@index([groupId, rating])
-  @@index([groupId, displayName])
   @@index([groupId, role])
 }
 
@@ -192,8 +189,6 @@ model MatchPlayer {
 
   groupMemberId String
   groupMember   GroupMember @relation(fields: [groupMemberId, groupId], references: [id, groupId], onDelete: Restrict)
-
-  displayNameSnapshot String
 
   team     MatchTeam
   position Int

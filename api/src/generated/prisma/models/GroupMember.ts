@@ -46,7 +46,6 @@ export type GroupMemberMinAggregateOutputType = {
   id: string | null
   groupId: string | null
   userId: string | null
-  displayName: string | null
   rating: number | null
   ratingDeviation: number | null
   ratingVolatility: number | null
@@ -63,7 +62,6 @@ export type GroupMemberMaxAggregateOutputType = {
   id: string | null
   groupId: string | null
   userId: string | null
-  displayName: string | null
   rating: number | null
   ratingDeviation: number | null
   ratingVolatility: number | null
@@ -80,7 +78,6 @@ export type GroupMemberCountAggregateOutputType = {
   id: number
   groupId: number
   userId: number
-  displayName: number
   rating: number
   ratingDeviation: number
   ratingVolatility: number
@@ -115,7 +112,6 @@ export type GroupMemberMinAggregateInputType = {
   id?: true
   groupId?: true
   userId?: true
-  displayName?: true
   rating?: true
   ratingDeviation?: true
   ratingVolatility?: true
@@ -132,7 +128,6 @@ export type GroupMemberMaxAggregateInputType = {
   id?: true
   groupId?: true
   userId?: true
-  displayName?: true
   rating?: true
   ratingDeviation?: true
   ratingVolatility?: true
@@ -149,7 +144,6 @@ export type GroupMemberCountAggregateInputType = {
   id?: true
   groupId?: true
   userId?: true
-  displayName?: true
   rating?: true
   ratingDeviation?: true
   ratingVolatility?: true
@@ -253,7 +247,6 @@ export type GroupMemberGroupByOutputType = {
   id: string
   groupId: string
   userId: string
-  displayName: string
   rating: number
   ratingDeviation: number | null
   ratingVolatility: number | null
@@ -293,7 +286,6 @@ export type GroupMemberWhereInput = {
   id?: Prisma.StringFilter<"GroupMember"> | string
   groupId?: Prisma.StringFilter<"GroupMember"> | string
   userId?: Prisma.StringFilter<"GroupMember"> | string
-  displayName?: Prisma.StringFilter<"GroupMember"> | string
   rating?: Prisma.FloatFilter<"GroupMember"> | number
   ratingDeviation?: Prisma.FloatNullableFilter<"GroupMember"> | number | null
   ratingVolatility?: Prisma.FloatNullableFilter<"GroupMember"> | number | null
@@ -314,7 +306,6 @@ export type GroupMemberOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   groupId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
-  displayName?: Prisma.SortOrder
   rating?: Prisma.SortOrder
   ratingDeviation?: Prisma.SortOrderInput | Prisma.SortOrder
   ratingVolatility?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -340,7 +331,6 @@ export type GroupMemberWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.GroupMemberWhereInput | Prisma.GroupMemberWhereInput[]
   groupId?: Prisma.StringFilter<"GroupMember"> | string
   userId?: Prisma.StringFilter<"GroupMember"> | string
-  displayName?: Prisma.StringFilter<"GroupMember"> | string
   rating?: Prisma.FloatFilter<"GroupMember"> | number
   ratingDeviation?: Prisma.FloatNullableFilter<"GroupMember"> | number | null
   ratingVolatility?: Prisma.FloatNullableFilter<"GroupMember"> | number | null
@@ -361,7 +351,6 @@ export type GroupMemberOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   groupId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
-  displayName?: Prisma.SortOrder
   rating?: Prisma.SortOrder
   ratingDeviation?: Prisma.SortOrderInput | Prisma.SortOrder
   ratingVolatility?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -386,7 +375,6 @@ export type GroupMemberScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"GroupMember"> | string
   groupId?: Prisma.StringWithAggregatesFilter<"GroupMember"> | string
   userId?: Prisma.StringWithAggregatesFilter<"GroupMember"> | string
-  displayName?: Prisma.StringWithAggregatesFilter<"GroupMember"> | string
   rating?: Prisma.FloatWithAggregatesFilter<"GroupMember"> | number
   ratingDeviation?: Prisma.FloatNullableWithAggregatesFilter<"GroupMember"> | number | null
   ratingVolatility?: Prisma.FloatNullableWithAggregatesFilter<"GroupMember"> | number | null
@@ -401,7 +389,6 @@ export type GroupMemberScalarWhereWithAggregatesInput = {
 
 export type GroupMemberCreateInput = {
   id?: string
-  displayName: string
   rating?: number
   ratingDeviation?: number | null
   ratingVolatility?: number | null
@@ -422,7 +409,6 @@ export type GroupMemberUncheckedCreateInput = {
   id?: string
   groupId: string
   userId: string
-  displayName: string
   rating?: number
   ratingDeviation?: number | null
   ratingVolatility?: number | null
@@ -439,7 +425,6 @@ export type GroupMemberUncheckedCreateInput = {
 
 export type GroupMemberUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  displayName?: Prisma.StringFieldUpdateOperationsInput | string
   rating?: Prisma.FloatFieldUpdateOperationsInput | number
   ratingDeviation?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   ratingVolatility?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -460,7 +445,6 @@ export type GroupMemberUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   groupId?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
-  displayName?: Prisma.StringFieldUpdateOperationsInput | string
   rating?: Prisma.FloatFieldUpdateOperationsInput | number
   ratingDeviation?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   ratingVolatility?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -479,7 +463,6 @@ export type GroupMemberCreateManyInput = {
   id?: string
   groupId: string
   userId: string
-  displayName: string
   rating?: number
   ratingDeviation?: number | null
   ratingVolatility?: number | null
@@ -494,7 +477,6 @@ export type GroupMemberCreateManyInput = {
 
 export type GroupMemberUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  displayName?: Prisma.StringFieldUpdateOperationsInput | string
   rating?: Prisma.FloatFieldUpdateOperationsInput | number
   ratingDeviation?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   ratingVolatility?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -511,7 +493,6 @@ export type GroupMemberUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   groupId?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
-  displayName?: Prisma.StringFieldUpdateOperationsInput | string
   rating?: Prisma.FloatFieldUpdateOperationsInput | number
   ratingDeviation?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   ratingVolatility?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -548,7 +529,6 @@ export type GroupMemberCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   groupId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
-  displayName?: Prisma.SortOrder
   rating?: Prisma.SortOrder
   ratingDeviation?: Prisma.SortOrder
   ratingVolatility?: Prisma.SortOrder
@@ -573,7 +553,6 @@ export type GroupMemberMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   groupId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
-  displayName?: Prisma.SortOrder
   rating?: Prisma.SortOrder
   ratingDeviation?: Prisma.SortOrder
   ratingVolatility?: Prisma.SortOrder
@@ -590,7 +569,6 @@ export type GroupMemberMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   groupId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
-  displayName?: Prisma.SortOrder
   rating?: Prisma.SortOrder
   ratingDeviation?: Prisma.SortOrder
   ratingVolatility?: Prisma.SortOrder
@@ -757,7 +735,6 @@ export type GroupMemberUpdateOneWithoutActorFeedItemsNestedInput = {
 
 export type GroupMemberCreateWithoutUserInput = {
   id?: string
-  displayName: string
   rating?: number
   ratingDeviation?: number | null
   ratingVolatility?: number | null
@@ -776,7 +753,6 @@ export type GroupMemberCreateWithoutUserInput = {
 export type GroupMemberUncheckedCreateWithoutUserInput = {
   id?: string
   groupId: string
-  displayName: string
   rating?: number
   ratingDeviation?: number | null
   ratingVolatility?: number | null
@@ -824,7 +800,6 @@ export type GroupMemberScalarWhereInput = {
   id?: Prisma.StringFilter<"GroupMember"> | string
   groupId?: Prisma.StringFilter<"GroupMember"> | string
   userId?: Prisma.StringFilter<"GroupMember"> | string
-  displayName?: Prisma.StringFilter<"GroupMember"> | string
   rating?: Prisma.FloatFilter<"GroupMember"> | number
   ratingDeviation?: Prisma.FloatNullableFilter<"GroupMember"> | number | null
   ratingVolatility?: Prisma.FloatNullableFilter<"GroupMember"> | number | null
@@ -839,7 +814,6 @@ export type GroupMemberScalarWhereInput = {
 
 export type GroupMemberCreateWithoutGroupInput = {
   id?: string
-  displayName: string
   rating?: number
   ratingDeviation?: number | null
   ratingVolatility?: number | null
@@ -858,7 +832,6 @@ export type GroupMemberCreateWithoutGroupInput = {
 export type GroupMemberUncheckedCreateWithoutGroupInput = {
   id?: string
   userId: string
-  displayName: string
   rating?: number
   ratingDeviation?: number | null
   ratingVolatility?: number | null
@@ -901,7 +874,6 @@ export type GroupMemberUpdateManyWithWhereWithoutGroupInput = {
 
 export type GroupMemberCreateWithoutMatchPlayersInput = {
   id?: string
-  displayName: string
   rating?: number
   ratingDeviation?: number | null
   ratingVolatility?: number | null
@@ -921,7 +893,6 @@ export type GroupMemberUncheckedCreateWithoutMatchPlayersInput = {
   id?: string
   groupId: string
   userId: string
-  displayName: string
   rating?: number
   ratingDeviation?: number | null
   ratingVolatility?: number | null
@@ -953,7 +924,6 @@ export type GroupMemberUpdateToOneWithWhereWithoutMatchPlayersInput = {
 
 export type GroupMemberUpdateWithoutMatchPlayersInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  displayName?: Prisma.StringFieldUpdateOperationsInput | string
   rating?: Prisma.FloatFieldUpdateOperationsInput | number
   ratingDeviation?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   ratingVolatility?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -973,7 +943,6 @@ export type GroupMemberUncheckedUpdateWithoutMatchPlayersInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   groupId?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
-  displayName?: Prisma.StringFieldUpdateOperationsInput | string
   rating?: Prisma.FloatFieldUpdateOperationsInput | number
   ratingDeviation?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   ratingVolatility?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -989,7 +958,6 @@ export type GroupMemberUncheckedUpdateWithoutMatchPlayersInput = {
 
 export type GroupMemberCreateWithoutActorFeedItemsInput = {
   id?: string
-  displayName: string
   rating?: number
   ratingDeviation?: number | null
   ratingVolatility?: number | null
@@ -1009,7 +977,6 @@ export type GroupMemberUncheckedCreateWithoutActorFeedItemsInput = {
   id?: string
   groupId: string
   userId: string
-  displayName: string
   rating?: number
   ratingDeviation?: number | null
   ratingVolatility?: number | null
@@ -1041,7 +1008,6 @@ export type GroupMemberUpdateToOneWithWhereWithoutActorFeedItemsInput = {
 
 export type GroupMemberUpdateWithoutActorFeedItemsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  displayName?: Prisma.StringFieldUpdateOperationsInput | string
   rating?: Prisma.FloatFieldUpdateOperationsInput | number
   ratingDeviation?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   ratingVolatility?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -1061,7 +1027,6 @@ export type GroupMemberUncheckedUpdateWithoutActorFeedItemsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   groupId?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
-  displayName?: Prisma.StringFieldUpdateOperationsInput | string
   rating?: Prisma.FloatFieldUpdateOperationsInput | number
   ratingDeviation?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   ratingVolatility?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -1078,7 +1043,6 @@ export type GroupMemberUncheckedUpdateWithoutActorFeedItemsInput = {
 export type GroupMemberCreateManyUserInput = {
   id?: string
   groupId: string
-  displayName: string
   rating?: number
   ratingDeviation?: number | null
   ratingVolatility?: number | null
@@ -1093,7 +1057,6 @@ export type GroupMemberCreateManyUserInput = {
 
 export type GroupMemberUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  displayName?: Prisma.StringFieldUpdateOperationsInput | string
   rating?: Prisma.FloatFieldUpdateOperationsInput | number
   ratingDeviation?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   ratingVolatility?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -1112,7 +1075,6 @@ export type GroupMemberUpdateWithoutUserInput = {
 export type GroupMemberUncheckedUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   groupId?: Prisma.StringFieldUpdateOperationsInput | string
-  displayName?: Prisma.StringFieldUpdateOperationsInput | string
   rating?: Prisma.FloatFieldUpdateOperationsInput | number
   ratingDeviation?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   ratingVolatility?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -1130,7 +1092,6 @@ export type GroupMemberUncheckedUpdateWithoutUserInput = {
 export type GroupMemberUncheckedUpdateManyWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   groupId?: Prisma.StringFieldUpdateOperationsInput | string
-  displayName?: Prisma.StringFieldUpdateOperationsInput | string
   rating?: Prisma.FloatFieldUpdateOperationsInput | number
   ratingDeviation?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   ratingVolatility?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -1146,7 +1107,6 @@ export type GroupMemberUncheckedUpdateManyWithoutUserInput = {
 export type GroupMemberCreateManyGroupInput = {
   id?: string
   userId: string
-  displayName: string
   rating?: number
   ratingDeviation?: number | null
   ratingVolatility?: number | null
@@ -1161,7 +1121,6 @@ export type GroupMemberCreateManyGroupInput = {
 
 export type GroupMemberUpdateWithoutGroupInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  displayName?: Prisma.StringFieldUpdateOperationsInput | string
   rating?: Prisma.FloatFieldUpdateOperationsInput | number
   ratingDeviation?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   ratingVolatility?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -1180,7 +1139,6 @@ export type GroupMemberUpdateWithoutGroupInput = {
 export type GroupMemberUncheckedUpdateWithoutGroupInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
-  displayName?: Prisma.StringFieldUpdateOperationsInput | string
   rating?: Prisma.FloatFieldUpdateOperationsInput | number
   ratingDeviation?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   ratingVolatility?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -1198,7 +1156,6 @@ export type GroupMemberUncheckedUpdateWithoutGroupInput = {
 export type GroupMemberUncheckedUpdateManyWithoutGroupInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
-  displayName?: Prisma.StringFieldUpdateOperationsInput | string
   rating?: Prisma.FloatFieldUpdateOperationsInput | number
   ratingDeviation?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   ratingVolatility?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -1255,7 +1212,6 @@ export type GroupMemberSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   id?: boolean
   groupId?: boolean
   userId?: boolean
-  displayName?: boolean
   rating?: boolean
   ratingDeviation?: boolean
   ratingVolatility?: boolean
@@ -1277,7 +1233,6 @@ export type GroupMemberSelectCreateManyAndReturn<ExtArgs extends runtime.Types.E
   id?: boolean
   groupId?: boolean
   userId?: boolean
-  displayName?: boolean
   rating?: boolean
   ratingDeviation?: boolean
   ratingVolatility?: boolean
@@ -1296,7 +1251,6 @@ export type GroupMemberSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.E
   id?: boolean
   groupId?: boolean
   userId?: boolean
-  displayName?: boolean
   rating?: boolean
   ratingDeviation?: boolean
   ratingVolatility?: boolean
@@ -1315,7 +1269,6 @@ export type GroupMemberSelectScalar = {
   id?: boolean
   groupId?: boolean
   userId?: boolean
-  displayName?: boolean
   rating?: boolean
   ratingDeviation?: boolean
   ratingVolatility?: boolean
@@ -1328,7 +1281,7 @@ export type GroupMemberSelectScalar = {
   updatedAt?: boolean
 }
 
-export type GroupMemberOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "groupId" | "userId" | "displayName" | "rating" | "ratingDeviation" | "ratingVolatility" | "ratingMu" | "ratingSigma" | "ratingAlgorithm" | "role" | "leftAt" | "createdAt" | "updatedAt", ExtArgs["result"]["groupMember"]>
+export type GroupMemberOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "groupId" | "userId" | "rating" | "ratingDeviation" | "ratingVolatility" | "ratingMu" | "ratingSigma" | "ratingAlgorithm" | "role" | "leftAt" | "createdAt" | "updatedAt", ExtArgs["result"]["groupMember"]>
 export type GroupMemberInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   group?: boolean | Prisma.GroupDefaultArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -1357,7 +1310,6 @@ export type $GroupMemberPayload<ExtArgs extends runtime.Types.Extensions.Interna
     id: string
     groupId: string
     userId: string
-    displayName: string
     rating: number
     ratingDeviation: number | null
     ratingVolatility: number | null
@@ -1798,7 +1750,6 @@ export interface GroupMemberFieldRefs {
   readonly id: Prisma.FieldRef<"GroupMember", 'String'>
   readonly groupId: Prisma.FieldRef<"GroupMember", 'String'>
   readonly userId: Prisma.FieldRef<"GroupMember", 'String'>
-  readonly displayName: Prisma.FieldRef<"GroupMember", 'String'>
   readonly rating: Prisma.FieldRef<"GroupMember", 'Float'>
   readonly ratingDeviation: Prisma.FieldRef<"GroupMember", 'Float'>
   readonly ratingVolatility: Prisma.FieldRef<"GroupMember", 'Float'>
