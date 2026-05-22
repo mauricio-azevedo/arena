@@ -52,10 +52,7 @@ export function MyGroupsList({ loadGroups, ratingLabel = 'Você' }: Props) {
   if (isLoading) {
     return (
       <Card>
-        <CardContent className="flex items-center gap-3 p-4 text-sm text-muted-foreground">
-          <div className="h-2 w-2 animate-pulse rounded-full bg-primary" />
-          Carregando grupos...
-        </CardContent>
+        <CardContent className="p-4 text-sm text-muted-foreground">Carregando grupos...</CardContent>
       </Card>
     );
   }

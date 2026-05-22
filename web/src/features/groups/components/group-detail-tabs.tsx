@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import type { GroupMember, Match } from '@/types/api';
 import { Card, CardContent } from '@/components/ui/card';
 import { MatchesList } from '@/features/matches/components/matches-list';
@@ -26,8 +25,12 @@ const tabs: { value: GroupTab; label: string }[] = [
 ];
 
 export function GroupDetailTabs({ groupId, activeTab, ranking, members, matches }: Props) {
-  const router = useRouter();
+  const [selectedTab, setSelectedTab] = useState<GroupTab>(activeTab);
   const [canManageMatches, setCanManageMatches] = useState(false);
+
+  useEffect(() => {
+    setSelectedTab(activeTab);
+  }, [activeTab]);
 
   useEffect(() => {
     const token = getAccessToken();
@@ -52,9 +55,14 @@ export function GroupDetailTabs({ groupId, activeTab, ranking, members, matches 
   }, [groupId]);
 
   function setTab(tab: GroupTab) {
-    router.replace(`/groups/${groupId}?tab=${tab}`, {
-      scroll: false,
-    });
+    setSelectedTab(tab);
+
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    const nextUrl = tab === 'ranking' ? `/groups/${groupId}` : `/groups/${groupId}?tab=${tab}`;
+    window.history.replaceState(null, '', nextUrl);
   }
 
   return (
@@ -65,8 +73,9 @@ export function GroupDetailTabs({ groupId, activeTab, ranking, members, matches 
             key={tab.value}
             type="button"
             onClick={() => setTab(tab.value)}
+            aria-current={selectedTab === tab.value ? 'page' : undefined}
             className={`rounded-[1.25rem] px-3 py-2.5 transition-all ${
-              activeTab === tab.value
+              selectedTab === tab.value
                 ? 'bg-primary text-primary-foreground shadow-sm'
                 : 'text-muted-foreground hover:bg-muted hover:text-foreground'
             }`}
@@ -76,11 +85,11 @@ export function GroupDetailTabs({ groupId, activeTab, ranking, members, matches 
         ))}
       </div>
 
-      {activeTab === 'ranking' && <RankingTab ranking={ranking} />}
-      {activeTab === 'matches' && (
+      {selectedTab === 'ranking' && <RankingTab ranking={ranking} />}
+      {selectedTab === 'matches' && (
         <MatchesTab matches={matches} groupId={groupId} canManage={canManageMatches} />
       )}
-      {activeTab === 'members' && <MembersTab members={members} />}
+      {selectedTab === 'members' && <MembersTab members={members} />}
     </div>
   );
 }
