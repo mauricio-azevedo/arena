@@ -1,4 +1,5 @@
 import { AppShell } from '@/components/app-shell';
+import { BackButton } from '@/components/back-button';
 import { Card, CardContent } from '@/components/ui/card';
 
 export default function GroupDetailLoading() {
@@ -13,7 +14,7 @@ export default function GroupDetailLoading() {
         <span className="sr-only">Carregando grupo</span>
 
         <div className="space-y-4">
-          <div className="h-9 w-24 animate-pulse rounded-full bg-muted" />
+          <BackButton href="/groups" />
 
           <div className="space-y-2 rounded-3xl border bg-card/70 p-4 shadow-[0_14px_45px_rgba(84,54,20,0.08)] backdrop-blur-sm">
             <div className="h-7 w-2/3 animate-pulse rounded-full bg-muted" />
