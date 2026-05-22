@@ -3,10 +3,10 @@
 import { ChevronRight, KeyRound, UserRound } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import type { ReactNode } from 'react';
+import { BackButton } from '@/components/back-button';
 import { Card, CardContent } from '@/components/ui/card';
 import { getAccessToken } from '@/lib/auth';
 import { ProfileSignedOutState } from './components/profile-signed-out-state';
-import { SettingsBackLink } from './components/settings-back-link';
 
 export function ProfileSettings() {
   const router = useRouter();
@@ -19,7 +19,7 @@ export function ProfileSettings() {
   return (
     <div className="space-y-6">
       <header className="space-y-3">
-        <SettingsBackLink href="/profile">Perfil</SettingsBackLink>
+        <BackButton href="/profile" />
 
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary/75">Conta</p>
