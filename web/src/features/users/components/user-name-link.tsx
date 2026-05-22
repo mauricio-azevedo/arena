@@ -10,9 +10,10 @@ type Props = {
   userId?: string | null;
   children: ReactNode;
   className?: string;
+  returnTo?: string;
 };
 
-export function UserNameLink({ userId, children, className }: Props) {
+export function UserNameLink({ userId, children, className, returnTo }: Props) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
@@ -27,10 +28,11 @@ export function UserNameLink({ userId, children, className }: Props) {
     }
 
     const search = searchParams.toString();
-    const returnTo = `${pathname}${search ? `?${search}` : ''}`;
+    const fallbackReturnTo = `${pathname}${search ? `?${search}` : ''}`;
+    const targetReturnTo = returnTo ?? fallbackReturnTo;
 
-    return `/users/${userId}?returnTo=${encodeURIComponent(returnTo)}`;
-  }, [pathname, searchParams, userId]);
+    return `/users/${userId}?returnTo=${encodeURIComponent(targetReturnTo)}`;
+  }, [pathname, returnTo, searchParams, userId]);
 
   if (!userId || userId === currentUserId) {
     return <span className={className}>{children}</span>;
