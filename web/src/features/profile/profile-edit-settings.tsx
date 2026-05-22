@@ -6,9 +6,9 @@ import { getAccessToken } from '@/lib/auth';
 import { getProfileSummary } from './api/profile.api';
 import { ProfileEditCard } from './components/profile-edit-card';
 import { ProfileErrorState } from './components/profile-error-state';
-import { ProfileLoadingState } from './components/profile-loading-state';
 import { ProfileSignedOutState } from './components/profile-signed-out-state';
 import { SettingsBackLink } from './components/settings-back-link';
+import { SettingsLoadingState } from './components/settings-loading-state';
 import type { ProfileSummary } from './tabs/summary/types/profile-summary.type';
 import type { ProfileUser } from './types/profile-user.type';
 
@@ -61,7 +61,7 @@ export function ProfileEditSettings() {
   }
 
   if (isLoading) {
-    return <ProfileLoadingState />;
+    return <SettingsLoadingState />;
   }
 
   if (!accessToken) {
