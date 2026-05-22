@@ -3,10 +3,10 @@
 import { ChevronRight, KeyRound, UserRound } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import type { ReactNode } from 'react';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { getAccessToken } from '@/lib/auth';
 import { ProfileSignedOutState } from './components/profile-signed-out-state';
+import { SettingsBackLink } from './components/settings-back-link';
 
 export function ProfileSettings() {
   const router = useRouter();
@@ -18,15 +18,8 @@ export function ProfileSettings() {
 
   return (
     <div className="space-y-6">
-      <header className="space-y-2">
-        <Button
-          type="button"
-          variant="ghost"
-          className="-ml-3 h-9 px-3 text-sm text-muted-foreground"
-          onClick={() => router.push('/profile')}
-        >
-          Voltar ao perfil
-        </Button>
+      <header className="space-y-3">
+        <SettingsBackLink href="/profile">Perfil</SettingsBackLink>
 
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary/75">
@@ -51,8 +44,7 @@ export function ProfileSettings() {
           icon={<KeyRound className="h-5 w-5" />}
           title="Alterar senha"
           description="Troque sua senha em uma tela própria."
-          badge="Em breve"
-          disabled
+          onClick={() => router.push('/profile/settings/password')}
         />
       </section>
     </div>
@@ -64,23 +56,14 @@ function SettingsOption({
   title,
   description,
   onClick,
-  badge,
-  disabled = false,
 }: {
   icon: ReactNode;
   title: string;
   description: string;
-  onClick?: () => void;
-  badge?: string;
-  disabled?: boolean;
+  onClick: () => void;
 }) {
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      disabled={disabled}
-      className="w-full text-left disabled:cursor-not-allowed disabled:opacity-70"
-    >
+    <button type="button" onClick={onClick} className="w-full text-left">
       <Card className="transition-colors hover:bg-muted/35">
         <CardContent className="flex items-center gap-4 p-4">
           <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-primary/12 text-primary">
@@ -88,18 +71,11 @@ function SettingsOption({
           </div>
 
           <div className="min-w-0 flex-1">
-            <div className="flex items-center gap-2">
-              <p className="font-semibold tracking-[-0.02em]">{title}</p>
-              {badge && (
-                <span className="rounded-full bg-muted px-2 py-0.5 text-[11px] font-semibold text-muted-foreground">
-                  {badge}
-                </span>
-              )}
-            </div>
+            <p className="font-semibold tracking-[-0.02em]">{title}</p>
             <p className="mt-1 text-sm leading-5 text-muted-foreground">{description}</p>
           </div>
 
-          {!disabled && <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground" />}
+          <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground" />
         </CardContent>
       </Card>
     </button>
