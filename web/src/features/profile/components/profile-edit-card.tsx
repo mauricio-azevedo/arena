@@ -1,6 +1,6 @@
 'use client';
 
-import { FormEvent, useMemo, useState } from 'react';
+import { FormEvent, useEffect, useMemo, useState } from 'react';
 import { CheckCircle2, Mail, UserRound } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -15,6 +15,7 @@ type Props = {
   user: ProfileUser;
   onCancel: () => void;
   onSaved: (user: ProfileUser) => void;
+  onTokenRefreshed: (token: string) => void;
 };
 
 type FormValues = {
@@ -26,7 +27,7 @@ type FormValues = {
 const MAX_NAME_LENGTH = 80;
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-export function ProfileEditCard({ token, user, onCancel, onSaved }: Props) {
+export function ProfileEditCard({ token, user, onCancel, onSaved, onTokenRefreshed }: Props) {
   const initialValues = useMemo(() => getInitialValues(user), [user]);
 
   const [firstName, setFirstName] = useState(initialValues.firstName);
@@ -35,6 +36,12 @@ export function ProfileEditCard({ token, user, onCancel, onSaved }: Props) {
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    setFirstName(initialValues.firstName);
+    setLastName(initialValues.lastName);
+    setEmail(initialValues.email);
+  }, [initialValues]);
 
   const normalizedValues = useMemo(
     () => normalizeFormValues({ firstName, lastName, email }),
@@ -45,6 +52,23 @@ export function ProfileEditCard({ token, user, onCancel, onSaved }: Props) {
     normalizedValues.firstName !== initialValues.firstName ||
     normalizedValues.lastName !== initialValues.lastName ||
     normalizedValues.email !== initialValues.email;
+
+  function handleFieldChange(field: keyof FormValues, value: string) {
+    setError('');
+    setSuccessMessage('');
+
+    if (field === 'firstName') {
+      setFirstName(value);
+      return;
+    }
+
+    if (field === 'lastName') {
+      setLastName(value);
+      return;
+    }
+
+    setEmail(value);
+  }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -68,14 +92,19 @@ export function ProfileEditCard({ token, user, onCancel, onSaved }: Props) {
 
     try {
       const result = await updateProfile(token, buildChangedPayload(initialValues, normalizedValues));
-
-      setAccessToken(result.accessToken);
-      onSaved({
+      const updatedUser = {
         id: result.user.id,
         firstName: result.user.firstName,
         lastName: result.user.lastName,
         email: result.user.email,
-      });
+      };
+
+      setAccessToken(result.accessToken);
+      onTokenRefreshed(result.accessToken);
+      onSaved(updatedUser);
+      setFirstName(updatedUser.firstName);
+      setLastName(updatedUser.lastName);
+      setEmail(updatedUser.email ?? '');
       setSuccessMessage('Perfil atualizado com sucesso.');
     } catch (caughtError) {
       setError(getFriendlyUpdateError(caughtError));
@@ -106,7 +135,7 @@ export function ProfileEditCard({ token, user, onCancel, onSaved }: Props) {
               id="profile-first-name"
               label="Nome"
               value={firstName}
-              onChange={setFirstName}
+              onChange={(value) => handleFieldChange('firstName', value)}
               autoComplete="given-name"
               disabled={isSubmitting}
             />
@@ -115,7 +144,7 @@ export function ProfileEditCard({ token, user, onCancel, onSaved }: Props) {
               id="profile-last-name"
               label="Sobrenome"
               value={lastName}
-              onChange={setLastName}
+              onChange={(value) => handleFieldChange('lastName', value)}
               autoComplete="family-name"
               disabled={isSubmitting}
             />
@@ -131,7 +160,7 @@ export function ProfileEditCard({ token, user, onCancel, onSaved }: Props) {
                 autoComplete="email"
                 inputMode="email"
                 value={email}
-                onChange={(event) => setEmail(event.target.value)}
+                onChange={(event) => handleFieldChange('email', event.target.value)}
                 disabled={isSubmitting}
                 aria-invalid={Boolean(error)}
                 className="pl-10"
