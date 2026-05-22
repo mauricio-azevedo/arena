@@ -154,6 +154,7 @@ export function Profile({ userId }: Props) {
           user={summary.user}
           onCancel={() => setIsEditingProfile(false)}
           onSaved={handleProfileSaved}
+          onTokenRefreshed={setAccessToken}
         />
       )}
 
