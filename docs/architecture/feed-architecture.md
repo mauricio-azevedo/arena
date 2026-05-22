@@ -86,7 +86,9 @@ Each event type should document its metadata contract in [`../product/feed-event
 
 Stored base relevance score.
 
-The feed reader can combine this with recency or future personalization to calculate `feedScore`.
+This remains persisted so BeachRank can re-enable relevance-based ranking later without changing event generation contracts.
+
+Current feed ordering does not prioritize `importanceScore`.
 
 ### `occurredAt`
 
@@ -131,7 +133,7 @@ Current responsibilities:
 - query feed items visible to the viewer;
 - include group and user display data;
 - calculate `feedScore`;
-- sort and limit the feed response.
+- return the most recent visible feed items.
 
 ### `FeedWriterService`
 
@@ -279,18 +281,22 @@ The feed sync should stay inside the same transaction as the match write when th
 
 ## Ordering and scoring
 
-Current feed ordering uses:
+Current feed ordering is recency-first:
 
-- stored `importanceScore`;
-- calculated `feedScore`;
-- `occurredAt` tie-breaker.
+1. `occurredAt desc`
+2. `createdAt desc`
 
-General guidance:
+`FeedScoreService` still exists, but feed score ranking is currently disabled and returns a constant score for all items.
 
-- higher product relevance should receive higher `importanceScore`;
-- highly repetitive events should receive lower scores;
+This keeps the implementation ready for future relevance ranking while making the current feed behave like a predictable recent-activity stream.
+
+General guidance for future relevance ranking:
+
+- higher product relevance can receive higher `importanceScore`;
+- highly repetitive events can receive lower scores;
 - rare, competitive, or milestone events can receive higher scores;
-- do not use importance score as a substitute for visibility or permissions.
+- do not use importance score as a substitute for visibility or permissions;
+- only re-enable score-based ranking after the product intentionally moves from “Movimento recente” to a “Destaques” style feed.
 
 ## Visibility and privacy
 
