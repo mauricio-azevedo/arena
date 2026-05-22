@@ -47,6 +47,7 @@ Examples:
 GROUP_CREATED
 MEMBER_JOINED
 MATCH_BLOWOUT
+MATCH_CLOSE
 ```
 
 ### `scope`
@@ -147,7 +148,7 @@ Responsibilities:
 - call event-specific generators;
 - create/upsert/delete feed items as needed;
 - keep domain modules from knowing persistence details;
-- provide event lifecycle methods such as `createMemberJoinedItem` or `syncMatchBlowoutItem`.
+- provide event lifecycle methods such as `createMemberJoinedItem`, `syncMatchBlowoutItem`, or `syncMatchCloseItem`.
 
 ### Generators
 
@@ -159,6 +160,7 @@ Examples:
 group-created-feed-item.generator.ts
 member-joined-feed-item.generator.ts
 match-blowout-feed-item.generator.ts
+match-close-feed-item.generator.ts
 ```
 
 A generator should:
@@ -180,6 +182,7 @@ feed-item-generator.type.ts
 group-created-feed-input.type.ts
 member-joined-feed-input.type.ts
 match-blowout-feed-input.type.ts
+match-close-feed-input.type.ts
 ```
 
 ## Frontend components
@@ -212,7 +215,8 @@ Renders feed items by type.
 Current behavior:
 
 - generic group/social events use the base card style;
-- `MATCH_BLOWOUT` uses a dedicated `Atropelo!` card.
+- `MATCH_BLOWOUT` uses a dedicated `Atropelo!` card;
+- `MATCH_CLOSE` uses a dedicated `No detalhe!` card.
 
 As the feed grows, split large event renderers into smaller components when `FeedItemCard` becomes hard to read.
 
@@ -242,10 +246,11 @@ MEMBER_JOINED
 
 Use when a source record can be edited and the event should reflect the latest source truth.
 
-Example:
+Examples:
 
 ```txt
 MATCH_BLOWOUT
+MATCH_CLOSE
 ```
 
 Synchronized events should support:
@@ -264,8 +269,9 @@ MatchesService.create/update
 → write Match / MatchPlayers
 → update or recalculate ratings
 → FeedOrchestratorService.syncMatchBlowoutItem(...)
-→ generator returns draft or null
-→ orchestrator upserts or deletes FeedItem
+→ FeedOrchestratorService.syncMatchCloseItem(...)
+→ generators return drafts or null
+→ orchestrator upserts or deletes FeedItems
 → transaction commits
 ```
 
