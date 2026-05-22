@@ -8,9 +8,6 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { PrismaService } from '../prisma/prisma.service';
 import type { UpdateAccountDto } from './dto/update-account.dto';
-import type { ChangePasswordDto } from './dto/change-password.dto';
-
-const SALT_ROUNDS = 10;
 
 type AccountUser = {
   id: string;
@@ -127,48 +124,6 @@ export class MeService {
     });
 
     return this.buildAccountResponse(user);
-  }
-
-  async changePassword(userId: string, body: ChangePasswordDto) {
-    const currentPassword = body.currentPassword;
-    const nextPassword = body.nextPassword;
-
-    if (!currentPassword || !nextPassword) {
-      throw new BadRequestException('Current password and new password are required');
-    }
-
-    if (nextPassword.length < 6) {
-      throw new BadRequestException('New password must have at least 6 characters');
-    }
-
-    const user = await this.prisma.user.findUnique({
-      where: { id: userId },
-      select: {
-        id: true,
-        passwordHash: true,
-      },
-    });
-
-    if (!user) {
-      throw new UnauthorizedException('Invalid user');
-    }
-
-    await this.verifyCurrentPassword(currentPassword, user.passwordHash);
-
-    const isSamePassword = await bcrypt.compare(nextPassword, user.passwordHash);
-
-    if (isSamePassword) {
-      throw new BadRequestException('New password must be different from current password');
-    }
-
-    const passwordHash = await bcrypt.hash(nextPassword, SALT_ROUNDS);
-
-    await this.prisma.user.update({
-      where: { id: userId },
-      data: { passwordHash },
-    });
-
-    return { ok: true };
   }
 
   private async verifyCurrentPassword(currentPassword: string, passwordHash: string) {
