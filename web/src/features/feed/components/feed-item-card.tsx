@@ -9,6 +9,7 @@ import type { CloseMatchFeedMetadata } from '../types/close-match-feed-metadata.
 import { getGroupInitials } from '../helpers/feed-item-style.helper';
 import { formatFeedItemTime } from '../helpers/feed-item-time.helper';
 import { getFeedItemHref } from '@/features/feed/helpers/feed-item-link.helper';
+import { GroupLink } from '@/features/groups/components/group-link';
 import { UserNameLink } from '@/features/users/components/user-name-link';
 
 type Props = {
@@ -220,13 +221,14 @@ function FeedGroupLink({ item, children }: { item: FeedItem; children: string })
   }
 
   return (
-    <Link
-      href={`/groups/${item.group.id}`}
+    <GroupLink
+      groupId={item.group.id}
+      returnTo="/"
       className="font-semibold text-secondary-foreground underline decoration-primary/35 decoration-1 underline-offset-[3px] focus-visible:rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
       onClick={(event) => event.stopPropagation()}
     >
       {children}
-    </Link>
+    </GroupLink>
   );
 }
 
