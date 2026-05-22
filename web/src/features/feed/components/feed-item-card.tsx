@@ -222,7 +222,7 @@ function FeedGroupLink({ item, children }: { item: FeedItem; children: string })
   return (
     <Link
       href={`/groups/${item.group.id}`}
-      className="font-semibold text-primary underline decoration-primary/30 decoration-1 underline-offset-[3px] focus-visible:rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+      className="font-semibold text-secondary-foreground underline decoration-primary/35 decoration-1 underline-offset-[3px] focus-visible:rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
       onClick={(event) => event.stopPropagation()}
     >
       {children}
