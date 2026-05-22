@@ -1,7 +1,7 @@
 'use client';
 
 import { FormEvent, useEffect, useMemo, useState } from 'react';
-import { CheckCircle2, Mail, UserRound } from 'lucide-react';
+import { CheckCircle2, Mail } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -91,7 +91,10 @@ export function ProfileEditCard({ token, user, onCancel, onSaved, onTokenRefresh
     setIsSubmitting(true);
 
     try {
-      const result = await updateProfile(token, buildChangedPayload(initialValues, normalizedValues));
+      const result = await updateProfile(
+        token,
+        buildChangedPayload(initialValues, normalizedValues),
+      );
       const updatedUser = {
         id: result.user.id,
         firstName: result.user.firstName,
@@ -116,19 +119,6 @@ export function ProfileEditCard({ token, user, onCancel, onSaved, onTokenRefresh
   return (
     <Card className="border-primary/15 bg-card/95 shadow-[0_18px_55px_rgba(84,54,20,0.12)]">
       <CardContent className="space-y-4 p-4">
-        <div className="flex items-start gap-3">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-primary/12 text-primary">
-            <UserRound className="h-5 w-5" />
-          </div>
-
-          <div className="min-w-0 flex-1">
-            <h2 className="font-semibold tracking-[-0.02em]">Editar perfil</h2>
-            <p className="mt-1 text-sm leading-6 text-muted-foreground">
-              Ajuste o nome que aparece nos rankings e o e-mail usado para entrar.
-            </p>
-          </div>
-        </div>
-
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-2 gap-3">
             <ProfileField
@@ -182,17 +172,12 @@ export function ProfileEditCard({ token, user, onCancel, onSaved, onTokenRefresh
           )}
 
           <div className="grid grid-cols-2 gap-2 pt-1">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={onCancel}
-              disabled={isSubmitting}
-            >
+            <Button type="button" variant="outline" onClick={onCancel} disabled={isSubmitting}>
               Cancelar
             </Button>
 
             <Button type="submit" disabled={isSubmitting || !hasChanges}>
-              {isSubmitting ? 'Salvando...' : 'Salvar'}
+              {isSubmitting ? 'Salvando...' : 'Salvar alterações'}
             </Button>
           </div>
         </form>

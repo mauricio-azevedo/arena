@@ -10,6 +10,7 @@ import { apiRequest } from '@/lib/api-client';
 import { getAccessToken } from '@/lib/auth';
 import { ProfileSignedOutState } from './components/profile-signed-out-state';
 import { SettingsBackLink } from './components/settings-back-link';
+import { useRouter } from 'next/navigation';
 
 type PasswordVisibility = {
   currentPassword: boolean;
@@ -22,6 +23,7 @@ const MAX_PASSWORD_BYTES = 72;
 
 export function ProfilePasswordSettings() {
   const token = getAccessToken();
+  const router = useRouter();
 
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -114,7 +116,7 @@ export function ProfilePasswordSettings() {
           </p>
           <h1 className="mt-1 text-3xl font-semibold tracking-[-0.06em]">Alterar senha</h1>
           <p className="mt-2 text-sm leading-6 text-muted-foreground">
-            Atualize sua senha em uma tela própria, separada dos dados do perfil.
+            Escolha uma nova senha para sua conta.
           </p>
         </div>
       </header>
@@ -189,16 +191,10 @@ export function ProfilePasswordSettings() {
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => {
-                  setCurrentPassword('');
-                  setNewPassword('');
-                  setConfirmPassword('');
-                  setError('');
-                  setSuccessMessage('');
-                }}
+                onClick={() => router.push('/profile/settings')}
                 disabled={isSubmitting}
               >
-                Limpar
+                Cancelar
               </Button>
 
               <Button type="submit" disabled={!canSubmit}>

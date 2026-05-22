@@ -22,12 +22,10 @@ export function ProfileSettings() {
         <SettingsBackLink href="/profile">Perfil</SettingsBackLink>
 
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary/75">
-            Conta
-          </p>
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary/75">Conta</p>
           <h1 className="mt-1 text-3xl font-semibold tracking-[-0.06em]">Configurações</h1>
           <p className="mt-2 text-sm leading-6 text-muted-foreground">
-            Gerencie seus dados pessoais e opções de segurança em telas separadas.
+            Atualize suas informações de conta.
           </p>
         </div>
       </header>
@@ -35,15 +33,15 @@ export function ProfileSettings() {
       <section className="space-y-3">
         <SettingsOption
           icon={<UserRound className="h-5 w-5" />}
-          title="Alterar perfil"
-          description="Atualize seu nome, sobrenome e e-mail de acesso."
+          title="Perfil"
+          description="Nome, sobrenome e e-mail."
           onClick={() => router.push('/profile/settings/profile')}
         />
 
         <SettingsOption
           icon={<KeyRound className="h-5 w-5" />}
-          title="Alterar senha"
-          description="Troque sua senha em uma tela própria."
+          title="Senha"
+          description="Senha de acesso da conta."
           onClick={() => router.push('/profile/settings/password')}
         />
       </section>

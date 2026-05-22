@@ -28,10 +28,10 @@ export function ProfileEditSettings() {
       return;
     }
 
-    async function loadProfile() {
+    async function loadProfile(profileToken: string) {
       try {
         setError('');
-        const data = await getProfileSummary(token);
+        const data = await getProfileSummary(profileToken);
         setSummary(data);
       } catch {
         setError('Não foi possível carregar seus dados agora.');
@@ -40,7 +40,7 @@ export function ProfileEditSettings() {
       }
     }
 
-    loadProfile();
+    loadProfile(token);
   }, []);
 
   function handleSaved(user: ProfileUser) {
@@ -86,7 +86,7 @@ export function ProfileEditSettings() {
           </p>
           <h1 className="mt-1 text-3xl font-semibold tracking-[-0.06em]">Alterar perfil</h1>
           <p className="mt-2 text-sm leading-6 text-muted-foreground">
-            Atualize como seu nome aparece no BeachRank e o e-mail usado para entrar.
+            Atualize seu nome e e-mail.
           </p>
         </div>
       </header>
