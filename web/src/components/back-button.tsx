@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { getDestinationLabel } from '@/lib/route-labels';
 
 type Props = {
   href: string;
@@ -34,28 +35,6 @@ export function BackButton({ href, label, preferHref = false }: Props) {
       {visibleLabel}
     </Button>
   );
-}
-
-function getDestinationLabel(href: string) {
-  const pathname = href.split('?')[0];
-
-  if (pathname === '/groups') {
-    return 'Grupos';
-  }
-
-  if (pathname === '/profile') {
-    return 'Perfil';
-  }
-
-  if (pathname === '/profile/settings') {
-    return 'Configurações';
-  }
-
-  if (pathname.startsWith('/groups/')) {
-    return 'Grupo';
-  }
-
-  return 'Anterior';
 }
 
 function canSafelyGoBack() {
