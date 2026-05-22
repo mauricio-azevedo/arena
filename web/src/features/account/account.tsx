@@ -22,6 +22,8 @@ export function Account() {
   const [isLoading, setIsLoading] = useState(true);
   const [status, setStatus] = useState<Status>('idle');
   const [message, setMessage] = useState('');
+  const [accessStatus, setAccessStatus] = useState<Status>('idle');
+  const [accessMessage, setAccessMessage] = useState('');
 
   useEffect(() => {
     let isCurrent = true;
