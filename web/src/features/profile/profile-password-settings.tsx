@@ -9,8 +9,8 @@ import { Label } from '@/components/ui/label';
 import { apiRequest } from '@/lib/api-client';
 import { getAccessToken } from '@/lib/auth';
 import { ProfileSignedOutState } from './components/profile-signed-out-state';
-import { SettingsBackLink } from './components/settings-back-link';
 import { useRouter } from 'next/navigation';
+import { BackButton } from '@/components/back-button';
 
 type PasswordVisibility = {
   currentPassword: boolean;
@@ -108,7 +108,7 @@ export function ProfilePasswordSettings() {
   return (
     <div className="space-y-6">
       <header className="space-y-3">
-        <SettingsBackLink href="/profile/settings">Configurações</SettingsBackLink>
+        <BackButton href="/profile/settings" />
 
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary/75">
