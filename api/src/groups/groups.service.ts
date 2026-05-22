@@ -50,7 +50,6 @@ export class GroupsService {
         data: {
           groupId: group.id,
           userId: body.createdById,
-          displayName: `${creator.firstName} ${creator.lastName}`.trim(),
           role: GroupMemberRole.ADMIN,
         },
       });
