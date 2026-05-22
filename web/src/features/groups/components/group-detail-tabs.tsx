@@ -100,7 +100,7 @@ function RankingTab({ ranking }: { ranking: GroupMember[] }) {
 
               <div className="min-w-0">
                 <p className="truncate font-semibold tracking-[-0.01em]">
-                  <UserNameLink userId={member.userId}>{member.displayName}</UserNameLink>
+                  <UserNameLink userId={member.userId}>{getMemberDisplayName(member)}</UserNameLink>
                 </p>
                 <p className="text-xs text-muted-foreground">
                   {member.role === 'ADMIN' ? 'Admin' : 'Membro'}
@@ -157,7 +157,7 @@ function MembersTab({ members }: { members: GroupMember[] }) {
           <CardContent className="flex items-center justify-between gap-4 p-4">
             <div className="min-w-0">
               <p className="truncate font-semibold tracking-[-0.01em]">
-                <UserNameLink userId={member.userId}>{member.displayName}</UserNameLink>
+                <UserNameLink userId={member.userId}>{getMemberDisplayName(member)}</UserNameLink>
               </p>
               <p className="text-xs text-muted-foreground">
                 {member.role === 'ADMIN' ? 'Admin' : 'Membro'}
@@ -172,4 +172,12 @@ function MembersTab({ members }: { members: GroupMember[] }) {
       ))}
     </section>
   );
+}
+
+function getMemberDisplayName(member: GroupMember) {
+  if (!member.user) {
+    return 'Jogador';
+  }
+
+  return `${member.user.firstName} ${member.user.lastName}`.trim();
 }
