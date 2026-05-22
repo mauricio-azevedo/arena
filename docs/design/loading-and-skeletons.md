@@ -22,11 +22,11 @@ Avoid:
 ```txt
 click/tap
 → user stays on previous screen
-→ only global loading bar appears
+→ global loading bar appears
 → destination appears after data is ready
 ```
 
-The second pattern can make the button feel delayed or broken.
+The second pattern can make the tap feel delayed or visually noisy.
 
 ## Loading categories
 
@@ -90,12 +90,6 @@ Preferred pattern:
 - show loading on the button or affected block;
 - disable the action if duplicate submissions would be harmful;
 - keep the rest of the UI stable.
-
-### Global navigation feedback
-
-BeachRank uses a top progress indicator for immediate acknowledgement of internal navigation clicks.
-
-This is useful as secondary feedback, but it should not be the only feedback for slow route transitions when a destination skeleton can be shown.
 
 ## Skeleton design rules
 
@@ -230,6 +224,14 @@ This makes the tap feel delayed.
 
 Fix with route-level loading or destination skeleton.
 
+### Global route progress bar
+
+A top loading bar that flashes on every internal navigation creates visual noise, especially when most destinations already have contextual skeletons.
+
+Avoid global route progress bars as the primary navigation feedback.
+
+Fix with route-level destination skeletons and action-level button loading where appropriate.
+
 ### Skeleton back button
 
 A screen-level loading state renders a fake back button skeleton instead of the real back button.
@@ -256,6 +258,7 @@ For every new screen or slow transition, verify:
 
 - tapping a link gives immediate feedback;
 - the destination context appears quickly;
+- global top loading bars do not flash during normal navigation;
 - skeleton resembles the final screen;
 - structural navigation controls appear immediately;
 - back button is real and usable while content loads;
