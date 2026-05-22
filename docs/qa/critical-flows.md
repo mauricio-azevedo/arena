@@ -158,6 +158,9 @@ For each changed area:
 - Empty feed state appears when no items are available.
 - Error state appears if feed request fails.
 - Feed loading state is not text-only.
+- Feed items are ordered by recency, newest first, regardless of event type.
+- Creating an Atropelo and then a No detalhe should show No detalhe above Atropelo.
+- Creating a No detalhe and then an Atropelo should show Atropelo above No detalhe.
 
 ### Group created event
 
