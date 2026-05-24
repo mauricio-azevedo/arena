@@ -49,6 +49,21 @@
   background: var(--surface-soft);
 }
 
+.project-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 20px;
+  align-items: center;
+}
+
+.text-link-muted {
+  color: #465168;
+}
+
+.text-link-muted:hover {
+  color: var(--blue);
+}
+
 .project-image-empty {
   display: grid;
   min-height: 240px;
