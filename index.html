@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Maurício Azevedo — Senior Full Stack Software Engineer portfolio."
+    />
+    <title>Maurício Azevedo | Senior Full Stack Software Engineer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="placeholder.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="#top" aria-label="Maurício Azevedo home">
+        <span class="brand-mark">MA</span>
+        <span class="brand-name">Maurício Azevedo</span>
+      </a>
+
+      <nav class="site-nav" aria-label="Primary navigation">
+        <a href="#about" class="active">About</a>
+        <a href="#experience">Experience</a>
+        <a href="#projects">Projects</a>
+        <a href="#contact">Contact</a>
+      </nav>
+    </header>
+
+    <main id="top" class="page-shell">
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="hero-content">
+          <p class="eyebrow">Senior Full Stack Software Engineer</p>
+          <h1 id="hero-title">Maurício Azevedo</h1>
+          <p class="hero-subtitle">
+            I build reliable full-stack products across frontend, backend,
+            databases, cloud and DevOps.
+          </p>
+          <p class="hero-subtitle muted">
+            I care about clean architecture, useful experiences, and systems
+            that are simple to maintain.
+          </p>
+
+          <div class="hero-meta" aria-label="Location and contact">
+            <span>Brasília, Brazil — Remote (UTC−3)</span>
+            <span class="divider" aria-hidden="true"></span>
+            <a href="mailto:mauricio.mendonca.azevedo@gmail.com">
+              mauricio.mendonca.azevedo@gmail.com
+            </a>
+          </div>
+        </div>
+
+        <div class="hero-portrait">
+          <div class="profile-photo-frame">
+            <img
+              class="profile-photo"
+              src="assets/profile-photo.jpg"
+              alt="Maurício Azevedo"
+              onerror="this.hidden = true; this.nextElementSibling.hidden = false;"
+            />
+            <span class="profile-photo-fallback" hidden>MA</span>
+          </div>
+        </div>
+      </section>
+
+      <section id="about" class="section split-section" aria-labelledby="about-title">
+        <div>
+          <p class="section-label">About</p>
+          <h2 id="about-title" class="sr-only">About Maurício</h2>
+          <p>
+            I’m a full stack engineer experienced in building academic systems,
+            trading tools, digital wallets, banking interfaces, and public-sector
+            platforms. I enjoy working close to the product, shaping solutions,
+            and delivering code that is clear, tested, and useful.
+          </p>
+        </div>
+
+        <div>
+          <p class="section-label">Tech Stack</p>
+          <h2 class="sr-only">Tech stack</h2>
+          <div id="skills-list" class="tag-list" aria-label="Skills"></div>
+        </div>
+      </section>
+
+      <section class="section work-section" aria-label="Experience and featured project">
+        <div id="experience" class="experience-column">
+          <p class="section-label">Experience</p>
+          <div id="experience-list" class="timeline"></div>
+        </div>
+
+        <article id="projects" class="project-card" aria-labelledby="project-title">
+          <p class="section-label">Featured Project</p>
+          <div class="project-content project-content-with-placeholder">
+            <div class="project-main">
+              <div class="project-heading">
+                <div class="project-icon" aria-hidden="true">◌</div>
+                <div>
+                  <h2 id="project-title">BeachRank</h2>
+                  <p>Mobile-first web app for casual beach tennis groups.</p>
+                </div>
+              </div>
+
+              <ul id="project-features" class="feature-list"></ul>
+
+              <a
+                class="text-link"
+                href="https://github.com/mauricio-azevedo/beachrank"
+                target="_blank"
+                rel="noreferrer"
+              >
+                View project
+                <span aria-hidden="true">→</span>
+              </a>
+            </div>
+
+            <div class="project-image-slot" aria-label="BeachRank project image">
+              <img
+                class="project-showcase-image"
+                src="assets/beachrank-showcase.png"
+                alt="BeachRank mobile app screens"
+                onerror="this.hidden = true; this.nextElementSibling.hidden = false;"
+              />
+              <div class="project-image-empty" hidden>
+                <span>BeachRank image</span>
+                <small>Add app showcase here</small>
+              </div>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <section id="contact" class="contact-card" aria-label="Contact">
+        <div class="contact-intro">
+          <div class="contact-icon" aria-hidden="true">✈</div>
+          <div>
+            <h2>Let’s build something useful together.</h2>
+            <p>I’m open to new opportunities and interesting projects.</p>
+          </div>
+        </div>
+
+        <div class="contact-links">
+          <a href="mailto:mauricio.mendonca.azevedo@gmail.com">Email</a>
+          <a href="https://github.com/mauricio-azevedo" target="_blank" rel="noreferrer">GitHub</a>
+          <a href="#" aria-label="LinkedIn profile placeholder">LinkedIn</a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <span>© <span id="current-year"></span> Maurício Azevedo. All rights reserved.</span>
+    </footer>
+
+    <script src="script.js"></script>
+  </body>
+</html>
