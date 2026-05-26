@@ -50,17 +50,17 @@ export function GroupDetailTabs({
 
   return (
     <div className="space-y-5">
-      <div className="grid grid-cols-3 rounded-[1.65rem] border bg-card/70 p-1.5 shadow-sm backdrop-blur-sm text-sm font-semibold">
+      <div className="br-liquid-glass br-hairline grid grid-cols-3 rounded-[1.85rem] p-1.5 text-sm font-semibold">
         {tabs.map((tab) => (
           <button
             key={tab.value}
             type="button"
             onClick={() => setTab(tab.value)}
             aria-current={selectedTab === tab.value ? 'page' : undefined}
-            className={`rounded-[1.25rem] px-3 py-2.5 transition-all ${
+            className={`br-pressable rounded-[1.45rem] px-3 py-2.5 transition-all ${
               selectedTab === tab.value
-                ? 'bg-primary text-primary-foreground shadow-sm'
-                : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                ? 'bg-foreground text-background shadow-[0_12px_28px_color-mix(in_oklch,var(--foreground)_18%,transparent)]'
+                : 'text-muted-foreground hover:bg-white/45 hover:text-foreground dark:hover:bg-white/10'
             }`}
           >
             {tab.label}
@@ -91,15 +91,21 @@ function RankingTab({ ranking }: { ranking: GroupMember[] }) {
   return (
     <section className="space-y-3">
       {ranking.map((member, index) => (
-        <Card key={member.id}>
+        <Card key={member.id} className={index === 0 ? 'bg-gradient-to-br from-card via-card to-accent/30' : undefined}>
           <CardContent className="flex items-center justify-between gap-4 p-4">
             <div className="flex min-w-0 items-center gap-3">
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-primary/12 text-sm font-bold text-primary">
+              <span
+                className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-[1.35rem] text-sm font-bold ${
+                  index === 0
+                    ? 'bg-foreground text-background shadow-[0_12px_28px_color-mix(in_oklch,var(--foreground)_20%,transparent)]'
+                    : 'bg-white/45 text-primary backdrop-blur-xl dark:bg-white/10'
+                }`}
+              >
                 {index + 1}
               </span>
 
               <div className="min-w-0">
-                <p className="truncate font-semibold tracking-[-0.01em]">
+                <p className="truncate font-semibold tracking-[-0.015em]">
                   <UserNameLink userId={member.userId}>{getMemberDisplayName(member)}</UserNameLink>
                 </p>
                 <p className="text-xs text-muted-foreground">
@@ -109,7 +115,7 @@ function RankingTab({ ranking }: { ranking: GroupMember[] }) {
             </div>
 
             <div className="shrink-0 text-right">
-              <p className="text-xl font-semibold tracking-[-0.03em]">{member.rating.toFixed(0)}</p>
+              <p className="text-2xl font-semibold tracking-[-0.055em]">{member.rating.toFixed(0)}</p>
               <p className="text-[11px] uppercase tracking-wide text-muted-foreground">rating</p>
             </div>
           </CardContent>
@@ -156,7 +162,7 @@ function MembersTab({ members }: { members: GroupMember[] }) {
         <Card key={member.id}>
           <CardContent className="flex items-center justify-between gap-4 p-4">
             <div className="min-w-0">
-              <p className="truncate font-semibold tracking-[-0.01em]">
+              <p className="truncate font-semibold tracking-[-0.015em]">
                 <UserNameLink userId={member.userId}>{getMemberDisplayName(member)}</UserNameLink>
               </p>
               <p className="text-xs text-muted-foreground">
@@ -164,7 +170,7 @@ function MembersTab({ members }: { members: GroupMember[] }) {
               </p>
             </div>
 
-            <span className="rounded-full bg-muted px-3 py-1 text-xs font-semibold text-muted-foreground">
+            <span className="rounded-full bg-white/45 px-3 py-1 text-xs font-semibold text-muted-foreground backdrop-blur-xl dark:bg-white/10">
               {member.rating.toFixed(0)}
             </span>
           </CardContent>
