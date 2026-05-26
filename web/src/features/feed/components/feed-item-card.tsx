@@ -33,12 +33,12 @@ export function FeedItemCard({ item }: Props) {
   const title = item.group?.name ?? 'BeachRank';
 
   return (
-    <Card className="transition-transform active:scale-[0.99]">
+    <Card className="br-pressable">
       <CardContent className="p-4">
         <div className="flex items-start gap-3">
-          <div className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-primary/16 to-accent text-sm font-bold text-primary ring-1 ring-primary/10">
+          <div className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-[1.35rem] bg-gradient-to-br from-primary/18 to-accent/55 text-sm font-bold text-primary ring-1 ring-primary/10">
             {getGroupInitials(title)}
-            <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sm">
+            <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-foreground text-background shadow-sm">
               <Sparkles className="h-3 w-3" />
             </span>
           </div>
@@ -67,16 +67,16 @@ function DominantWinFeedCard({ item }: { item: FeedItem }) {
   const loserScore = Math.min(metadata.gamesA, metadata.gamesB);
 
   return (
-    <Card className="border-primary/20 bg-gradient-to-br from-card via-card to-primary/8 transition-transform active:scale-[0.99]">
+    <Card className="br-pressable bg-gradient-to-br from-card via-card to-primary/14">
       <CardContent className="p-4">
         <div className="flex items-start gap-3">
-          <div className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-primary/12 text-primary ring-1 ring-primary/15">
+          <div className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-[1.35rem] bg-foreground text-background ring-1 ring-foreground/10">
             <Flame className="h-5 w-5" />
           </div>
 
           <div className="min-w-0 flex-1 space-y-2">
             <div className="flex items-center gap-2">
-              <p className="truncate text-sm font-semibold tracking-[-0.01em] text-foreground">
+              <p className="truncate text-sm font-semibold tracking-[-0.015em] text-foreground">
                 Atropelo!
               </p>
               <p className="shrink-0 text-xs text-muted-foreground">
@@ -105,16 +105,16 @@ function CloseMatchFeedCard({ item }: { item: FeedItem }) {
   const loserScore = Math.min(metadata.gamesA, metadata.gamesB);
 
   return (
-    <Card className="border-accent/50 bg-gradient-to-br from-card via-card to-accent/25 transition-transform active:scale-[0.99]">
+    <Card className="br-pressable bg-gradient-to-br from-card via-card to-accent/28">
       <CardContent className="p-4">
         <div className="flex items-start gap-3">
-          <div className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-accent text-accent-foreground ring-1 ring-accent/60">
+          <div className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-[1.35rem] bg-accent text-accent-foreground ring-1 ring-accent/60">
             <CircleDot className="h-5 w-5" />
           </div>
 
           <div className="min-w-0 flex-1 space-y-2">
             <div className="flex items-center gap-2">
-              <p className="truncate text-sm font-semibold tracking-[-0.01em] text-foreground">
+              <p className="truncate text-sm font-semibold tracking-[-0.015em] text-foreground">
                 No detalhe!
               </p>
               <p className="shrink-0 text-xs text-muted-foreground">
@@ -141,7 +141,7 @@ function FeedItemTitle({ item, children }: { item: FeedItem; children: string })
   return (
     <Link
       href={getFeedItemHref(item)}
-      className="truncate text-sm font-semibold tracking-[-0.01em] underline-offset-4 hover:underline"
+      className="truncate text-sm font-semibold tracking-[-0.015em] underline-offset-4 hover:underline"
     >
       {children}
     </Link>
