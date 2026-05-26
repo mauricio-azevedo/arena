@@ -1,4 +1,5 @@
 import { Activity, ShieldCheck, Trophy } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import type { ProfileUser } from '../types/profile-user.type';
 
 type Props = {
@@ -42,7 +43,7 @@ export function ProfileHeader({ user, isPublicProfile = false }: Props) {
   );
 }
 
-function ProfileSignal({ icon: Icon, label }: { icon: typeof Trophy; label: string }) {
+function ProfileSignal({ icon: Icon, label }: { icon: LucideIcon; label: string }) {
   return (
     <div className="rounded-[1.25rem] border border-white/12 bg-white/12 px-3 py-2 backdrop-blur-xl">
       <Icon className="h-3.5 w-3.5" />
