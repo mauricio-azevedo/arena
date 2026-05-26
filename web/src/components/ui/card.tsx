@@ -12,7 +12,7 @@ function Card({
       data-slot="card"
       data-size={size}
       className={cn(
-        'group/card flex flex-col gap-4 overflow-hidden rounded-3xl border bg-card/90 py-4 text-sm text-card-foreground shadow-[0_14px_45px_rgba(84,54,20,0.08)] backdrop-blur-sm transition-shadow has-data-[slot=card-footer]:pb-0 has-[>img:first-child]:pt-0 hover:shadow-[0_18px_55px_rgba(84,54,20,0.12)] data-[size=sm]:gap-3 data-[size=sm]:py-3 data-[size=sm]:has-data-[slot=card-footer]:pb-0 *:[img:first-child]:rounded-t-3xl *:[img:last-child]:rounded-b-3xl',
+        'br-liquid-glass br-hairline group/card flex flex-col gap-4 overflow-hidden rounded-[2rem] py-4 text-sm text-card-foreground transition-all has-data-[slot=card-footer]:pb-0 has-[>img:first-child]:pt-0 hover:-translate-y-0.5 data-[size=sm]:gap-3 data-[size=sm]:rounded-[1.5rem] data-[size=sm]:py-3 data-[size=sm]:has-data-[slot=card-footer]:pb-0 *:[img:first-child]:rounded-t-[2rem] *:[img:last-child]:rounded-b-[2rem]',
         className,
       )}
       {...props}
@@ -38,7 +38,7 @@ function CardTitle({ className, ...props }: React.ComponentProps<'div'>) {
     <div
       data-slot="card-title"
       className={cn(
-        'font-heading text-base leading-snug font-semibold tracking-[-0.02em] group-data-[size=sm]/card:text-sm',
+        'font-heading text-base leading-snug font-semibold tracking-[-0.025em] group-data-[size=sm]/card:text-sm',
         className,
       )}
       {...props}
@@ -133,7 +133,7 @@ function CardFooter({ className, ...props }: React.ComponentProps<'div'>) {
     <div
       data-slot="card-footer"
       className={cn(
-        'flex items-center border-t bg-muted/45 p-4 group-data-[size=sm]/card:p-3',
+        'flex items-center border-t bg-white/28 p-4 backdrop-blur-xl group-data-[size=sm]/card:p-3 dark:bg-white/8',
         className,
       )}
       {...props}
