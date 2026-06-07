@@ -43,6 +43,10 @@ function renderSection(title: string, findings: BriefFinding[]) {
   ].join('\n');
 }
 
+function renderSources(finding: BriefFinding[]) {
+  return finding;
+}
+
 function renderSources(finding: BriefFinding) {
   if (finding.sources.length === 0) {
     return [];
