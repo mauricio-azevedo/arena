@@ -113,12 +113,12 @@ export function MatchCard({
 
   return (
     <>
-      <Card className="relative">
+      <Card className="relative bg-gradient-to-br from-card via-card to-primary/8">
         {showActions && (
-          <div className="absolute right-3 top-3">
+          <div className="absolute right-3 top-3 z-10">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon-sm">
+                <Button variant="ghost" size="icon-sm" className="bg-white/34 backdrop-blur-xl dark:bg-white/8">
                   <MoreVertical className="h-4 w-4" />
                   <span className="sr-only">Abrir opções</span>
                 </Button>
@@ -154,17 +154,17 @@ export function MatchCard({
         <CardContent className="space-y-4 p-4 pr-12">
           <div className="flex items-start justify-between gap-4">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary/80">
+              <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-primary/75">
                 Partida
               </p>
               <p className="mt-1 text-xs text-muted-foreground">{formatDate(match.playedAt)}</p>
             </div>
 
-            <div className="text-right">
-              <p className="text-3xl font-semibold tracking-[-0.06em]">
+            <div className="rounded-[1.5rem] bg-foreground px-4 py-2 text-right text-background shadow-[0_16px_36px_color-mix(in_oklch,var(--foreground)_20%,transparent)]">
+              <p className="text-3xl font-semibold leading-none tracking-[-0.07em]">
                 {match.gamesA}–{match.gamesB}
               </p>
-              <p className="mt-0.5 text-xs font-medium text-primary">{formatDelta(winningDelta)}</p>
+              <p className="mt-1 text-xs font-semibold text-background/72">{formatDelta(winningDelta)}</p>
             </div>
           </div>
 
@@ -217,13 +217,15 @@ function MatchTeam({
 }) {
   return (
     <div
-      className={`flex min-w-0 items-center gap-3 rounded-2xl border px-3 py-2.5 ${
-        isWinner ? 'bg-primary/10 ring-1 ring-primary/20' : 'bg-muted/35'
+      className={`flex min-w-0 items-center gap-3 rounded-[1.35rem] px-3 py-2.5 ${
+        isWinner
+          ? 'bg-accent/55 text-accent-foreground ring-1 ring-accent/60'
+          : 'bg-white/36 text-muted-foreground ring-1 ring-border/50 dark:bg-white/8'
       }`}
     >
       <div
         className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-bold ${
-          isWinner ? 'bg-primary text-primary-foreground' : 'bg-background text-muted-foreground'
+          isWinner ? 'bg-foreground text-background' : 'bg-background/80 text-muted-foreground'
         }`}
       >
         {score}

@@ -11,16 +11,16 @@ type PageHeaderProps = {
 
 export function PageHeader({ title, description, eyebrow, action, className }: PageHeaderProps) {
   return (
-    <header className={cn('space-y-3', className)}>
+    <header className={cn('space-y-4', className)}>
       <div className="flex items-start justify-between gap-4">
-        <div className="min-w-0 space-y-1.5">
+        <div className="min-w-0 space-y-2">
           {eyebrow && (
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary/80">
+            <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-primary/75">
               {eyebrow}
             </p>
           )}
 
-          <h1 className="text-balance text-3xl font-semibold tracking-[-0.035em] text-foreground">
+          <h1 className="text-balance text-[2.45rem] font-semibold leading-[0.96] tracking-[-0.065em] text-foreground">
             {title}
           </h1>
         </div>
@@ -29,7 +29,7 @@ export function PageHeader({ title, description, eyebrow, action, className }: P
       </div>
 
       {description && (
-        <p className="max-w-sm text-sm leading-6 text-muted-foreground">{description}</p>
+        <p className="max-w-sm text-[0.95rem] leading-6 text-muted-foreground">{description}</p>
       )}
     </header>
   );
