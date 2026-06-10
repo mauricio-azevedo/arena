@@ -1,6 +1,6 @@
 # Database Guide
 
-BeachRank uses PostgreSQL with Prisma as the backend database access layer.
+Arena uses PostgreSQL with Prisma as the backend database access layer.
 
 The production-like hosted database provider is Neon.
 

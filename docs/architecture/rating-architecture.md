@@ -1,6 +1,6 @@
 # Rating Architecture
 
-BeachRank ratings are group-scoped skill estimates updated from match results.
+Arena ratings are group-scoped skill estimates updated from match results.
 
 The rating system must support two competing needs:
 

@@ -1,6 +1,6 @@
 # Critical Flows QA Checklist
 
-This document defines the manual regression flows that should remain healthy as BeachRank evolves.
+This document defines the manual regression flows that should remain healthy as Arena evolves.
 
 Use this checklist before merging risky changes, after large refactors, and before production releases.
 

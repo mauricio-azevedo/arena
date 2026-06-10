@@ -1,9 +1,9 @@
 # Architecture Overview
 
-BeachRank is a monorepo with a Next.js frontend, a NestJS backend, Prisma, and PostgreSQL on Neon.
+Arena is a monorepo with a Next.js frontend, a NestJS backend, Prisma, and PostgreSQL on Neon.
 
 ```txt
-beachrank/
+arena/
   api/   NestJS backend
   web/   Next.js frontend
   docs/  project documentation

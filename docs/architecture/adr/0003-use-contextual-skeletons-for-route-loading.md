@@ -6,7 +6,7 @@ Accepted
 
 ## Context
 
-Several BeachRank screens load server-side or client-side data before content is ready.
+Several Arena screens load server-side or client-side data before content is ready.
 
 When the user taps a link and remains on the previous screen with only a global loading bar, the interaction can feel delayed or broken.
 
@@ -14,7 +14,7 @@ The product should feel immediate on mobile.
 
 ## Decision
 
-For navigation between screens, BeachRank should prefer destination-context loading states.
+For navigation between screens, Arena should prefer destination-context loading states.
 
 The route should transition to the destination context immediately, and the destination should render a skeleton that resembles the final layout.
 

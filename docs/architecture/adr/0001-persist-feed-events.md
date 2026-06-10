@@ -6,7 +6,7 @@ Accepted
 
 ## Context
 
-BeachRank needs a home feed that shows relevant product moments such as group creation, member joins, dominant wins, close matches, upsets, ranking changes, and milestones.
+Arena needs a home feed that shows relevant product moments such as group creation, member joins, dominant wins, close matches, upsets, ranking changes, and milestones.
 
 A feed could be built by querying all source tables on every request and reconstructing events dynamically, but that would become expensive and hard to keep consistent as event types grow.
 
@@ -14,7 +14,7 @@ Some events also need stable historical metadata. For example, an `Atropelo!` fe
 
 ## Decision
 
-BeachRank persists feed moments as `FeedItem` rows.
+Arena persists feed moments as `FeedItem` rows.
 
 Domain workflows generate or synchronize feed items when source actions happen.
 

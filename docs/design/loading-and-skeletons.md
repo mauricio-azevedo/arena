@@ -1,6 +1,6 @@
 # Loading and Skeleton UX
 
-BeachRank should feel immediate, calm, and polished on mobile.
+Arena should feel immediate, calm, and polished on mobile.
 
 Loading behavior is part of product quality. A technically correct loading state can still feel broken if it appears in the wrong place or uses the wrong visual pattern.
 

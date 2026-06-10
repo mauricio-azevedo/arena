@@ -6,7 +6,7 @@ Accepted
 
 ## Context
 
-BeachRank ratings change over time as matches are registered, edited, or deleted.
+Arena ratings change over time as matches are registered, edited, or deleted.
 
 The product needs to show historical match details such as:
 
@@ -20,7 +20,7 @@ If historical match screens relied only on current `GroupMember.rating`, old mat
 
 ## Decision
 
-BeachRank persists rating snapshots on `Match` and `MatchPlayer` records.
+Arena persists rating snapshots on `Match` and `MatchPlayer` records.
 
 `GroupMember.rating` stores the current group-scoped rating.
 

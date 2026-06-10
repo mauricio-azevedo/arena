@@ -1,11 +1,11 @@
 # Code Organization Guide
 
-This document defines how code should be organized in BeachRank.
+This document defines how code should be organized in Arena.
 
 The goal is not to minimize the number of files.  
 The goal is to keep the codebase explicit, predictable, scalable, and easy to navigate.
 
-BeachRank should feel simple as a product, but the codebase should be structured like a serious production system.
+Arena should feel simple as a product, but the codebase should be structured like a serious production system.
 
 ---
 
@@ -20,7 +20,7 @@ This guide is inspired by:
 - Angular Style Guide for naming and consistency
 - Google TypeScript Style Guide
 
-These references are not followed blindly. BeachRank adapts them to its own product, stack, and domain.
+These references are not followed blindly. Arena adapts them to its own product, stack, and domain.
 
 ---
 
@@ -173,10 +173,10 @@ Do not reorganize based on momentary preference unless the guide is updated.
 
 ## 3. Repository structure
 
-BeachRank is a monorepo:
+Arena is a monorepo:
 
 ```txt
-beachrank/
+arena/
   api/
   web/
   docs/

@@ -1,8 +1,8 @@
 # Development Setup
 
-This document describes the expected local development workflow for BeachRank.
+This document describes the expected local development workflow for Arena.
 
-BeachRank is a monorepo with two applications:
+Arena is a monorepo with two applications:
 
 ```txt
 api/  NestJS backend
@@ -23,7 +23,7 @@ Check the root and app-specific package files before installing dependencies.
 ## Repository layout
 
 ```txt
-beachrank/
+arena/
   api/
     prisma/
     src/

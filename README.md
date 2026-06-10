@@ -1,6 +1,6 @@
-# BeachRank
+# Arena
 
-BeachRank is a mobile-first web app for casual beach tennis groups.
+Arena is a mobile-first web app for casual beach tennis groups.
 
 It lets players create groups, invite friends, register doubles matches, track ratings, view rankings, follow recent activity, and build a personal sports history from casual games.
 
@@ -10,9 +10,9 @@ The goal is simple:
 
 ---
 
-## What BeachRank is
+## What Arena is
 
-BeachRank is not a tournament platform.
+Arena is not a tournament platform.
 
 It is designed for the kind of beach tennis people actually play every week:
 
@@ -24,7 +24,7 @@ It is designed for the kind of beach tennis people actually play every week:
 - local rankings inside each group;
 - personal stats over time.
 
-Instead of trying to manage courts, queues, or tournaments, BeachRank focuses on what happens after the match:
+Instead of trying to manage courts, queues, or tournaments, Arena focuses on what happens after the match:
 
 > record the result, update ratings, keep the history alive.
 
@@ -36,7 +36,7 @@ Casual beach tennis usually has a lot of games, but very little memory.
 
 People play, win, lose, improve, create rivalries, change partners, and move up or down in the group — but none of that is usually tracked.
 
-BeachRank turns those games into:
+Arena turns those games into:
 
 - group rankings;
 - match history;
@@ -78,7 +78,7 @@ BeachRank turns those games into:
 
 ### Rating
 
-BeachRank currently uses a custom rating model inspired by Elo-style expected performance.
+Arena currently uses a custom rating model inspired by Elo-style expected performance.
 
 Each group member has a rating inside each group. A user's rating is not global because performance and context can vary between groups.
 
@@ -99,7 +99,7 @@ For example:
 
 ### Feed
 
-BeachRank has a feed system based on persisted `FeedItem`s.
+Arena has a feed system based on persisted `FeedItem`s.
 
 Current feed concepts include:
 
@@ -152,7 +152,7 @@ The summary tab includes:
 
 ## Product principles
 
-BeachRank is being built around a few strong product principles.
+Arena is being built around a few strong product principles.
 
 ### 1. Low friction first
 
@@ -199,7 +199,7 @@ It should show moments that create:
 
 ### 5. Mobile-first
 
-BeachRank is designed primarily for phone usage.
+Arena is designed primarily for phone usage.
 
 It should be usable in a beach tennis arena, between games, with minimum friction.
 
@@ -235,7 +235,7 @@ It should be usable in a beach tennis arena, between games, with minimum frictio
 ## Repository structure
 
 ```txt
-beachrank/
+arena/
   api/
     prisma/
     src/
@@ -373,7 +373,7 @@ Current feed model supports:
 
 ## Rating model
 
-BeachRank currently uses a custom rating formula inspired by Elo.
+Arena currently uses a custom rating formula inspired by Elo.
 
 ### Team rating
 
@@ -413,7 +413,7 @@ Both players on a team receive the same delta.
 
 ## Why score matters
 
-BeachRank does not treat every win equally.
+Arena does not treat every win equally.
 
 A 7–6 win and a 6–0 win communicate different things.
 
@@ -607,7 +607,7 @@ Some of these may still be under active implementation.
 Create `api/.env`:
 
 ```env
-DATABASE_URL="postgresql://beachrank:beachrank@localhost:5433/beachrank"
+DATABASE_URL="postgresql://arena:arena@localhost:5433/arena"
 JWT_SECRET="your-local-secret"
 CORS_ORIGIN="http://localhost:3000,http://localhost:3001"
 ```
@@ -703,7 +703,7 @@ So imports should use the local generated client instead of assuming `@prisma/cl
 
 ## UX direction
 
-BeachRank should feel:
+Arena should feel:
 
 * mobile-first;
 * calm;
@@ -877,7 +877,7 @@ The goal is:
 
 ## Status
 
-BeachRank is under active development.
+Arena is under active development.
 
 The current focus is building the foundations of:
 

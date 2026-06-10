@@ -1,4 +1,4 @@
-# BeachRank — Product & UI Quality Bar
+# Arena — Product & UI Quality Bar
 
 Treat every UI/UX decision as something that will be shipped to real users, not as a functional draft.
 

@@ -1,5 +1,5 @@
-import { Activity, ArrowUpRight, Sparkles, Trophy, UsersRound, Waves } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
+import { Activity, ArrowUpRight, Sparkles, Trophy, UsersRound, Waves } from 'lucide-react';
 import { AppShell } from '@/components/app-shell';
 import { HomeFeed } from '@/features/feed/home-feed';
 
@@ -15,7 +15,7 @@ export default function HomePage() {
             <div className="flex items-center justify-between gap-4">
               <div className="inline-flex items-center gap-2 rounded-full bg-white/12 px-3 py-1.5 text-xs font-semibold text-background/86 backdrop-blur-xl">
                 <Waves className="h-3.5 w-3.5" />
-                BeachRank
+                Arena
               </div>
 
               <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/12 backdrop-blur-xl">
@@ -63,7 +63,15 @@ export default function HomePage() {
   );
 }
 
-function HeroMetric({ icon: Icon, label, value }: { icon: LucideIcon; label: string; value: string }) {
+function HeroMetric({
+  icon: Icon,
+  label,
+  value,
+}: {
+  icon: LucideIcon;
+  label: string;
+  value: string;
+}) {
   return (
     <div className="rounded-[1.35rem] border border-white/12 bg-white/12 p-3 backdrop-blur-xl">
       <Icon className="h-4 w-4" />

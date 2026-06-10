@@ -1,6 +1,6 @@
-# BeachRank Documentation
+# Arena Documentation
 
-This directory is the source of truth for BeachRank product, design, architecture, engineering, QA, operations, and security decisions.
+This directory is the source of truth for Arena product, design, architecture, engineering, QA, operations, and security decisions.
 
 The goal is to make the project easier to evolve without losing context in conversations, pull requests, or implementation details.
 
@@ -8,7 +8,7 @@ The goal is to make the project easier to evolve without losing context in conve
 
 ### Product
 
-Product docs describe what BeachRank should do and why.
+Product docs describe what Arena should do and why.
 
 - [`product/glossary.md`](product/glossary.md): domain vocabulary used across product, design, code, and QA.
 - [`product/feed-events.md`](product/feed-events.md): feed event catalog, product rules, lifecycle, visibility, and metadata contracts.

@@ -30,7 +30,7 @@ export function FeedItemCard({ item }: Props) {
     return <CloseMatchFeedCard item={item} />;
   }
 
-  const title = item.group?.name ?? 'BeachRank';
+  const title = item.group?.name ?? 'Arena';
 
   return (
     <Card className="br-pressable">
@@ -155,7 +155,10 @@ function FeedItemText({ item }: { item: FeedItem }) {
     return (
       <>
         <FeedActorName item={item} /> criou o grupo{' '}
-        <FeedGroupLink item={item}>{metadata.groupName ?? item.group?.name ?? 'um grupo'}</FeedGroupLink>.
+        <FeedGroupLink item={item}>
+          {metadata.groupName ?? item.group?.name ?? 'um grupo'}
+        </FeedGroupLink>
+        .
       </>
     );
   }
@@ -169,7 +172,8 @@ function FeedItemText({ item }: { item: FeedItem }) {
           <UserNameLink userId={item.actorUserId} variant="feed">
             Você
           </UserNameLink>{' '}
-          entrou no grupo <FeedGroupLink item={item}>{item.group?.name ?? 'um grupo'}</FeedGroupLink>.
+          entrou no grupo{' '}
+          <FeedGroupLink item={item}>{item.group?.name ?? 'um grupo'}</FeedGroupLink>.
         </>
       );
     }
@@ -209,7 +213,8 @@ function FeedGroupSuffix({ item }: { item: FeedItem }) {
 
   return (
     <>
-      {' '}no <FeedGroupLink item={item}>{item.group.name}</FeedGroupLink>.
+      {' '}
+      no <FeedGroupLink item={item}>{item.group.name}</FeedGroupLink>.
     </>
   );
 }

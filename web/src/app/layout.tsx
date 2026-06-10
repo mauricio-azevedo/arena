@@ -13,12 +13,12 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'BeachRank',
+  title: 'Arena',
   description: 'Ranking social para grupos casuais de beach tennis.',
-  applicationName: 'BeachRank',
+  applicationName: 'Arena',
   appleWebApp: {
     capable: true,
-    title: 'BeachRank',
+    title: 'Arena',
     statusBarStyle: 'black-translucent',
   },
 };

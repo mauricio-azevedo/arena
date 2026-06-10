@@ -1,4 +1,4 @@
-export const ACCESS_TOKEN_STORAGE_KEY = 'beachrank_access_token';
+export const ACCESS_TOKEN_STORAGE_KEY = 'arena_access_token';
 
 type JwtPayload = {
   sub?: string;

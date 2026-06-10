@@ -1,12 +1,12 @@
 # Feed Architecture
 
-The BeachRank feed is a persisted event system for product moments.
+The Arena feed is a persisted event system for product moments.
 
 It is intentionally not built as a raw query over every source table at read time. Instead, important moments are generated when domain actions happen and stored as `FeedItem` rows.
 
 ## Why feed items are persisted
 
-Persisted feed items give BeachRank:
+Persisted feed items give Arena:
 
 - fast feed reads;
 - stable historical event text/metadata;
@@ -86,7 +86,7 @@ Each event type should document its metadata contract in [`../product/feed-event
 
 Stored base relevance score.
 
-This remains persisted so BeachRank can re-enable relevance-based ranking later without changing event generation contracts.
+This remains persisted so Arena can re-enable relevance-based ranking later without changing event generation contracts.
 
 Current feed ordering does not prioritize `importanceScore`.
 

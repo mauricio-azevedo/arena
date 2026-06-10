@@ -1,6 +1,6 @@
 # Product Glossary
 
-This glossary defines the shared vocabulary used in BeachRank product, design, code, API contracts, and QA.
+This glossary defines the shared vocabulary used in Arena product, design, code, API contracts, and QA.
 
 Use these terms consistently in documentation, PRs, UI copy, and implementation names.
 
@@ -8,7 +8,7 @@ Use these terms consistently in documentation, PRs, UI copy, and implementation 
 
 ### User
 
-A registered account in BeachRank.
+A registered account in Arena.
 
 A user can belong to multiple groups and can appear in matches through group memberships.
 
@@ -126,7 +126,7 @@ Used when historical order can be affected, such as:
 
 A fast path used when creating a match at the end of the group timeline.
 
-Instead of recalculating every historical match, BeachRank calculates only the new match from current member ratings and updates the four affected members.
+Instead of recalculating every historical match, Arena calculates only the new match from current member ratings and updates the four affected members.
 
 ## Feed
 

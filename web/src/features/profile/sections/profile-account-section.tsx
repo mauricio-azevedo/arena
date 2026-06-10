@@ -8,7 +8,7 @@ export function ProfileAccountSection() {
         <div className="min-w-0 space-y-1">
           <p className="text-sm font-semibold">Conta</p>
           <p className="text-sm leading-6 text-muted-foreground">
-            Saia deste dispositivo quando terminar de usar o BeachRank.
+            Saia deste dispositivo quando terminar de usar o Arena.
           </p>
         </div>
 

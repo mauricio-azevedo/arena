@@ -45,8 +45,9 @@ export function GroupDetail({ groupId, tab }: Props) {
       try {
         const token = getAccessToken();
         const membershipPromise = token
-          ? getMyGroups(token).then((memberships) =>
-              memberships.find((membership) => membership.groupId === groupId) ?? null,
+          ? getMyGroups(token).then(
+              (memberships) =>
+                memberships.find((membership) => membership.groupId === groupId) ?? null,
             )
           : Promise.resolve(null);
 
@@ -98,7 +99,7 @@ export function GroupDetail({ groupId, tab }: Props) {
 
         <PageHeader
           title={data.group.name}
-          description={data.group.description ?? 'Grupo público do BeachRank.'}
+          description={data.group.description ?? 'Grupo público do Arena.'}
         />
 
         <GroupActions groupId={data.group.id} isAdmin={isAdmin} />

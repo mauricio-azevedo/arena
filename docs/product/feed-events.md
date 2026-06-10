@@ -1,6 +1,6 @@
 # Feed Events
 
-Feed events are persisted product moments shown in the BeachRank home feed.
+Feed events are persisted product moments shown in the Arena home feed.
 
 The feed should not be treated as a raw activity log. Its purpose is to surface moments that are relevant, social, competitive, or meaningful to the user.
 
