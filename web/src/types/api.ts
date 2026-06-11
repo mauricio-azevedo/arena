@@ -23,6 +23,15 @@ export type Group = {
 
 export type GroupMemberRole = 'ADMIN' | 'MEMBER';
 
+export type RankingMovement = {
+  direction: 'UP';
+  positions: number;
+  previousPosition: number;
+  currentPosition: number;
+  sourceMatchId: string;
+  occurredAt: string;
+};
+
 export type GroupMember = {
   id: string;
   groupId: string;
@@ -39,6 +48,7 @@ export type GroupMember = {
   updatedAt: string;
   user?: User;
   group?: Group;
+  rankingMovement?: RankingMovement | null;
 };
 
 export type MyGroup = {
