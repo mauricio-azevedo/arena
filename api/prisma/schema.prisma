@@ -47,6 +47,7 @@ enum FeedItemType {
   MATCH_CLOSE
   MATCH_BLOWOUT
   UPSET_WIN
+  RANKING_MOVEMENT
 }
 
 enum FeedItemScope {
