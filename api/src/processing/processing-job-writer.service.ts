@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { randomUUID } from 'crypto';
 import type { Prisma } from '../generated/prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import type { ProcessingJobType } from './processing-job.types';
@@ -19,24 +18,15 @@ export class ProcessingJobWriterService {
   constructor(private readonly prisma: PrismaService) {}
 
   enqueue(input: EnqueueJobInput, tx: PrismaClientLike = this.prisma) {
-    return tx.$executeRaw`
-      INSERT INTO "ProcessingJob" (
-        "id",
-        "type",
-        "status",
-        "groupId",
-        "matchId",
-        "payload",
-        "availableAt"
-      ) VALUES (
-        ${randomUUID()},
-        ${input.type}::"ProcessingJobType",
-        'PENDING'::"ProcessingJobStatus",
-        ${input.groupId},
-        ${input.matchId ?? null},
-        ${JSON.stringify(input.payload ?? {})}::jsonb,
-        ${input.availableAt ?? new Date()}
-      )
-    `;
+    return tx.processingJob.create({
+      data: {
+        type: input.type,
+        status: 'PENDING',
+        groupId: input.groupId,
+        matchId: input.matchId ?? null,
+        payload: input.payload ?? {},
+        availableAt: input.availableAt ?? new Date(),
+      },
+    });
   }
 }
