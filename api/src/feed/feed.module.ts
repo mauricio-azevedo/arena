@@ -9,6 +9,7 @@ import { AuthModule } from '../auth/auth.module';
 import { MemberJoinedFeedItemGenerator } from './generators/member-joined-feed-item.generator';
 import { MatchBlowoutFeedItemGenerator } from './generators/match-blowout-feed-item.generator';
 import { MatchCloseFeedItemGenerator } from './generators/match-close-feed-item.generator';
+import { RankingMovementFeedItemGenerator } from './generators/ranking-movement-feed-item.generator';
 import { FeedScoreService } from './feed-score.service';
 
 @Module({
@@ -22,6 +23,7 @@ import { FeedScoreService } from './feed-score.service';
     MemberJoinedFeedItemGenerator,
     MatchBlowoutFeedItemGenerator,
     MatchCloseFeedItemGenerator,
+    RankingMovementFeedItemGenerator,
     FeedScoreService,
   ],
   exports: [FeedOrchestratorService],
