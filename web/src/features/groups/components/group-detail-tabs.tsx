@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import type { GroupMember, Match } from '@/types/api';
+import { ArrowUp } from 'lucide-react';
+import type { GroupMember, Match, RankingMovement } from '@/types/api';
 import { Card, CardContent } from '@/components/ui/card';
 import { MatchesList } from '@/features/matches/components/matches-list';
 import { UserNameLink } from '@/features/users/components/user-name-link';
@@ -91,7 +92,10 @@ function RankingTab({ ranking }: { ranking: GroupMember[] }) {
   return (
     <section className="space-y-3">
       {ranking.map((member, index) => (
-        <Card key={member.id} className={index === 0 ? 'bg-gradient-to-br from-card via-card to-accent/30' : undefined}>
+        <Card
+          key={member.id}
+          className={index === 0 ? 'bg-gradient-to-br from-card via-card to-accent/30' : undefined}
+        >
           <CardContent className="flex items-center justify-between gap-4 p-4">
             <div className="flex min-w-0 items-center gap-3">
               <span
@@ -105,9 +109,12 @@ function RankingTab({ ranking }: { ranking: GroupMember[] }) {
               </span>
 
               <div className="min-w-0">
-                <p className="truncate font-semibold tracking-[-0.015em]">
-                  <UserNameLink userId={member.userId}>{getMemberDisplayName(member)}</UserNameLink>
-                </p>
+                <div className="flex min-w-0 items-center gap-2">
+                  <p className="min-w-0 truncate font-semibold tracking-[-0.015em]">
+                    <UserNameLink userId={member.userId}>{getMemberDisplayName(member)}</UserNameLink>
+                  </p>
+                  <RankingMovementBadge movement={member.rankingMovement} />
+                </div>
                 <p className="text-xs text-muted-foreground">
                   {member.role === 'ADMIN' ? 'Admin' : 'Membro'}
                 </p>
@@ -122,6 +129,25 @@ function RankingTab({ ranking }: { ranking: GroupMember[] }) {
         </Card>
       ))}
     </section>
+  );
+}
+
+function RankingMovementBadge({ movement }: { movement?: RankingMovement | null }) {
+  if (!movement || movement.direction !== 'UP') {
+    return null;
+  }
+
+  const label = `Subiu ${movement.positions} ${movement.positions === 1 ? 'posição' : 'posições'} no último ranking`;
+
+  return (
+    <span
+      aria-label={label}
+      title={label}
+      className="inline-flex shrink-0 items-center gap-0.5 rounded-full bg-emerald-500/12 px-2 py-0.5 text-[11px] font-bold leading-none text-emerald-700 dark:text-emerald-300"
+    >
+      <ArrowUp className="h-3 w-3" aria-hidden="true" />
+      {movement.positions}
+    </span>
   );
 }
 
