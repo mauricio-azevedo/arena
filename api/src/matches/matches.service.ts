@@ -9,6 +9,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { calculateBeachRating } from '../rating/calculate-beach-rating';
 import type { Prisma } from '../generated/prisma/client';
 import { FeedOrchestratorService } from '../feed/feed-orchestrator.service';
+import { RankingMovementService } from '../ranking/ranking-movement.service';
 
 type MatchBody = {
   teamAPlayer1Id: string;
@@ -60,6 +61,7 @@ export class MatchesService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly feed: FeedOrchestratorService,
+    private readonly rankingMovements: RankingMovementService,
   ) {}
 
   async create(groupId: string, userId: string, body: MatchBody) {
@@ -146,6 +148,7 @@ export class MatchesService {
         await this.recalculateRatings(tx, groupId);
       }
 
+      await this.rankingMovements.syncGroupRankingState(tx, groupId);
       await this.syncMatchFeedItems(tx, groupId, match.id, body, membersById, playedAt);
 
       return tx.match.findUnique({
@@ -160,6 +163,7 @@ export class MatchesService {
 
     return this.prisma.$transaction(async (tx) => {
       await this.ensureGroupExists(tx, groupId);
+      await this.ensureActiveGroupMember(tx, groupId, userId);
 
       const existingMatch = await tx.match.findFirst({
         where: { id, groupId },
@@ -232,6 +236,7 @@ export class MatchesService {
       });
 
       await this.recalculateRatings(tx, groupId);
+      await this.rankingMovements.syncGroupRankingState(tx, groupId);
       await this.syncMatchFeedItems(tx, groupId, id, body, membersById, playedAt);
 
       return tx.match.findUnique({
@@ -244,6 +249,7 @@ export class MatchesService {
   async remove(groupId: string, id: string, userId: string) {
     return this.prisma.$transaction(async (tx) => {
       await this.ensureGroupExists(tx, groupId);
+      await this.ensureActiveGroupMember(tx, groupId, userId);
 
       const existingMatch = await tx.match.findFirst({
         where: { id, groupId },
@@ -258,6 +264,7 @@ export class MatchesService {
       });
 
       await this.recalculateRatings(tx, groupId);
+      await this.rankingMovements.syncGroupRankingState(tx, groupId);
 
       return { success: true };
     });
