@@ -9,13 +9,14 @@ import type {
   RankingMovementFeedMovement,
   RankingMovementFeedPlayer,
 } from '../feed/types/ranking-movement-feed-input.type';
+import { RatingProjectionService } from '../rating/rating-projection.service';
 import { RankingMovementService } from '../ranking/ranking-movement.service';
 import { MatchTeam } from '../generated/prisma/enums';
 import { errorLogFields, structuredLog } from '../observability/structured-log';
 import type { ProcessingJob } from './processing-job.types';
 
 const DEFAULT_LOCK_TIMEOUT_MS = 60_000;
-const DEFAULT_TRANSACTION_TIMEOUT_MS = 15_000;
+const DEFAULT_TRANSACTION_TIMEOUT_MS = 60_000;
 const RANKING_MOVEMENT_FEED_THRESHOLD = 2;
 
 type PrismaClientLike = Prisma.TransactionClient | PrismaService;
@@ -75,6 +76,7 @@ export class ProcessingJobRunnerService {
 
   constructor(
     private readonly prisma: PrismaService,
+    private readonly ratingProjection: RatingProjectionService,
     private readonly rankingMovements: RankingMovementService,
     private readonly feed: FeedOrchestratorService,
   ) {}
@@ -212,61 +214,31 @@ export class ProcessingJobRunnerService {
     switch (job.type) {
       case 'MATCH_CREATED':
       case 'MATCH_UPDATED':
-        await this.processMatchChangedJob(job);
+        if (!job.matchId) {
+          throw new Error('Match processing job requires matchId');
+        }
+        await this.processGroupProjectionJob(job.groupId, job.matchId);
         break;
       case 'MATCH_DELETED':
       case 'GROUP_RANKING_REBUILD':
-        await this.processGroupRankingRebuildJob(job.groupId);
+        await this.processGroupProjectionJob(job.groupId, null);
         break;
       default:
         throw new Error(`Unsupported processing job type: ${job.type}`);
     }
   }
 
-  private async processGroupRankingRebuildJob(groupId: string) {
-    await this.prisma.$transaction(
-      (tx) => this.rankingMovements.syncGroupRankingState(tx, groupId),
-      { timeout: this.getTransactionTimeoutMs() },
-    );
-
-    await this.prisma.$transaction(
-      (tx) => this.syncGroupRankingMovementFeedItems(tx, groupId),
-      { timeout: this.getTransactionTimeoutMs() },
-    );
-  }
-
-  private async processMatchChangedJob(job: ProcessingJob) {
-    if (!job.matchId) {
-      throw new Error('Match processing job requires matchId');
-    }
-
-    const canProcessIncrementally = await this.isLatestMatch(this.prisma, job.groupId, job.matchId);
-
-    this.logger.log(
-      structuredLog('processing_job.match_projection_strategy_selected', {
-        jobId: job.id,
-        jobType: job.type,
-        groupId: job.groupId,
-        matchId: job.matchId,
-        strategy: canProcessIncrementally && job.type === 'MATCH_CREATED' ? 'incremental' : 'full_rebuild',
-      }),
-    );
-
+  private async processGroupProjectionJob(groupId: string, changedMatchId: string | null) {
     await this.prisma.$transaction(
       async (tx) => {
-        if (canProcessIncrementally && job.type === 'MATCH_CREATED') {
-          await this.rankingMovements.syncLatestMatchRankingState(tx, job.groupId, job.matchId!);
-        } else {
-          await this.rankingMovements.syncGroupRankingState(tx, job.groupId);
+        await this.ratingProjection.syncGroupRatings(tx, groupId);
+        await this.rankingMovements.syncGroupRankingState(tx, groupId);
+
+        if (changedMatchId) {
+          await this.syncMatchFeedItems(tx, groupId, changedMatchId);
         }
-      },
-      { timeout: this.getTransactionTimeoutMs() },
-    );
 
-    await this.prisma.$transaction(
-      async (tx) => {
-        await this.syncMatchFeedItems(tx, job.groupId, job.matchId!);
-        await this.syncGroupRankingMovementFeedItems(tx, job.groupId);
+        await this.syncGroupRankingMovementFeedItems(tx, groupId);
       },
       { timeout: this.getTransactionTimeoutMs() },
     );
@@ -400,11 +372,9 @@ export class ProcessingJobRunnerService {
     tx: Prisma.TransactionClient,
     groupId: string,
   ): Promise<RankingMovementFeedInput[]> {
-    const visibleMovements = (await tx.rankingMovement.findMany({
+    const historicalMovements = (await tx.rankingMovement.findMany({
       where: {
         groupId,
-        isVisible: true,
-        invalidatedAt: null,
         OR: [
           {
             positions: {
@@ -454,15 +424,15 @@ export class ProcessingJobRunnerService {
       orderBy: [{ occurredAt: 'asc' }, { createdAt: 'asc' }],
     })) as RankingMovementProjectionRow[];
 
-    if (visibleMovements.length === 0) {
+    if (historicalMovements.length === 0) {
       return [];
     }
 
     const currentLeaders = await this.getCurrentLeaders(tx, groupId);
-    const membersById = await this.buildRankingMovementMemberMap(tx, groupId, visibleMovements);
+    const membersById = await this.buildRankingMovementMemberMap(tx, groupId, historicalMovements);
     const movementsByMatchId = new Map<string, RankingMovementProjectionRow[]>();
 
-    for (const movement of visibleMovements) {
+    for (const movement of historicalMovements) {
       const movements = movementsByMatchId.get(movement.matchId) ?? [];
       movements.push(movement);
       movementsByMatchId.set(movement.matchId, movements);
@@ -640,14 +610,26 @@ export class ProcessingJobRunnerService {
     const currentLeaderMap = new Map<string, RankingMovementFeedPlayer>();
     const movedToLeadershipIds = new Set(upToLeadership.map((movement) => movement.groupMemberId));
 
-    if (dethronedLeaders.length > 0) {
-      for (const leader of currentLeaders) {
-        currentLeaderMap.set(leader.groupMemberId, leader);
+    for (const movement of upToLeadership) {
+      currentLeaderMap.set(movement.groupMemberId, this.toRankingMovementFeedPlayer(movement));
+    }
+
+    if (dethronedLeaders.length > 0 && currentLeaderMap.size === 0) {
+      for (const movement of dethronedLeaders) {
+        const likelyNewLeader = movement.affectedMembers.find(
+          (member) => !previousLeaderMap.has(member.groupMemberId),
+        );
+
+        if (likelyNewLeader) {
+          currentLeaderMap.set(likelyNewLeader.groupMemberId, this.toRankingMovementFeedPlayer(likelyNewLeader));
+        }
       }
     }
 
-    for (const movement of upToLeadership) {
-      currentLeaderMap.set(movement.groupMemberId, this.toRankingMovementFeedPlayer(movement));
+    if (dethronedLeaders.length > 0 && currentLeaderMap.size === 0) {
+      for (const leader of currentLeaders) {
+        currentLeaderMap.set(leader.groupMemberId, leader);
+      }
     }
 
     return {
@@ -754,6 +736,7 @@ export class ProcessingJobRunnerService {
           ...errorLogFields(error),
         }),
       );
+      await this.markMatchFailed(job, message);
       await this.prisma.processingJob.update({
         where: { id: job.id },
         data: {
@@ -792,6 +775,19 @@ export class ProcessingJobRunnerService {
         availableAt: new Date(Date.now() + retryDelaySeconds * 1000),
       },
     });
+  }
+
+  private async markMatchFailed(job: ProcessingJob, message: string) {
+    if (!job.matchId) {
+      return;
+    }
+
+    await this.prisma.$executeRaw`
+      UPDATE "Match"
+      SET "processingStatus" = 'FAILED', "processingError" = ${message}
+      WHERE "id" = ${job.matchId}
+        AND "groupId" = ${job.groupId}
+    `;
   }
 
   private getLockTimeoutMs() {
