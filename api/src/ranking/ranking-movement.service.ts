@@ -191,16 +191,14 @@ export class RankingMovementService {
     tx: Prisma.TransactionClient,
     groupId: string,
   ) {
-    await tx.$executeRaw`
-      DELETE FROM "RankingMovement"
-      WHERE "groupId" = ${groupId}
-    `;
+    await tx.rankingMovement.deleteMany({
+      where: { groupId },
+    });
 
-    await tx.$executeRaw`
-      UPDATE "GroupMember"
-      SET "currentRank" = NULL
-      WHERE "groupId" = ${groupId}
-    `;
+    await tx.groupMember.updateMany({
+      where: { groupId },
+      data: { currentRank: null },
+    });
   }
 
   private buildRankingState(ratingByMemberId: Map<string, number>) {
@@ -342,17 +340,19 @@ export class RankingMovementService {
     finalRanking: Map<string, RankingMemberState>,
   ) {
     for (const member of finalRanking.values()) {
-      await tx.$executeRaw`
-        UPDATE "RankingMovement"
-        SET
-          "isVisible" = false,
-          "invalidatedAt" = NOW()
-        WHERE "groupId" = ${groupId}
-          AND "groupMemberId" = ${member.id}
-          AND "isVisible" = true
-          AND "invalidatedAt" IS NULL
-          AND "currentRank" <> ${member.rank}
-      `;
+      await tx.rankingMovement.updateMany({
+        where: {
+          groupId,
+          groupMemberId: member.id,
+          isVisible: true,
+          invalidatedAt: null,
+          currentRank: { not: member.rank },
+        },
+        data: {
+          isVisible: false,
+          invalidatedAt: new Date(),
+        },
+      });
     }
   }
 
@@ -370,47 +370,32 @@ export class RankingMovementService {
     groupMemberId: string,
     currentRank: number,
   ) {
-    await tx.$executeRaw`
-      UPDATE "GroupMember"
-      SET "currentRank" = ${currentRank}
-      WHERE "id" = ${groupMemberId}
-    `;
+    await tx.groupMember.update({
+      where: { id: groupMemberId },
+      data: { currentRank },
+    });
   }
 
   private async createRankingMovement(
     tx: Prisma.TransactionClient,
     movement: RankingMovementToPersist,
   ) {
-    await tx.$executeRaw`
-      INSERT INTO "RankingMovement" (
-        "id",
-        "groupId",
-        "groupMemberId",
-        "matchId",
-        "direction",
-        "positions",
-        "previousRank",
-        "currentRank",
-        "previousRating",
-        "currentRating",
-        "passedGroupMemberIds",
-        "isVisible",
-        "occurredAt"
-      ) VALUES (
-        ${movement.id},
-        ${movement.groupId},
-        ${movement.groupMemberId},
-        ${movement.matchId},
-        ${movement.direction}::"RankingMovementDirection",
-        ${movement.positions},
-        ${movement.previousRank},
-        ${movement.currentRank},
-        ${movement.previousRating},
-        ${movement.currentRating},
-        ${JSON.stringify(movement.passedGroupMemberIds)}::jsonb,
-        ${movement.isVisible},
-        ${movement.occurredAt}
-      )
-    `;
+    await tx.rankingMovement.create({
+      data: {
+        id: movement.id,
+        groupId: movement.groupId,
+        groupMemberId: movement.groupMemberId,
+        matchId: movement.matchId,
+        direction: movement.direction,
+        positions: movement.positions,
+        previousRank: movement.previousRank,
+        currentRank: movement.currentRank,
+        previousRating: movement.previousRating,
+        currentRating: movement.currentRating,
+        passedGroupMemberIds: movement.passedGroupMemberIds,
+        isVisible: movement.isVisible,
+        occurredAt: movement.occurredAt,
+      },
+    });
   }
 }
