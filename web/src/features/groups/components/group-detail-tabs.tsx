@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { ArrowUp } from 'lucide-react';
+import { ArrowDown, ArrowUp } from 'lucide-react';
 import type { GroupMember, Match, RankingMovement } from '@/types/api';
 import { Card, CardContent } from '@/components/ui/card';
 import { MatchesList } from '@/features/matches/components/matches-list';
@@ -133,19 +133,25 @@ function RankingTab({ ranking }: { ranking: GroupMember[] }) {
 }
 
 function RankingMovementBadge({ movement }: { movement?: RankingMovement | null }) {
-  if (!movement || movement.direction !== 'UP') {
+  if (!movement) {
     return null;
   }
 
-  const label = `Subiu ${movement.positions} ${movement.positions === 1 ? 'posição' : 'posições'} no último ranking`;
+  const isUp = movement.direction === 'UP';
+  const Icon = isUp ? ArrowUp : ArrowDown;
+  const verb = isUp ? 'Subiu' : 'Caiu';
+  const label = `${verb} ${movement.positions} ${movement.positions === 1 ? 'posição' : 'posições'} no ranking`;
+  const className = isUp
+    ? 'bg-emerald-500/12 text-emerald-700 dark:text-emerald-300'
+    : 'bg-rose-500/12 text-rose-700 dark:text-rose-300';
 
   return (
     <span
       aria-label={label}
       title={label}
-      className="inline-flex shrink-0 items-center gap-0.5 rounded-full bg-emerald-500/12 px-2 py-0.5 text-[11px] font-bold leading-none text-emerald-700 dark:text-emerald-300"
+      className={`inline-flex shrink-0 items-center gap-0.5 rounded-full px-2 py-0.5 text-[11px] font-bold leading-none ${className}`}
     >
-      <ArrowUp className="h-3 w-3" aria-hidden="true" />
+      <Icon className="h-3 w-3" aria-hidden="true" />
       {movement.positions}
     </span>
   );
