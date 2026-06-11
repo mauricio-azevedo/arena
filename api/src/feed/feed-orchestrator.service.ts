@@ -12,6 +12,7 @@ import type { MatchBlowoutFeedInput } from './types/match-blowout-feed-input.typ
 import { MatchCloseFeedItemGenerator } from './generators/match-close-feed-item.generator';
 import type { MatchCloseFeedInput } from './types/match-close-feed-input.type';
 import { RankingMovementFeedItemGenerator } from './generators/ranking-movement-feed-item.generator';
+import type { FeedItemDraft } from './types/feed-item-draft.type';
 import type { RankingMovementFeedInput } from './types/ranking-movement-feed-input.type';
 
 const RANKING_MOVEMENT_FEED_ITEM_TYPE = 'RANKING_MOVEMENT' as FeedItemType;
@@ -80,7 +81,7 @@ export class FeedOrchestratorService {
   ) {
     const drafts = inputs
       .map((input) => this.rankingMovementGenerator.generate(input))
-      .filter((draft): draft is NonNullable<typeof draft> => Boolean(draft));
+      .filter((draft): draft is FeedItemDraft => Boolean(draft));
     const matchIds = drafts
       .map((draft) => draft.matchId)
       .filter((matchId): matchId is string => Boolean(matchId));
@@ -110,10 +111,7 @@ export class FeedOrchestratorService {
     };
   }
 
-  private upsertGeneratedItem(
-    draft: NonNullable<ReturnType<RankingMovementFeedItemGenerator['generate']>>,
-    tx: PrismaClientLike,
-  ) {
+  private upsertGeneratedItem(draft: FeedItemDraft, tx: PrismaClientLike) {
     if (!draft.matchId) {
       throw new Error('Synchronized feed item requires matchId');
     }
