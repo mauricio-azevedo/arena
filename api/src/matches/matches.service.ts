@@ -15,6 +15,7 @@ type MatchBody = {
   teamAPlayer1Id: string;
   teamAPlayer2Id: string;
   teamBPlayer1Id: string;
+  teamBPlayer2Id: string;
   gamesA: number;
   gamesB: number;
   playedAt?: string;
