@@ -3,11 +3,10 @@ import { MatchesService } from './matches.service';
 import { MatchesController } from './matches.controller';
 import { PrismaModule } from '../prisma/prisma.module';
 import { AuthModule } from '../auth/auth.module';
-import { FeedModule } from '../feed/feed.module';
-import { RankingModule } from '../ranking/ranking.module';
+import { ProcessingModule } from '../processing/processing.module';
 
 @Module({
-  imports: [PrismaModule, AuthModule, FeedModule, RankingModule],
+  imports: [PrismaModule, AuthModule, ProcessingModule],
   controllers: [MatchesController],
   providers: [MatchesService],
 })
