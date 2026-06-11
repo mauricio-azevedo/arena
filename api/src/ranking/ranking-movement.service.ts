@@ -41,6 +41,15 @@ type RankingMovementToPersist = {
   isVisible: boolean;
 };
 
+type MatchParticipation = {
+  matchId: string;
+  participatingMemberIds: Set<string>;
+};
+
+type MatchIdRow = {
+  id: string;
+};
+
 @Injectable()
 export class RankingMovementService {
   private readonly logger = new Logger(RankingMovementService.name);
@@ -63,6 +72,29 @@ export class RankingMovementService {
           matchId,
           strategy: 'incremental',
           reason: 'NO_ACTIVE_MEMBERS',
+          durationMs: Date.now() - startedAt,
+        }),
+      );
+      return;
+    }
+
+    const activeMatchRows = await tx.$queryRaw<MatchIdRow[]>`
+      SELECT "id"
+      FROM "Match"
+      WHERE "id" = ${matchId}
+        AND "groupId" = ${groupId}
+        AND "deletedAt" IS NULL
+      LIMIT 1
+    `;
+
+    if (activeMatchRows.length === 0) {
+      this.logger.warn(
+        structuredLog('ranking_projection.skipped', {
+          groupId,
+          matchId,
+          strategy: 'incremental',
+          reason: 'MATCH_NOT_FOUND',
+          activeMembersCount: activeMembers.length,
           durationMs: Date.now() - startedAt,
         }),
       );
@@ -135,6 +167,7 @@ export class RankingMovementService {
     });
 
     await this.invalidateVisibleMovementsChangedByRanking(tx, groupId, afterRanking);
+    await this.invalidateVisibleMovementsForParticipants(tx, groupId, participatingMemberIds);
 
     for (const movement of movements) {
       movement.isVisible = true;
@@ -178,29 +211,39 @@ export class RankingMovementService {
       return;
     }
 
-    const matches = await tx.match.findMany({
-      where: { groupId },
-      orderBy: [{ playedAt: 'asc' }, { createdAt: 'asc' }],
-      select: {
-        id: true,
-        playedAt: true,
-        createdAt: true,
-        players: {
-          orderBy: [{ team: 'asc' }, { position: 'asc' }],
+    const activeMatchIds = await tx.$queryRaw<MatchIdRow[]>`
+      SELECT "id"
+      FROM "Match"
+      WHERE "groupId" = ${groupId}
+        AND "deletedAt" IS NULL
+      ORDER BY "playedAt" ASC, "createdAt" ASC
+    `;
+    const matches = activeMatchIds.length
+      ? await tx.match.findMany({
+          where: { id: { in: activeMatchIds.map((match) => match.id) } },
+          orderBy: [{ playedAt: 'asc' }, { createdAt: 'asc' }],
           select: {
-            groupMemberId: true,
-            team: true,
-            position: true,
-            ratingBefore: true,
-            ratingAfter: true,
+            id: true,
+            playedAt: true,
+            createdAt: true,
+            players: {
+              orderBy: [{ team: 'asc' }, { position: 'asc' }],
+              select: {
+                groupMemberId: true,
+                team: true,
+                position: true,
+                ratingBefore: true,
+                ratingAfter: true,
+              },
+            },
           },
-        },
-      },
-    });
+        })
+      : [];
 
     const memberIds = new Set(activeMembers.map((member) => member.id));
     let ratingByMemberId = new Map(activeMembers.map((member) => [member.id, 1000]));
     const movements: RankingMovementToPersist[] = [];
+    const matchParticipations: MatchParticipation[] = [];
 
     for (const match of matches) {
       const beforeRanking = this.buildRankingState(ratingByMemberId);
@@ -226,11 +269,19 @@ export class RankingMovementService {
           afterRanking,
         }),
       );
+      matchParticipations.push({
+        matchId: match.id,
+        participatingMemberIds,
+      });
       ratingByMemberId = nextRatingByMemberId;
     }
 
     const finalRanking = this.buildRankingState(ratingByMemberId);
-    const visibleMovementIds = this.getVisibleMovementIds(movements, finalRanking);
+    const visibleMovementIds = this.getVisibleMovementIds(
+      movements,
+      matchParticipations,
+      finalRanking,
+    );
 
     this.logger.log(
       structuredLog('ranking_projection.movements_detected', {
@@ -399,19 +450,30 @@ export class RankingMovementService {
 
   private getVisibleMovementIds(
     movements: RankingMovementToPersist[],
+    matchParticipations: MatchParticipation[],
     finalRanking: Map<string, RankingMemberState>,
   ) {
     const latestVisibleMovementByMemberId = new Map<string, RankingMovementToPersist>();
+    const movementsByMatchId = new Map<string, RankingMovementToPersist[]>();
 
     for (const movement of movements) {
-      const finalMemberRank = finalRanking.get(movement.groupMemberId)?.rank;
+      const matchMovements = movementsByMatchId.get(movement.matchId) ?? [];
+      matchMovements.push(movement);
+      movementsByMatchId.set(movement.matchId, matchMovements);
+    }
 
-      if (finalMemberRank !== movement.currentRank) {
-        latestVisibleMovementByMemberId.delete(movement.groupMemberId);
-        continue;
+    for (const participation of matchParticipations) {
+      for (const groupMemberId of participation.participatingMemberIds) {
+        latestVisibleMovementByMemberId.delete(groupMemberId);
       }
 
-      latestVisibleMovementByMemberId.set(movement.groupMemberId, movement);
+      for (const movement of movementsByMatchId.get(participation.matchId) ?? []) {
+        const finalMemberRank = finalRanking.get(movement.groupMemberId)?.rank;
+
+        if (finalMemberRank === movement.currentRank) {
+          latestVisibleMovementByMemberId.set(movement.groupMemberId, movement);
+        }
+      }
     }
 
     return new Set(
@@ -439,6 +501,29 @@ export class RankingMovementService {
         },
       });
     }
+  }
+
+  private async invalidateVisibleMovementsForParticipants(
+    tx: Prisma.TransactionClient,
+    groupId: string,
+    participatingMemberIds: Set<string>,
+  ) {
+    if (participatingMemberIds.size === 0) {
+      return;
+    }
+
+    await tx.rankingMovement.updateMany({
+      where: {
+        groupId,
+        groupMemberId: { in: [...participatingMemberIds] },
+        isVisible: true,
+        invalidatedAt: null,
+      },
+      data: {
+        isVisible: false,
+        invalidatedAt: new Date(),
+      },
+    });
   }
 
   private async updateCurrentRanks(
