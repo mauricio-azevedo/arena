@@ -13,6 +13,10 @@ type RatingState = {
   rating: number;
 };
 
+type MatchIdRow = {
+  id: string;
+};
+
 @Injectable()
 export class RatingProjectionService {
   private readonly logger = new Logger(RatingProjectionService.name);
@@ -44,19 +48,48 @@ export class RatingProjectionService {
       ]),
     );
 
-    const matches = await tx.match.findMany({
-      where: { groupId },
-      orderBy: [{ playedAt: 'asc' }, { createdAt: 'asc' }],
-      include: {
-        players: {
-          orderBy: [{ team: 'asc' }, { position: 'asc' }],
-        },
-      },
-    });
+    const activeMatchIds = await tx.$queryRaw<MatchIdRow[]>`
+      SELECT "id"
+      FROM "Match"
+      WHERE "groupId" = ${groupId}
+        AND "deletedAt" IS NULL
+      ORDER BY "playedAt" ASC, "createdAt" ASC
+    `;
+    const matches = activeMatchIds.length
+      ? await tx.match.findMany({
+          where: {
+            id: { in: activeMatchIds.map((match) => match.id) },
+          },
+          orderBy: [{ playedAt: 'asc' }, { createdAt: 'asc' }],
+          include: {
+            players: {
+              orderBy: [{ team: 'asc' }, { position: 'asc' }],
+            },
+          },
+        })
+      : [];
+
+    await tx.$executeRaw`
+      UPDATE "Match"
+      SET "processingStatus" = 'PROCESSING', "processingError" = NULL
+      WHERE "groupId" = ${groupId}
+        AND "processingStatus" IN ('PENDING', 'FAILED')
+    `;
 
     for (const match of matches) {
       await this.applyMatchRating(tx, match, membersById);
     }
+
+    await tx.$executeRaw`
+      UPDATE "Match"
+      SET
+        "processingStatus" = 'PROCESSED',
+        "processedAt" = NOW(),
+        "processingError" = NULL
+      WHERE "groupId" = ${groupId}
+        AND "deletedAt" IS NOT NULL
+        AND "processingStatus" IN ('PENDING', 'PROCESSING', 'FAILED')
+    `;
 
     for (const member of membersById.values()) {
       await tx.groupMember.update({
@@ -180,6 +213,15 @@ export class RatingProjectionService {
         ratingAlgorithm: RATING_ALGORITHM,
       },
     });
+
+    await tx.$executeRaw`
+      UPDATE "Match"
+      SET
+        "processingStatus" = 'PROCESSED',
+        "processedAt" = NOW(),
+        "processingError" = NULL
+      WHERE "id" = ${match.id}
+    `;
   }
 
   private getPlayerBeforeRating(
