@@ -15,7 +15,6 @@ type MatchBody = {
   teamAPlayer1Id: string;
   teamAPlayer2Id: string;
   teamBPlayer1Id: string;
-  teamBPlayer2Id: string;
   gamesA: number;
   gamesB: number;
   playedAt?: string;
@@ -144,11 +143,12 @@ export class MatchesService {
 
       if (ratingSnapshot) {
         await this.updateGroupMemberRatings(tx, ratingSnapshot.updatedMembers);
+        await this.rankingMovements.syncLatestMatchRankingState(tx, groupId, match.id);
       } else {
         await this.recalculateRatings(tx, groupId);
+        await this.rankingMovements.syncGroupRankingState(tx, groupId);
       }
 
-      await this.rankingMovements.syncGroupRankingState(tx, groupId);
       await this.syncMatchFeedItems(tx, groupId, match.id, body, membersById, playedAt);
 
       return tx.match.findUnique({
