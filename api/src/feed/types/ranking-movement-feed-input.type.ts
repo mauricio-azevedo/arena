@@ -1,4 +1,6 @@
-import type { MatchTeam, RankingMovementDirection } from '../../generated/prisma/enums';
+import type { MatchTeam } from '../../generated/prisma/enums';
+
+export type RankingMovementFeedDirection = 'UP' | 'DOWN';
 
 export type RankingMovementFeedPlayer = {
   groupMemberId: string;
@@ -11,7 +13,7 @@ export type RankingMovementFeedAffectedMember = RankingMovementFeedPlayer & {
 };
 
 export type RankingMovementFeedMovement = RankingMovementFeedPlayer & {
-  direction: RankingMovementDirection;
+  direction: RankingMovementFeedDirection;
   positions: number;
   previousRank: number;
   currentRank: number;
