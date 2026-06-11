@@ -41,4 +41,4 @@ CREATE INDEX "ProcessingJob_lockedBy_idx" ON "ProcessingJob"("lockedBy");
 ALTER TABLE "ProcessingJob" ADD CONSTRAINT "ProcessingJob_groupId_fkey" FOREIGN KEY ("groupId") REFERENCES "Group"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "ProcessingJob" ADD CONSTRAINT "ProcessingJob_matchId_groupId_fkey" FOREIGN KEY ("matchId", "groupId") REFERENCES "Match"("id", "groupId") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "ProcessingJob" ADD CONSTRAINT "ProcessingJob_matchId_groupId_fkey" FOREIGN KEY ("matchId", "groupId") REFERENCES "Match"("id", "groupId") ON DELETE CASCADE ON UPDATE CASCADE;
