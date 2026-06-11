@@ -9,7 +9,7 @@ type EnqueueJobInput = {
   type: ProcessingJobType;
   groupId: string;
   matchId?: string | null;
-  payload?: Record<string, unknown>;
+  payload?: Prisma.InputJsonValue;
   availableAt?: Date;
 };
 
