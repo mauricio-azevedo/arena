@@ -107,7 +107,7 @@ export class RankingMovementService {
 
     for (const movement of movements) {
       movement.isVisible = true;
-      await this.createRankingMovement(tx, movement);
+      await this.upsertRankingMovement(tx, movement);
     }
 
     await this.updateCurrentRanks(tx, afterRanking);
@@ -181,7 +181,7 @@ export class RankingMovementService {
 
     for (const movement of movements) {
       movement.isVisible = visibleMovementIds.has(movement.id);
-      await this.createRankingMovement(tx, movement);
+      await this.upsertRankingMovement(tx, movement);
     }
 
     await this.updateCurrentRanks(tx, finalRanking);
@@ -376,12 +376,18 @@ export class RankingMovementService {
     });
   }
 
-  private async createRankingMovement(
+  private async upsertRankingMovement(
     tx: Prisma.TransactionClient,
     movement: RankingMovementToPersist,
   ) {
-    await tx.rankingMovement.create({
-      data: {
+    await tx.rankingMovement.upsert({
+      where: {
+        matchId_groupMemberId: {
+          matchId: movement.matchId,
+          groupMemberId: movement.groupMemberId,
+        },
+      },
+      create: {
         id: movement.id,
         groupId: movement.groupId,
         groupMemberId: movement.groupMemberId,
@@ -394,6 +400,19 @@ export class RankingMovementService {
         currentRating: movement.currentRating,
         passedGroupMemberIds: movement.passedGroupMemberIds,
         isVisible: movement.isVisible,
+        invalidatedAt: movement.isVisible ? null : new Date(),
+        occurredAt: movement.occurredAt,
+      },
+      update: {
+        direction: movement.direction,
+        positions: movement.positions,
+        previousRank: movement.previousRank,
+        currentRank: movement.currentRank,
+        previousRating: movement.previousRating,
+        currentRating: movement.currentRating,
+        passedGroupMemberIds: movement.passedGroupMemberIds,
+        isVisible: movement.isVisible,
+        invalidatedAt: movement.isVisible ? null : new Date(),
         occurredAt: movement.occurredAt,
       },
     });
