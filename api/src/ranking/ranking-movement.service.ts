@@ -114,10 +114,7 @@ export class RankingMovementService {
     }
 
     for (const member of finalRanking.values()) {
-      await tx.groupMember.update({
-        where: { id: member.id },
-        data: { currentRank: member.rank },
-      });
+      await this.updateCurrentRank(tx, member.id, member.rank);
     }
   }
 
@@ -130,10 +127,11 @@ export class RankingMovementService {
       WHERE "groupId" = ${groupId}
     `;
 
-    await tx.groupMember.updateMany({
-      where: { groupId },
-      data: { currentRank: null },
-    });
+    await tx.$executeRaw`
+      UPDATE "GroupMember"
+      SET "currentRank" = NULL
+      WHERE "groupId" = ${groupId}
+    `;
   }
 
   private buildRankingState(ratingByMemberId: Map<string, number>) {
@@ -267,6 +265,18 @@ export class RankingMovementService {
     return new Set(
       [...latestVisibleMovementByMemberId.values()].map((movement) => movement.id),
     );
+  }
+
+  private async updateCurrentRank(
+    tx: Prisma.TransactionClient,
+    groupMemberId: string,
+    currentRank: number,
+  ) {
+    await tx.$executeRaw`
+      UPDATE "GroupMember"
+      SET "currentRank" = ${currentRank}
+      WHERE "id" = ${groupMemberId}
+    `;
   }
 
   private async createRankingMovement(
