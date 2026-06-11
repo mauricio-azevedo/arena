@@ -11,6 +11,10 @@ import { MatchBlowoutFeedItemGenerator } from './generators/match-blowout-feed-i
 import type { MatchBlowoutFeedInput } from './types/match-blowout-feed-input.type';
 import { MatchCloseFeedItemGenerator } from './generators/match-close-feed-item.generator';
 import type { MatchCloseFeedInput } from './types/match-close-feed-input.type';
+import { RankingMovementFeedItemGenerator } from './generators/ranking-movement-feed-item.generator';
+import type { RankingMovementFeedInput } from './types/ranking-movement-feed-input.type';
+
+const RANKING_MOVEMENT_FEED_ITEM_TYPE = 'RANKING_MOVEMENT' as FeedItemType;
 
 type PrismaClientLike = Prisma.TransactionClient | PrismaService;
 
@@ -22,6 +26,7 @@ export class FeedOrchestratorService {
     private readonly memberJoinedGenerator: MemberJoinedFeedItemGenerator,
     private readonly matchBlowoutGenerator: MatchBlowoutFeedItemGenerator,
     private readonly matchCloseGenerator: MatchCloseFeedItemGenerator,
+    private readonly rankingMovementGenerator: RankingMovementFeedItemGenerator,
   ) {}
 
   createGroupCreatedItem(input: GroupCreatedFeedInput, tx?: PrismaClientLike) {
@@ -49,38 +54,7 @@ export class FeedOrchestratorService {
       return null;
     }
 
-    return tx.feedItem.upsert({
-      where: {
-        type_matchId: {
-          type: FeedItemType.MATCH_BLOWOUT,
-          matchId: input.matchId,
-        },
-      },
-      create: {
-        type: draft.type,
-        scope: draft.scope,
-        visibility: draft.visibility,
-        groupId: draft.groupId ?? null,
-        actorUserId: draft.actorUserId ?? null,
-        actorGroupMemberId: draft.actorGroupMemberId ?? null,
-        subjectUserId: draft.subjectUserId ?? null,
-        matchId: draft.matchId ?? null,
-        importanceScore: draft.importanceScore,
-        metadata: draft.metadata,
-        occurredAt: draft.occurredAt,
-      },
-      update: {
-        scope: draft.scope,
-        visibility: draft.visibility,
-        groupId: draft.groupId ?? null,
-        actorUserId: draft.actorUserId ?? null,
-        actorGroupMemberId: draft.actorGroupMemberId ?? null,
-        subjectUserId: draft.subjectUserId ?? null,
-        importanceScore: draft.importanceScore,
-        metadata: draft.metadata,
-        occurredAt: draft.occurredAt,
-      },
-    });
+    return this.upsertGeneratedItem(draft, tx);
   }
 
   async syncMatchCloseItem(input: MatchCloseFeedInput, tx: PrismaClientLike) {
@@ -96,11 +70,59 @@ export class FeedOrchestratorService {
       return null;
     }
 
+    return this.upsertGeneratedItem(draft, tx);
+  }
+
+  async syncGroupRankingMovementItems(
+    groupId: string,
+    inputs: RankingMovementFeedInput[],
+    tx: PrismaClientLike,
+  ) {
+    const drafts = inputs
+      .map((input) => this.rankingMovementGenerator.generate(input))
+      .filter((draft): draft is NonNullable<typeof draft> => Boolean(draft));
+    const matchIds = drafts
+      .map((draft) => draft.matchId)
+      .filter((matchId): matchId is string => Boolean(matchId));
+
+    for (const draft of drafts) {
+      await this.upsertGeneratedItem(draft, tx);
+    }
+
+    const deleteResult = await tx.feedItem.deleteMany({
+      where: {
+        type: RANKING_MOVEMENT_FEED_ITEM_TYPE,
+        groupId,
+        ...(matchIds.length > 0
+          ? {
+              matchId: {
+                notIn: matchIds,
+              },
+            }
+          : {}),
+      },
+    });
+
+    return {
+      upsertedCount: drafts.length,
+      deletedCount: deleteResult.count,
+      eligibleMatchCount: matchIds.length,
+    };
+  }
+
+  private upsertGeneratedItem(
+    draft: NonNullable<ReturnType<RankingMovementFeedItemGenerator['generate']>>,
+    tx: PrismaClientLike,
+  ) {
+    if (!draft.matchId) {
+      throw new Error('Synchronized feed item requires matchId');
+    }
+
     return tx.feedItem.upsert({
       where: {
         type_matchId: {
-          type: FeedItemType.MATCH_CLOSE,
-          matchId: input.matchId,
+          type: draft.type,
+          matchId: draft.matchId,
         },
       },
       create: {
