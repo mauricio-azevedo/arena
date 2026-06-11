@@ -48,6 +48,7 @@ GROUP_CREATED
 MEMBER_JOINED
 MATCH_BLOWOUT
 MATCH_CLOSE
+RANKING_MOVEMENT
 ```
 
 ### `scope`
@@ -150,7 +151,7 @@ Responsibilities:
 - call event-specific generators;
 - create/upsert/delete feed items as needed;
 - keep domain modules from knowing persistence details;
-- provide event lifecycle methods such as `createMemberJoinedItem`, `syncMatchBlowoutItem`, or `syncMatchCloseItem`.
+- provide event lifecycle methods such as `createMemberJoinedItem`, `syncMatchBlowoutItem`, `syncMatchCloseItem`, and `syncGroupRankingMovementItems`.
 
 ### Generators
 
@@ -163,6 +164,7 @@ group-created-feed-item.generator.ts
 member-joined-feed-item.generator.ts
 match-blowout-feed-item.generator.ts
 match-close-feed-item.generator.ts
+ranking-movement-feed-item.generator.ts
 ```
 
 A generator should:
@@ -185,6 +187,7 @@ group-created-feed-input.type.ts
 member-joined-feed-input.type.ts
 match-blowout-feed-input.type.ts
 match-close-feed-input.type.ts
+ranking-movement-feed-input.type.ts
 ```
 
 ## Frontend components
@@ -218,7 +221,8 @@ Current behavior:
 
 - generic group/social events use the base card style;
 - `MATCH_BLOWOUT` uses a dedicated `Atropelo!` card;
-- `MATCH_CLOSE` uses a dedicated `No detalhe!` card.
+- `MATCH_CLOSE` uses a dedicated `No detalhe!` card;
+- `RANKING_MOVEMENT` delegates to a dedicated ranking movement card.
 
 As the feed grows, split large event renderers into smaller components when `FeedItemCard` becomes hard to read.
 
@@ -253,6 +257,7 @@ Examples:
 ```txt
 MATCH_BLOWOUT
 MATCH_CLOSE
+RANKING_MOVEMENT
 ```
 
 Synchronized events should support:
@@ -262,22 +267,40 @@ Synchronized events should support:
 - delete when rule becomes false;
 - cascade delete when source record is deleted.
 
+`RANKING_MOVEMENT` is synchronized as a deterministic group projection because a later match can invalidate an older visible movement. After ranking projection completes, the group ranking movement feed projection recreates the set of eligible match cards and deletes stale ones.
+
 ## Match-derived event flow
 
+Match writes are intentionally split from heavier feed/ranking projections through processing jobs.
+
 ```txt
-MatchesService.create/update
+MatchesService.create/update/delete
 → validate match body
-→ fetch group members
-→ write Match / MatchPlayers
-→ update or recalculate ratings
-→ FeedOrchestratorService.syncMatchBlowoutItem(...)
-→ FeedOrchestratorService.syncMatchCloseItem(...)
-→ generators return drafts or null
-→ orchestrator upserts or deletes FeedItems
-→ transaction commits
+→ write Match / MatchPlayers and rating changes needed for the write path
+→ enqueue ProcessingJob
+→ HTTP response returns
+→ ProcessingJobRunner claims job
+→ RankingMovementService syncs ranking movement state
+→ FeedOrchestratorService syncs match-specific feed events
+→ FeedOrchestratorService syncs group ranking movement feed projection
+→ job marked DONE or retried
 ```
 
-The feed sync should stay inside the same transaction as the match write when the event must be consistent with match state.
+For `MATCH_CREATED`/`MATCH_UPDATED`, feed projection includes:
+
+```txt
+syncMatchBlowoutItem(match)
+syncMatchCloseItem(match)
+syncGroupRankingMovementItems(group)
+```
+
+For `MATCH_DELETED`/`GROUP_RANKING_REBUILD`, feed projection includes:
+
+```txt
+syncGroupRankingMovementItems(group)
+```
+
+This keeps ranking movement feed cards consistent even when old movements are invalidated by later matches or by a full rebuild.
 
 ## Ordering and scoring
 
@@ -308,7 +331,7 @@ For match-derived events, default to `GROUP_MEMBERS` unless there is an explicit
 
 ## Failure behavior
 
-Because feed events are persisted as part of domain transactions, feed write failure should normally fail the whole transaction when the feed item is required for consistency.
+Because feed events are persisted as part of domain transactions, feed write failure should normally fail the processing job transaction when the feed item is required for consistency.
 
 For future non-critical events, the product may choose eventual consistency, but that should be an explicit architecture decision.
 
@@ -320,7 +343,7 @@ When adding a new event:
 2. Add backend input type and generator.
 3. Register generator in `FeedModule`.
 4. Add an orchestration method.
-5. Call from the source domain service.
+5. Call from the source domain service or processing job runner.
 6. Add frontend metadata type and rendering.
 7. Add QA cases.
 8. Update docs.
