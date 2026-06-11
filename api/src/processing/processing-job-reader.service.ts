@@ -53,4 +53,35 @@ export class ProcessingJobReaderService {
       jobs,
     };
   }
+
+  async retryFailedGroupJobs(groupId: string) {
+    await this.ensureGroupExists(groupId);
+
+    const result = await this.prisma.processingJob.updateMany({
+      where: {
+        groupId,
+        status: 'FAILED',
+      },
+      data: {
+        status: 'PENDING',
+        availableAt: new Date(),
+        lockedAt: null,
+        lockedBy: null,
+        lastError: null,
+      },
+    });
+
+    return { retriedCount: result.count };
+  }
+
+  private async ensureGroupExists(groupId: string) {
+    const group = await this.prisma.group.findUnique({
+      where: { id: groupId },
+      select: { id: true },
+    });
+
+    if (!group) {
+      throw new NotFoundException('Group not found');
+    }
+  }
 }
