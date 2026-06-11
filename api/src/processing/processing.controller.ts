@@ -1,4 +1,5 @@
-import { Controller, Get, Param, Post } from '@nestjs/common';
+import { Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { ProcessingJobReaderService } from './processing-job-reader.service';
 
 @Controller('groups/:groupId/processing-jobs')
@@ -11,6 +12,7 @@ export class ProcessingController {
   }
 
   @Post('retry-failed')
+  @UseGuards(JwtAuthGuard)
   retryFailedGroupJobs(@Param('groupId') groupId: string) {
     return this.reader.retryFailedGroupJobs(groupId);
   }
