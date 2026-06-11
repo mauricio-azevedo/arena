@@ -10,6 +10,7 @@ import { getGroupInitials } from '../helpers/feed-item-style.helper';
 import { formatFeedItemTime } from '../helpers/feed-item-time.helper';
 import { getFeedItemHref } from '@/features/feed/helpers/feed-item-link.helper';
 import { UserNameLink } from '@/features/users/components/user-name-link';
+import { RankingMovementFeedCard } from './ranking-movement-feed-card';
 
 type Props = {
   item: FeedItem;
@@ -28,6 +29,10 @@ export function FeedItemCard({ item }: Props) {
 
   if (item.type === 'MATCH_CLOSE') {
     return <CloseMatchFeedCard item={item} />;
+  }
+
+  if (item.type === 'RANKING_MOVEMENT') {
+    return <RankingMovementFeedCard item={item} />;
   }
 
   const title = item.group?.name ?? 'Arena';
