@@ -37,7 +37,8 @@ export const FeedItemType = {
   MEMBER_JOINED: 'MEMBER_JOINED',
   MATCH_CLOSE: 'MATCH_CLOSE',
   MATCH_BLOWOUT: 'MATCH_BLOWOUT',
-  UPSET_WIN: 'UPSET_WIN'
+  UPSET_WIN: 'UPSET_WIN',
+  RANKING_MOVEMENT: 'RANKING_MOVEMENT'
 } as const
 
 export type FeedItemType = (typeof FeedItemType)[keyof typeof FeedItemType]
