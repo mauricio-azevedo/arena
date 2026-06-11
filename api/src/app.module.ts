@@ -9,19 +9,9 @@ import { MeModule } from './me/me.module';
 import { MembersModule } from './members/members.module';
 import { FeedModule } from './feed/feed.module';
 import { UsersModule } from './users/users.module';
+import { ProcessingModule } from './processing/processing.module';
 
 @Module({
-  imports: [
-    PrismaModule,
-    GroupsModule,
-    MembersModule,
-    MatchesModule,
-    RankingModule,
-    AuthModule,
-    GroupInvitesModule,
-    MeModule,
-    FeedModule,
-    UsersModule,
-  ],
+  imports: [PrismaModule, GroupsModule, MembersModule, MatchesModule, RankingModule, AuthModule, GroupInvitesModule, MeModule, FeedModule, UsersModule, ProcessingModule],
 })
 export class AppModule {}
