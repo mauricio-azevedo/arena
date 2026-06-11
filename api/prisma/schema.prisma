@@ -22,6 +22,11 @@ enum MatchTeam {
   TEAM_B
 }
 
+enum RankingMovementDirection {
+  UP
+  DOWN
+}
+
 enum FeedItemType {
   GROUP_CREATED
   MEMBER_JOINED
@@ -73,10 +78,11 @@ model Group {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  members   GroupMember[]
-  matches   Match[]
-  invites   GroupInvite[]
-  feedItems FeedItem[]
+  members          GroupMember[]
+  matches          Match[]
+  invites          GroupInvite[]
+  feedItems        FeedItem[]
+  rankingMovements RankingMovement[]
 
   @@index([visibility, createdAt])
   @@index([name])
@@ -123,6 +129,7 @@ model GroupMember {
   ratingMu         Float?
   ratingSigma      Float?
   ratingAlgorithm  String @default("BEACH_ELO_V1")
+  currentRank      Int?
 
   role GroupMemberRole @default(MEMBER)
 
@@ -131,14 +138,16 @@ model GroupMember {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  matchPlayers   MatchPlayer[]
-  actorFeedItems FeedItem[]    @relation("FeedItemActorGroupMember")
+  matchPlayers          MatchPlayer[]
+  actorFeedItems        FeedItem[]          @relation("FeedItemActorGroupMember")
+  rankingMovements      RankingMovement[]
 
   @@unique([groupId, userId])
   @@unique([id, groupId])
   @@index([groupId])
   @@index([userId])
   @@index([groupId, rating])
+  @@index([groupId, currentRank, rating])
   @@index([groupId, role])
 }
 
@@ -169,8 +178,9 @@ model Match {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  players   MatchPlayer[]
-  feedItems FeedItem[]
+  players          MatchPlayer[]
+  feedItems        FeedItem[]
+  rankingMovements RankingMovement[]
 
   @@unique([id, groupId])
   @@index([groupId])
@@ -220,6 +230,42 @@ model MatchPlayer {
   @@index([groupId, groupMemberId, playedAt])
   @@index([groupMemberId])
   @@index([groupMemberId, playedAt])
+}
+
+model RankingMovement {
+  id String @id @default(uuid())
+
+  groupId String
+  group   Group  @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  groupMemberId String
+  groupMember   GroupMember @relation(fields: [groupMemberId, groupId], references: [id, groupId], onDelete: Cascade)
+
+  matchId String
+  match   Match  @relation(fields: [matchId, groupId], references: [id, groupId], onDelete: Cascade)
+
+  direction RankingMovementDirection
+  positions Int
+
+  previousRank Int
+  currentRank  Int
+
+  previousRating Float
+  currentRating  Float
+
+  passedGroupMemberIds Json @default("[]")
+
+  isVisible     Boolean   @default(false)
+  occurredAt    DateTime
+  invalidatedAt DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@unique([matchId, groupMemberId])
+  @@index([groupId, occurredAt])
+  @@index([groupMemberId, occurredAt])
+  @@index([matchId])
+  @@index([groupId, isVisible])
 }
 
 model FeedItem {
