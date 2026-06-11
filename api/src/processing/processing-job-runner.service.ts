@@ -5,6 +5,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { FeedOrchestratorService } from '../feed/feed-orchestrator.service';
 import { RankingMovementService } from '../ranking/ranking-movement.service';
 import { MatchTeam } from '../generated/prisma/enums';
+import { errorLogFields, structuredLog } from '../observability/structured-log';
 import type { ProcessingJob } from './processing-job.types';
 
 const DEFAULT_LOCK_TIMEOUT_MS = 60_000;
@@ -43,7 +44,7 @@ export class ProcessingJobRunnerService {
   private async releaseStaleProcessingJobs() {
     const staleBefore = new Date(Date.now() - this.getLockTimeoutMs());
 
-    await this.prisma.processingJob.updateMany({
+    const result = await this.prisma.processingJob.updateMany({
       where: {
         status: 'PROCESSING',
         lockedAt: { lt: staleBefore },
@@ -56,6 +57,16 @@ export class ProcessingJobRunnerService {
         lastError: 'Released stale processing lock',
       },
     });
+
+    if (result.count > 0) {
+      this.logger.warn(
+        structuredLog('processing_job.stale_locks_released', {
+          releasedCount: result.count,
+          staleBefore: staleBefore.toISOString(),
+          workerId: this.workerId,
+        }),
+      );
+    }
   }
 
   private async claimNextJob() {
@@ -94,19 +105,58 @@ export class ProcessingJobRunnerService {
         "updatedAt"
     `;
 
-    return jobs[0] ?? null;
+    const job = jobs[0] ?? null;
+
+    if (job) {
+      this.logger.log(
+        structuredLog('processing_job.claimed', {
+          jobId: job.id,
+          jobType: job.type,
+          jobStatus: job.status,
+          groupId: job.groupId,
+          matchId: job.matchId,
+          attemptCount: job.attemptCount,
+          maxAttempts: job.maxAttempts,
+          workerId: this.workerId,
+        }),
+      );
+    }
+
+    return job;
   }
 
   private async runClaimedJob(job: ProcessingJob) {
+    const startedAt = Date.now();
+
     try {
       await this.processJob(job);
       await this.markDone(job.id);
+      this.logger.log(
+        structuredLog('processing_job.completed', {
+          jobId: job.id,
+          jobType: job.type,
+          groupId: job.groupId,
+          matchId: job.matchId,
+          workerId: this.workerId,
+          durationMs: Date.now() - startedAt,
+        }),
+      );
     } catch (error) {
-      await this.markFailedOrRetry(job, error);
+      await this.markFailedOrRetry(job, error, Date.now() - startedAt);
     }
   }
 
   private async processJob(job: ProcessingJob) {
+    this.logger.log(
+      structuredLog('processing_job.started', {
+        jobId: job.id,
+        jobType: job.type,
+        groupId: job.groupId,
+        matchId: job.matchId,
+        workerId: this.workerId,
+      }),
+    );
+
     await this.prisma.$transaction(async (tx) => {
       switch (job.type) {
         case 'MATCH_CREATED':
@@ -132,6 +182,16 @@ export class ProcessingJobRunnerService {
     }
 
     const canProcessIncrementally = await this.isLatestMatch(tx, job.groupId, job.matchId);
+
+    this.logger.log(
+      structuredLog('processing_job.match_projection_strategy_selected', {
+        jobId: job.id,
+        jobType: job.type,
+        groupId: job.groupId,
+        matchId: job.matchId,
+        strategy: canProcessIncrementally && job.type === 'MATCH_CREATED' ? 'incremental' : 'full_rebuild',
+      }),
+    );
 
     if (canProcessIncrementally && job.type === 'MATCH_CREATED') {
       await this.rankingMovements.syncLatestMatchRankingState(tx, job.groupId, job.matchId);
@@ -183,6 +243,13 @@ export class ProcessingJobRunnerService {
     });
 
     if (!match) {
+      this.logger.warn(
+        structuredLog('feed_projection.skipped', {
+          groupId,
+          matchId,
+          reason: 'MATCH_NOT_FOUND',
+        }),
+      );
       return;
     }
 
@@ -202,10 +269,20 @@ export class ProcessingJobRunnerService {
       .map((player) => this.getMatchFeedPlayer(player.groupMemberId, membersById));
     const teamB = match.players
       .filter((player) => player.team === MatchTeam.TEAM_B)
-      .sort((a, b) => a.position - b.position)
+      .sort((a, b) => b.position - b.position)
       .map((player) => this.getMatchFeedPlayer(player.groupMemberId, membersById));
 
     if (teamA.length !== 2 || teamB.length !== 2 || !match.winnerTeam) {
+      this.logger.warn(
+        structuredLog('feed_projection.skipped', {
+          groupId,
+          matchId,
+          reason: 'INVALID_MATCH_SHAPE',
+          teamASize: teamA.length,
+          teamBSize: teamB.length,
+          hasWinnerTeam: Boolean(match.winnerTeam),
+        }),
+      );
       return;
     }
 
@@ -222,6 +299,14 @@ export class ProcessingJobRunnerService {
 
     await this.feed.syncMatchBlowoutItem(input, tx);
     await this.feed.syncMatchCloseItem(input, tx);
+
+    this.logger.log(
+      structuredLog('feed_projection.completed', {
+        groupId,
+        matchId,
+        winnerTeam: match.winnerTeam,
+      }),
+    );
   }
 
   private getMatchFeedPlayer(
@@ -258,12 +343,24 @@ export class ProcessingJobRunnerService {
     });
   }
 
-  private async markFailedOrRetry(job: ProcessingJob, error: unknown) {
+  private async markFailedOrRetry(job: ProcessingJob, error: unknown, durationMs: number) {
     const message = error instanceof Error ? error.message : 'Unknown processing error';
     const shouldRetry = job.attemptCount < job.maxAttempts;
 
     if (!shouldRetry) {
-      this.logger.error(`Processing job ${job.id} failed permanently: ${message}`);
+      this.logger.error(
+        structuredLog('processing_job.failed_permanently', {
+          jobId: job.id,
+          jobType: job.type,
+          groupId: job.groupId,
+          matchId: job.matchId,
+          attemptCount: job.attemptCount,
+          maxAttempts: job.maxAttempts,
+          workerId: this.workerId,
+          durationMs,
+          ...errorLogFields(error),
+        }),
+      );
       await this.prisma.processingJob.update({
         where: { id: job.id },
         data: {
@@ -277,7 +374,20 @@ export class ProcessingJobRunnerService {
     }
 
     const retryDelaySeconds = Math.min(60, 2 ** job.attemptCount);
-    this.logger.warn(`Processing job ${job.id} failed; retrying in ${retryDelaySeconds}s: ${message}`);
+    this.logger.warn(
+      structuredLog('processing_job.retry_scheduled', {
+        jobId: job.id,
+        jobType: job.type,
+        groupId: job.groupId,
+        matchId: job.matchId,
+        attemptCount: job.attemptCount,
+        maxAttempts: job.maxAttempts,
+        retryDelaySeconds,
+        workerId: this.workerId,
+        durationMs,
+        ...errorLogFields(error),
+      }),
+    );
 
     await this.prisma.processingJob.update({
       where: { id: job.id },
