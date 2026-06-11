@@ -3,4 +3,5 @@ export type FeedItemType =
   | 'MEMBER_JOINED'
   | 'MATCH_CLOSE'
   | 'MATCH_BLOWOUT'
-  | 'UPSET_WIN';
+  | 'UPSET_WIN'
+  | 'RANKING_MOVEMENT';
