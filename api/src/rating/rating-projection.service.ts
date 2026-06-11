@@ -45,10 +45,7 @@ export class RatingProjectionService {
     );
 
     const matches = await tx.match.findMany({
-      where: {
-        groupId,
-        deletedAt: null,
-      },
+      where: { groupId },
       orderBy: [{ playedAt: 'asc' }, { createdAt: 'asc' }],
       include: {
         players: {
@@ -57,33 +54,9 @@ export class RatingProjectionService {
       },
     });
 
-    await tx.match.updateMany({
-      where: {
-        groupId,
-        processingStatus: { in: ['PENDING', 'FAILED'] },
-      },
-      data: {
-        processingStatus: 'PROCESSING',
-        processingError: null,
-      },
-    });
-
     for (const match of matches) {
       await this.applyMatchRating(tx, match, membersById);
     }
-
-    await tx.match.updateMany({
-      where: {
-        groupId,
-        deletedAt: { not: null },
-        processingStatus: { in: ['PENDING', 'PROCESSING', 'FAILED'] },
-      },
-      data: {
-        processingStatus: 'PROCESSED',
-        processedAt: new Date(),
-        processingError: null,
-      },
-    });
 
     for (const member of membersById.values()) {
       await tx.groupMember.update({
@@ -205,9 +178,6 @@ export class RatingProjectionService {
         teamARatingAfter,
         teamBRatingAfter,
         ratingAlgorithm: RATING_ALGORITHM,
-        processingStatus: 'PROCESSED',
-        processedAt: new Date(),
-        processingError: null,
       },
     });
   }
