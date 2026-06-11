@@ -17,8 +17,8 @@ type MatchForRanking = {
   createdAt: Date;
   players: Array<{
     groupMemberId: string;
-    team: MatchTeam;
-    position: number;
+    team?: MatchTeam;
+    position?: number;
     ratingBefore: number;
     ratingAfter: number;
   }>;
@@ -42,6 +42,77 @@ type RankingMovementToPersist = {
 
 @Injectable()
 export class RankingMovementService {
+  async syncLatestMatchRankingState(
+    tx: Prisma.TransactionClient,
+    groupId: string,
+    matchId: string,
+  ) {
+    const activeMembers = await tx.groupMember.findMany({
+      where: { groupId, leftAt: null },
+      select: { id: true, rating: true },
+    });
+
+    if (activeMembers.length === 0) {
+      return;
+    }
+
+    const match = await tx.match.findFirst({
+      where: { id: matchId, groupId },
+      select: {
+        id: true,
+        playedAt: true,
+        createdAt: true,
+        players: {
+          select: {
+            groupMemberId: true,
+            ratingBefore: true,
+            ratingAfter: true,
+          },
+        },
+      },
+    });
+
+    if (!match) {
+      return;
+    }
+
+    const memberIds = new Set(activeMembers.map((member) => member.id));
+    const afterRatingByMemberId = new Map(
+      activeMembers.map((member) => [member.id, member.rating]),
+    );
+    const beforeRatingByMemberId = new Map(afterRatingByMemberId);
+    const participatingMemberIds = new Set<string>();
+
+    for (const player of match.players) {
+      if (!memberIds.has(player.groupMemberId)) {
+        continue;
+      }
+
+      participatingMemberIds.add(player.groupMemberId);
+      beforeRatingByMemberId.set(player.groupMemberId, player.ratingBefore);
+      afterRatingByMemberId.set(player.groupMemberId, player.ratingAfter);
+    }
+
+    const beforeRanking = this.buildRankingState(beforeRatingByMemberId);
+    const afterRanking = this.buildRankingState(afterRatingByMemberId);
+    const movements = this.detectMatchMovements({
+      groupId,
+      match,
+      participatingMemberIds,
+      beforeRanking,
+      afterRanking,
+    });
+
+    await this.invalidateVisibleMovementsChangedByRanking(tx, groupId, afterRanking);
+
+    for (const movement of movements) {
+      movement.isVisible = true;
+      await this.createRankingMovement(tx, movement);
+    }
+
+    await this.updateCurrentRanks(tx, afterRanking);
+  }
+
   async syncGroupRankingState(tx: Prisma.TransactionClient, groupId: string) {
     const activeMembers = await tx.groupMember.findMany({
       where: { groupId, leftAt: null },
@@ -113,9 +184,7 @@ export class RankingMovementService {
       await this.createRankingMovement(tx, movement);
     }
 
-    for (const member of finalRanking.values()) {
-      await this.updateCurrentRank(tx, member.id, member.rank);
-    }
+    await this.updateCurrentRanks(tx, finalRanking);
   }
 
   private async clearGroupRankingMovementState(
@@ -265,6 +334,35 @@ export class RankingMovementService {
     return new Set(
       [...latestVisibleMovementByMemberId.values()].map((movement) => movement.id),
     );
+  }
+
+  private async invalidateVisibleMovementsChangedByRanking(
+    tx: Prisma.TransactionClient,
+    groupId: string,
+    finalRanking: Map<string, RankingMemberState>,
+  ) {
+    for (const member of finalRanking.values()) {
+      await tx.$executeRaw`
+        UPDATE "RankingMovement"
+        SET
+          "isVisible" = false,
+          "invalidatedAt" = NOW()
+        WHERE "groupId" = ${groupId}
+          AND "groupMemberId" = ${member.id}
+          AND "isVisible" = true
+          AND "invalidatedAt" IS NULL
+          AND "currentRank" <> ${member.rank}
+      `;
+    }
+  }
+
+  private async updateCurrentRanks(
+    tx: Prisma.TransactionClient,
+    ranking: Map<string, RankingMemberState>,
+  ) {
+    for (const member of ranking.values()) {
+      await this.updateCurrentRank(tx, member.id, member.rank);
+    }
   }
 
   private async updateCurrentRank(
