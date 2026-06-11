@@ -40,7 +40,7 @@ export class ProcessingJobRunnerService {
     const jobs = await this.prisma.$queryRaw<ProcessingJob[]>`
       UPDATE "ProcessingJob"
       SET
-        "status" = 'PROCESSING'::"ProcessingJobStatus",
+        "status" = 'PROCESSING',
         "lockedAt" = NOW(),
         "lockedBy" = ${this.workerId},
         "attemptCount" = "attemptCount" + 1,
@@ -48,7 +48,7 @@ export class ProcessingJobRunnerService {
       WHERE "id" = (
         SELECT "id"
         FROM "ProcessingJob"
-        WHERE "status" = 'PENDING'::"ProcessingJobStatus"
+        WHERE "status" = 'PENDING'
           AND "availableAt" <= NOW()
         ORDER BY "availableAt" ASC, "createdAt" ASC
         FOR UPDATE SKIP LOCKED
@@ -224,18 +224,16 @@ export class ProcessingJobRunnerService {
   }
 
   private async markDone(jobId: string) {
-    await this.prisma.$executeRaw`
-      UPDATE "ProcessingJob"
-      SET
-        "status" = 'DONE'::"ProcessingJobStatus",
-        "processedAt" = NOW(),
-        "lockedAt" = NULL,
-        "lockedBy" = NULL,
-        "lastError" = NULL,
-        "updatedAt" = NOW()
-      WHERE "id" = ${jobId}
-        AND "lockedBy" = ${this.workerId}
-    `;
+    await this.prisma.processingJob.update({
+      where: { id: jobId },
+      data: {
+        status: 'DONE',
+        processedAt: new Date(),
+        lockedAt: null,
+        lockedBy: null,
+        lastError: null,
+      },
+    });
   }
 
   private async markFailedOrRetry(job: ProcessingJob, error: unknown) {
@@ -244,34 +242,30 @@ export class ProcessingJobRunnerService {
 
     if (!shouldRetry) {
       this.logger.error(`Processing job ${job.id} failed permanently: ${message}`);
-      await this.prisma.$executeRaw`
-        UPDATE "ProcessingJob"
-        SET
-          "status" = 'FAILED'::"ProcessingJobStatus",
-          "lockedAt" = NULL,
-          "lockedBy" = NULL,
-          "lastError" = ${message},
-          "updatedAt" = NOW()
-        WHERE "id" = ${job.id}
-          AND "lockedBy" = ${this.workerId}
-      `;
+      await this.prisma.processingJob.update({
+        where: { id: job.id },
+        data: {
+          status: 'FAILED',
+          lockedAt: null,
+          lockedBy: null,
+          lastError: message,
+        },
+      });
       return;
     }
 
     const retryDelaySeconds = Math.min(60, 2 ** job.attemptCount);
     this.logger.warn(`Processing job ${job.id} failed; retrying in ${retryDelaySeconds}s: ${message}`);
 
-    await this.prisma.$executeRaw`
-      UPDATE "ProcessingJob"
-      SET
-        "status" = 'PENDING'::"ProcessingJobStatus",
-        "lockedAt" = NULL,
-        "lockedBy" = NULL,
-        "lastError" = ${message},
-        "availableAt" = NOW() + (${retryDelaySeconds} * INTERVAL '1 second'),
-        "updatedAt" = NOW()
-      WHERE "id" = ${job.id}
-        AND "lockedBy" = ${this.workerId}
-    `;
+    await this.prisma.processingJob.update({
+      where: { id: job.id },
+      data: {
+        status: 'PENDING',
+        lockedAt: null,
+        lockedBy: null,
+        lastError: message,
+        availableAt: new Date(Date.now() + retryDelaySeconds * 1000),
+      },
+    });
   }
 }
