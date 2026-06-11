@@ -9,6 +9,9 @@ import { errorLogFields, structuredLog } from '../observability/structured-log';
 import type { ProcessingJob } from './processing-job.types';
 
 const DEFAULT_LOCK_TIMEOUT_MS = 60_000;
+const DEFAULT_TRANSACTION_TIMEOUT_MS = 15_000;
+
+type PrismaClientLike = Prisma.TransactionClient | PrismaService;
 
 type MatchMember = {
   id: string;
@@ -157,31 +160,29 @@ export class ProcessingJobRunnerService {
       }),
     );
 
-    await this.prisma.$transaction(async (tx) => {
-      switch (job.type) {
-        case 'MATCH_CREATED':
-        case 'MATCH_UPDATED':
-          await this.processMatchChangedJob(tx, job);
-          break;
-        case 'MATCH_DELETED':
-        case 'GROUP_RANKING_REBUILD':
-          await this.rankingMovements.syncGroupRankingState(tx, job.groupId);
-          break;
-        default:
-          throw new Error(`Unsupported processing job type: ${job.type}`);
-      }
-    });
+    switch (job.type) {
+      case 'MATCH_CREATED':
+      case 'MATCH_UPDATED':
+        await this.processMatchChangedJob(job);
+        break;
+      case 'MATCH_DELETED':
+      case 'GROUP_RANKING_REBUILD':
+        await this.prisma.$transaction(
+          (tx) => this.rankingMovements.syncGroupRankingState(tx, job.groupId),
+          { timeout: this.getTransactionTimeoutMs() },
+        );
+        break;
+      default:
+        throw new Error(`Unsupported processing job type: ${job.type}`);
+    }
   }
 
-  private async processMatchChangedJob(
-    tx: Prisma.TransactionClient,
-    job: ProcessingJob,
-  ) {
+  private async processMatchChangedJob(job: ProcessingJob) {
     if (!job.matchId) {
       throw new Error('Match processing job requires matchId');
     }
 
-    const canProcessIncrementally = await this.isLatestMatch(tx, job.groupId, job.matchId);
+    const canProcessIncrementally = await this.isLatestMatch(this.prisma, job.groupId, job.matchId);
 
     this.logger.log(
       structuredLog('processing_job.match_projection_strategy_selected', {
@@ -193,17 +194,25 @@ export class ProcessingJobRunnerService {
       }),
     );
 
-    if (canProcessIncrementally && job.type === 'MATCH_CREATED') {
-      await this.rankingMovements.syncLatestMatchRankingState(tx, job.groupId, job.matchId);
-    } else {
-      await this.rankingMovements.syncGroupRankingState(tx, job.groupId);
-    }
+    await this.prisma.$transaction(
+      async (tx) => {
+        if (canProcessIncrementally && job.type === 'MATCH_CREATED') {
+          await this.rankingMovements.syncLatestMatchRankingState(tx, job.groupId, job.matchId!);
+        } else {
+          await this.rankingMovements.syncGroupRankingState(tx, job.groupId);
+        }
+      },
+      { timeout: this.getTransactionTimeoutMs() },
+    );
 
-    await this.syncMatchFeedItems(tx, job.groupId, job.matchId);
+    await this.prisma.$transaction(
+      (tx) => this.syncMatchFeedItems(tx, job.groupId, job.matchId!),
+      { timeout: this.getTransactionTimeoutMs() },
+    );
   }
 
   private async isLatestMatch(
-    tx: Prisma.TransactionClient,
+    tx: PrismaClientLike,
     groupId: string,
     matchId: string,
   ) {
@@ -409,5 +418,15 @@ export class ProcessingJobRunnerService {
     }
 
     return DEFAULT_LOCK_TIMEOUT_MS;
+  }
+
+  private getTransactionTimeoutMs() {
+    const value = Number(process.env.PROCESSING_JOB_TRANSACTION_TIMEOUT_MS);
+
+    if (Number.isFinite(value) && value > 0) {
+      return value;
+    }
+
+    return DEFAULT_TRANSACTION_TIMEOUT_MS;
   }
 }
