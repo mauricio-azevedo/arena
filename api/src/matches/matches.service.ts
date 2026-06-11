@@ -8,8 +8,7 @@ import { MatchTeam } from '../generated/prisma/enums';
 import { PrismaService } from '../prisma/prisma.service';
 import { calculateBeachRating } from '../rating/calculate-beach-rating';
 import type { Prisma } from '../generated/prisma/client';
-import { FeedOrchestratorService } from '../feed/feed-orchestrator.service';
-import { RankingMovementService } from '../ranking/ranking-movement.service';
+import { ProcessingJobWriterService } from '../processing/processing-job-writer.service';
 
 type MatchBody = {
   teamAPlayer1Id: string;
@@ -60,8 +59,7 @@ const RATING_ALGORITHM = 'BEACH_ELO_V1';
 export class MatchesService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly feed: FeedOrchestratorService,
-    private readonly rankingMovements: RankingMovementService,
+    private readonly processingJobs: ProcessingJobWriterService,
   ) {}
 
   async create(groupId: string, userId: string, body: MatchBody) {
@@ -144,13 +142,19 @@ export class MatchesService {
 
       if (ratingSnapshot) {
         await this.updateGroupMemberRatings(tx, ratingSnapshot.updatedMembers);
-        await this.rankingMovements.syncLatestMatchRankingState(tx, groupId, match.id);
       } else {
         await this.recalculateRatings(tx, groupId);
-        await this.rankingMovements.syncGroupRankingState(tx, groupId);
       }
 
-      await this.syncMatchFeedItems(tx, groupId, match.id, body, membersById, playedAt);
+      await this.processingJobs.enqueue(
+        {
+          type: 'MATCH_CREATED',
+          groupId,
+          matchId: match.id,
+          payload: { canUseAppendOnlyRatingUpdate },
+        },
+        tx,
+      );
 
       return tx.match.findUnique({
         where: { id: match.id },
@@ -237,8 +241,14 @@ export class MatchesService {
       });
 
       await this.recalculateRatings(tx, groupId);
-      await this.rankingMovements.syncGroupRankingState(tx, groupId);
-      await this.syncMatchFeedItems(tx, groupId, id, body, membersById, playedAt);
+      await this.processingJobs.enqueue(
+        {
+          type: 'MATCH_UPDATED',
+          groupId,
+          matchId: id,
+        },
+        tx,
+      );
 
       return tx.match.findUnique({
         where: { id },
@@ -265,7 +275,14 @@ export class MatchesService {
       });
 
       await this.recalculateRatings(tx, groupId);
-      await this.rankingMovements.syncGroupRankingState(tx, groupId);
+      await this.processingJobs.enqueue(
+        {
+          type: 'GROUP_RANKING_REBUILD',
+          groupId,
+          payload: { reason: 'MATCH_DELETED', deletedMatchId: id },
+        },
+        tx,
+      );
 
       return { success: true };
     });
@@ -450,55 +467,6 @@ export class MatchesService {
 
   private getWinnerTeam(body: MatchBody) {
     return body.gamesA > body.gamesB ? MatchTeam.TEAM_A : MatchTeam.TEAM_B;
-  }
-
-  private async syncMatchFeedItems(
-    tx: Prisma.TransactionClient,
-    groupId: string,
-    matchId: string,
-    body: MatchBody,
-    membersById: Map<string, MatchMember>,
-    playedAt: Date,
-  ) {
-    const winnerTeam = this.getWinnerTeam(body);
-    const teamA = [body.teamAPlayer1Id, body.teamAPlayer2Id].map((id) =>
-      this.getMatchFeedPlayer(id, membersById),
-    );
-    const teamB = [body.teamBPlayer1Id, body.teamBPlayer2Id].map((id) =>
-      this.getMatchFeedPlayer(id, membersById),
-    );
-    const input = {
-      groupId,
-      matchId,
-      winnerTeam,
-      gamesA: body.gamesA,
-      gamesB: body.gamesB,
-      winners: winnerTeam === MatchTeam.TEAM_A ? teamA : teamB,
-      losers: winnerTeam === MatchTeam.TEAM_A ? teamB : teamA,
-      occurredAt: playedAt,
-    };
-
-    await this.feed.syncMatchBlowoutItem(input, tx);
-    await this.feed.syncMatchCloseItem(input, tx);
-  }
-
-  private getMatchFeedPlayer(
-    groupMemberId: string,
-    membersById: Map<string, MatchMember>,
-  ) {
-    const member = membersById.get(groupMemberId);
-
-    if (!member) {
-      throw new NotFoundException(
-        'One or more members were not found in this group',
-      );
-    }
-
-    return {
-      groupMemberId: member.id,
-      userId: member.userId,
-      displayName: member.displayName,
-    };
   }
 
   private async canUseAppendOnlyRatingUpdate(
