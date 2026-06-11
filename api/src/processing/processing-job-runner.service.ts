@@ -3,6 +3,12 @@ import { randomUUID } from 'crypto';
 import type { Prisma } from '../generated/prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { FeedOrchestratorService } from '../feed/feed-orchestrator.service';
+import type {
+  RankingMovementFeedAffectedMember,
+  RankingMovementFeedInput,
+  RankingMovementFeedMovement,
+  RankingMovementFeedPlayer,
+} from '../feed/types/ranking-movement-feed-input.type';
 import { RankingMovementService } from '../ranking/ranking-movement.service';
 import { MatchTeam } from '../generated/prisma/enums';
 import { errorLogFields, structuredLog } from '../observability/structured-log';
@@ -10,6 +16,8 @@ import type { ProcessingJob } from './processing-job.types';
 
 const DEFAULT_LOCK_TIMEOUT_MS = 60_000;
 const DEFAULT_TRANSACTION_TIMEOUT_MS = 15_000;
+const RANKING_MOVEMENT_FEED_THRESHOLD = 2;
+const RANKING_MOVEMENT_FEED_ITEM_TYPE = 'RANKING_MOVEMENT';
 
 type PrismaClientLike = Prisma.TransactionClient | PrismaService;
 
@@ -17,6 +25,48 @@ type MatchMember = {
   id: string;
   userId: string;
   displayName: string;
+};
+
+type RankingMovementProjectionRow = {
+  id: string;
+  groupId: string;
+  groupMemberId: string;
+  matchId: string;
+  direction: 'UP' | 'DOWN';
+  positions: number;
+  previousRank: number;
+  currentRank: number;
+  previousRating: number;
+  currentRating: number;
+  passedGroupMemberIds: unknown;
+  occurredAt: Date;
+  groupMember: {
+    userId: string;
+    user: {
+      firstName: string;
+      lastName: string;
+    };
+  };
+  match: {
+    id: string;
+    groupId: string;
+    winnerTeam: MatchTeam | null;
+    gamesA: number;
+    gamesB: number;
+    playedAt: Date;
+    players: Array<{
+      groupMemberId: string;
+      team: MatchTeam;
+      position: number;
+      groupMember: {
+        userId: string;
+        user: {
+          firstName: string;
+          lastName: string;
+        };
+      };
+    }>;
+  };
 };
 
 @Injectable()
@@ -167,14 +217,23 @@ export class ProcessingJobRunnerService {
         break;
       case 'MATCH_DELETED':
       case 'GROUP_RANKING_REBUILD':
-        await this.prisma.$transaction(
-          (tx) => this.rankingMovements.syncGroupRankingState(tx, job.groupId),
-          { timeout: this.getTransactionTimeoutMs() },
-        );
+        await this.processGroupRankingRebuildJob(job.groupId);
         break;
       default:
         throw new Error(`Unsupported processing job type: ${job.type}`);
     }
+  }
+
+  private async processGroupRankingRebuildJob(groupId: string) {
+    await this.prisma.$transaction(
+      (tx) => this.rankingMovements.syncGroupRankingState(tx, groupId),
+      { timeout: this.getTransactionTimeoutMs() },
+    );
+
+    await this.prisma.$transaction(
+      (tx) => this.syncGroupRankingMovementFeedItems(tx, groupId),
+      { timeout: this.getTransactionTimeoutMs() },
+    );
   }
 
   private async processMatchChangedJob(job: ProcessingJob) {
@@ -206,7 +265,10 @@ export class ProcessingJobRunnerService {
     );
 
     await this.prisma.$transaction(
-      (tx) => this.syncMatchFeedItems(tx, job.groupId, job.matchId!),
+      async (tx) => {
+        await this.syncMatchFeedItems(tx, job.groupId, job.matchId!);
+        await this.syncGroupRankingMovementFeedItems(tx, job.groupId);
+      },
       { timeout: this.getTransactionTimeoutMs() },
     );
   }
@@ -316,6 +378,329 @@ export class ProcessingJobRunnerService {
         winnerTeam: match.winnerTeam,
       }),
     );
+  }
+
+  private async syncGroupRankingMovementFeedItems(
+    tx: Prisma.TransactionClient,
+    groupId: string,
+  ) {
+    const inputs = await this.buildRankingMovementFeedInputs(tx, groupId);
+    const result = await this.feed.syncGroupRankingMovementItems(groupId, inputs, tx);
+
+    this.logger.log(
+      structuredLog('ranking_movement_feed_projection.completed', {
+        groupId,
+        eligibleMatchCount: result.eligibleMatchCount,
+        upsertedCount: result.upsertedCount,
+        deletedCount: result.deletedCount,
+      }),
+    );
+  }
+
+  private async buildRankingMovementFeedInputs(
+    tx: Prisma.TransactionClient,
+    groupId: string,
+  ): Promise<RankingMovementFeedInput[]> {
+    const visibleMovements = (await tx.rankingMovement.findMany({
+      where: {
+        groupId,
+        isVisible: true,
+        invalidatedAt: null,
+        OR: [
+          {
+            positions: {
+              gte: RANKING_MOVEMENT_FEED_THRESHOLD,
+            },
+          },
+          {
+            direction: 'UP',
+            currentRank: 1,
+          },
+          {
+            direction: 'DOWN',
+            previousRank: 1,
+          },
+        ],
+      },
+      include: {
+        groupMember: {
+          include: {
+            user: {
+              select: {
+                firstName: true,
+                lastName: true,
+              },
+            },
+          },
+        },
+        match: {
+          include: {
+            players: {
+              include: {
+                groupMember: {
+                  include: {
+                    user: {
+                      select: {
+                        firstName: true,
+                        lastName: true,
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      orderBy: [{ occurredAt: 'asc' }, { createdAt: 'asc' }],
+    })) as RankingMovementProjectionRow[];
+
+    if (visibleMovements.length === 0) {
+      return [];
+    }
+
+    const currentLeaders = await this.getCurrentLeaders(tx, groupId);
+    const membersById = await this.buildRankingMovementMemberMap(tx, groupId, visibleMovements);
+    const movementsByMatchId = new Map<string, RankingMovementProjectionRow[]>();
+
+    for (const movement of visibleMovements) {
+      const movements = movementsByMatchId.get(movement.matchId) ?? [];
+      movements.push(movement);
+      movementsByMatchId.set(movement.matchId, movements);
+    }
+
+    return [...movementsByMatchId.values()]
+      .map((movements) => this.buildRankingMovementFeedInput(movements, membersById, currentLeaders))
+      .filter((input): input is RankingMovementFeedInput => Boolean(input));
+  }
+
+  private async getCurrentLeaders(tx: Prisma.TransactionClient, groupId: string) {
+    const leaders = await tx.groupMember.findMany({
+      where: {
+        groupId,
+        leftAt: null,
+        currentRank: 1,
+      },
+      include: {
+        user: {
+          select: {
+            firstName: true,
+            lastName: true,
+          },
+        },
+      },
+      orderBy: [{ rating: 'desc' }, { createdAt: 'asc' }],
+    });
+
+    return leaders.map((leader) => this.getRankingMovementFeedPlayer({
+      groupMemberId: leader.id,
+      userId: leader.userId,
+      user: leader.user,
+    }));
+  }
+
+  private async buildRankingMovementMemberMap(
+    tx: Prisma.TransactionClient,
+    groupId: string,
+    movements: RankingMovementProjectionRow[],
+  ) {
+    const groupMemberIds = new Set<string>();
+
+    for (const movement of movements) {
+      groupMemberIds.add(movement.groupMemberId);
+
+      for (const affectedMemberId of this.getAffectedGroupMemberIds(movement.passedGroupMemberIds)) {
+        groupMemberIds.add(affectedMemberId);
+      }
+
+      for (const player of movement.match.players) {
+        groupMemberIds.add(player.groupMemberId);
+      }
+    }
+
+    const members = await tx.groupMember.findMany({
+      where: {
+        groupId,
+        id: {
+          in: [...groupMemberIds],
+        },
+      },
+      include: {
+        user: {
+          select: {
+            firstName: true,
+            lastName: true,
+          },
+        },
+      },
+    });
+
+    return new Map(
+      members.map((member) => [
+        member.id,
+        {
+          groupMemberId: member.id,
+          userId: member.userId,
+          displayName: this.getUserDisplayName(member.user),
+          rank: member.currentRank ?? null,
+        },
+      ]),
+    );
+  }
+
+  private buildRankingMovementFeedInput(
+    movements: RankingMovementProjectionRow[],
+    membersById: Map<string, RankingMovementFeedAffectedMember>,
+    currentLeaders: RankingMovementFeedPlayer[],
+  ): RankingMovementFeedInput | null {
+    const firstMovement = movements[0];
+    const match = firstMovement?.match;
+
+    if (!firstMovement || !match?.winnerTeam) {
+      return null;
+    }
+
+    const teamA = this.getRankingMovementMatchTeam(match.players, MatchTeam.TEAM_A, membersById);
+    const teamB = this.getRankingMovementMatchTeam(match.players, MatchTeam.TEAM_B, membersById);
+
+    if (teamA.length !== 2 || teamB.length !== 2) {
+      return null;
+    }
+
+    const feedMovements = movements.map((movement) => this.getRankingMovementFeedMovement(movement, membersById));
+
+    return {
+      groupId: firstMovement.groupId,
+      matchId: firstMovement.matchId,
+      winnerTeam: match.winnerTeam,
+      gamesA: match.gamesA,
+      gamesB: match.gamesB,
+      winners: match.winnerTeam === MatchTeam.TEAM_A ? teamA : teamB,
+      losers: match.winnerTeam === MatchTeam.TEAM_A ? teamB : teamA,
+      movements: feedMovements,
+      leadershipChange: this.getLeadershipChange(feedMovements, currentLeaders),
+      occurredAt: match.playedAt,
+    };
+  }
+
+  private getRankingMovementFeedMovement(
+    movement: RankingMovementProjectionRow,
+    membersById: Map<string, RankingMovementFeedAffectedMember>,
+  ): RankingMovementFeedMovement {
+    const member = membersById.get(movement.groupMemberId);
+
+    if (!member) {
+      throw new Error('Ranking movement member not found');
+    }
+
+    return {
+      groupMemberId: member.groupMemberId,
+      userId: member.userId,
+      displayName: member.displayName,
+      direction: movement.direction,
+      positions: movement.positions,
+      previousRank: movement.previousRank,
+      currentRank: movement.currentRank,
+      previousRating: movement.previousRating,
+      currentRating: movement.currentRating,
+      affectedMembers: this.getAffectedGroupMemberIds(movement.passedGroupMemberIds)
+        .map((groupMemberId) => membersById.get(groupMemberId))
+        .filter((member): member is RankingMovementFeedAffectedMember => Boolean(member)),
+    };
+  }
+
+  private getLeadershipChange(
+    movements: RankingMovementFeedMovement[],
+    currentLeaders: RankingMovementFeedPlayer[],
+  ) {
+    const upToLeadership = movements.filter(
+      (movement) => movement.direction === 'UP' && movement.currentRank === 1,
+    );
+    const dethronedLeaders = movements.filter(
+      (movement) => movement.direction === 'DOWN' && movement.previousRank === 1,
+    );
+
+    if (upToLeadership.length === 0 && dethronedLeaders.length === 0) {
+      return null;
+    }
+
+    const previousLeaderMap = new Map<string, RankingMovementFeedPlayer>();
+
+    for (const movement of dethronedLeaders) {
+      previousLeaderMap.set(movement.groupMemberId, this.toRankingMovementFeedPlayer(movement));
+    }
+
+    for (const movement of upToLeadership) {
+      for (const affectedMember of movement.affectedMembers) {
+        if (affectedMember.groupMemberId !== movement.groupMemberId) {
+          previousLeaderMap.set(affectedMember.groupMemberId, this.toRankingMovementFeedPlayer(affectedMember));
+        }
+      }
+    }
+
+    const currentLeaderMap = new Map<string, RankingMovementFeedPlayer>();
+    const movedToLeadershipIds = new Set(upToLeadership.map((movement) => movement.groupMemberId));
+
+    if (dethronedLeaders.length > 0) {
+      for (const leader of currentLeaders) {
+        currentLeaderMap.set(leader.groupMemberId, leader);
+      }
+    }
+
+    for (const movement of upToLeadership) {
+      currentLeaderMap.set(movement.groupMemberId, this.toRankingMovementFeedPlayer(movement));
+    }
+
+    return {
+      previousLeaders: [...previousLeaderMap.values()],
+      currentLeaders: [...currentLeaderMap.values()].filter(
+        (leader) => dethronedLeaders.length > 0 || movedToLeadershipIds.has(leader.groupMemberId),
+      ),
+      dethronedLeaders: dethronedLeaders.map((movement) => this.toRankingMovementFeedPlayer(movement)),
+    };
+  }
+
+  private getRankingMovementMatchTeam(
+    players: RankingMovementProjectionRow['match']['players'],
+    team: MatchTeam,
+    membersById: Map<string, RankingMovementFeedAffectedMember>,
+  ) {
+    return players
+      .filter((player) => player.team === team)
+      .sort((a, b) => a.position - b.position)
+      .map((player) => membersById.get(player.groupMemberId))
+      .filter((player): player is RankingMovementFeedAffectedMember => Boolean(player))
+      .map((player) => this.toRankingMovementFeedPlayer(player));
+  }
+
+  private getAffectedGroupMemberIds(value: unknown) {
+    if (!Array.isArray(value)) {
+      return [];
+    }
+
+    return value.filter((item): item is string => typeof item === 'string');
+  }
+
+  private toRankingMovementFeedPlayer(
+    player: RankingMovementFeedAffectedMember | RankingMovementFeedMovement,
+  ): RankingMovementFeedPlayer {
+    return {
+      groupMemberId: player.groupMemberId,
+      userId: player.userId,
+      displayName: player.displayName,
+    };
+  }
+
+  private getRankingMovementFeedPlayer(input: {
+    groupMemberId: string;
+    userId: string;
+    user: { firstName: string; lastName: string };
+  }): RankingMovementFeedPlayer {
+    return {
+      groupMemberId: input.groupMemberId,
+      userId: input.userId,
+      displayName: this.getUserDisplayName(input.user),
+    };
   }
 
   private getMatchFeedPlayer(
