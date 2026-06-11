@@ -24,10 +24,12 @@ export type Group = {
 export type GroupMemberRole = 'ADMIN' | 'MEMBER';
 
 export type RankingMovement = {
-  direction: 'UP';
+  direction: 'UP' | 'DOWN';
   positions: number;
-  previousPosition: number;
-  currentPosition: number;
+  previousRank: number;
+  currentRank: number;
+  previousRating: number;
+  currentRating: number;
   sourceMatchId: string;
   occurredAt: string;
 };
