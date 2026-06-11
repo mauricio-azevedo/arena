@@ -207,7 +207,8 @@ export class RankingMovementService {
         passedGroupMemberIds: this.getPassedGroupMemberIds({
           groupMemberId,
           direction,
-          before,
+          previousRank: before.rank,
+          currentRank: after.rank,
           beforeRanking,
         }),
         occurredAt: match.playedAt,
@@ -221,12 +222,14 @@ export class RankingMovementService {
   private getPassedGroupMemberIds({
     groupMemberId,
     direction,
-    before,
+    previousRank,
+    currentRank,
     beforeRanking,
   }: {
     groupMemberId: string;
     direction: RankingDirection;
-    before: RankingMemberState;
+    previousRank: number;
+    currentRank: number;
     beforeRanking: Map<string, RankingMemberState>;
   }) {
     return [...beforeRanking.values()]
@@ -236,10 +239,10 @@ export class RankingMovementService {
         }
 
         if (direction === 'UP') {
-          return member.rank < before.rank;
+          return member.rank >= currentRank && member.rank < previousRank;
         }
 
-        return member.rank > before.rank;
+        return member.rank <= currentRank && member.rank > previousRank;
       })
       .map((member) => member.id);
   }
