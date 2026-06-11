@@ -269,7 +269,7 @@ export class ProcessingJobRunnerService {
       .map((player) => this.getMatchFeedPlayer(player.groupMemberId, membersById));
     const teamB = match.players
       .filter((player) => player.team === MatchTeam.TEAM_B)
-      .sort((a, b) => b.position - b.position)
+      .sort((a, b) => a.position - b.position)
       .map((player) => this.getMatchFeedPlayer(player.groupMemberId, membersById));
 
     if (teamA.length !== 2 || teamB.length !== 2 || !match.winnerTeam) {
