@@ -1,7 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { randomUUID } from 'crypto';
 import { MatchTeam } from '../generated/prisma/enums';
 import type { Prisma } from '../generated/prisma/client';
+import { structuredLog } from '../observability/structured-log';
 
 type RankingDirection = 'UP' | 'DOWN';
 
@@ -42,17 +43,29 @@ type RankingMovementToPersist = {
 
 @Injectable()
 export class RankingMovementService {
+  private readonly logger = new Logger(RankingMovementService.name);
+
   async syncLatestMatchRankingState(
     tx: Prisma.TransactionClient,
     groupId: string,
     matchId: string,
   ) {
+    const startedAt = Date.now();
     const activeMembers = await tx.groupMember.findMany({
       where: { groupId, leftAt: null },
       select: { id: true, rating: true },
     });
 
     if (activeMembers.length === 0) {
+      this.logger.log(
+        structuredLog('ranking_projection.skipped', {
+          groupId,
+          matchId,
+          strategy: 'incremental',
+          reason: 'NO_ACTIVE_MEMBERS',
+          durationMs: Date.now() - startedAt,
+        }),
+      );
       return;
     }
 
@@ -73,6 +86,16 @@ export class RankingMovementService {
     });
 
     if (!match) {
+      this.logger.warn(
+        structuredLog('ranking_projection.skipped', {
+          groupId,
+          matchId,
+          strategy: 'incremental',
+          reason: 'MATCH_NOT_FOUND',
+          activeMembersCount: activeMembers.length,
+          durationMs: Date.now() - startedAt,
+        }),
+      );
       return;
     }
 
@@ -103,6 +126,14 @@ export class RankingMovementService {
       afterRanking,
     });
 
+    this.logDetectedMovements({
+      groupId,
+      matchId,
+      strategy: 'incremental',
+      movements,
+      participatingMemberIds,
+    });
+
     await this.invalidateVisibleMovementsChangedByRanking(tx, groupId, afterRanking);
 
     for (const movement of movements) {
@@ -111,9 +142,23 @@ export class RankingMovementService {
     }
 
     await this.updateCurrentRanks(tx, afterRanking);
+
+    this.logger.log(
+      structuredLog('ranking_projection.completed', {
+        groupId,
+        matchId,
+        strategy: 'incremental',
+        activeMembersCount: activeMembers.length,
+        participatingMembersCount: participatingMemberIds.size,
+        movementsDetected: movements.length,
+        visibleMovements: movements.filter((movement) => movement.isVisible).length,
+        durationMs: Date.now() - startedAt,
+      }),
+    );
   }
 
   async syncGroupRankingState(tx: Prisma.TransactionClient, groupId: string) {
+    const startedAt = Date.now();
     const activeMembers = await tx.groupMember.findMany({
       where: { groupId, leftAt: null },
       select: { id: true, rating: true },
@@ -122,6 +167,14 @@ export class RankingMovementService {
     await this.clearGroupRankingMovementState(tx, groupId);
 
     if (activeMembers.length === 0) {
+      this.logger.log(
+        structuredLog('ranking_projection.skipped', {
+          groupId,
+          strategy: 'full_rebuild',
+          reason: 'NO_ACTIVE_MEMBERS',
+          durationMs: Date.now() - startedAt,
+        }),
+      );
       return;
     }
 
@@ -179,12 +232,44 @@ export class RankingMovementService {
     const finalRanking = this.buildRankingState(ratingByMemberId);
     const visibleMovementIds = this.getVisibleMovementIds(movements, finalRanking);
 
+    this.logger.log(
+      structuredLog('ranking_projection.movements_detected', {
+        groupId,
+        strategy: 'full_rebuild',
+        matchesCount: matches.length,
+        activeMembersCount: activeMembers.length,
+        movementsDetected: movements.length,
+        visibleMovements: visibleMovementIds.size,
+        movements: movements.map((movement) => ({
+          groupMemberId: movement.groupMemberId,
+          matchId: movement.matchId,
+          direction: movement.direction,
+          positions: movement.positions,
+          previousRank: movement.previousRank,
+          currentRank: movement.currentRank,
+          isVisible: visibleMovementIds.has(movement.id),
+        })),
+      }),
+    );
+
     for (const movement of movements) {
       movement.isVisible = visibleMovementIds.has(movement.id);
       await this.upsertRankingMovement(tx, movement);
     }
 
     await this.updateCurrentRanks(tx, finalRanking);
+
+    this.logger.log(
+      structuredLog('ranking_projection.completed', {
+        groupId,
+        strategy: 'full_rebuild',
+        activeMembersCount: activeMembers.length,
+        matchesCount: matches.length,
+        movementsDetected: movements.length,
+        visibleMovements: visibleMovementIds.size,
+        durationMs: Date.now() - startedAt,
+      }),
+    );
   }
 
   private async clearGroupRankingMovementState(
@@ -416,5 +501,39 @@ export class RankingMovementService {
         occurredAt: movement.occurredAt,
       },
     });
+  }
+
+  private logDetectedMovements({
+    groupId,
+    matchId,
+    strategy,
+    movements,
+    participatingMemberIds,
+  }: {
+    groupId: string;
+    matchId: string;
+    strategy: 'incremental';
+    movements: RankingMovementToPersist[];
+    participatingMemberIds: Set<string>;
+  }) {
+    this.logger.log(
+      structuredLog('ranking_projection.movements_detected', {
+        groupId,
+        matchId,
+        strategy,
+        participatingMembersCount: participatingMemberIds.size,
+        movementsDetected: movements.length,
+        visibleMovements: movements.length,
+        movements: movements.map((movement) => ({
+          groupMemberId: movement.groupMemberId,
+          matchId: movement.matchId,
+          direction: movement.direction,
+          positions: movement.positions,
+          previousRank: movement.previousRank,
+          currentRank: movement.currentRank,
+          isVisible: true,
+        })),
+      }),
+    );
   }
 }
