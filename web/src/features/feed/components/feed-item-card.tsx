@@ -92,7 +92,7 @@ function DominantWinFeedCard({ item }: { item: FeedItem }) {
             <p className="text-sm leading-6 text-muted-foreground">
               <FeedPlayerNames players={metadata.winners} /> venceram{' '}
               <FeedPlayerNames players={metadata.losers} /> por{' '}
-              <span className="font-semibold text-foreground">
+              <span className="text-lg font-bold leading-none tracking-[-0.035em] text-foreground">
                 {winnerScore}–{loserScore}
               </span>
               <FeedGroupSuffix item={item} />
@@ -130,7 +130,7 @@ function CloseMatchFeedCard({ item }: { item: FeedItem }) {
             <p className="text-sm leading-6 text-muted-foreground">
               <FeedPlayerNames players={metadata.winners} /> venceram{' '}
               <FeedPlayerNames players={metadata.losers} /> no detalhe por{' '}
-              <span className="font-semibold text-foreground">
+              <span className="text-lg font-bold leading-none tracking-[-0.035em] text-foreground">
                 {winnerScore}–{loserScore}
               </span>
               <FeedGroupSuffix item={item} />
