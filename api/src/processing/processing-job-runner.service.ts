@@ -17,7 +17,6 @@ import type { ProcessingJob } from './processing-job.types';
 const DEFAULT_LOCK_TIMEOUT_MS = 60_000;
 const DEFAULT_TRANSACTION_TIMEOUT_MS = 15_000;
 const RANKING_MOVEMENT_FEED_THRESHOLD = 2;
-const RANKING_MOVEMENT_FEED_ITEM_TYPE = 'RANKING_MOVEMENT';
 
 type PrismaClientLike = Prisma.TransactionClient | PrismaService;
 
