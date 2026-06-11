@@ -6,7 +6,6 @@ import {
 } from '@nestjs/common';
 import { MatchTeam } from '../generated/prisma/enums';
 import { PrismaService } from '../prisma/prisma.service';
-import { calculateBeachRating } from '../rating/calculate-beach-rating';
 import type { Prisma } from '../generated/prisma/client';
 import { ProcessingJobWriterService } from '../processing/processing-job-writer.service';
 
@@ -24,35 +23,12 @@ type MatchMember = {
   id: string;
   userId: string;
   displayName: string;
-  rating: number;
 };
 
-type RatingState = {
+type MatchIdRow = {
   id: string;
-  name: string;
-  rating: number;
 };
 
-type PlayerRatingSnapshot = {
-  ratingBefore: number;
-  ratingAfter: number;
-  ratingDelta: number;
-};
-
-type MatchRatingSnapshot = {
-  teamAExpected: number;
-  teamBExpected: number;
-  teamAActual: number;
-  teamBActual: number;
-  teamARatingBefore: number;
-  teamBRatingBefore: number;
-  teamARatingAfter: number;
-  teamBRatingAfter: number;
-  playerRatingsByMemberId: Map<string, PlayerRatingSnapshot>;
-  updatedMembers: Array<{ id: string; rating: number }>;
-};
-
-const INITIAL_RATING = 1000;
 const RATING_ALGORITHM = 'BEACH_ELO_V1';
 
 @Injectable()
@@ -71,12 +47,6 @@ export class MatchesService {
 
       const membersById = await this.getMembersById(tx, groupId, body);
       const playedAt = this.parsePlayedAt(body.playedAt);
-      const canUseAppendOnlyRatingUpdate =
-        await this.canUseAppendOnlyRatingUpdate(tx, groupId, playedAt);
-      const ratingSnapshot = canUseAppendOnlyRatingUpdate
-        ? this.calculateCurrentMatchRatings(body, membersById)
-        : null;
-
       const match = await tx.match.create({
         data: {
           groupId,
@@ -85,73 +55,31 @@ export class MatchesService {
           winnerTeam: this.getWinnerTeam(body),
           ratingAlgorithm: RATING_ALGORITHM,
           playedAt,
-          ...(ratingSnapshot
-            ? {
-                teamAExpected: ratingSnapshot.teamAExpected,
-                teamBExpected: ratingSnapshot.teamBExpected,
-                teamAActual: ratingSnapshot.teamAActual,
-                teamBActual: ratingSnapshot.teamBActual,
-                teamARatingBefore: ratingSnapshot.teamARatingBefore,
-                teamBRatingBefore: ratingSnapshot.teamBRatingBefore,
-                teamARatingAfter: ratingSnapshot.teamARatingAfter,
-                teamBRatingAfter: ratingSnapshot.teamBRatingAfter,
-              }
-            : {}),
+          teamAExpected: null,
+          teamBExpected: null,
+          teamAActual: null,
+          teamBActual: null,
+          teamARatingBefore: null,
+          teamBRatingBefore: null,
+          teamARatingAfter: null,
+          teamBRatingAfter: null,
           players: {
             create: [
-              this.buildPlayerCreate(
-                groupId,
-                body.teamAPlayer1Id,
-                membersById,
-                MatchTeam.TEAM_A,
-                1,
-                playedAt,
-                ratingSnapshot?.playerRatingsByMemberId.get(body.teamAPlayer1Id),
-              ),
-              this.buildPlayerCreate(
-                groupId,
-                body.teamAPlayer2Id,
-                membersById,
-                MatchTeam.TEAM_A,
-                2,
-                playedAt,
-                ratingSnapshot?.playerRatingsByMemberId.get(body.teamAPlayer2Id),
-              ),
-              this.buildPlayerCreate(
-                groupId,
-                body.teamBPlayer1Id,
-                membersById,
-                MatchTeam.TEAM_B,
-                1,
-                playedAt,
-                ratingSnapshot?.playerRatingsByMemberId.get(body.teamBPlayer1Id),
-              ),
-              this.buildPlayerCreate(
-                groupId,
-                body.teamBPlayer2Id,
-                membersById,
-                MatchTeam.TEAM_B,
-                2,
-                playedAt,
-                ratingSnapshot?.playerRatingsByMemberId.get(body.teamBPlayer2Id),
-              ),
+              this.buildPlayerCreate(groupId, body.teamAPlayer1Id, membersById, MatchTeam.TEAM_A, 1, playedAt),
+              this.buildPlayerCreate(groupId, body.teamAPlayer2Id, membersById, MatchTeam.TEAM_A, 2, playedAt),
+              this.buildPlayerCreate(groupId, body.teamBPlayer1Id, membersById, MatchTeam.TEAM_B, 1, playedAt),
+              this.buildPlayerCreate(groupId, body.teamBPlayer2Id, membersById, MatchTeam.TEAM_B, 2, playedAt),
             ],
           },
         },
       });
 
-      if (ratingSnapshot) {
-        await this.updateGroupMemberRatings(tx, ratingSnapshot.updatedMembers);
-      } else {
-        await this.recalculateRatings(tx, groupId);
-      }
-
+      await this.markMatchPending(tx, match.id, groupId);
       await this.processingJobs.enqueue(
         {
           type: 'MATCH_CREATED',
           groupId,
           matchId: match.id,
-          payload: { canUseAppendOnlyRatingUpdate },
         },
         tx,
       );
@@ -170,9 +98,7 @@ export class MatchesService {
       await this.ensureGroupExists(tx, groupId);
       await this.ensureActiveGroupMember(tx, groupId, userId);
 
-      const existingMatch = await tx.match.findFirst({
-        where: { id, groupId },
-      });
+      const existingMatch = await this.findActiveMatchId(tx, groupId, id);
 
       if (!existingMatch) {
         throw new NotFoundException('Match not found');
@@ -203,44 +129,16 @@ export class MatchesService {
           playedAt,
           players: {
             create: [
-              this.buildPlayerCreate(
-                groupId,
-                body.teamAPlayer1Id,
-                membersById,
-                MatchTeam.TEAM_A,
-                1,
-                playedAt,
-              ),
-              this.buildPlayerCreate(
-                groupId,
-                body.teamAPlayer2Id,
-                membersById,
-                MatchTeam.TEAM_A,
-                2,
-                playedAt,
-              ),
-              this.buildPlayerCreate(
-                groupId,
-                body.teamBPlayer1Id,
-                membersById,
-                MatchTeam.TEAM_B,
-                1,
-                playedAt,
-              ),
-              this.buildPlayerCreate(
-                groupId,
-                body.teamBPlayer2Id,
-                membersById,
-                MatchTeam.TEAM_B,
-                2,
-                playedAt,
-              ),
+              this.buildPlayerCreate(groupId, body.teamAPlayer1Id, membersById, MatchTeam.TEAM_A, 1, playedAt),
+              this.buildPlayerCreate(groupId, body.teamAPlayer2Id, membersById, MatchTeam.TEAM_A, 2, playedAt),
+              this.buildPlayerCreate(groupId, body.teamBPlayer1Id, membersById, MatchTeam.TEAM_B, 1, playedAt),
+              this.buildPlayerCreate(groupId, body.teamBPlayer2Id, membersById, MatchTeam.TEAM_B, 2, playedAt),
             ],
           },
         },
       });
 
-      await this.recalculateRatings(tx, groupId);
+      await this.markMatchPending(tx, id, groupId);
       await this.processingJobs.enqueue(
         {
           type: 'MATCH_UPDATED',
@@ -262,23 +160,28 @@ export class MatchesService {
       await this.ensureGroupExists(tx, groupId);
       await this.ensureActiveGroupMember(tx, groupId, userId);
 
-      const existingMatch = await tx.match.findFirst({
-        where: { id, groupId },
-      });
+      const existingMatch = await this.findActiveMatchId(tx, groupId, id);
 
       if (!existingMatch) {
         throw new NotFoundException('Match not found');
       }
 
-      await tx.match.delete({
-        where: { id },
-      });
+      await tx.$executeRaw`
+        UPDATE "Match"
+        SET
+          "deletedAt" = NOW(),
+          "processingStatus" = 'PENDING',
+          "processedAt" = NULL,
+          "processingError" = NULL
+        WHERE "id" = ${id}
+          AND "groupId" = ${groupId}
+      `;
 
-      await this.recalculateRatings(tx, groupId);
       await this.processingJobs.enqueue(
         {
-          type: 'GROUP_RANKING_REBUILD',
+          type: 'MATCH_DELETED',
           groupId,
+          matchId: id,
           payload: { reason: 'MATCH_DELETED', deletedMatchId: id },
         },
         tx,
@@ -297,8 +200,16 @@ export class MatchesService {
       throw new NotFoundException('Group not found');
     }
 
+    const activeMatchIds = await this.findActiveMatchIds(this.prisma, groupId);
+
+    if (activeMatchIds.length === 0) {
+      return [];
+    }
+
     return this.prisma.match.findMany({
-      where: { groupId },
+      where: {
+        id: { in: activeMatchIds.map((match) => match.id) },
+      },
       orderBy: [{ playedAt: 'desc' }, { createdAt: 'desc' }],
       include: this.matchInclude(),
     });
@@ -311,6 +222,12 @@ export class MatchesService {
 
     if (!group) {
       throw new NotFoundException('Group not found');
+    }
+
+    const activeMatch = await this.findActiveMatchId(this.prisma, groupId, id);
+
+    if (!activeMatch) {
+      throw new NotFoundException('Match not found');
     }
 
     const match = await this.prisma.match.findFirst({
@@ -387,7 +304,6 @@ export class MatchesService {
       select: {
         id: true,
         userId: true,
-        rating: true,
         user: {
           select: {
             firstName: true,
@@ -410,7 +326,6 @@ export class MatchesService {
           id: member.id,
           userId: member.userId,
           displayName: this.getUserDisplayName(member.user),
-          rating: member.rating,
         },
       ]),
     );
@@ -423,7 +338,6 @@ export class MatchesService {
     team: MatchTeam,
     position: number,
     playedAt: Date,
-    ratingSnapshot?: PlayerRatingSnapshot,
   ) {
     const member = membersById.get(groupMemberId);
 
@@ -444,9 +358,9 @@ export class MatchesService {
       },
       team,
       position,
-      ratingBefore: ratingSnapshot?.ratingBefore ?? 0,
-      ratingAfter: ratingSnapshot?.ratingAfter ?? 0,
-      ratingDelta: ratingSnapshot?.ratingDelta ?? 0,
+      ratingBefore: 0,
+      ratingAfter: 0,
+      ratingDelta: 0,
       playedAt,
     };
   }
@@ -469,297 +383,48 @@ export class MatchesService {
     return body.gamesA > body.gamesB ? MatchTeam.TEAM_A : MatchTeam.TEAM_B;
   }
 
-  private async canUseAppendOnlyRatingUpdate(
+  private async markMatchPending(
     tx: Prisma.TransactionClient,
-    groupId: string,
-    playedAt: Date,
-  ) {
-    const latestMatch = await tx.match.findFirst({
-      where: { groupId },
-      orderBy: [{ playedAt: 'desc' }, { createdAt: 'desc' }],
-      select: { playedAt: true },
-    });
-
-    if (!latestMatch) {
-      return true;
-    }
-
-    return playedAt.getTime() >= latestMatch.playedAt.getTime();
-  }
-
-  private calculateCurrentMatchRatings(
-    body: MatchBody,
-    membersById: Map<string, MatchMember>,
-  ): MatchRatingSnapshot {
-    const teamAPlayer1 = this.getRatingState(body.teamAPlayer1Id, membersById);
-    const teamAPlayer2 = this.getRatingState(body.teamAPlayer2Id, membersById);
-    const teamBPlayer1 = this.getRatingState(body.teamBPlayer1Id, membersById);
-    const teamBPlayer2 = this.getRatingState(body.teamBPlayer2Id, membersById);
-
-    const teamARatingBefore = (teamAPlayer1.rating + teamAPlayer2.rating) / 2;
-    const teamBRatingBefore = (teamBPlayer1.rating + teamBPlayer2.rating) / 2;
-
-    const result = calculateBeachRating({
-      teamA: [teamAPlayer1, teamAPlayer2],
-      teamB: [teamBPlayer1, teamBPlayer2],
-      gamesA: body.gamesA,
-      gamesB: body.gamesB,
-    });
-
-    const updatedPlayers = [...result.teamA.players, ...result.teamB.players];
-    const playersBeforeById = new Map(
-      [teamAPlayer1, teamAPlayer2, teamBPlayer1, teamBPlayer2].map((player) => [
-        player.id,
-        player.rating,
-      ]),
-    );
-    const playerRatingsByMemberId = new Map<string, PlayerRatingSnapshot>();
-
-    for (const player of updatedPlayers) {
-      const ratingBefore = playersBeforeById.get(player.id);
-
-      if (ratingBefore === undefined) {
-        throw new Error('Invalid updated player');
-      }
-
-      playerRatingsByMemberId.set(player.id, {
-        ratingBefore,
-        ratingAfter: player.newRating,
-        ratingDelta: player.newRating - ratingBefore,
-      });
-    }
-
-    return {
-      teamAExpected: result.teamA.expected,
-      teamBExpected: result.teamB.expected,
-      teamAActual: result.teamA.actual,
-      teamBActual: result.teamB.actual,
-      teamARatingBefore,
-      teamBRatingBefore,
-      teamARatingAfter:
-        (result.teamA.players[0].newRating + result.teamA.players[1].newRating) /
-        2,
-      teamBRatingAfter:
-        (result.teamB.players[0].newRating + result.teamB.players[1].newRating) /
-        2,
-      playerRatingsByMemberId,
-      updatedMembers: updatedPlayers.map((player) => ({
-        id: player.id,
-        rating: player.newRating,
-      })),
-    };
-  }
-
-  private getRatingState(
-    groupMemberId: string,
-    membersById: Map<string, MatchMember>,
-  ): RatingState {
-    const member = membersById.get(groupMemberId);
-
-    if (!member) {
-      throw new NotFoundException(
-        'One or more members were not found in this group',
-      );
-    }
-
-    return {
-      id: member.id,
-      name: member.displayName,
-      rating: member.rating,
-    };
-  }
-
-  private async updateGroupMemberRatings(
-    tx: Prisma.TransactionClient,
-    members: Array<{ id: string; rating: number }>,
-  ) {
-    for (const member of members) {
-      await tx.groupMember.update({
-        where: { id: member.id },
-        data: {
-          rating: member.rating,
-          ratingAlgorithm: RATING_ALGORITHM,
-        },
-      });
-    }
-  }
-
-  private async recalculateRatings(
-    tx: Prisma.TransactionClient,
+    matchId: string,
     groupId: string,
   ) {
-    const members = await tx.groupMember.findMany({
-      where: { groupId },
-      select: {
-        id: true,
-        user: {
-          select: {
-            firstName: true,
-            lastName: true,
-          },
-        },
-      },
-    });
-
-    const membersById = new Map<string, RatingState>(
-      members.map((member) => [
-        member.id,
-        {
-          id: member.id,
-          name: this.getUserDisplayName(member.user),
-          rating: INITIAL_RATING,
-        },
-      ]),
-    );
-
-    const matches = await tx.match.findMany({
-      where: { groupId },
-      orderBy: [{ playedAt: 'asc' }, { createdAt: 'asc' }],
-      include: {
-        players: {
-          orderBy: [{ team: 'asc' }, { position: 'asc' }],
-        },
-      },
-    });
-
-    for (const match of matches) {
-      const teamAPlayers = match.players
-        .filter((player) => player.team === MatchTeam.TEAM_A)
-        .sort((a, b) => a.position - b.position);
-
-      const teamBPlayers = match.players
-        .filter((player) => player.team === MatchTeam.TEAM_B)
-        .sort((a, b) => a.position - b.position);
-
-      if (teamAPlayers.length !== 2 || teamBPlayers.length !== 2) {
-        throw new Error('Invalid match players');
-      }
-
-      const teamAPlayer1 = membersById.get(teamAPlayers[0].groupMemberId);
-      const teamAPlayer2 = membersById.get(teamAPlayers[1].groupMemberId);
-      const teamBPlayer1 = membersById.get(teamBPlayers[0].groupMemberId);
-      const teamBPlayer2 = membersById.get(teamBPlayers[1].groupMemberId);
-
-      if (!teamAPlayer1 || !teamAPlayer2 || !teamBPlayer1 || !teamBPlayer2) {
-        throw new Error('Invalid match players');
-      }
-
-      const teamARatingBefore = (teamAPlayer1.rating + teamAPlayer2.rating) / 2;
-      const teamBRatingBefore = (teamBPlayer1.rating + teamBPlayer2.rating) / 2;
-
-      const result = calculateBeachRating({
-        teamA: [teamAPlayer1, teamAPlayer2],
-        teamB: [teamBPlayer1, teamBPlayer2],
-        gamesA: match.gamesA,
-        gamesB: match.gamesB,
-      });
-
-      const updatedPlayers = [...result.teamA.players, ...result.teamB.players];
-
-      for (const player of updatedPlayers) {
-        membersById.set(player.id, {
-          id: player.id,
-          name: player.name,
-          rating: player.newRating,
-        });
-      }
-
-      const playerById = new Map(
-        updatedPlayers.map((player) => [player.id, player]),
-      );
-
-      for (const player of match.players) {
-        const before = this.getPlayerBeforeRating(
-          player.groupMemberId,
-          teamAPlayers,
-          teamBPlayers,
-          teamAPlayer1,
-          teamAPlayer2,
-          teamBPlayer1,
-          teamBPlayer2,
-        );
-
-        const updatedPlayer = playerById.get(player.groupMemberId);
-
-        if (!updatedPlayer) {
-          throw new Error('Invalid updated player');
-        }
-
-        await tx.matchPlayer.update({
-          where: { id: player.id },
-          data: {
-            ratingBefore: before,
-            ratingAfter: updatedPlayer.newRating,
-            ratingDelta: updatedPlayer.newRating - before,
-            playedAt: match.playedAt,
-          },
-        });
-      }
-
-      const teamARatingAfter =
-        (result.teamA.players[0].newRating +
-          result.teamA.players[1].newRating) /
-        2;
-      const teamBRatingAfter =
-        (result.teamB.players[0].newRating +
-          result.teamB.players[1].newRating) /
-        2;
-
-      await tx.match.update({
-        where: { id: match.id },
-        data: {
-          winnerTeam:
-            match.gamesA > match.gamesB ? MatchTeam.TEAM_A : MatchTeam.TEAM_B,
-          teamAExpected: result.teamA.expected,
-          teamBExpected: result.teamB.expected,
-          teamAActual: result.teamA.actual,
-          teamBActual: result.teamB.actual,
-          teamARatingBefore,
-          teamBRatingBefore,
-          teamARatingAfter,
-          teamBRatingAfter,
-          ratingAlgorithm: RATING_ALGORITHM,
-        },
-      });
-    }
-
-    for (const member of membersById.values()) {
-      await tx.groupMember.update({
-        where: { id: member.id },
-        data: {
-          rating: member.rating,
-          ratingAlgorithm: RATING_ALGORITHM,
-        },
-      });
-    }
+    await tx.$executeRaw`
+      UPDATE "Match"
+      SET
+        "processingStatus" = 'PENDING',
+        "processedAt" = NULL,
+        "processingError" = NULL,
+        "deletedAt" = NULL
+      WHERE "id" = ${matchId}
+        AND "groupId" = ${groupId}
+    `;
   }
 
-  private getPlayerBeforeRating(
-    groupMemberId: string,
-    teamAPlayers: { groupMemberId: string }[],
-    teamBPlayers: { groupMemberId: string }[],
-    teamAPlayer1: RatingState,
-    teamAPlayer2: RatingState,
-    teamBPlayer1: RatingState,
-    teamBPlayer2: RatingState,
+  private async findActiveMatchIds(tx: PrismaClientLike, groupId: string) {
+    return tx.$queryRaw<MatchIdRow[]>`
+      SELECT "id"
+      FROM "Match"
+      WHERE "groupId" = ${groupId}
+        AND "deletedAt" IS NULL
+      ORDER BY "playedAt" DESC, "createdAt" DESC
+    `;
+  }
+
+  private async findActiveMatchId(
+    tx: PrismaClientLike,
+    groupId: string,
+    matchId: string,
   ) {
-    if (groupMemberId === teamAPlayers[0].groupMemberId) {
-      return teamAPlayer1.rating;
-    }
+    const matches = await tx.$queryRaw<MatchIdRow[]>`
+      SELECT "id"
+      FROM "Match"
+      WHERE "id" = ${matchId}
+        AND "groupId" = ${groupId}
+        AND "deletedAt" IS NULL
+      LIMIT 1
+    `;
 
-    if (groupMemberId === teamAPlayers[1].groupMemberId) {
-      return teamAPlayer2.rating;
-    }
-
-    if (groupMemberId === teamBPlayers[0].groupMemberId) {
-      return teamBPlayer1.rating;
-    }
-
-    if (groupMemberId === teamBPlayers[1].groupMemberId) {
-      return teamBPlayer2.rating;
-    }
-
-    throw new Error('Invalid player');
+    return matches[0] ?? null;
   }
 
   private matchInclude() {
