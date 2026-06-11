@@ -7,6 +7,8 @@ import { RankingMovementService } from '../ranking/ranking-movement.service';
 import { MatchTeam } from '../generated/prisma/enums';
 import type { ProcessingJob } from './processing-job.types';
 
+const DEFAULT_LOCK_TIMEOUT_MS = 60_000;
+
 type MatchMember = {
   id: string;
   userId: string;
@@ -25,6 +27,8 @@ export class ProcessingJobRunnerService {
   ) {}
 
   async runNextBatch(limit = 5) {
+    await this.releaseStaleProcessingJobs();
+
     for (let index = 0; index < limit; index += 1) {
       const job = await this.claimNextJob();
 
@@ -34,6 +38,24 @@ export class ProcessingJobRunnerService {
 
       await this.runClaimedJob(job);
     }
+  }
+
+  private async releaseStaleProcessingJobs() {
+    const staleBefore = new Date(Date.now() - this.getLockTimeoutMs());
+
+    await this.prisma.processingJob.updateMany({
+      where: {
+        status: 'PROCESSING',
+        lockedAt: { lt: staleBefore },
+      },
+      data: {
+        status: 'PENDING',
+        lockedAt: null,
+        lockedBy: null,
+        availableAt: new Date(),
+        lastError: 'Released stale processing lock',
+      },
+    });
   }
 
   private async claimNextJob() {
@@ -267,5 +289,15 @@ export class ProcessingJobRunnerService {
         availableAt: new Date(Date.now() + retryDelaySeconds * 1000),
       },
     });
+  }
+
+  private getLockTimeoutMs() {
+    const value = Number(process.env.PROCESSING_JOB_LOCK_TIMEOUT_MS);
+
+    if (Number.isFinite(value) && value > 0) {
+      return value;
+    }
+
+    return DEFAULT_LOCK_TIMEOUT_MS;
   }
 }
