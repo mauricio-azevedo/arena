@@ -17,6 +17,7 @@ const FEED_MOVEMENT_THRESHOLD = 2;
 const BIG_MOVEMENT_THRESHOLD = 4;
 const MAX_NAMES_IN_HEADLINE = 2;
 const RANKING_MOVEMENT_IMPORTANCE_SCORE = 80;
+const RANKING_MOVEMENT_FEED_ITEM_TYPE = 'RANKING_MOVEMENT' as FeedItemType;
 
 type MovementVerb = 'sobe' | 'sobem' | 'dispara' | 'disparam' | 'cai' | 'caem' | 'desaba' | 'desabam';
 
@@ -33,7 +34,7 @@ export class RankingMovementFeedItemGenerator implements FeedItemGenerator<Ranki
     const headline = this.buildHeadline(input, relevantMovements);
 
     return {
-      type: FeedItemType.RANKING_MOVEMENT,
+      type: RANKING_MOVEMENT_FEED_ITEM_TYPE,
       scope: FeedItemScope.GROUP,
       visibility: FeedItemVisibility.GROUP_MEMBERS,
       groupId: input.groupId,
