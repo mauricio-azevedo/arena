@@ -29,6 +29,8 @@ type MatchIdRow = {
   id: string;
 };
 
+type PrismaClientLike = Prisma.TransactionClient | PrismaService;
+
 const RATING_ALGORITHM = 'BEACH_ELO_V1';
 
 @Injectable()
