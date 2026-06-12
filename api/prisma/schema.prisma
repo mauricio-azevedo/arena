@@ -114,6 +114,7 @@ model Group {
   processingJobs          ProcessingJob[]
   rankingProjection       GroupRankingProjection?
   matchRankingSnapshots   MatchRankingSnapshot[]
+  homeSummary             GroupHomeSummary?
 
   @@index([visibility, createdAt])
   @@index([name])
@@ -320,6 +321,28 @@ model GroupRankingProjection {
   @@index([lastProcessedAt])
 }
 
+model GroupHomeSummary {
+  groupId String @id
+  group   Group  @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  membersCount Int @default(0)
+  leaders      Json @default("[]")
+
+  lastRelevantFeedItemId String?
+  lastRelevantFeedItem   FeedItem? @relation("GroupHomeSummaryLastRelevantFeedItem", fields: [lastRelevantFeedItemId], references: [id], onDelete: SetNull)
+  lastRelevantAt         DateTime?
+
+  projectionStatus GroupRankingProjectionStatus?
+  lastProcessedAt  DateTime?
+  lastError        String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([lastRelevantAt])
+  @@index([projectionStatus])
+}
+
 model RankingMovement {
   id String @id @default(uuid())
 
@@ -408,6 +431,8 @@ model FeedItem {
 
   matchId String?
   match   Match?  @relation(fields: [matchId], references: [id], onDelete: Cascade)
+
+  groupHomeSummaries GroupHomeSummary[] @relation("GroupHomeSummaryLastRelevantFeedItem")
 
   importanceScore Int @default(0)
 
