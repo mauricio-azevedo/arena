@@ -22,6 +22,13 @@ enum MatchTeam {
   TEAM_B
 }
 
+enum MatchProcessingStatus {
+  PENDING
+  PROCESSING
+  PROCESSED
+  FAILED
+}
+
 enum RankingMovementDirection {
   UP
   DOWN
@@ -190,6 +197,11 @@ model Match {
 
   ratingAlgorithm String @default("BEACH_ELO_V1")
 
+  processingStatus MatchProcessingStatus @default(PROCESSED)
+  processedAt      DateTime?
+  processingError   String?
+  deletedAt         DateTime?
+
   playedAt  DateTime @default(now())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -204,6 +216,8 @@ model Match {
   @@index([groupId, playedAt, createdAt])
   @@index([groupId, winnerTeam])
   @@index([groupId, ratingAlgorithm])
+  @@index([groupId, processingStatus])
+  @@index([groupId, deletedAt])
 }
 
 model MatchPlayer {
