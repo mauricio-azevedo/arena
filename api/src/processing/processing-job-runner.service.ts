@@ -33,6 +33,24 @@ type MatchRankingSnapshotRow = {
   movements: unknown;
 };
 
+type RankingMovementFeedMatch = {
+  id: string;
+  groupId: string;
+  gamesA: number;
+  gamesB: number;
+  winnerTeam: MatchTeam | null;
+  playedAt: Date;
+  players: Array<{
+    groupMemberId: string;
+    team: MatchTeam;
+    position: number;
+    groupMember: {
+      userId: string;
+      user: { firstName: string; lastName: string };
+    };
+  }>;
+};
+
 type SnapshotLeadershipContext = {
   previousLeaders: RankingMovementFeedPlayer[];
   currentLeaders: RankingMovementFeedPlayer[];
@@ -367,22 +385,24 @@ export class ProcessingJobRunnerService {
   ): Promise<RankingMovementFeedInput[]> {
     const snapshots = await tx.$queryRaw<MatchRankingSnapshotRow[]>`
       SELECT
-        "matchId",
-        "groupId",
-        "previousLeaders",
-        "currentLeaders",
-        "dethronedLeaders",
-        "movements"
-      FROM "MatchRankingSnapshot"
-      WHERE "groupId" = ${groupId}
-      ORDER BY "createdAt" ASC
+        s."matchId",
+        s."groupId",
+        s."previousLeaders",
+        s."currentLeaders",
+        s."dethronedLeaders",
+        s."movements"
+      FROM "MatchRankingSnapshot" s
+      INNER JOIN "Match" m ON m."id" = s."matchId"
+      WHERE s."groupId" = ${groupId}
+        AND m."deletedAt" IS NULL
+      ORDER BY m."playedAt" ASC, m."createdAt" ASC
     `;
 
     if (snapshots.length === 0) {
       return [];
     }
 
-    const matches = await tx.match.findMany({
+    const matches = (await tx.match.findMany({
       where: {
         id: {
           in: snapshots.map((snapshot) => snapshot.matchId),
@@ -405,7 +425,7 @@ export class ProcessingJobRunnerService {
         },
       },
       orderBy: [{ playedAt: 'asc' }, { createdAt: 'asc' }],
-    });
+    })) as RankingMovementFeedMatch[];
     const matchesById = new Map(matches.map((match) => [match.id, match]));
 
     return snapshots
@@ -415,7 +435,7 @@ export class ProcessingJobRunnerService {
 
   private buildRankingMovementFeedInput(
     snapshot: MatchRankingSnapshotRow,
-    match: Awaited<ReturnType<Prisma.TransactionClient['match']['findMany']>>[number] | null,
+    match: RankingMovementFeedMatch | null,
   ): RankingMovementFeedInput | null {
     if (!match?.winnerTeam) {
       return null;
@@ -482,15 +502,7 @@ export class ProcessingJobRunnerService {
   }
 
   private getRankingMovementMatchTeam(
-    players: Array<{
-      groupMemberId: string;
-      team: MatchTeam;
-      position: number;
-      groupMember: {
-        userId: string;
-        user: { firstName: string; lastName: string };
-      };
-    }>,
+    players: RankingMovementFeedMatch['players'],
     team: MatchTeam,
   ) {
     return players
