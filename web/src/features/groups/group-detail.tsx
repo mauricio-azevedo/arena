@@ -31,7 +31,10 @@ type GroupDetailData = {
 };
 
 export function GroupDetail({ groupId, tab }: Props) {
-  const activeTab = tab === 'matches' || tab === 'members' || tab === 'ranking' ? tab : 'ranking';
+  const activeTab =
+    tab === 'matches' || tab === 'members' || tab === 'activity' || tab === 'ranking'
+      ? tab
+      : 'ranking';
   const [data, setData] = useState<GroupDetailData | null>(null);
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
 
