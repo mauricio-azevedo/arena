@@ -19,12 +19,14 @@ const DEFAULT_LOCK_TIMEOUT_MS = 60_000;
 const DEFAULT_TRANSACTION_TIMEOUT_MS = 60_000;
 const RANKING_MOVEMENT_FEED_THRESHOLD = 2;
 
-type PrismaClientLike = Prisma.TransactionClient | PrismaService;
-
 type MatchMember = {
   id: string;
   userId: string;
   displayName: string;
+};
+
+type MatchIdRow = {
+  id: string;
 };
 
 type RankingMovementProjectionRow = {
@@ -67,6 +69,17 @@ type RankingMovementProjectionRow = {
       };
     }>;
   };
+};
+
+type RankingSnapshotMember = RankingMovementFeedPlayer & {
+  rating: number;
+  rank: number;
+};
+
+type HistoricalLeadershipContext = {
+  previousLeaders: RankingMovementFeedPlayer[];
+  currentLeaders: RankingMovementFeedPlayer[];
+  dethronedLeaders: RankingMovementFeedPlayer[];
 };
 
 @Injectable()
@@ -253,20 +266,6 @@ export class ProcessingJobRunnerService {
       },
       { timeout: this.getTransactionTimeoutMs() },
     );
-  }
-
-  private async isLatestMatch(
-    tx: PrismaClientLike,
-    groupId: string,
-    matchId: string,
-  ) {
-    const latestMatch = await tx.match.findFirst({
-      where: { groupId },
-      orderBy: [{ playedAt: 'desc' }, { createdAt: 'desc' }],
-      select: { id: true },
-    });
-
-    return latestMatch?.id === matchId;
   }
 
   private async syncMatchFeedItems(
@@ -460,7 +459,7 @@ export class ProcessingJobRunnerService {
       return [];
     }
 
-    const currentLeaders = await this.getCurrentLeaders(tx, groupId);
+    const leadershipContexts = await this.buildHistoricalLeadershipContexts(tx, groupId);
     const membersById = await this.buildRankingMovementMemberMap(tx, groupId, historicalMovements);
     const movementsByMatchId = new Map<string, RankingMovementProjectionRow[]>();
 
@@ -471,17 +470,22 @@ export class ProcessingJobRunnerService {
     }
 
     return [...movementsByMatchId.values()]
-      .map((movements) => this.buildRankingMovementFeedInput(movements, membersById, currentLeaders))
+      .map((movements) =>
+        this.buildRankingMovementFeedInput(
+          movements,
+          membersById,
+          leadershipContexts.get(movements[0].matchId) ?? null,
+        ),
+      )
       .filter((input): input is RankingMovementFeedInput => Boolean(input));
   }
 
-  private async getCurrentLeaders(tx: Prisma.TransactionClient, groupId: string) {
-    const leaders = await tx.groupMember.findMany({
-      where: {
-        groupId,
-        leftAt: null,
-        currentRank: 1,
-      },
+  private async buildHistoricalLeadershipContexts(
+    tx: Prisma.TransactionClient,
+    groupId: string,
+  ) {
+    const members = await tx.groupMember.findMany({
+      where: { groupId, leftAt: null },
       include: {
         user: {
           select: {
@@ -490,14 +494,124 @@ export class ProcessingJobRunnerService {
           },
         },
       },
-      orderBy: [{ rating: 'desc' }, { createdAt: 'asc' }],
     });
+    const playersByMemberId = new Map(
+      members.map((member) => [
+        member.id,
+        {
+          groupMemberId: member.id,
+          userId: member.userId,
+          displayName: this.getUserDisplayName(member.user),
+        },
+      ]),
+    );
+    const ratingByMemberId = new Map(members.map((member) => [member.id, 1000]));
+    const activeMatchIds = await tx.$queryRaw<MatchIdRow[]>`
+      SELECT "id"
+      FROM "Match"
+      WHERE "groupId" = ${groupId}
+        AND "deletedAt" IS NULL
+      ORDER BY "playedAt" ASC, "createdAt" ASC
+    `;
 
-    return leaders.map((leader) => this.getRankingMovementFeedPlayer({
-      groupMemberId: leader.id,
-      userId: leader.userId,
-      user: leader.user,
-    }));
+    if (activeMatchIds.length === 0) {
+      return new Map<string, HistoricalLeadershipContext>();
+    }
+
+    const matches = await tx.match.findMany({
+      where: {
+        id: {
+          in: activeMatchIds.map((match) => match.id),
+        },
+      },
+      orderBy: [{ playedAt: 'asc' }, { createdAt: 'asc' }],
+      select: {
+        id: true,
+        players: {
+          select: {
+            groupMemberId: true,
+            ratingAfter: true,
+          },
+        },
+      },
+    });
+    const contextsByMatchId = new Map<string, HistoricalLeadershipContext>();
+
+    for (const match of matches) {
+      const previousRanking = this.buildHistoricalRanking(playersByMemberId, ratingByMemberId);
+
+      for (const player of match.players) {
+        if (ratingByMemberId.has(player.groupMemberId)) {
+          ratingByMemberId.set(player.groupMemberId, player.ratingAfter);
+        }
+      }
+
+      const currentRanking = this.buildHistoricalRanking(playersByMemberId, ratingByMemberId);
+      const previousLeaders = this.getSnapshotLeaders(previousRanking);
+      const currentLeaders = this.getSnapshotLeaders(currentRanking);
+      const dethronedLeaders = previousLeaders.filter((leader) => {
+        const currentMember = currentRanking.get(leader.groupMemberId);
+        return currentMember?.rank !== 1;
+      });
+
+      contextsByMatchId.set(match.id, {
+        previousLeaders,
+        currentLeaders,
+        dethronedLeaders,
+      });
+    }
+
+    return contextsByMatchId;
+  }
+
+  private buildHistoricalRanking(
+    playersByMemberId: Map<string, RankingMovementFeedPlayer>,
+    ratingByMemberId: Map<string, number>,
+  ) {
+    const sortedMembers = [...ratingByMemberId.entries()]
+      .map(([groupMemberId, rating]) => ({
+        ...playersByMemberId.get(groupMemberId),
+        groupMemberId,
+        rating,
+      }))
+      .filter((member): member is RankingMovementFeedPlayer & { rating: number } =>
+        Boolean(member.userId && member.displayName),
+      )
+      .sort((a, b) => {
+        const ratingComparison = b.rating - a.rating;
+
+        if (ratingComparison !== 0) {
+          return ratingComparison;
+        }
+
+        return a.groupMemberId.localeCompare(b.groupMemberId);
+      });
+    const rankingByMemberId = new Map<string, RankingSnapshotMember>();
+    let currentRank = 0;
+    let previousRating: number | null = null;
+
+    for (const member of sortedMembers) {
+      if (previousRating === null || member.rating !== previousRating) {
+        currentRank += 1;
+        previousRating = member.rating;
+      }
+
+      rankingByMemberId.set(member.groupMemberId, {
+        groupMemberId: member.groupMemberId,
+        userId: member.userId,
+        displayName: member.displayName,
+        rating: member.rating,
+        rank: currentRank,
+      });
+    }
+
+    return rankingByMemberId;
+  }
+
+  private getSnapshotLeaders(ranking: Map<string, RankingSnapshotMember>) {
+    return [...ranking.values()]
+      .filter((member) => member.rank === 1)
+      .map((member) => this.toRankingMovementFeedPlayer(member));
   }
 
   private async buildRankingMovementMemberMap(
@@ -543,7 +657,7 @@ export class ProcessingJobRunnerService {
           groupMemberId: member.id,
           userId: member.userId,
           displayName: this.getUserDisplayName(member.user),
-          rank: member.currentRank ?? null,
+          rank: null,
         },
       ]),
     );
@@ -552,7 +666,7 @@ export class ProcessingJobRunnerService {
   private buildRankingMovementFeedInput(
     movements: RankingMovementProjectionRow[],
     membersById: Map<string, RankingMovementFeedAffectedMember>,
-    currentLeaders: RankingMovementFeedPlayer[],
+    leadershipContext: HistoricalLeadershipContext | null,
   ): RankingMovementFeedInput | null {
     const firstMovement = movements[0];
     const match = firstMovement?.match;
@@ -579,7 +693,7 @@ export class ProcessingJobRunnerService {
       winners: match.winnerTeam === MatchTeam.TEAM_A ? teamA : teamB,
       losers: match.winnerTeam === MatchTeam.TEAM_A ? teamB : teamA,
       movements: feedMovements,
-      leadershipChange: this.getLeadershipChange(feedMovements, currentLeaders),
+      leadershipChange: this.getLeadershipChange(feedMovements, leadershipContext),
       occurredAt: match.playedAt,
     };
   }
@@ -612,64 +726,71 @@ export class ProcessingJobRunnerService {
 
   private getLeadershipChange(
     movements: RankingMovementFeedMovement[],
-    currentLeaders: RankingMovementFeedPlayer[],
+    leadershipContext: HistoricalLeadershipContext | null,
   ) {
     const upToLeadership = movements.filter(
       (movement) => movement.direction === 'UP' && movement.currentRank === 1,
     );
-    const dethronedLeaders = movements.filter(
+    const dethronedLeaderMovements = movements.filter(
       (movement) => movement.direction === 'DOWN' && movement.previousRank === 1,
     );
 
-    if (upToLeadership.length === 0 && dethronedLeaders.length === 0) {
+    if (upToLeadership.length === 0 && dethronedLeaderMovements.length === 0) {
       return null;
     }
 
     const previousLeaderMap = new Map<string, RankingMovementFeedPlayer>();
-
-    for (const movement of dethronedLeaders) {
-      previousLeaderMap.set(movement.groupMemberId, this.toRankingMovementFeedPlayer(movement));
-    }
-
-    for (const movement of upToLeadership) {
-      for (const affectedMember of movement.affectedMembers) {
-        if (affectedMember.groupMemberId !== movement.groupMemberId) {
-          previousLeaderMap.set(affectedMember.groupMemberId, this.toRankingMovementFeedPlayer(affectedMember));
-        }
-      }
-    }
-
     const currentLeaderMap = new Map<string, RankingMovementFeedPlayer>();
-    const movedToLeadershipIds = new Set(upToLeadership.map((movement) => movement.groupMemberId));
+    const dethronedLeaderMap = new Map<string, RankingMovementFeedPlayer>();
+
+    for (const leader of leadershipContext?.previousLeaders ?? []) {
+      previousLeaderMap.set(leader.groupMemberId, leader);
+    }
 
     for (const movement of upToLeadership) {
       currentLeaderMap.set(movement.groupMemberId, this.toRankingMovementFeedPlayer(movement));
+
+      for (const affectedMember of movement.affectedMembers) {
+        previousLeaderMap.set(affectedMember.groupMemberId, this.toRankingMovementFeedPlayer(affectedMember));
+      }
     }
 
-    if (dethronedLeaders.length > 0 && currentLeaderMap.size === 0) {
-      for (const movement of dethronedLeaders) {
-        const likelyNewLeader = movement.affectedMembers.find(
-          (member) => !previousLeaderMap.has(member.groupMemberId),
-        );
+    for (const movement of dethronedLeaderMovements) {
+      const dethronedLeader = this.toRankingMovementFeedPlayer(movement);
+      previousLeaderMap.set(movement.groupMemberId, dethronedLeader);
+      dethronedLeaderMap.set(movement.groupMemberId, dethronedLeader);
+    }
 
-        if (likelyNewLeader) {
-          currentLeaderMap.set(likelyNewLeader.groupMemberId, this.toRankingMovementFeedPlayer(likelyNewLeader));
+    if (dethronedLeaderMovements.length > 0) {
+      for (const leader of leadershipContext?.currentLeaders ?? []) {
+        if (!dethronedLeaderMap.has(leader.groupMemberId)) {
+          currentLeaderMap.set(leader.groupMemberId, leader);
         }
       }
     }
 
-    if (dethronedLeaders.length > 0 && currentLeaderMap.size === 0) {
-      for (const leader of currentLeaders) {
-        currentLeaderMap.set(leader.groupMemberId, leader);
+    if (dethronedLeaderMovements.length > 0 && currentLeaderMap.size === 0) {
+      for (const movement of dethronedLeaderMovements) {
+        const likelyHistoricalLeader = movement.affectedMembers.find(
+          (member) => !previousLeaderMap.has(member.groupMemberId),
+        );
+
+        if (likelyHistoricalLeader) {
+          currentLeaderMap.set(
+            likelyHistoricalLeader.groupMemberId,
+            this.toRankingMovementFeedPlayer(likelyHistoricalLeader),
+          );
+        }
       }
     }
 
     return {
       previousLeaders: [...previousLeaderMap.values()],
-      currentLeaders: [...currentLeaderMap.values()].filter(
-        (leader) => dethronedLeaders.length > 0 || movedToLeadershipIds.has(leader.groupMemberId),
-      ),
-      dethronedLeaders: dethronedLeaders.map((movement) => this.toRankingMovementFeedPlayer(movement)),
+      currentLeaders: [...currentLeaderMap.values()],
+      dethronedLeaders:
+        dethronedLeaderMap.size > 0
+          ? [...dethronedLeaderMap.values()]
+          : leadershipContext?.dethronedLeaders ?? [],
     };
   }
 
@@ -695,24 +816,12 @@ export class ProcessingJobRunnerService {
   }
 
   private toRankingMovementFeedPlayer(
-    player: RankingMovementFeedAffectedMember | RankingMovementFeedMovement,
+    player: RankingMovementFeedAffectedMember | RankingMovementFeedMovement | RankingSnapshotMember,
   ): RankingMovementFeedPlayer {
     return {
       groupMemberId: player.groupMemberId,
       userId: player.userId,
       displayName: player.displayName,
-    };
-  }
-
-  private getRankingMovementFeedPlayer(input: {
-    groupMemberId: string;
-    userId: string;
-    user: { firstName: string; lastName: string };
-  }): RankingMovementFeedPlayer {
-    return {
-      groupMemberId: input.groupMemberId,
-      userId: input.userId,
-      displayName: this.getUserDisplayName(input.user),
     };
   }
 
