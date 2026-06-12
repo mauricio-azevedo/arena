@@ -3,6 +3,7 @@ import { PrismaModule } from '../prisma/prisma.module';
 import { FeedModule } from '../feed/feed.module';
 import { RankingModule } from '../ranking/ranking.module';
 import { AuthModule } from '../auth/auth.module';
+import { GroupsModule } from '../groups/groups.module';
 import { RatingProjectionService } from '../rating/rating-projection.service';
 import { ProcessingController } from './processing.controller';
 import { ProcessingJobReaderService } from './processing-job-reader.service';
@@ -11,7 +12,7 @@ import { ProcessingJobWriterService } from './processing-job-writer.service';
 import { ProcessingWorkerService } from './processing-worker.service';
 
 @Module({
-  imports: [PrismaModule, FeedModule, RankingModule, AuthModule],
+  imports: [PrismaModule, FeedModule, RankingModule, AuthModule, GroupsModule],
   controllers: [ProcessingController],
   providers: [
     RatingProjectionService,
