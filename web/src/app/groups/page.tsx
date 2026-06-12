@@ -3,16 +3,16 @@ import { Plus } from 'lucide-react';
 import { AppShell } from '@/components/app-shell';
 import { PageHeader } from '@/components/page-header';
 import { Button } from '@/components/ui/button';
-import { MyGroupsList } from '@/features/groups/components/my-groups-list';
+import { GroupHomeList } from '@/features/groups/components/group-home-list';
 
 export default function GroupsPage() {
   return (
     <AppShell>
       <div className="space-y-6">
         <PageHeader
-          eyebrow="Comunidades"
+          eyebrow="Grupos"
           title="Seus grupos"
-          description="Entre nos grupos onde você joga, registre partidas e acompanhe o ranking da galera."
+          description="Acompanhe onde você está no ranking, quem lidera e o que mudou em cada grupo."
           action={
             <Button asChild size="icon" variant="outline" className="rounded-full">
               <Link href="/groups/new">
@@ -23,7 +23,7 @@ export default function GroupsPage() {
           }
         />
 
-        <MyGroupsList />
+        <GroupHomeList />
       </div>
     </AppShell>
   );
