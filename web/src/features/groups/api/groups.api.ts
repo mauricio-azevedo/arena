@@ -1,5 +1,6 @@
 import { apiRequest } from '@/lib/api-client';
 import type { Group, GroupMember, MyGroup } from '@/types/api';
+import type { GroupHomeCard } from '@/features/groups/types/group-home.type';
 
 export function getGroups(): Promise<Group[]> {
   return apiRequest<Group[]>('/groups', {
@@ -9,6 +10,13 @@ export function getGroups(): Promise<Group[]> {
 
 export function getGroup(groupId: string): Promise<Group> {
   return apiRequest<Group>(`/groups/${groupId}`, {
+    cache: 'no-store',
+  });
+}
+
+export function getGroupHome(token?: string): Promise<GroupHomeCard[]> {
+  return apiRequest<GroupHomeCard[]>('/groups/home', {
+    token,
     cache: 'no-store',
   });
 }
