@@ -7,3 +7,10 @@ export function getFeed(token: string): Promise<FeedItem[]> {
     cache: 'no-store',
   });
 }
+
+export function getGroupFeed(groupId: string, token: string): Promise<FeedItem[]> {
+  return apiRequest<FeedItem[]>(`/feed/groups/${groupId}`, {
+    token,
+    cache: 'no-store',
+  });
+}
