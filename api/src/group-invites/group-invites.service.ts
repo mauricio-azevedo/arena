@@ -8,12 +8,14 @@ import { randomBytes } from 'crypto';
 import { GroupMemberRole } from '../generated/prisma/enums';
 import { PrismaService } from '../prisma/prisma.service';
 import { FeedOrchestratorService } from '../feed/feed-orchestrator.service';
+import { GroupHomeSummaryService } from '../groups/group-home-summary.service';
 
 @Injectable()
 export class GroupInvitesService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly feedOrchestrator: FeedOrchestratorService,
+    private readonly groupHomeSummary: GroupHomeSummaryService,
   ) {}
 
   async create(
@@ -221,6 +223,8 @@ export class GroupInvitesService {
           tx,
         );
       }
+
+      await this.groupHomeSummary.syncGroupSummary(groupId, tx);
 
       return tx.groupMember.findUnique({
         where: { id: membership.id },
