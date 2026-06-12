@@ -10,6 +10,7 @@ import type {
 } from '../feed/types/ranking-movement-feed-input.type';
 import { RatingProjectionService } from '../rating/rating-projection.service';
 import { RankingMovementService } from '../ranking/ranking-movement.service';
+import { GroupHomeSummaryService } from '../groups/group-home-summary.service';
 import { MatchTeam } from '../generated/prisma/enums';
 import { errorLogFields, structuredLog } from '../observability/structured-log';
 import type { ProcessingJob } from './processing-job.types';
@@ -69,6 +70,7 @@ export class ProcessingJobRunnerService {
     private readonly ratingProjection: RatingProjectionService,
     private readonly rankingMovements: RankingMovementService,
     private readonly feed: FeedOrchestratorService,
+    private readonly groupHomeSummary: GroupHomeSummaryService,
   ) {}
 
   async runNextBatch(limit = 5) {
@@ -243,6 +245,7 @@ export class ProcessingJobRunnerService {
 
         await this.syncGroupRankingMovementFeedItems(tx, groupId);
         await this.markProjectionCurrent(tx, groupId, changedMatchId);
+        await this.groupHomeSummary.syncGroupSummary(groupId, tx);
       },
       { timeout: this.getTransactionTimeoutMs() },
     );
@@ -608,6 +611,8 @@ export class ProcessingJobRunnerService {
         "lastError" = NULL,
         "updatedAt" = NOW()
     `;
+
+    await this.groupHomeSummary.syncGroupSummary(job.groupId);
   }
 
   private async markProjectionCurrent(
@@ -655,6 +660,8 @@ export class ProcessingJobRunnerService {
         "lastError" = ${message},
         "updatedAt" = NOW()
     `;
+
+    await this.groupHomeSummary.syncGroupSummary(job.groupId);
   }
 
   private async markDone(jobId: string) {
