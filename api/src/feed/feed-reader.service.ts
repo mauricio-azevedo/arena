@@ -155,7 +155,7 @@ export class FeedReaderService {
           lastName: true,
         },
       },
-    };
+    } as const;
   }
 
   private toFeedItem(
