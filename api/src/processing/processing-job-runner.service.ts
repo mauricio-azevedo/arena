@@ -217,24 +217,35 @@ export class ProcessingJobRunnerService {
         if (!job.matchId) {
           throw new Error('Match processing job requires matchId');
         }
-        await this.processGroupProjectionJob(job.groupId, job.matchId);
+        await this.processGroupProjectionJob(job.groupId, job.matchId, false);
         break;
       case 'MATCH_DELETED':
+        if (!job.matchId) {
+          throw new Error('Deleted match processing job requires matchId');
+        }
+        await this.processGroupProjectionJob(job.groupId, job.matchId, true);
+        break;
       case 'GROUP_RANKING_REBUILD':
-        await this.processGroupProjectionJob(job.groupId, null);
+        await this.processGroupProjectionJob(job.groupId, null, false);
         break;
       default:
         throw new Error(`Unsupported processing job type: ${job.type}`);
     }
   }
 
-  private async processGroupProjectionJob(groupId: string, changedMatchId: string | null) {
+  private async processGroupProjectionJob(
+    groupId: string,
+    changedMatchId: string | null,
+    deleteChangedMatchFeed: boolean,
+  ) {
     await this.prisma.$transaction(
       async (tx) => {
         await this.ratingProjection.syncGroupRatings(tx, groupId);
         await this.rankingMovements.syncGroupRankingState(tx, groupId);
 
-        if (changedMatchId) {
+        if (changedMatchId && deleteChangedMatchFeed) {
+          await this.deleteMatchFeedItems(tx, groupId, changedMatchId);
+        } else if (changedMatchId) {
           await this.syncMatchFeedItems(tx, groupId, changedMatchId);
         }
 
@@ -347,6 +358,27 @@ export class ProcessingJobRunnerService {
         groupId,
         matchId,
         winnerTeam: match.winnerTeam,
+      }),
+    );
+  }
+
+  private async deleteMatchFeedItems(
+    tx: Prisma.TransactionClient,
+    groupId: string,
+    matchId: string,
+  ) {
+    const result = await tx.feedItem.deleteMany({
+      where: {
+        groupId,
+        matchId,
+      },
+    });
+
+    this.logger.log(
+      structuredLog('feed_projection.deleted_match_items', {
+        groupId,
+        matchId,
+        deletedCount: result.count,
       }),
     );
   }
