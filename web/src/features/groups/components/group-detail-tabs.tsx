@@ -6,8 +6,12 @@ import type { GroupMember, Match, RankingMovement } from '@/types/api';
 import { Card, CardContent } from '@/components/ui/card';
 import { MatchesList } from '@/features/matches/components/matches-list';
 import { UserNameLink } from '@/features/users/components/user-name-link';
+import { getAccessToken } from '@/lib/auth';
+import { getGroupFeed } from '@/features/feed/feed.api';
+import { FeedItemCard } from '@/features/feed/components/feed-item-card';
+import type { FeedItem } from '@/features/feed/types/feed-item.type';
 
-type GroupTab = 'ranking' | 'matches' | 'members';
+type GroupTab = 'ranking' | 'matches' | 'activity' | 'members';
 
 type Props = {
   groupId: string;
@@ -21,6 +25,7 @@ type Props = {
 const tabs: { value: GroupTab; label: string }[] = [
   { value: 'ranking', label: 'Ranking' },
   { value: 'matches', label: 'Partidas' },
+  { value: 'activity', label: 'Atividade' },
   { value: 'members', label: 'Membros' },
 ];
 
@@ -51,14 +56,14 @@ export function GroupDetailTabs({
 
   return (
     <div className="space-y-5">
-      <div className="br-liquid-glass br-hairline grid grid-cols-3 rounded-[1.85rem] p-1.5 text-sm font-semibold">
+      <div className="br-liquid-glass br-hairline grid grid-cols-4 rounded-[1.85rem] p-1.5 text-sm font-semibold">
         {tabs.map((tab) => (
           <button
             key={tab.value}
             type="button"
             onClick={() => setTab(tab.value)}
             aria-current={selectedTab === tab.value ? 'page' : undefined}
-            className={`br-pressable rounded-[1.45rem] px-3 py-2.5 transition-all ${
+            className={`br-pressable rounded-[1.45rem] px-2 py-2.5 transition-all sm:px-3 ${
               selectedTab === tab.value
                 ? 'bg-foreground text-background shadow-[0_12px_28px_color-mix(in_oklch,var(--foreground)_18%,transparent)]'
                 : 'text-muted-foreground hover:bg-white/45 hover:text-foreground dark:hover:bg-white/10'
@@ -73,6 +78,7 @@ export function GroupDetailTabs({
       {selectedTab === 'matches' && (
         <MatchesTab matches={matches} groupId={groupId} canManage={canManageMatches} />
       )}
+      {selectedTab === 'activity' && <ActivityTab groupId={groupId} />}
       {selectedTab === 'members' && <MembersTab members={members} />}
     </div>
   );
@@ -174,6 +180,83 @@ function MatchesTab({
       emptyTitle="Nenhuma partida registrada"
       emptyDescription="Quando o grupo registrar partidas, elas aparecem aqui."
     />
+  );
+}
+
+function ActivityTab({ groupId }: { groupId: string }) {
+  const [items, setItems] = useState<FeedItem[]>([]);
+  const [status, setStatus] = useState<'idle' | 'loading' | 'ready' | 'signed-out' | 'error'>('idle');
+
+  useEffect(() => {
+    let isCurrent = true;
+    const token = getAccessToken();
+
+    if (!token) {
+      setStatus('signed-out');
+      return;
+    }
+
+    async function loadActivity(authToken: string) {
+      setStatus('loading');
+
+      try {
+        const data = await getGroupFeed(groupId, authToken);
+
+        if (!isCurrent) {
+          return;
+        }
+
+        setItems(data);
+        setStatus('ready');
+      } catch {
+        if (!isCurrent) {
+          return;
+        }
+
+        setStatus('error');
+      }
+    }
+
+    loadActivity(token);
+
+    return () => {
+      isCurrent = false;
+    };
+  }, [groupId]);
+
+  if (status === 'loading' || status === 'idle') {
+    return <ActivityStateCard title="Carregando atividade" description="Buscando os acontecimentos mais recentes da arena." />;
+  }
+
+  if (status === 'signed-out') {
+    return <ActivityStateCard title="Entre para ver a atividade" description="A atividade do grupo fica disponível para membros autenticados." />;
+  }
+
+  if (status === 'error') {
+    return <ActivityStateCard title="Não foi possível carregar a atividade" description="Verifique sua conexão e tente novamente." />;
+  }
+
+  if (items.length === 0) {
+    return <ActivityStateCard title="Nada aconteceu ainda" description="Quando partidas e mudanças de ranking forem registradas, elas aparecem aqui." />;
+  }
+
+  return (
+    <section className="space-y-3">
+      {items.map((item) => (
+        <FeedItemCard key={item.id} item={item} context="group" />
+      ))}
+    </section>
+  );
+}
+
+function ActivityStateCard({ title, description }: { title: string; description: string }) {
+  return (
+    <Card>
+      <CardContent className="space-y-1 p-4">
+        <p className="text-sm font-medium">{title}</p>
+        <p className="text-sm leading-6 text-muted-foreground">{description}</p>
+      </CardContent>
+    </Card>
   );
 }
 

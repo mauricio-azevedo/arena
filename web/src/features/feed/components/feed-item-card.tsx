@@ -14,6 +14,7 @@ import { RankingMovementFeedCard } from './ranking-movement-feed-card';
 
 type Props = {
   item: FeedItem;
+  context?: 'global' | 'group';
 };
 
 type FeedPlayer = {
@@ -22,13 +23,13 @@ type FeedPlayer = {
   displayName: string;
 };
 
-export function FeedItemCard({ item }: Props) {
+export function FeedItemCard({ item, context = 'global' }: Props) {
   if (item.type === 'MATCH_BLOWOUT') {
-    return <DominantWinFeedCard item={item} />;
+    return <DominantWinFeedCard item={item} context={context} />;
   }
 
   if (item.type === 'MATCH_CLOSE') {
-    return <CloseMatchFeedCard item={item} />;
+    return <CloseMatchFeedCard item={item} context={context} />;
   }
 
   if (item.type === 'RANKING_MOVEMENT') {
@@ -66,7 +67,7 @@ export function FeedItemCard({ item }: Props) {
   );
 }
 
-function DominantWinFeedCard({ item }: { item: FeedItem }) {
+function DominantWinFeedCard({ item, context }: { item: FeedItem; context: 'global' | 'group' }) {
   const metadata = item.metadata as DominantWinFeedMetadata;
   const winnerScore = Math.max(metadata.gamesA, metadata.gamesB);
   const loserScore = Math.min(metadata.gamesA, metadata.gamesB);
@@ -95,7 +96,7 @@ function DominantWinFeedCard({ item }: { item: FeedItem }) {
               <span className="text-lg font-bold leading-none tracking-[-0.035em] text-foreground">
                 {winnerScore}–{loserScore}
               </span>
-              <FeedGroupSuffix item={item} />
+              <FeedGroupSuffix item={item} context={context} />
             </p>
           </div>
         </div>
@@ -104,7 +105,7 @@ function DominantWinFeedCard({ item }: { item: FeedItem }) {
   );
 }
 
-function CloseMatchFeedCard({ item }: { item: FeedItem }) {
+function CloseMatchFeedCard({ item, context }: { item: FeedItem; context: 'global' | 'group' }) {
   const metadata = item.metadata as CloseMatchFeedMetadata;
   const winnerScore = Math.max(metadata.gamesA, metadata.gamesB);
   const loserScore = Math.min(metadata.gamesA, metadata.gamesB);
@@ -133,7 +134,7 @@ function CloseMatchFeedCard({ item }: { item: FeedItem }) {
               <span className="text-lg font-bold leading-none tracking-[-0.035em] text-foreground">
                 {winnerScore}–{loserScore}
               </span>
-              <FeedGroupSuffix item={item} />
+              <FeedGroupSuffix item={item} context={context} />
             </p>
           </div>
         </div>
@@ -211,7 +212,11 @@ function FeedPlayerNames({ players }: { players: FeedPlayer[] }) {
   );
 }
 
-function FeedGroupSuffix({ item }: { item: FeedItem }) {
+function FeedGroupSuffix({ item, context }: { item: FeedItem; context: 'global' | 'group' }) {
+  if (context === 'group') {
+    return <>.</>;
+  }
+
   if (!item.group?.name) {
     return <>.</>;
   }
