@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { FeedScoreService } from './feed-score.service';
 
@@ -81,32 +81,93 @@ export class FeedReaderService {
         },
       ],
       take: 30,
-      include: {
-        group: {
-          select: {
-            id: true,
-            name: true,
-            description: true,
-          },
-        },
-        actorUser: {
-          select: {
-            id: true,
-            firstName: true,
-            lastName: true,
-          },
-        },
-        subjectUser: {
-          select: {
-            id: true,
-            firstName: true,
-            lastName: true,
-          },
-        },
-      },
+      include: this.getFeedItemInclude(),
     });
 
-    return items.map((item) => ({
+    return items.map((item) => this.toFeedItem(item, userId));
+  }
+
+  async findGroupFeed(userId: string, groupId: string) {
+    const group = await this.prisma.group.findUnique({
+      where: { id: groupId },
+      select: { id: true },
+    });
+
+    if (!group) {
+      throw new NotFoundException('Group not found');
+    }
+
+    const membership = await this.prisma.groupMember.findFirst({
+      where: {
+        groupId,
+        userId,
+        leftAt: null,
+      },
+      select: { id: true },
+    });
+
+    if (!membership) {
+      throw new ForbiddenException('You must be a group member to view group activity');
+    }
+
+    const items = await this.prisma.feedItem.findMany({
+      where: {
+        groupId,
+        visibility: {
+          in: ['GROUP_MEMBERS', 'SOCIAL_CIRCLE', 'PUBLIC'],
+        },
+      },
+      orderBy: [
+        {
+          occurredAt: 'desc',
+        },
+        {
+          createdAt: 'desc',
+        },
+      ],
+      take: 50,
+      include: this.getFeedItemInclude(),
+    });
+
+    return items.map((item) => this.toFeedItem(item, userId));
+  }
+
+  private getFeedItemInclude() {
+    return {
+      group: {
+        select: {
+          id: true,
+          name: true,
+          description: true,
+        },
+      },
+      actorUser: {
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+        },
+      },
+      subjectUser: {
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+        },
+      },
+    };
+  }
+
+  private toFeedItem(
+    item: {
+      actorUserId: string | null;
+      subjectUserId: string | null;
+      importanceScore: number;
+      occurredAt: Date;
+    },
+    userId: string,
+  ) {
+    return {
       ...item,
       isActorCurrentUser: item.actorUserId === userId,
       isSubjectCurrentUser: item.subjectUserId === userId,
@@ -114,6 +175,6 @@ export class FeedReaderService {
         importanceScore: item.importanceScore,
         occurredAt: item.occurredAt,
       }),
-    }));
+    };
   }
 }
