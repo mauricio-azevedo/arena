@@ -6,12 +6,14 @@ import {
 import { GroupMemberRole } from '../generated/prisma/enums';
 import { PrismaService } from '../prisma/prisma.service';
 import { FeedOrchestratorService } from '../feed/feed-orchestrator.service';
+import { GroupHomeSummaryService } from './group-home-summary.service';
 
 @Injectable()
 export class GroupsService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly feedOrchestrator: FeedOrchestratorService,
+    private readonly groupHomeSummary: GroupHomeSummaryService,
   ) {}
 
   async create(body: {
@@ -64,6 +66,8 @@ export class GroupsService {
         },
         tx,
       );
+
+      await this.groupHomeSummary.syncGroupSummary(group.id, tx);
 
       return tx.group.findUnique({
         where: { id: group.id },
