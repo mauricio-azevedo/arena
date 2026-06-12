@@ -9,6 +9,7 @@ const RATING_ALGORITHM = 'BEACH_ELO_V1';
 
 type RatingState = {
   id: string;
+  name: string;
   userId: string;
   displayName: string;
   rating: number;
@@ -76,15 +77,20 @@ export class RatingProjectionService {
     });
 
     const membersById = new Map<string, RatingState>(
-      members.map((member) => [
-        member.id,
-        {
-          id: member.id,
-          userId: member.userId,
-          displayName: this.getUserDisplayName(member.user),
-          rating: INITIAL_RATING,
-        },
-      ]),
+      members.map((member) => {
+        const displayName = this.getUserDisplayName(member.user);
+
+        return [
+          member.id,
+          {
+            id: member.id,
+            name: displayName,
+            userId: member.userId,
+            displayName,
+            rating: INITIAL_RATING,
+          },
+        ];
+      }),
     );
 
     const activeMatchIds = await tx.$queryRaw<MatchIdRow[]>`
