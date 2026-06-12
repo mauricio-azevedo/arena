@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { Prisma } from '../generated/prisma/client';
 import type { FeedItemType, GroupMemberRole, GroupRankingProjectionStatus } from '../generated/prisma/enums';
 import { PrismaService } from '../prisma/prisma.service';
 
@@ -209,7 +210,7 @@ export class GroupHomeService {
         "lastProcessedAt",
         "lastError"
       FROM "GroupHomeSummary"
-      WHERE "groupId" IN (${PrismaService.join(groupIds)})
+      WHERE "groupId" IN (${Prisma.join(groupIds)})
     `;
 
     return new Map(rows.map((row) => [row.groupId, row]));
@@ -225,26 +226,23 @@ export class GroupHomeService {
 
     const visibilityFilter =
       audience === 'member'
-        ? `AND "visibility" IN ('GROUP_MEMBERS', 'SOCIAL_CIRCLE', 'PUBLIC')`
-        : `AND "visibility" = 'PUBLIC'`;
+        ? Prisma.sql`AND "visibility" IN ('GROUP_MEMBERS', 'SOCIAL_CIRCLE', 'PUBLIC')`
+        : Prisma.sql`AND "visibility" = 'PUBLIC'`;
 
-    const rows = await this.prisma.$queryRawUnsafe<Array<LastRelevantActivity & { groupId: string }>>(
-      `
-        SELECT DISTINCT ON ("groupId")
-          "groupId",
-          "id",
-          "type",
-          "occurredAt",
-          "importanceScore",
-          "metadata"
-        FROM "FeedItem"
-        WHERE "groupId" = ANY($1)
-          AND "type" NOT IN ('MEMBER_JOINED', 'GROUP_CREATED')
-          ${visibilityFilter}
-        ORDER BY "groupId", "occurredAt" DESC, "createdAt" DESC
-      `,
-      groupIds,
-    );
+    const rows = await this.prisma.$queryRaw<Array<LastRelevantActivity & { groupId: string }>>`
+      SELECT DISTINCT ON ("groupId")
+        "groupId",
+        "id",
+        "type",
+        "occurredAt",
+        "importanceScore",
+        "metadata"
+      FROM "FeedItem"
+      WHERE "groupId" IN (${Prisma.join(groupIds)})
+        AND "type" NOT IN ('MEMBER_JOINED', 'GROUP_CREATED')
+        ${visibilityFilter}
+      ORDER BY "groupId", "occurredAt" DESC, "createdAt" DESC
+    `;
 
     return new Map(rows.map((row) => [row.groupId, this.toActivity(row)]));
   }
@@ -351,7 +349,10 @@ export class GroupHomeService {
       return priorityComparison;
     }
 
-    return this.getTime(b.activity.lastRelevantAt ?? b.group.updatedAt) - this.getTime(a.activity.lastRelevantAt ?? a.group.updatedAt);
+    return (
+      this.getTime(b.activity.lastRelevantAt ?? b.group.updatedAt) -
+      this.getTime(a.activity.lastRelevantAt ?? a.group.updatedAt)
+    );
   }
 
   private comparePublicCards(
