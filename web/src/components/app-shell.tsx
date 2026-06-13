@@ -58,7 +58,7 @@ export function AppShell({ children }: AppShellProps) {
         }
 
         setAccessState('redirecting');
-        router.replace(getSafeRedirectUrl(getRedirectParam()) ?? '/groups');
+        router.replace(getSafeRedirectUrl(getRedirectParam()) ?? '/');
         return;
       }
 
@@ -101,7 +101,7 @@ export function AppShell({ children }: AppShellProps) {
         }
 
         setAccessState('redirecting');
-        router.replace('/groups');
+        router.replace('/');
       }
     }
 
