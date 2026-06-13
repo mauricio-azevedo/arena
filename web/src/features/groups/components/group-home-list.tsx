@@ -307,7 +307,7 @@ function PublicSuggestionIntro({ hasToken }: { hasToken: boolean }) {
 
         {!hasToken && (
           <Button asChild variant="outline" className="shrink-0">
-            <Link href="/login?redirect=/groups">Entrar</Link>
+            <Link href="/login?redirect=/">Entrar</Link>
           </Button>
         )}
       </CardContent>
@@ -381,13 +381,13 @@ function GroupHomeEmptyState({ hasToken }: { hasToken: boolean }) {
             </Button>
           ) : (
             <Button asChild>
-              <Link href="/login?redirect=/groups">Entrar</Link>
+              <Link href="/login?redirect=/">Entrar</Link>
             </Button>
           )}
 
           {!hasToken && (
             <Button asChild variant="outline">
-              <Link href="/register?redirect=/groups">Criar conta</Link>
+              <Link href="/register?redirect=/">Criar conta</Link>
             </Button>
           )}
         </div>
