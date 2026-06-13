@@ -131,6 +131,18 @@
 
     body {
         @apply min-h-screen bg-background text-foreground antialiased;
+        position: relative;
+        background: var(--background);
+        text-rendering: optimizeLegibility;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    body::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
         background:
                 radial-gradient(
                         circle at 92% 8%,
@@ -148,10 +160,13 @@
                         var(--background) 100%,
                         color-mix(in oklch, var(--background) 0%, var(--accent)) 0%
                 );
-        background-attachment: fixed;
         background-repeat: no-repeat;
-        text-rendering: optimizeLegibility;
-        -webkit-tap-highlight-color: transparent;
+        background-size: 100vw 100dvh;
+    }
+
+    body > * {
+        position: relative;
+        z-index: 1;
     }
 
     button,
