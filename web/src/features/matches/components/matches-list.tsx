@@ -160,7 +160,7 @@ export function MatchCard({
               <p className="mt-1 text-xs text-muted-foreground">{formatDate(match.playedAt)}</p>
             </div>
 
-            <div className="rounded-xl border bg-muted px-3 py-2 text-right">
+            <div className="rounded-[1.5rem] bg-muted px-3 py-2 text-right">
               <p className="text-2xl font-semibold leading-none tracking-[-0.04em] text-foreground">
                 {match.gamesA}–{match.gamesB}
               </p>
@@ -217,8 +217,8 @@ function MatchTeam({
 }) {
   return (
     <div
-      className={`flex min-w-0 items-center gap-3 rounded-xl border px-3 py-2.5 ${
-        isWinner ? 'bg-muted text-foreground' : 'bg-background text-muted-foreground'
+      className={`flex min-w-0 items-center gap-3 rounded-[1.5rem] px-3 py-2.5 ${
+        isWinner ? 'bg-muted text-foreground' : 'bg-background/65 text-muted-foreground'
       }`}
     >
       <div
