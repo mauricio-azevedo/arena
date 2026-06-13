@@ -97,10 +97,10 @@ function GroupHomeCardView({ item }: { item: GroupHomeCard }) {
 
   return (
     <Link href={`/groups/${item.group.id}`} className="block">
-      <Card className="br-pressable hover:border-foreground/20">
+      <Card className="br-pressable hover:bg-card/95">
         <CardContent className="space-y-4 p-4">
           <div className="flex items-start gap-3">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border bg-muted text-sm font-semibold text-foreground">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-muted text-sm font-semibold text-foreground">
               {getGroupInitials(item.group.name)}
             </div>
 
@@ -110,7 +110,7 @@ function GroupHomeCardView({ item }: { item: GroupHomeCard }) {
                   {item.group.name}
                 </h2>
                 {isMember && item.currentUser?.role === 'ADMIN' && (
-                  <span className="shrink-0 rounded-full border px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
+                  <span className="shrink-0 rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
                     Admin
                   </span>
                 )}
@@ -142,7 +142,7 @@ function GroupHomeCardView({ item }: { item: GroupHomeCard }) {
 function CurrentUserStanding({ item }: { item: GroupHomeCard }) {
   if (!item.currentUser) {
     return (
-      <div className="rounded-xl border bg-muted/35 px-3 py-3">
+      <div className="rounded-[1.5rem] bg-muted/35 px-3 py-3">
         <p className="text-xs font-medium text-muted-foreground">Grupo público</p>
         <p className="mt-1 text-sm font-medium text-foreground">Entre para competir</p>
       </div>
@@ -153,7 +153,7 @@ function CurrentUserStanding({ item }: { item: GroupHomeCard }) {
 
   if (standing.kind === 'UNRANKED') {
     return (
-      <div className="rounded-xl border bg-muted/35 px-3 py-3">
+      <div className="rounded-[1.5rem] bg-muted/35 px-3 py-3">
         <p className="text-xs font-medium text-muted-foreground">Você</p>
         <p className="mt-1 text-sm font-medium text-foreground">Ainda sem ranking</p>
         <p className="mt-1 text-xs text-muted-foreground">
@@ -167,7 +167,7 @@ function CurrentUserStanding({ item }: { item: GroupHomeCard }) {
   const isLeader = standing.rank === 1;
 
   return (
-    <div className="rounded-xl border bg-muted/35 px-3 py-3">
+    <div className="rounded-[1.5rem] bg-muted/35 px-3 py-3">
       <p className="text-xs font-medium text-muted-foreground">Você</p>
       <div className="mt-1 flex items-center gap-2">
         <p className="text-sm font-medium text-foreground">
@@ -185,7 +185,7 @@ function LeadershipSummary({ item }: { item: GroupHomeCard }) {
 
   if (leaders.length === 0) {
     return (
-      <div className="rounded-xl border bg-muted/35 px-3 py-3">
+      <div className="rounded-[1.5rem] bg-muted/35 px-3 py-3">
         <p className="text-xs font-medium text-muted-foreground">Liderança</p>
         <p className="mt-1 text-sm font-medium text-foreground">Ranking ainda não começou</p>
       </div>
@@ -196,7 +196,7 @@ function LeadershipSummary({ item }: { item: GroupHomeCard }) {
   const rating = Math.round(leaders[0]?.rating ?? 0);
 
   return (
-    <div className="rounded-xl border bg-muted/35 px-3 py-3">
+    <div className="rounded-[1.5rem] bg-muted/35 px-3 py-3">
       <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
         <Trophy className="h-3.5 w-3.5" />
         Liderança
@@ -212,7 +212,7 @@ function LastRelevantActivity({ item }: { item: GroupHomeCard }) {
 
   if (!activity) {
     return (
-      <div className="rounded-xl border border-dashed px-3 py-3">
+      <div className="rounded-[1.5rem] bg-muted/25 px-3 py-3">
         <p className="text-sm font-medium text-foreground">Nenhum destaque competitivo ainda</p>
         <p className="mt-1 text-xs leading-5 text-muted-foreground">
           Quando houver partidas marcantes ou mudanças no ranking, elas aparecem aqui.
@@ -222,7 +222,7 @@ function LastRelevantActivity({ item }: { item: GroupHomeCard }) {
   }
 
   return (
-    <div className="rounded-xl border bg-muted/25 px-3 py-3">
+    <div className="rounded-[1.5rem] bg-muted/25 px-3 py-3">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <p className="text-xs font-medium text-muted-foreground">Último destaque</p>
@@ -241,15 +241,15 @@ function LastRelevantActivity({ item }: { item: GroupHomeCard }) {
 function StatusPill({ status }: { status: ReturnType<typeof getGroupStatus> }) {
   const className =
     status.kind === 'failed'
-      ? 'border-rose-200 bg-rose-50 text-rose-700 dark:border-rose-900 dark:bg-rose-950/40 dark:text-rose-300'
+      ? 'bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300'
       : status.kind === 'processing'
-        ? 'border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-900 dark:bg-amber-950/40 dark:text-amber-300'
+        ? 'bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300'
         : status.kind === 'active'
-          ? 'border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-300'
-          : 'border-border bg-muted text-muted-foreground';
+          ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300'
+          : 'bg-muted text-muted-foreground';
 
   return (
-    <span className={`inline-flex items-center gap-1 rounded-full border px-2 py-1 text-[11px] font-medium leading-none ${className}`}>
+    <span className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-[11px] font-medium leading-none ${className}`}>
       {status.kind === 'processing' && <Loader2 className="h-3 w-3 animate-spin" />}
       {status.kind === 'failed' && <AlertTriangle className="h-3 w-3" />}
       {status.label}
@@ -261,11 +261,11 @@ function MovementBadge({ direction, positions }: { direction: 'UP' | 'DOWN'; pos
   const isUp = direction === 'UP';
   const Icon = isUp ? ArrowUp : ArrowDown;
   const className = isUp
-    ? 'border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-300'
-    : 'border-rose-200 bg-rose-50 text-rose-700 dark:border-rose-900 dark:bg-rose-950/40 dark:text-rose-300';
+    ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300'
+    : 'bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300';
 
   return (
-    <span className={`inline-flex shrink-0 items-center gap-0.5 rounded-full border px-2 py-0.5 text-[11px] font-medium leading-none ${className}`}>
+    <span className={`inline-flex shrink-0 items-center gap-0.5 rounded-full px-2 py-0.5 text-[11px] font-medium leading-none ${className}`}>
       <Icon className="h-3 w-3" />
       {positions}
     </span>
@@ -302,17 +302,17 @@ function GroupHomeLoadingState() {
         <Card key={index}>
           <CardContent className="space-y-4 p-4">
             <div className="flex items-start gap-3">
-              <div className="h-12 w-12 rounded-xl bg-muted" />
+              <div className="h-12 w-12 rounded-full bg-muted" />
               <div className="flex-1 space-y-2">
                 <div className="h-4 w-2/3 rounded-full bg-muted" />
                 <div className="h-3 w-1/3 rounded-full bg-muted" />
               </div>
             </div>
             <div className="grid gap-2 sm:grid-cols-2">
-              <div className="h-20 rounded-xl bg-muted" />
-              <div className="h-20 rounded-xl bg-muted" />
+              <div className="h-20 rounded-[1.5rem] bg-muted" />
+              <div className="h-20 rounded-[1.5rem] bg-muted" />
             </div>
-            <div className="h-16 rounded-xl bg-muted" />
+            <div className="h-16 rounded-[1.5rem] bg-muted" />
           </CardContent>
         </Card>
       ))}
@@ -338,7 +338,7 @@ function GroupHomeEmptyState({ hasToken }: { hasToken: boolean }) {
     <Card>
       <CardContent className="space-y-4 p-4">
         <div className="space-y-2">
-          <div className="flex h-11 w-11 items-center justify-center rounded-xl border bg-muted text-foreground">
+          <div className="flex h-11 w-11 items-center justify-center rounded-full bg-muted text-foreground">
             <UsersRound className="h-5 w-5" />
           </div>
           <p className="text-sm font-medium text-foreground">
