@@ -115,11 +115,7 @@ export function AppShell({ children }: AppShellProps) {
   const shouldHoldContent = routeAccess.requiresCheck && accessState !== 'allowed';
 
   return (
-    <main className="relative min-h-screen overflow-hidden px-4 pb-30 pt-[max(1.25rem,env(safe-area-inset-top))] text-foreground">
-      <div className="pointer-events-none fixed inset-0 -z-20 bg-background" />
-      <div className="pointer-events-none fixed inset-x-0 top-0 -z-10 h-72 bg-[radial-gradient(circle_at_18%_0%,color-mix(in_oklch,var(--primary)_24%,transparent),transparent_34%),radial-gradient(circle_at_88%_10%,color-mix(in_oklch,var(--accent)_38%,transparent),transparent_32%)]" />
-      <div className="pointer-events-none fixed inset-x-0 bottom-0 -z-10 h-72 bg-[radial-gradient(circle_at_50%_100%,color-mix(in_oklch,var(--primary)_12%,transparent),transparent_36%)]" />
-
+    <main className="min-h-screen px-4 pb-28 pt-[max(1.25rem,env(safe-area-inset-top))] text-foreground">
       <div className="mx-auto w-full max-w-md space-y-6">
         {shouldHoldContent ? <AccessGuardSkeleton /> : children}
       </div>
@@ -134,13 +130,13 @@ function AccessGuardSkeleton() {
       role="status"
       aria-live="polite"
       aria-busy="true"
-      className="br-liquid-glass br-hairline space-y-4 rounded-[2rem] p-4"
+      className="space-y-4 rounded-2xl border bg-card p-4 shadow-sm"
     >
       <span className="sr-only">Carregando página</span>
-      <div className="h-28 animate-pulse rounded-[1.5rem] bg-muted/70" />
+      <div className="h-28 animate-pulse rounded-xl bg-muted" />
       <div className="space-y-2">
         <div className="h-3 w-2/3 animate-pulse rounded-full bg-muted" />
-        <div className="h-3 w-1/2 animate-pulse rounded-full bg-muted/80" />
+        <div className="h-3 w-1/2 animate-pulse rounded-full bg-muted" />
       </div>
     </div>
   );
