@@ -98,7 +98,7 @@ export function GroupDetail({ groupId, tab }: Props) {
   return (
     <div className="space-y-6">
       <div className="space-y-4">
-        <BackButton href="/groups" />
+        <BackButton href="/" />
 
         <PageHeader
           title={data.group.name}
@@ -123,11 +123,11 @@ export function GroupDetail({ groupId, tab }: Props) {
 function GroupDetailErrorState() {
   return (
     <div className="space-y-6">
-      <BackButton href="/groups" />
+      <BackButton href="/" />
 
       <Card>
         <CardContent className="space-y-2 p-4">
-          <p className="text-sm font-semibold">Não foi possível carregar o grupo</p>
+          <p className="text-sm font-medium text-foreground">Não foi possível carregar o grupo</p>
           <p className="text-sm leading-6 text-muted-foreground">
             Verifique sua conexão e tente abrir o grupo novamente.
           </p>
