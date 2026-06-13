@@ -141,10 +141,11 @@
     body::before {
         content: '';
         position: fixed;
-        top: calc(env(safe-area-inset-top) * -1);
+        top: 0;
         left: 0;
         right: 0;
-        height: calc(100dvh + env(safe-area-inset-top));
+        height: 100lvh;
+        min-height: 100dvh;
         z-index: 0;
         pointer-events: none;
         background:
@@ -165,7 +166,7 @@
                         color-mix(in oklch, var(--background) 0%, var(--accent)) 0%
                 );
         background-repeat: no-repeat;
-        background-size: 100vw calc(100dvh + env(safe-area-inset-top));
+        background-size: 100vw 100lvh;
     }
 
     body > * {
