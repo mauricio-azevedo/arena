@@ -14,16 +14,16 @@ const tabs: Array<{ value: ProfileTab; label: string }> = [
 
 export function ProfileTabs({ activeTab, onChange }: Props) {
   return (
-    <div className="br-liquid-glass br-hairline grid grid-cols-4 rounded-[1.85rem] p-1.5 text-xs font-semibold">
+    <div className="grid grid-cols-4 rounded-2xl border bg-card p-1 text-xs font-medium shadow-sm">
       {tabs.map((tab) => (
         <button
           key={tab.value}
           type="button"
           onClick={() => onChange(tab.value)}
-          className={`br-pressable rounded-[1.4rem] px-2 py-2.5 transition-all ${
+          className={`min-h-11 rounded-xl px-2 transition-colors ${
             activeTab === tab.value
-              ? 'bg-foreground text-background shadow-[0_12px_28px_color-mix(in_oklch,var(--foreground)_18%,transparent)]'
-              : 'text-muted-foreground hover:bg-white/45 hover:text-foreground dark:hover:bg-white/10'
+              ? 'bg-foreground text-background'
+              : 'text-muted-foreground hover:bg-muted hover:text-foreground'
           }`}
         >
           {tab.label}
