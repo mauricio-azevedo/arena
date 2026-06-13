@@ -12,10 +12,10 @@ export function ProfileHeader({ user, isPublicProfile = false }: Props) {
   const initials = `${user.firstName[0] ?? ''}${user.lastName[0] ?? ''}`.toUpperCase();
 
   return (
-    <header className="rounded-2xl border bg-primary p-5 text-primary-foreground shadow-sm">
+    <header className="rounded-[2rem] bg-primary p-5 text-primary-foreground shadow-[0_10px_30px_color-mix(in_oklch,var(--primary)_12%,transparent)]">
       <div className="space-y-5">
         <div className="flex items-start gap-4 pr-10">
-          <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-xl border border-primary-foreground/20 bg-primary-foreground/10 text-xl font-semibold">
+          <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-primary-foreground/10 text-xl font-semibold">
             {initials}
           </div>
 
@@ -42,7 +42,7 @@ export function ProfileHeader({ user, isPublicProfile = false }: Props) {
 
 function ProfileSignal({ icon: Icon, label }: { icon: LucideIcon; label: string }) {
   return (
-    <div className="rounded-xl border border-primary-foreground/16 bg-primary-foreground/10 px-3 py-2">
+    <div className="rounded-full bg-primary-foreground/10 px-3 py-2">
       <Icon className="h-3.5 w-3.5" />
       <p className="mt-1.5 font-medium text-primary-foreground/80">{label}</p>
     </div>
