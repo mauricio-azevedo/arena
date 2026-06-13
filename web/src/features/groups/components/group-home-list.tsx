@@ -97,20 +97,20 @@ function GroupHomeCardView({ item }: { item: GroupHomeCard }) {
 
   return (
     <Link href={`/groups/${item.group.id}`} className="block">
-      <Card className="br-pressable overflow-hidden">
+      <Card className="br-pressable hover:border-foreground/20">
         <CardContent className="space-y-4 p-4">
           <div className="flex items-start gap-3">
-            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-[1.5rem] bg-gradient-to-br from-primary/18 via-white/22 to-accent/55 text-sm font-bold text-primary ring-1 ring-primary/10 dark:via-white/8">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border bg-muted text-sm font-semibold text-foreground">
               {getGroupInitials(item.group.name)}
             </div>
 
             <div className="min-w-0 flex-1 space-y-1">
               <div className="flex min-w-0 items-center gap-2">
-                <h2 className="min-w-0 truncate text-lg font-semibold tracking-[-0.035em]">
+                <h2 className="min-w-0 truncate text-base font-semibold tracking-[-0.02em]">
                   {item.group.name}
                 </h2>
                 {isMember && item.currentUser?.role === 'ADMIN' && (
-                  <span className="shrink-0 rounded-full bg-foreground px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-background">
+                  <span className="shrink-0 rounded-full border px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
                     Admin
                   </span>
                 )}
@@ -142,13 +142,9 @@ function GroupHomeCardView({ item }: { item: GroupHomeCard }) {
 function CurrentUserStanding({ item }: { item: GroupHomeCard }) {
   if (!item.currentUser) {
     return (
-      <div className="rounded-[1.35rem] bg-white/42 px-3 py-3 shadow-[inset_0_1px_0_color-mix(in_oklch,white_58%,transparent)] backdrop-blur-xl dark:bg-white/8">
-        <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-          Grupo público
-        </p>
-        <p className="mt-1 text-sm font-semibold tracking-[-0.015em] text-foreground">
-          Entre para competir
-        </p>
+      <div className="rounded-xl border bg-muted/35 px-3 py-3">
+        <p className="text-xs font-medium text-muted-foreground">Grupo público</p>
+        <p className="mt-1 text-sm font-medium text-foreground">Entre para competir</p>
       </div>
     );
   }
@@ -157,13 +153,9 @@ function CurrentUserStanding({ item }: { item: GroupHomeCard }) {
 
   if (standing.kind === 'UNRANKED') {
     return (
-      <div className="rounded-[1.35rem] bg-white/42 px-3 py-3 shadow-[inset_0_1px_0_color-mix(in_oklch,white_58%,transparent)] backdrop-blur-xl dark:bg-white/8">
-        <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-          Você
-        </p>
-        <p className="mt-1 text-sm font-semibold tracking-[-0.015em] text-foreground">
-          Ainda sem ranking
-        </p>
+      <div className="rounded-xl border bg-muted/35 px-3 py-3">
+        <p className="text-xs font-medium text-muted-foreground">Você</p>
+        <p className="mt-1 text-sm font-medium text-foreground">Ainda sem ranking</p>
         <p className="mt-1 text-xs text-muted-foreground">
           {Math.round(standing.rating)} rating inicial
         </p>
@@ -175,12 +167,10 @@ function CurrentUserStanding({ item }: { item: GroupHomeCard }) {
   const isLeader = standing.rank === 1;
 
   return (
-    <div className="rounded-[1.35rem] bg-white/42 px-3 py-3 shadow-[inset_0_1px_0_color-mix(in_oklch,white_58%,transparent)] backdrop-blur-xl dark:bg-white/8">
-      <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-        Você
-      </p>
+    <div className="rounded-xl border bg-muted/35 px-3 py-3">
+      <p className="text-xs font-medium text-muted-foreground">Você</p>
       <div className="mt-1 flex items-center gap-2">
-        <p className="text-sm font-semibold tracking-[-0.015em] text-foreground">
+        <p className="text-sm font-medium text-foreground">
           {isLeader ? 'Você lidera' : `#${standing.rank} no ranking`}
         </p>
         {movement && <MovementBadge direction={movement.direction} positions={movement.positions} />}
@@ -195,13 +185,9 @@ function LeadershipSummary({ item }: { item: GroupHomeCard }) {
 
   if (leaders.length === 0) {
     return (
-      <div className="rounded-[1.35rem] bg-white/42 px-3 py-3 shadow-[inset_0_1px_0_color-mix(in_oklch,white_58%,transparent)] backdrop-blur-xl dark:bg-white/8">
-        <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-          Liderança
-        </p>
-        <p className="mt-1 text-sm font-semibold tracking-[-0.015em] text-foreground">
-          Ranking ainda não começou
-        </p>
+      <div className="rounded-xl border bg-muted/35 px-3 py-3">
+        <p className="text-xs font-medium text-muted-foreground">Liderança</p>
+        <p className="mt-1 text-sm font-medium text-foreground">Ranking ainda não começou</p>
       </div>
     );
   }
@@ -210,14 +196,12 @@ function LeadershipSummary({ item }: { item: GroupHomeCard }) {
   const rating = Math.round(leaders[0]?.rating ?? 0);
 
   return (
-    <div className="rounded-[1.35rem] bg-white/42 px-3 py-3 shadow-[inset_0_1px_0_color-mix(in_oklch,white_58%,transparent)] backdrop-blur-xl dark:bg-white/8">
-      <div className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-        <Trophy className="h-3 w-3" />
+    <div className="rounded-xl border bg-muted/35 px-3 py-3">
+      <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
+        <Trophy className="h-3.5 w-3.5" />
         Liderança
       </div>
-      <p className="mt-1 truncate text-sm font-semibold tracking-[-0.015em] text-foreground">
-        {leaderText}
-      </p>
+      <p className="mt-1 truncate text-sm font-medium text-foreground">{leaderText}</p>
       <p className="mt-1 text-xs text-muted-foreground">{rating} rating</p>
     </div>
   );
@@ -228,10 +212,8 @@ function LastRelevantActivity({ item }: { item: GroupHomeCard }) {
 
   if (!activity) {
     return (
-      <div className="rounded-[1.35rem] border border-dashed border-border/75 px-3 py-3">
-        <p className="text-sm font-medium tracking-[-0.01em] text-foreground">
-          Nenhum destaque competitivo ainda
-        </p>
+      <div className="rounded-xl border border-dashed px-3 py-3">
+        <p className="text-sm font-medium text-foreground">Nenhum destaque competitivo ainda</p>
         <p className="mt-1 text-xs leading-5 text-muted-foreground">
           Quando houver partidas marcantes ou mudanças no ranking, elas aparecem aqui.
         </p>
@@ -240,13 +222,11 @@ function LastRelevantActivity({ item }: { item: GroupHomeCard }) {
   }
 
   return (
-    <div className="rounded-[1.35rem] bg-gradient-to-br from-card via-card to-accent/24 px-3 py-3 ring-1 ring-border/70">
+    <div className="rounded-xl border bg-muted/25 px-3 py-3">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-            Último destaque
-          </p>
-          <p className="mt-1 line-clamp-2 text-sm font-semibold leading-5 tracking-[-0.015em] text-foreground">
+          <p className="text-xs font-medium text-muted-foreground">Último destaque</p>
+          <p className="mt-1 line-clamp-2 text-sm font-medium leading-5 text-foreground">
             {getActivityHeadline(activity)}
           </p>
         </div>
@@ -261,15 +241,15 @@ function LastRelevantActivity({ item }: { item: GroupHomeCard }) {
 function StatusPill({ status }: { status: ReturnType<typeof getGroupStatus> }) {
   const className =
     status.kind === 'failed'
-      ? 'bg-rose-500/12 text-rose-700 dark:text-rose-300'
+      ? 'border-rose-200 bg-rose-50 text-rose-700 dark:border-rose-900 dark:bg-rose-950/40 dark:text-rose-300'
       : status.kind === 'processing'
-        ? 'bg-amber-500/12 text-amber-700 dark:text-amber-300'
+        ? 'border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-900 dark:bg-amber-950/40 dark:text-amber-300'
         : status.kind === 'active'
-          ? 'bg-emerald-500/12 text-emerald-700 dark:text-emerald-300'
-          : 'bg-white/45 text-muted-foreground dark:bg-white/10';
+          ? 'border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-300'
+          : 'border-border bg-muted text-muted-foreground';
 
   return (
-    <span className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-[11px] font-bold leading-none ${className}`}>
+    <span className={`inline-flex items-center gap-1 rounded-full border px-2 py-1 text-[11px] font-medium leading-none ${className}`}>
       {status.kind === 'processing' && <Loader2 className="h-3 w-3 animate-spin" />}
       {status.kind === 'failed' && <AlertTriangle className="h-3 w-3" />}
       {status.label}
@@ -281,11 +261,11 @@ function MovementBadge({ direction, positions }: { direction: 'UP' | 'DOWN'; pos
   const isUp = direction === 'UP';
   const Icon = isUp ? ArrowUp : ArrowDown;
   const className = isUp
-    ? 'bg-emerald-500/12 text-emerald-700 dark:text-emerald-300'
-    : 'bg-rose-500/12 text-rose-700 dark:text-rose-300';
+    ? 'border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-300'
+    : 'border-rose-200 bg-rose-50 text-rose-700 dark:border-rose-900 dark:bg-rose-950/40 dark:text-rose-300';
 
   return (
-    <span className={`inline-flex shrink-0 items-center gap-0.5 rounded-full px-2 py-0.5 text-[11px] font-bold leading-none ${className}`}>
+    <span className={`inline-flex shrink-0 items-center gap-0.5 rounded-full border px-2 py-0.5 text-[11px] font-medium leading-none ${className}`}>
       <Icon className="h-3 w-3" />
       {positions}
     </span>
@@ -297,7 +277,7 @@ function PublicSuggestionIntro({ hasToken }: { hasToken: boolean }) {
     <Card>
       <CardContent className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="space-y-1">
-          <p className="text-sm font-semibold tracking-[-0.015em]">
+          <p className="text-sm font-medium text-foreground">
             {hasToken ? 'Grupos públicos para conhecer' : 'Conheça grupos públicos'}
           </p>
           <p className="text-sm leading-6 text-muted-foreground">
@@ -322,17 +302,17 @@ function GroupHomeLoadingState() {
         <Card key={index}>
           <CardContent className="space-y-4 p-4">
             <div className="flex items-start gap-3">
-              <div className="h-14 w-14 rounded-[1.5rem] bg-muted" />
+              <div className="h-12 w-12 rounded-xl bg-muted" />
               <div className="flex-1 space-y-2">
                 <div className="h-4 w-2/3 rounded-full bg-muted" />
                 <div className="h-3 w-1/3 rounded-full bg-muted" />
               </div>
             </div>
             <div className="grid gap-2 sm:grid-cols-2">
-              <div className="h-20 rounded-[1.35rem] bg-muted" />
-              <div className="h-20 rounded-[1.35rem] bg-muted" />
+              <div className="h-20 rounded-xl bg-muted" />
+              <div className="h-20 rounded-xl bg-muted" />
             </div>
-            <div className="h-16 rounded-[1.35rem] bg-muted" />
+            <div className="h-16 rounded-xl bg-muted" />
           </CardContent>
         </Card>
       ))}
@@ -344,7 +324,7 @@ function GroupHomeErrorState() {
   return (
     <Card>
       <CardContent className="space-y-2 p-4">
-        <p className="text-sm font-semibold">Não foi possível carregar os grupos</p>
+        <p className="text-sm font-medium text-foreground">Não foi possível carregar os grupos</p>
         <p className="text-sm leading-6 text-muted-foreground">
           Verifique sua conexão e tente novamente.
         </p>
@@ -358,10 +338,10 @@ function GroupHomeEmptyState({ hasToken }: { hasToken: boolean }) {
     <Card>
       <CardContent className="space-y-4 p-4">
         <div className="space-y-2">
-          <div className="flex h-12 w-12 items-center justify-center rounded-[1.35rem] bg-accent text-accent-foreground">
+          <div className="flex h-11 w-11 items-center justify-center rounded-xl border bg-muted text-foreground">
             <UsersRound className="h-5 w-5" />
           </div>
-          <p className="text-sm font-semibold">
+          <p className="text-sm font-medium text-foreground">
             {hasToken ? 'Seus grupos aparecem aqui' : 'Grupos aparecem aqui'}
           </p>
           <p className="text-sm leading-6 text-muted-foreground">
