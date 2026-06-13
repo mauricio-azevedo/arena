@@ -65,7 +65,7 @@ export function GroupDetailTabs({
             aria-current={selectedTab === tab.value ? 'page' : undefined}
             className={`min-h-11 rounded-xl px-2 transition-colors sm:px-3 ${
               selectedTab === tab.value
-                ? 'bg-foreground text-background'
+                ? 'bg-primary text-primary-foreground'
                 : 'text-muted-foreground hover:bg-muted hover:text-foreground'
             }`}
           >
@@ -103,7 +103,7 @@ function RankingTab({ ranking }: { ranking: GroupMember[] }) {
             <div className="flex min-w-0 items-center gap-3">
               <span
                 className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border text-sm font-semibold ${
-                  index === 0 ? 'bg-foreground text-background' : 'bg-muted text-foreground'
+                  index === 0 ? 'border-primary bg-primary text-primary-foreground' : 'bg-muted text-foreground'
                 }`}
               >
                 {index + 1}
