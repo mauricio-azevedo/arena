@@ -31,6 +31,10 @@ export type MatchPlayerAvgAggregateOutputType = {
   ratingBefore: number | null
   ratingAfter: number | null
   ratingDelta: number | null
+  rankBefore: number | null
+  rankAfter: number | null
+  rankDelta: number | null
+  movementPositions: number | null
   ratingDeviationBefore: number | null
   ratingDeviationAfter: number | null
   ratingVolatilityBefore: number | null
@@ -46,6 +50,10 @@ export type MatchPlayerSumAggregateOutputType = {
   ratingBefore: number | null
   ratingAfter: number | null
   ratingDelta: number | null
+  rankBefore: number | null
+  rankAfter: number | null
+  rankDelta: number | null
+  movementPositions: number | null
   ratingDeviationBefore: number | null
   ratingDeviationAfter: number | null
   ratingVolatilityBefore: number | null
@@ -66,6 +74,11 @@ export type MatchPlayerMinAggregateOutputType = {
   ratingBefore: number | null
   ratingAfter: number | null
   ratingDelta: number | null
+  rankBefore: number | null
+  rankAfter: number | null
+  rankDelta: number | null
+  movementDirection: $Enums.RankingMovementDirection | null
+  movementPositions: number | null
   ratingDeviationBefore: number | null
   ratingDeviationAfter: number | null
   ratingVolatilityBefore: number | null
@@ -89,6 +102,11 @@ export type MatchPlayerMaxAggregateOutputType = {
   ratingBefore: number | null
   ratingAfter: number | null
   ratingDelta: number | null
+  rankBefore: number | null
+  rankAfter: number | null
+  rankDelta: number | null
+  movementDirection: $Enums.RankingMovementDirection | null
+  movementPositions: number | null
   ratingDeviationBefore: number | null
   ratingDeviationAfter: number | null
   ratingVolatilityBefore: number | null
@@ -112,6 +130,11 @@ export type MatchPlayerCountAggregateOutputType = {
   ratingBefore: number
   ratingAfter: number
   ratingDelta: number
+  rankBefore: number
+  rankAfter: number
+  rankDelta: number
+  movementDirection: number
+  movementPositions: number
   ratingDeviationBefore: number
   ratingDeviationAfter: number
   ratingVolatilityBefore: number
@@ -132,6 +155,10 @@ export type MatchPlayerAvgAggregateInputType = {
   ratingBefore?: true
   ratingAfter?: true
   ratingDelta?: true
+  rankBefore?: true
+  rankAfter?: true
+  rankDelta?: true
+  movementPositions?: true
   ratingDeviationBefore?: true
   ratingDeviationAfter?: true
   ratingVolatilityBefore?: true
@@ -147,6 +174,10 @@ export type MatchPlayerSumAggregateInputType = {
   ratingBefore?: true
   ratingAfter?: true
   ratingDelta?: true
+  rankBefore?: true
+  rankAfter?: true
+  rankDelta?: true
+  movementPositions?: true
   ratingDeviationBefore?: true
   ratingDeviationAfter?: true
   ratingVolatilityBefore?: true
@@ -167,6 +198,11 @@ export type MatchPlayerMinAggregateInputType = {
   ratingBefore?: true
   ratingAfter?: true
   ratingDelta?: true
+  rankBefore?: true
+  rankAfter?: true
+  rankDelta?: true
+  movementDirection?: true
+  movementPositions?: true
   ratingDeviationBefore?: true
   ratingDeviationAfter?: true
   ratingVolatilityBefore?: true
@@ -190,6 +226,11 @@ export type MatchPlayerMaxAggregateInputType = {
   ratingBefore?: true
   ratingAfter?: true
   ratingDelta?: true
+  rankBefore?: true
+  rankAfter?: true
+  rankDelta?: true
+  movementDirection?: true
+  movementPositions?: true
   ratingDeviationBefore?: true
   ratingDeviationAfter?: true
   ratingVolatilityBefore?: true
@@ -213,6 +254,11 @@ export type MatchPlayerCountAggregateInputType = {
   ratingBefore?: true
   ratingAfter?: true
   ratingDelta?: true
+  rankBefore?: true
+  rankAfter?: true
+  rankDelta?: true
+  movementDirection?: true
+  movementPositions?: true
   ratingDeviationBefore?: true
   ratingDeviationAfter?: true
   ratingVolatilityBefore?: true
@@ -323,6 +369,11 @@ export type MatchPlayerGroupByOutputType = {
   ratingBefore: number
   ratingAfter: number
   ratingDelta: number
+  rankBefore: number | null
+  rankAfter: number | null
+  rankDelta: number | null
+  movementDirection: $Enums.RankingMovementDirection | null
+  movementPositions: number | null
   ratingDeviationBefore: number | null
   ratingDeviationAfter: number | null
   ratingVolatilityBefore: number | null
@@ -369,6 +420,11 @@ export type MatchPlayerWhereInput = {
   ratingBefore?: Prisma.FloatFilter<"MatchPlayer"> | number
   ratingAfter?: Prisma.FloatFilter<"MatchPlayer"> | number
   ratingDelta?: Prisma.FloatFilter<"MatchPlayer"> | number
+  rankBefore?: Prisma.IntNullableFilter<"MatchPlayer"> | number | null
+  rankAfter?: Prisma.IntNullableFilter<"MatchPlayer"> | number | null
+  rankDelta?: Prisma.IntNullableFilter<"MatchPlayer"> | number | null
+  movementDirection?: Prisma.EnumRankingMovementDirectionNullableFilter<"MatchPlayer"> | $Enums.RankingMovementDirection | null
+  movementPositions?: Prisma.IntNullableFilter<"MatchPlayer"> | number | null
   ratingDeviationBefore?: Prisma.FloatNullableFilter<"MatchPlayer"> | number | null
   ratingDeviationAfter?: Prisma.FloatNullableFilter<"MatchPlayer"> | number | null
   ratingVolatilityBefore?: Prisma.FloatNullableFilter<"MatchPlayer"> | number | null
@@ -394,6 +450,11 @@ export type MatchPlayerOrderByWithRelationInput = {
   ratingBefore?: Prisma.SortOrder
   ratingAfter?: Prisma.SortOrder
   ratingDelta?: Prisma.SortOrder
+  rankBefore?: Prisma.SortOrderInput | Prisma.SortOrder
+  rankAfter?: Prisma.SortOrderInput | Prisma.SortOrder
+  rankDelta?: Prisma.SortOrderInput | Prisma.SortOrder
+  movementDirection?: Prisma.SortOrderInput | Prisma.SortOrder
+  movementPositions?: Prisma.SortOrderInput | Prisma.SortOrder
   ratingDeviationBefore?: Prisma.SortOrderInput | Prisma.SortOrder
   ratingDeviationAfter?: Prisma.SortOrderInput | Prisma.SortOrder
   ratingVolatilityBefore?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -424,6 +485,11 @@ export type MatchPlayerWhereUniqueInput = Prisma.AtLeast<{
   ratingBefore?: Prisma.FloatFilter<"MatchPlayer"> | number
   ratingAfter?: Prisma.FloatFilter<"MatchPlayer"> | number
   ratingDelta?: Prisma.FloatFilter<"MatchPlayer"> | number
+  rankBefore?: Prisma.IntNullableFilter<"MatchPlayer"> | number | null
+  rankAfter?: Prisma.IntNullableFilter<"MatchPlayer"> | number | null
+  rankDelta?: Prisma.IntNullableFilter<"MatchPlayer"> | number | null
+  movementDirection?: Prisma.EnumRankingMovementDirectionNullableFilter<"MatchPlayer"> | $Enums.RankingMovementDirection | null
+  movementPositions?: Prisma.IntNullableFilter<"MatchPlayer"> | number | null
   ratingDeviationBefore?: Prisma.FloatNullableFilter<"MatchPlayer"> | number | null
   ratingDeviationAfter?: Prisma.FloatNullableFilter<"MatchPlayer"> | number | null
   ratingVolatilityBefore?: Prisma.FloatNullableFilter<"MatchPlayer"> | number | null
@@ -449,6 +515,11 @@ export type MatchPlayerOrderByWithAggregationInput = {
   ratingBefore?: Prisma.SortOrder
   ratingAfter?: Prisma.SortOrder
   ratingDelta?: Prisma.SortOrder
+  rankBefore?: Prisma.SortOrderInput | Prisma.SortOrder
+  rankAfter?: Prisma.SortOrderInput | Prisma.SortOrder
+  rankDelta?: Prisma.SortOrderInput | Prisma.SortOrder
+  movementDirection?: Prisma.SortOrderInput | Prisma.SortOrder
+  movementPositions?: Prisma.SortOrderInput | Prisma.SortOrder
   ratingDeviationBefore?: Prisma.SortOrderInput | Prisma.SortOrder
   ratingDeviationAfter?: Prisma.SortOrderInput | Prisma.SortOrder
   ratingVolatilityBefore?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -480,6 +551,11 @@ export type MatchPlayerScalarWhereWithAggregatesInput = {
   ratingBefore?: Prisma.FloatWithAggregatesFilter<"MatchPlayer"> | number
   ratingAfter?: Prisma.FloatWithAggregatesFilter<"MatchPlayer"> | number
   ratingDelta?: Prisma.FloatWithAggregatesFilter<"MatchPlayer"> | number
+  rankBefore?: Prisma.IntNullableWithAggregatesFilter<"MatchPlayer"> | number | null
+  rankAfter?: Prisma.IntNullableWithAggregatesFilter<"MatchPlayer"> | number | null
+  rankDelta?: Prisma.IntNullableWithAggregatesFilter<"MatchPlayer"> | number | null
+  movementDirection?: Prisma.EnumRankingMovementDirectionNullableWithAggregatesFilter<"MatchPlayer"> | $Enums.RankingMovementDirection | null
+  movementPositions?: Prisma.IntNullableWithAggregatesFilter<"MatchPlayer"> | number | null
   ratingDeviationBefore?: Prisma.FloatNullableWithAggregatesFilter<"MatchPlayer"> | number | null
   ratingDeviationAfter?: Prisma.FloatNullableWithAggregatesFilter<"MatchPlayer"> | number | null
   ratingVolatilityBefore?: Prisma.FloatNullableWithAggregatesFilter<"MatchPlayer"> | number | null
@@ -500,6 +576,11 @@ export type MatchPlayerCreateInput = {
   ratingBefore: number
   ratingAfter: number
   ratingDelta: number
+  rankBefore?: number | null
+  rankAfter?: number | null
+  rankDelta?: number | null
+  movementDirection?: $Enums.RankingMovementDirection | null
+  movementPositions?: number | null
   ratingDeviationBefore?: number | null
   ratingDeviationAfter?: number | null
   ratingVolatilityBefore?: number | null
@@ -525,6 +606,11 @@ export type MatchPlayerUncheckedCreateInput = {
   ratingBefore: number
   ratingAfter: number
   ratingDelta: number
+  rankBefore?: number | null
+  rankAfter?: number | null
+  rankDelta?: number | null
+  movementDirection?: $Enums.RankingMovementDirection | null
+  movementPositions?: number | null
   ratingDeviationBefore?: number | null
   ratingDeviationAfter?: number | null
   ratingVolatilityBefore?: number | null
@@ -545,6 +631,11 @@ export type MatchPlayerUpdateInput = {
   ratingBefore?: Prisma.FloatFieldUpdateOperationsInput | number
   ratingAfter?: Prisma.FloatFieldUpdateOperationsInput | number
   ratingDelta?: Prisma.FloatFieldUpdateOperationsInput | number
+  rankBefore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  rankAfter?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  rankDelta?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  movementDirection?: Prisma.NullableEnumRankingMovementDirectionFieldUpdateOperationsInput | $Enums.RankingMovementDirection | null
+  movementPositions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   ratingDeviationBefore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   ratingDeviationAfter?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   ratingVolatilityBefore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -570,6 +661,11 @@ export type MatchPlayerUncheckedUpdateInput = {
   ratingBefore?: Prisma.FloatFieldUpdateOperationsInput | number
   ratingAfter?: Prisma.FloatFieldUpdateOperationsInput | number
   ratingDelta?: Prisma.FloatFieldUpdateOperationsInput | number
+  rankBefore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  rankAfter?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  rankDelta?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  movementDirection?: Prisma.NullableEnumRankingMovementDirectionFieldUpdateOperationsInput | $Enums.RankingMovementDirection | null
+  movementPositions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   ratingDeviationBefore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   ratingDeviationAfter?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   ratingVolatilityBefore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -593,6 +689,11 @@ export type MatchPlayerCreateManyInput = {
   ratingBefore: number
   ratingAfter: number
   ratingDelta: number
+  rankBefore?: number | null
+  rankAfter?: number | null
+  rankDelta?: number | null
+  movementDirection?: $Enums.RankingMovementDirection | null
+  movementPositions?: number | null
   ratingDeviationBefore?: number | null
   ratingDeviationAfter?: number | null
   ratingVolatilityBefore?: number | null
@@ -613,6 +714,11 @@ export type MatchPlayerUpdateManyMutationInput = {
   ratingBefore?: Prisma.FloatFieldUpdateOperationsInput | number
   ratingAfter?: Prisma.FloatFieldUpdateOperationsInput | number
   ratingDelta?: Prisma.FloatFieldUpdateOperationsInput | number
+  rankBefore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  rankAfter?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  rankDelta?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  movementDirection?: Prisma.NullableEnumRankingMovementDirectionFieldUpdateOperationsInput | $Enums.RankingMovementDirection | null
+  movementPositions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   ratingDeviationBefore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   ratingDeviationAfter?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   ratingVolatilityBefore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -636,6 +742,11 @@ export type MatchPlayerUncheckedUpdateManyInput = {
   ratingBefore?: Prisma.FloatFieldUpdateOperationsInput | number
   ratingAfter?: Prisma.FloatFieldUpdateOperationsInput | number
   ratingDelta?: Prisma.FloatFieldUpdateOperationsInput | number
+  rankBefore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  rankAfter?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  rankDelta?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  movementDirection?: Prisma.NullableEnumRankingMovementDirectionFieldUpdateOperationsInput | $Enums.RankingMovementDirection | null
+  movementPositions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   ratingDeviationBefore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   ratingDeviationAfter?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   ratingVolatilityBefore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -680,6 +791,11 @@ export type MatchPlayerCountOrderByAggregateInput = {
   ratingBefore?: Prisma.SortOrder
   ratingAfter?: Prisma.SortOrder
   ratingDelta?: Prisma.SortOrder
+  rankBefore?: Prisma.SortOrder
+  rankAfter?: Prisma.SortOrder
+  rankDelta?: Prisma.SortOrder
+  movementDirection?: Prisma.SortOrder
+  movementPositions?: Prisma.SortOrder
   ratingDeviationBefore?: Prisma.SortOrder
   ratingDeviationAfter?: Prisma.SortOrder
   ratingVolatilityBefore?: Prisma.SortOrder
@@ -698,6 +814,10 @@ export type MatchPlayerAvgOrderByAggregateInput = {
   ratingBefore?: Prisma.SortOrder
   ratingAfter?: Prisma.SortOrder
   ratingDelta?: Prisma.SortOrder
+  rankBefore?: Prisma.SortOrder
+  rankAfter?: Prisma.SortOrder
+  rankDelta?: Prisma.SortOrder
+  movementPositions?: Prisma.SortOrder
   ratingDeviationBefore?: Prisma.SortOrder
   ratingDeviationAfter?: Prisma.SortOrder
   ratingVolatilityBefore?: Prisma.SortOrder
@@ -718,6 +838,11 @@ export type MatchPlayerMaxOrderByAggregateInput = {
   ratingBefore?: Prisma.SortOrder
   ratingAfter?: Prisma.SortOrder
   ratingDelta?: Prisma.SortOrder
+  rankBefore?: Prisma.SortOrder
+  rankAfter?: Prisma.SortOrder
+  rankDelta?: Prisma.SortOrder
+  movementDirection?: Prisma.SortOrder
+  movementPositions?: Prisma.SortOrder
   ratingDeviationBefore?: Prisma.SortOrder
   ratingDeviationAfter?: Prisma.SortOrder
   ratingVolatilityBefore?: Prisma.SortOrder
@@ -741,6 +866,11 @@ export type MatchPlayerMinOrderByAggregateInput = {
   ratingBefore?: Prisma.SortOrder
   ratingAfter?: Prisma.SortOrder
   ratingDelta?: Prisma.SortOrder
+  rankBefore?: Prisma.SortOrder
+  rankAfter?: Prisma.SortOrder
+  rankDelta?: Prisma.SortOrder
+  movementDirection?: Prisma.SortOrder
+  movementPositions?: Prisma.SortOrder
   ratingDeviationBefore?: Prisma.SortOrder
   ratingDeviationAfter?: Prisma.SortOrder
   ratingVolatilityBefore?: Prisma.SortOrder
@@ -759,6 +889,10 @@ export type MatchPlayerSumOrderByAggregateInput = {
   ratingBefore?: Prisma.SortOrder
   ratingAfter?: Prisma.SortOrder
   ratingDelta?: Prisma.SortOrder
+  rankBefore?: Prisma.SortOrder
+  rankAfter?: Prisma.SortOrder
+  rankDelta?: Prisma.SortOrder
+  movementPositions?: Prisma.SortOrder
   ratingDeviationBefore?: Prisma.SortOrder
   ratingDeviationAfter?: Prisma.SortOrder
   ratingVolatilityBefore?: Prisma.SortOrder
@@ -857,6 +991,10 @@ export type EnumMatchTeamFieldUpdateOperationsInput = {
   set?: $Enums.MatchTeam
 }
 
+export type NullableEnumRankingMovementDirectionFieldUpdateOperationsInput = {
+  set?: $Enums.RankingMovementDirection | null
+}
+
 export type MatchPlayerCreateWithoutGroupMemberInput = {
   id?: string
   team: $Enums.MatchTeam
@@ -864,6 +1002,11 @@ export type MatchPlayerCreateWithoutGroupMemberInput = {
   ratingBefore: number
   ratingAfter: number
   ratingDelta: number
+  rankBefore?: number | null
+  rankAfter?: number | null
+  rankDelta?: number | null
+  movementDirection?: $Enums.RankingMovementDirection | null
+  movementPositions?: number | null
   ratingDeviationBefore?: number | null
   ratingDeviationAfter?: number | null
   ratingVolatilityBefore?: number | null
@@ -886,6 +1029,11 @@ export type MatchPlayerUncheckedCreateWithoutGroupMemberInput = {
   ratingBefore: number
   ratingAfter: number
   ratingDelta: number
+  rankBefore?: number | null
+  rankAfter?: number | null
+  rankDelta?: number | null
+  movementDirection?: $Enums.RankingMovementDirection | null
+  movementPositions?: number | null
   ratingDeviationBefore?: number | null
   ratingDeviationAfter?: number | null
   ratingVolatilityBefore?: number | null
@@ -938,6 +1086,11 @@ export type MatchPlayerScalarWhereInput = {
   ratingBefore?: Prisma.FloatFilter<"MatchPlayer"> | number
   ratingAfter?: Prisma.FloatFilter<"MatchPlayer"> | number
   ratingDelta?: Prisma.FloatFilter<"MatchPlayer"> | number
+  rankBefore?: Prisma.IntNullableFilter<"MatchPlayer"> | number | null
+  rankAfter?: Prisma.IntNullableFilter<"MatchPlayer"> | number | null
+  rankDelta?: Prisma.IntNullableFilter<"MatchPlayer"> | number | null
+  movementDirection?: Prisma.EnumRankingMovementDirectionNullableFilter<"MatchPlayer"> | $Enums.RankingMovementDirection | null
+  movementPositions?: Prisma.IntNullableFilter<"MatchPlayer"> | number | null
   ratingDeviationBefore?: Prisma.FloatNullableFilter<"MatchPlayer"> | number | null
   ratingDeviationAfter?: Prisma.FloatNullableFilter<"MatchPlayer"> | number | null
   ratingVolatilityBefore?: Prisma.FloatNullableFilter<"MatchPlayer"> | number | null
@@ -958,6 +1111,11 @@ export type MatchPlayerCreateWithoutMatchInput = {
   ratingBefore: number
   ratingAfter: number
   ratingDelta: number
+  rankBefore?: number | null
+  rankAfter?: number | null
+  rankDelta?: number | null
+  movementDirection?: $Enums.RankingMovementDirection | null
+  movementPositions?: number | null
   ratingDeviationBefore?: number | null
   ratingDeviationAfter?: number | null
   ratingVolatilityBefore?: number | null
@@ -980,6 +1138,11 @@ export type MatchPlayerUncheckedCreateWithoutMatchInput = {
   ratingBefore: number
   ratingAfter: number
   ratingDelta: number
+  rankBefore?: number | null
+  rankAfter?: number | null
+  rankDelta?: number | null
+  movementDirection?: $Enums.RankingMovementDirection | null
+  movementPositions?: number | null
   ratingDeviationBefore?: number | null
   ratingDeviationAfter?: number | null
   ratingVolatilityBefore?: number | null
@@ -1027,6 +1190,11 @@ export type MatchPlayerCreateManyGroupMemberInput = {
   ratingBefore: number
   ratingAfter: number
   ratingDelta: number
+  rankBefore?: number | null
+  rankAfter?: number | null
+  rankDelta?: number | null
+  movementDirection?: $Enums.RankingMovementDirection | null
+  movementPositions?: number | null
   ratingDeviationBefore?: number | null
   ratingDeviationAfter?: number | null
   ratingVolatilityBefore?: number | null
@@ -1047,6 +1215,11 @@ export type MatchPlayerUpdateWithoutGroupMemberInput = {
   ratingBefore?: Prisma.FloatFieldUpdateOperationsInput | number
   ratingAfter?: Prisma.FloatFieldUpdateOperationsInput | number
   ratingDelta?: Prisma.FloatFieldUpdateOperationsInput | number
+  rankBefore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  rankAfter?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  rankDelta?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  movementDirection?: Prisma.NullableEnumRankingMovementDirectionFieldUpdateOperationsInput | $Enums.RankingMovementDirection | null
+  movementPositions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   ratingDeviationBefore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   ratingDeviationAfter?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   ratingVolatilityBefore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -1069,6 +1242,11 @@ export type MatchPlayerUncheckedUpdateWithoutGroupMemberInput = {
   ratingBefore?: Prisma.FloatFieldUpdateOperationsInput | number
   ratingAfter?: Prisma.FloatFieldUpdateOperationsInput | number
   ratingDelta?: Prisma.FloatFieldUpdateOperationsInput | number
+  rankBefore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  rankAfter?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  rankDelta?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  movementDirection?: Prisma.NullableEnumRankingMovementDirectionFieldUpdateOperationsInput | $Enums.RankingMovementDirection | null
+  movementPositions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   ratingDeviationBefore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   ratingDeviationAfter?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   ratingVolatilityBefore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -1090,6 +1268,11 @@ export type MatchPlayerUncheckedUpdateManyWithoutGroupMemberInput = {
   ratingBefore?: Prisma.FloatFieldUpdateOperationsInput | number
   ratingAfter?: Prisma.FloatFieldUpdateOperationsInput | number
   ratingDelta?: Prisma.FloatFieldUpdateOperationsInput | number
+  rankBefore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  rankAfter?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  rankDelta?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  movementDirection?: Prisma.NullableEnumRankingMovementDirectionFieldUpdateOperationsInput | $Enums.RankingMovementDirection | null
+  movementPositions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   ratingDeviationBefore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   ratingDeviationAfter?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   ratingVolatilityBefore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -1111,6 +1294,11 @@ export type MatchPlayerCreateManyMatchInput = {
   ratingBefore: number
   ratingAfter: number
   ratingDelta: number
+  rankBefore?: number | null
+  rankAfter?: number | null
+  rankDelta?: number | null
+  movementDirection?: $Enums.RankingMovementDirection | null
+  movementPositions?: number | null
   ratingDeviationBefore?: number | null
   ratingDeviationAfter?: number | null
   ratingVolatilityBefore?: number | null
@@ -1131,6 +1319,11 @@ export type MatchPlayerUpdateWithoutMatchInput = {
   ratingBefore?: Prisma.FloatFieldUpdateOperationsInput | number
   ratingAfter?: Prisma.FloatFieldUpdateOperationsInput | number
   ratingDelta?: Prisma.FloatFieldUpdateOperationsInput | number
+  rankBefore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  rankAfter?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  rankDelta?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  movementDirection?: Prisma.NullableEnumRankingMovementDirectionFieldUpdateOperationsInput | $Enums.RankingMovementDirection | null
+  movementPositions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   ratingDeviationBefore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   ratingDeviationAfter?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   ratingVolatilityBefore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -1153,6 +1346,11 @@ export type MatchPlayerUncheckedUpdateWithoutMatchInput = {
   ratingBefore?: Prisma.FloatFieldUpdateOperationsInput | number
   ratingAfter?: Prisma.FloatFieldUpdateOperationsInput | number
   ratingDelta?: Prisma.FloatFieldUpdateOperationsInput | number
+  rankBefore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  rankAfter?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  rankDelta?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  movementDirection?: Prisma.NullableEnumRankingMovementDirectionFieldUpdateOperationsInput | $Enums.RankingMovementDirection | null
+  movementPositions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   ratingDeviationBefore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   ratingDeviationAfter?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   ratingVolatilityBefore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -1174,6 +1372,11 @@ export type MatchPlayerUncheckedUpdateManyWithoutMatchInput = {
   ratingBefore?: Prisma.FloatFieldUpdateOperationsInput | number
   ratingAfter?: Prisma.FloatFieldUpdateOperationsInput | number
   ratingDelta?: Prisma.FloatFieldUpdateOperationsInput | number
+  rankBefore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  rankAfter?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  rankDelta?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  movementDirection?: Prisma.NullableEnumRankingMovementDirectionFieldUpdateOperationsInput | $Enums.RankingMovementDirection | null
+  movementPositions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   ratingDeviationBefore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   ratingDeviationAfter?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   ratingVolatilityBefore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -1199,6 +1402,11 @@ export type MatchPlayerSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   ratingBefore?: boolean
   ratingAfter?: boolean
   ratingDelta?: boolean
+  rankBefore?: boolean
+  rankAfter?: boolean
+  rankDelta?: boolean
+  movementDirection?: boolean
+  movementPositions?: boolean
   ratingDeviationBefore?: boolean
   ratingDeviationAfter?: boolean
   ratingVolatilityBefore?: boolean
@@ -1224,6 +1432,11 @@ export type MatchPlayerSelectCreateManyAndReturn<ExtArgs extends runtime.Types.E
   ratingBefore?: boolean
   ratingAfter?: boolean
   ratingDelta?: boolean
+  rankBefore?: boolean
+  rankAfter?: boolean
+  rankDelta?: boolean
+  movementDirection?: boolean
+  movementPositions?: boolean
   ratingDeviationBefore?: boolean
   ratingDeviationAfter?: boolean
   ratingVolatilityBefore?: boolean
@@ -1249,6 +1462,11 @@ export type MatchPlayerSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.E
   ratingBefore?: boolean
   ratingAfter?: boolean
   ratingDelta?: boolean
+  rankBefore?: boolean
+  rankAfter?: boolean
+  rankDelta?: boolean
+  movementDirection?: boolean
+  movementPositions?: boolean
   ratingDeviationBefore?: boolean
   ratingDeviationAfter?: boolean
   ratingVolatilityBefore?: boolean
@@ -1274,6 +1492,11 @@ export type MatchPlayerSelectScalar = {
   ratingBefore?: boolean
   ratingAfter?: boolean
   ratingDelta?: boolean
+  rankBefore?: boolean
+  rankAfter?: boolean
+  rankDelta?: boolean
+  movementDirection?: boolean
+  movementPositions?: boolean
   ratingDeviationBefore?: boolean
   ratingDeviationAfter?: boolean
   ratingVolatilityBefore?: boolean
@@ -1287,7 +1510,7 @@ export type MatchPlayerSelectScalar = {
   updatedAt?: boolean
 }
 
-export type MatchPlayerOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "matchId" | "groupId" | "groupMemberId" | "team" | "position" | "ratingBefore" | "ratingAfter" | "ratingDelta" | "ratingDeviationBefore" | "ratingDeviationAfter" | "ratingVolatilityBefore" | "ratingVolatilityAfter" | "ratingMuBefore" | "ratingMuAfter" | "ratingSigmaBefore" | "ratingSigmaAfter" | "playedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["matchPlayer"]>
+export type MatchPlayerOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "matchId" | "groupId" | "groupMemberId" | "team" | "position" | "ratingBefore" | "ratingAfter" | "ratingDelta" | "rankBefore" | "rankAfter" | "rankDelta" | "movementDirection" | "movementPositions" | "ratingDeviationBefore" | "ratingDeviationAfter" | "ratingVolatilityBefore" | "ratingVolatilityAfter" | "ratingMuBefore" | "ratingMuAfter" | "ratingSigmaBefore" | "ratingSigmaAfter" | "playedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["matchPlayer"]>
 export type MatchPlayerInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   match?: boolean | Prisma.MatchDefaultArgs<ExtArgs>
   groupMember?: boolean | Prisma.GroupMemberDefaultArgs<ExtArgs>
@@ -1317,6 +1540,11 @@ export type $MatchPlayerPayload<ExtArgs extends runtime.Types.Extensions.Interna
     ratingBefore: number
     ratingAfter: number
     ratingDelta: number
+    rankBefore: number | null
+    rankAfter: number | null
+    rankDelta: number | null
+    movementDirection: $Enums.RankingMovementDirection | null
+    movementPositions: number | null
     ratingDeviationBefore: number | null
     ratingDeviationAfter: number | null
     ratingVolatilityBefore: number | null
@@ -1762,6 +1990,11 @@ export interface MatchPlayerFieldRefs {
   readonly ratingBefore: Prisma.FieldRef<"MatchPlayer", 'Float'>
   readonly ratingAfter: Prisma.FieldRef<"MatchPlayer", 'Float'>
   readonly ratingDelta: Prisma.FieldRef<"MatchPlayer", 'Float'>
+  readonly rankBefore: Prisma.FieldRef<"MatchPlayer", 'Int'>
+  readonly rankAfter: Prisma.FieldRef<"MatchPlayer", 'Int'>
+  readonly rankDelta: Prisma.FieldRef<"MatchPlayer", 'Int'>
+  readonly movementDirection: Prisma.FieldRef<"MatchPlayer", 'RankingMovementDirection'>
+  readonly movementPositions: Prisma.FieldRef<"MatchPlayer", 'Int'>
   readonly ratingDeviationBefore: Prisma.FieldRef<"MatchPlayer", 'Float'>
   readonly ratingDeviationAfter: Prisma.FieldRef<"MatchPlayer", 'Float'>
   readonly ratingVolatilityBefore: Prisma.FieldRef<"MatchPlayer", 'Float'>

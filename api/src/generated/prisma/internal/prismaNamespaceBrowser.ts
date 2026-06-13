@@ -57,6 +57,11 @@ export const ModelName = {
   GroupMember: 'GroupMember',
   Match: 'Match',
   MatchPlayer: 'MatchPlayer',
+  MatchRankingSnapshot: 'MatchRankingSnapshot',
+  GroupRankingProjection: 'GroupRankingProjection',
+  GroupHomeSummary: 'GroupHomeSummary',
+  RankingMovement: 'RankingMovement',
+  ProcessingJob: 'ProcessingJob',
   FeedItem: 'FeedItem'
 } as const
 
@@ -128,6 +133,7 @@ export const GroupMemberScalarFieldEnum = {
   ratingMu: 'ratingMu',
   ratingSigma: 'ratingSigma',
   ratingAlgorithm: 'ratingAlgorithm',
+  currentRank: 'currentRank',
   role: 'role',
   leftAt: 'leftAt',
   createdAt: 'createdAt',
@@ -152,6 +158,10 @@ export const MatchScalarFieldEnum = {
   teamARatingAfter: 'teamARatingAfter',
   teamBRatingAfter: 'teamBRatingAfter',
   ratingAlgorithm: 'ratingAlgorithm',
+  processingStatus: 'processingStatus',
+  processedAt: 'processedAt',
+  processingError: 'processingError',
+  deletedAt: 'deletedAt',
   playedAt: 'playedAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -170,6 +180,11 @@ export const MatchPlayerScalarFieldEnum = {
   ratingBefore: 'ratingBefore',
   ratingAfter: 'ratingAfter',
   ratingDelta: 'ratingDelta',
+  rankBefore: 'rankBefore',
+  rankAfter: 'rankAfter',
+  rankDelta: 'rankDelta',
+  movementDirection: 'movementDirection',
+  movementPositions: 'movementPositions',
   ratingDeviationBefore: 'ratingDeviationBefore',
   ratingDeviationAfter: 'ratingDeviationAfter',
   ratingVolatilityBefore: 'ratingVolatilityBefore',
@@ -184,6 +199,95 @@ export const MatchPlayerScalarFieldEnum = {
 } as const
 
 export type MatchPlayerScalarFieldEnum = (typeof MatchPlayerScalarFieldEnum)[keyof typeof MatchPlayerScalarFieldEnum]
+
+
+export const MatchRankingSnapshotScalarFieldEnum = {
+  matchId: 'matchId',
+  groupId: 'groupId',
+  previousLeaders: 'previousLeaders',
+  currentLeaders: 'currentLeaders',
+  dethronedLeaders: 'dethronedLeaders',
+  movements: 'movements',
+  algorithmVersion: 'algorithmVersion',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type MatchRankingSnapshotScalarFieldEnum = (typeof MatchRankingSnapshotScalarFieldEnum)[keyof typeof MatchRankingSnapshotScalarFieldEnum]
+
+
+export const GroupRankingProjectionScalarFieldEnum = {
+  groupId: 'groupId',
+  status: 'status',
+  version: 'version',
+  processingJobId: 'processingJobId',
+  lastProcessedMatchId: 'lastProcessedMatchId',
+  lastProcessedAt: 'lastProcessedAt',
+  lastError: 'lastError',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type GroupRankingProjectionScalarFieldEnum = (typeof GroupRankingProjectionScalarFieldEnum)[keyof typeof GroupRankingProjectionScalarFieldEnum]
+
+
+export const GroupHomeSummaryScalarFieldEnum = {
+  groupId: 'groupId',
+  membersCount: 'membersCount',
+  leaders: 'leaders',
+  lastRelevantFeedItemId: 'lastRelevantFeedItemId',
+  lastRelevantAt: 'lastRelevantAt',
+  projectionStatus: 'projectionStatus',
+  lastProcessedAt: 'lastProcessedAt',
+  lastError: 'lastError',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type GroupHomeSummaryScalarFieldEnum = (typeof GroupHomeSummaryScalarFieldEnum)[keyof typeof GroupHomeSummaryScalarFieldEnum]
+
+
+export const RankingMovementScalarFieldEnum = {
+  id: 'id',
+  groupId: 'groupId',
+  groupMemberId: 'groupMemberId',
+  matchId: 'matchId',
+  direction: 'direction',
+  positions: 'positions',
+  previousRank: 'previousRank',
+  currentRank: 'currentRank',
+  previousRating: 'previousRating',
+  currentRating: 'currentRating',
+  passedGroupMemberIds: 'passedGroupMemberIds',
+  isVisible: 'isVisible',
+  occurredAt: 'occurredAt',
+  invalidatedAt: 'invalidatedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type RankingMovementScalarFieldEnum = (typeof RankingMovementScalarFieldEnum)[keyof typeof RankingMovementScalarFieldEnum]
+
+
+export const ProcessingJobScalarFieldEnum = {
+  id: 'id',
+  type: 'type',
+  status: 'status',
+  groupId: 'groupId',
+  matchId: 'matchId',
+  payload: 'payload',
+  attemptCount: 'attemptCount',
+  maxAttempts: 'maxAttempts',
+  availableAt: 'availableAt',
+  lockedAt: 'lockedAt',
+  lockedBy: 'lockedBy',
+  lastError: 'lastError',
+  processedAt: 'processedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ProcessingJobScalarFieldEnum = (typeof ProcessingJobScalarFieldEnum)[keyof typeof ProcessingJobScalarFieldEnum]
 
 
 export const FeedItemScalarFieldEnum = {

@@ -281,6 +281,7 @@ export type FeedItemWhereInput = {
   actorGroupMember?: Prisma.XOR<Prisma.GroupMemberNullableScalarRelationFilter, Prisma.GroupMemberWhereInput> | null
   subjectUser?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   match?: Prisma.XOR<Prisma.MatchNullableScalarRelationFilter, Prisma.MatchWhereInput> | null
+  groupHomeSummaries?: Prisma.GroupHomeSummaryListRelationFilter
 }
 
 export type FeedItemOrderByWithRelationInput = {
@@ -302,6 +303,7 @@ export type FeedItemOrderByWithRelationInput = {
   actorGroupMember?: Prisma.GroupMemberOrderByWithRelationInput
   subjectUser?: Prisma.UserOrderByWithRelationInput
   match?: Prisma.MatchOrderByWithRelationInput
+  groupHomeSummaries?: Prisma.GroupHomeSummaryOrderByRelationAggregateInput
 }
 
 export type FeedItemWhereUniqueInput = Prisma.AtLeast<{
@@ -327,6 +329,7 @@ export type FeedItemWhereUniqueInput = Prisma.AtLeast<{
   actorGroupMember?: Prisma.XOR<Prisma.GroupMemberNullableScalarRelationFilter, Prisma.GroupMemberWhereInput> | null
   subjectUser?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   match?: Prisma.XOR<Prisma.MatchNullableScalarRelationFilter, Prisma.MatchWhereInput> | null
+  groupHomeSummaries?: Prisma.GroupHomeSummaryListRelationFilter
 }, "id" | "type_matchId">
 
 export type FeedItemOrderByWithAggregationInput = {
@@ -383,6 +386,7 @@ export type FeedItemCreateInput = {
   actorGroupMember?: Prisma.GroupMemberCreateNestedOneWithoutActorFeedItemsInput
   subjectUser?: Prisma.UserCreateNestedOneWithoutSubjectFeedItemsInput
   match?: Prisma.MatchCreateNestedOneWithoutFeedItemsInput
+  groupHomeSummaries?: Prisma.GroupHomeSummaryCreateNestedManyWithoutLastRelevantFeedItemInput
 }
 
 export type FeedItemUncheckedCreateInput = {
@@ -399,6 +403,7 @@ export type FeedItemUncheckedCreateInput = {
   metadata: Prisma.JsonNullValueInput | runtime.InputJsonValue
   occurredAt: Date | string
   createdAt?: Date | string
+  groupHomeSummaries?: Prisma.GroupHomeSummaryUncheckedCreateNestedManyWithoutLastRelevantFeedItemInput
 }
 
 export type FeedItemUpdateInput = {
@@ -415,6 +420,7 @@ export type FeedItemUpdateInput = {
   actorGroupMember?: Prisma.GroupMemberUpdateOneWithoutActorFeedItemsNestedInput
   subjectUser?: Prisma.UserUpdateOneWithoutSubjectFeedItemsNestedInput
   match?: Prisma.MatchUpdateOneWithoutFeedItemsNestedInput
+  groupHomeSummaries?: Prisma.GroupHomeSummaryUpdateManyWithoutLastRelevantFeedItemNestedInput
 }
 
 export type FeedItemUncheckedUpdateInput = {
@@ -431,6 +437,7 @@ export type FeedItemUncheckedUpdateInput = {
   metadata?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   occurredAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  groupHomeSummaries?: Prisma.GroupHomeSummaryUncheckedUpdateManyWithoutLastRelevantFeedItemNestedInput
 }
 
 export type FeedItemCreateManyInput = {
@@ -484,6 +491,11 @@ export type FeedItemListRelationFilter = {
 
 export type FeedItemOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
+}
+
+export type FeedItemNullableScalarRelationFilter = {
+  is?: Prisma.FeedItemWhereInput | null
+  isNot?: Prisma.FeedItemWhereInput | null
 }
 
 export type FeedItemTypeMatchIdCompoundUniqueInput = {
@@ -755,6 +767,22 @@ export type FeedItemUncheckedUpdateManyWithoutMatchNestedInput = {
   deleteMany?: Prisma.FeedItemScalarWhereInput | Prisma.FeedItemScalarWhereInput[]
 }
 
+export type FeedItemCreateNestedOneWithoutGroupHomeSummariesInput = {
+  create?: Prisma.XOR<Prisma.FeedItemCreateWithoutGroupHomeSummariesInput, Prisma.FeedItemUncheckedCreateWithoutGroupHomeSummariesInput>
+  connectOrCreate?: Prisma.FeedItemCreateOrConnectWithoutGroupHomeSummariesInput
+  connect?: Prisma.FeedItemWhereUniqueInput
+}
+
+export type FeedItemUpdateOneWithoutGroupHomeSummariesNestedInput = {
+  create?: Prisma.XOR<Prisma.FeedItemCreateWithoutGroupHomeSummariesInput, Prisma.FeedItemUncheckedCreateWithoutGroupHomeSummariesInput>
+  connectOrCreate?: Prisma.FeedItemCreateOrConnectWithoutGroupHomeSummariesInput
+  upsert?: Prisma.FeedItemUpsertWithoutGroupHomeSummariesInput
+  disconnect?: Prisma.FeedItemWhereInput | boolean
+  delete?: Prisma.FeedItemWhereInput | boolean
+  connect?: Prisma.FeedItemWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.FeedItemUpdateToOneWithWhereWithoutGroupHomeSummariesInput, Prisma.FeedItemUpdateWithoutGroupHomeSummariesInput>, Prisma.FeedItemUncheckedUpdateWithoutGroupHomeSummariesInput>
+}
+
 export type EnumFeedItemTypeFieldUpdateOperationsInput = {
   set?: $Enums.FeedItemType
 }
@@ -780,6 +808,7 @@ export type FeedItemCreateWithoutActorUserInput = {
   actorGroupMember?: Prisma.GroupMemberCreateNestedOneWithoutActorFeedItemsInput
   subjectUser?: Prisma.UserCreateNestedOneWithoutSubjectFeedItemsInput
   match?: Prisma.MatchCreateNestedOneWithoutFeedItemsInput
+  groupHomeSummaries?: Prisma.GroupHomeSummaryCreateNestedManyWithoutLastRelevantFeedItemInput
 }
 
 export type FeedItemUncheckedCreateWithoutActorUserInput = {
@@ -795,6 +824,7 @@ export type FeedItemUncheckedCreateWithoutActorUserInput = {
   metadata: Prisma.JsonNullValueInput | runtime.InputJsonValue
   occurredAt: Date | string
   createdAt?: Date | string
+  groupHomeSummaries?: Prisma.GroupHomeSummaryUncheckedCreateNestedManyWithoutLastRelevantFeedItemInput
 }
 
 export type FeedItemCreateOrConnectWithoutActorUserInput = {
@@ -820,6 +850,7 @@ export type FeedItemCreateWithoutSubjectUserInput = {
   actorUser?: Prisma.UserCreateNestedOneWithoutActorFeedItemsInput
   actorGroupMember?: Prisma.GroupMemberCreateNestedOneWithoutActorFeedItemsInput
   match?: Prisma.MatchCreateNestedOneWithoutFeedItemsInput
+  groupHomeSummaries?: Prisma.GroupHomeSummaryCreateNestedManyWithoutLastRelevantFeedItemInput
 }
 
 export type FeedItemUncheckedCreateWithoutSubjectUserInput = {
@@ -835,6 +866,7 @@ export type FeedItemUncheckedCreateWithoutSubjectUserInput = {
   metadata: Prisma.JsonNullValueInput | runtime.InputJsonValue
   occurredAt: Date | string
   createdAt?: Date | string
+  groupHomeSummaries?: Prisma.GroupHomeSummaryUncheckedCreateNestedManyWithoutLastRelevantFeedItemInput
 }
 
 export type FeedItemCreateOrConnectWithoutSubjectUserInput = {
@@ -911,6 +943,7 @@ export type FeedItemCreateWithoutGroupInput = {
   actorGroupMember?: Prisma.GroupMemberCreateNestedOneWithoutActorFeedItemsInput
   subjectUser?: Prisma.UserCreateNestedOneWithoutSubjectFeedItemsInput
   match?: Prisma.MatchCreateNestedOneWithoutFeedItemsInput
+  groupHomeSummaries?: Prisma.GroupHomeSummaryCreateNestedManyWithoutLastRelevantFeedItemInput
 }
 
 export type FeedItemUncheckedCreateWithoutGroupInput = {
@@ -926,6 +959,7 @@ export type FeedItemUncheckedCreateWithoutGroupInput = {
   metadata: Prisma.JsonNullValueInput | runtime.InputJsonValue
   occurredAt: Date | string
   createdAt?: Date | string
+  groupHomeSummaries?: Prisma.GroupHomeSummaryUncheckedCreateNestedManyWithoutLastRelevantFeedItemInput
 }
 
 export type FeedItemCreateOrConnectWithoutGroupInput = {
@@ -967,6 +1001,7 @@ export type FeedItemCreateWithoutActorGroupMemberInput = {
   actorUser?: Prisma.UserCreateNestedOneWithoutActorFeedItemsInput
   subjectUser?: Prisma.UserCreateNestedOneWithoutSubjectFeedItemsInput
   match?: Prisma.MatchCreateNestedOneWithoutFeedItemsInput
+  groupHomeSummaries?: Prisma.GroupHomeSummaryCreateNestedManyWithoutLastRelevantFeedItemInput
 }
 
 export type FeedItemUncheckedCreateWithoutActorGroupMemberInput = {
@@ -982,6 +1017,7 @@ export type FeedItemUncheckedCreateWithoutActorGroupMemberInput = {
   metadata: Prisma.JsonNullValueInput | runtime.InputJsonValue
   occurredAt: Date | string
   createdAt?: Date | string
+  groupHomeSummaries?: Prisma.GroupHomeSummaryUncheckedCreateNestedManyWithoutLastRelevantFeedItemInput
 }
 
 export type FeedItemCreateOrConnectWithoutActorGroupMemberInput = {
@@ -1023,6 +1059,7 @@ export type FeedItemCreateWithoutMatchInput = {
   actorUser?: Prisma.UserCreateNestedOneWithoutActorFeedItemsInput
   actorGroupMember?: Prisma.GroupMemberCreateNestedOneWithoutActorFeedItemsInput
   subjectUser?: Prisma.UserCreateNestedOneWithoutSubjectFeedItemsInput
+  groupHomeSummaries?: Prisma.GroupHomeSummaryCreateNestedManyWithoutLastRelevantFeedItemInput
 }
 
 export type FeedItemUncheckedCreateWithoutMatchInput = {
@@ -1038,6 +1075,7 @@ export type FeedItemUncheckedCreateWithoutMatchInput = {
   metadata: Prisma.JsonNullValueInput | runtime.InputJsonValue
   occurredAt: Date | string
   createdAt?: Date | string
+  groupHomeSummaries?: Prisma.GroupHomeSummaryUncheckedCreateNestedManyWithoutLastRelevantFeedItemInput
 }
 
 export type FeedItemCreateOrConnectWithoutMatchInput = {
@@ -1064,6 +1102,86 @@ export type FeedItemUpdateWithWhereUniqueWithoutMatchInput = {
 export type FeedItemUpdateManyWithWhereWithoutMatchInput = {
   where: Prisma.FeedItemScalarWhereInput
   data: Prisma.XOR<Prisma.FeedItemUpdateManyMutationInput, Prisma.FeedItemUncheckedUpdateManyWithoutMatchInput>
+}
+
+export type FeedItemCreateWithoutGroupHomeSummariesInput = {
+  id?: string
+  type: $Enums.FeedItemType
+  scope: $Enums.FeedItemScope
+  visibility: $Enums.FeedItemVisibility
+  importanceScore?: number
+  metadata: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  occurredAt: Date | string
+  createdAt?: Date | string
+  group?: Prisma.GroupCreateNestedOneWithoutFeedItemsInput
+  actorUser?: Prisma.UserCreateNestedOneWithoutActorFeedItemsInput
+  actorGroupMember?: Prisma.GroupMemberCreateNestedOneWithoutActorFeedItemsInput
+  subjectUser?: Prisma.UserCreateNestedOneWithoutSubjectFeedItemsInput
+  match?: Prisma.MatchCreateNestedOneWithoutFeedItemsInput
+}
+
+export type FeedItemUncheckedCreateWithoutGroupHomeSummariesInput = {
+  id?: string
+  type: $Enums.FeedItemType
+  scope: $Enums.FeedItemScope
+  visibility: $Enums.FeedItemVisibility
+  groupId?: string | null
+  actorUserId?: string | null
+  actorGroupMemberId?: string | null
+  subjectUserId?: string | null
+  matchId?: string | null
+  importanceScore?: number
+  metadata: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  occurredAt: Date | string
+  createdAt?: Date | string
+}
+
+export type FeedItemCreateOrConnectWithoutGroupHomeSummariesInput = {
+  where: Prisma.FeedItemWhereUniqueInput
+  create: Prisma.XOR<Prisma.FeedItemCreateWithoutGroupHomeSummariesInput, Prisma.FeedItemUncheckedCreateWithoutGroupHomeSummariesInput>
+}
+
+export type FeedItemUpsertWithoutGroupHomeSummariesInput = {
+  update: Prisma.XOR<Prisma.FeedItemUpdateWithoutGroupHomeSummariesInput, Prisma.FeedItemUncheckedUpdateWithoutGroupHomeSummariesInput>
+  create: Prisma.XOR<Prisma.FeedItemCreateWithoutGroupHomeSummariesInput, Prisma.FeedItemUncheckedCreateWithoutGroupHomeSummariesInput>
+  where?: Prisma.FeedItemWhereInput
+}
+
+export type FeedItemUpdateToOneWithWhereWithoutGroupHomeSummariesInput = {
+  where?: Prisma.FeedItemWhereInput
+  data: Prisma.XOR<Prisma.FeedItemUpdateWithoutGroupHomeSummariesInput, Prisma.FeedItemUncheckedUpdateWithoutGroupHomeSummariesInput>
+}
+
+export type FeedItemUpdateWithoutGroupHomeSummariesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumFeedItemTypeFieldUpdateOperationsInput | $Enums.FeedItemType
+  scope?: Prisma.EnumFeedItemScopeFieldUpdateOperationsInput | $Enums.FeedItemScope
+  visibility?: Prisma.EnumFeedItemVisibilityFieldUpdateOperationsInput | $Enums.FeedItemVisibility
+  importanceScore?: Prisma.IntFieldUpdateOperationsInput | number
+  metadata?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  occurredAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  group?: Prisma.GroupUpdateOneWithoutFeedItemsNestedInput
+  actorUser?: Prisma.UserUpdateOneWithoutActorFeedItemsNestedInput
+  actorGroupMember?: Prisma.GroupMemberUpdateOneWithoutActorFeedItemsNestedInput
+  subjectUser?: Prisma.UserUpdateOneWithoutSubjectFeedItemsNestedInput
+  match?: Prisma.MatchUpdateOneWithoutFeedItemsNestedInput
+}
+
+export type FeedItemUncheckedUpdateWithoutGroupHomeSummariesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumFeedItemTypeFieldUpdateOperationsInput | $Enums.FeedItemType
+  scope?: Prisma.EnumFeedItemScopeFieldUpdateOperationsInput | $Enums.FeedItemScope
+  visibility?: Prisma.EnumFeedItemVisibilityFieldUpdateOperationsInput | $Enums.FeedItemVisibility
+  groupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  actorUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  actorGroupMemberId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subjectUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  matchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  importanceScore?: Prisma.IntFieldUpdateOperationsInput | number
+  metadata?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  occurredAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type FeedItemCreateManyActorUserInput = {
@@ -1109,6 +1227,7 @@ export type FeedItemUpdateWithoutActorUserInput = {
   actorGroupMember?: Prisma.GroupMemberUpdateOneWithoutActorFeedItemsNestedInput
   subjectUser?: Prisma.UserUpdateOneWithoutSubjectFeedItemsNestedInput
   match?: Prisma.MatchUpdateOneWithoutFeedItemsNestedInput
+  groupHomeSummaries?: Prisma.GroupHomeSummaryUpdateManyWithoutLastRelevantFeedItemNestedInput
 }
 
 export type FeedItemUncheckedUpdateWithoutActorUserInput = {
@@ -1124,6 +1243,7 @@ export type FeedItemUncheckedUpdateWithoutActorUserInput = {
   metadata?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   occurredAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  groupHomeSummaries?: Prisma.GroupHomeSummaryUncheckedUpdateManyWithoutLastRelevantFeedItemNestedInput
 }
 
 export type FeedItemUncheckedUpdateManyWithoutActorUserInput = {
@@ -1154,6 +1274,7 @@ export type FeedItemUpdateWithoutSubjectUserInput = {
   actorUser?: Prisma.UserUpdateOneWithoutActorFeedItemsNestedInput
   actorGroupMember?: Prisma.GroupMemberUpdateOneWithoutActorFeedItemsNestedInput
   match?: Prisma.MatchUpdateOneWithoutFeedItemsNestedInput
+  groupHomeSummaries?: Prisma.GroupHomeSummaryUpdateManyWithoutLastRelevantFeedItemNestedInput
 }
 
 export type FeedItemUncheckedUpdateWithoutSubjectUserInput = {
@@ -1169,6 +1290,7 @@ export type FeedItemUncheckedUpdateWithoutSubjectUserInput = {
   metadata?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   occurredAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  groupHomeSummaries?: Prisma.GroupHomeSummaryUncheckedUpdateManyWithoutLastRelevantFeedItemNestedInput
 }
 
 export type FeedItemUncheckedUpdateManyWithoutSubjectUserInput = {
@@ -1214,6 +1336,7 @@ export type FeedItemUpdateWithoutGroupInput = {
   actorGroupMember?: Prisma.GroupMemberUpdateOneWithoutActorFeedItemsNestedInput
   subjectUser?: Prisma.UserUpdateOneWithoutSubjectFeedItemsNestedInput
   match?: Prisma.MatchUpdateOneWithoutFeedItemsNestedInput
+  groupHomeSummaries?: Prisma.GroupHomeSummaryUpdateManyWithoutLastRelevantFeedItemNestedInput
 }
 
 export type FeedItemUncheckedUpdateWithoutGroupInput = {
@@ -1229,6 +1352,7 @@ export type FeedItemUncheckedUpdateWithoutGroupInput = {
   metadata?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   occurredAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  groupHomeSummaries?: Prisma.GroupHomeSummaryUncheckedUpdateManyWithoutLastRelevantFeedItemNestedInput
 }
 
 export type FeedItemUncheckedUpdateManyWithoutGroupInput = {
@@ -1274,6 +1398,7 @@ export type FeedItemUpdateWithoutActorGroupMemberInput = {
   actorUser?: Prisma.UserUpdateOneWithoutActorFeedItemsNestedInput
   subjectUser?: Prisma.UserUpdateOneWithoutSubjectFeedItemsNestedInput
   match?: Prisma.MatchUpdateOneWithoutFeedItemsNestedInput
+  groupHomeSummaries?: Prisma.GroupHomeSummaryUpdateManyWithoutLastRelevantFeedItemNestedInput
 }
 
 export type FeedItemUncheckedUpdateWithoutActorGroupMemberInput = {
@@ -1289,6 +1414,7 @@ export type FeedItemUncheckedUpdateWithoutActorGroupMemberInput = {
   metadata?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   occurredAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  groupHomeSummaries?: Prisma.GroupHomeSummaryUncheckedUpdateManyWithoutLastRelevantFeedItemNestedInput
 }
 
 export type FeedItemUncheckedUpdateManyWithoutActorGroupMemberInput = {
@@ -1334,6 +1460,7 @@ export type FeedItemUpdateWithoutMatchInput = {
   actorUser?: Prisma.UserUpdateOneWithoutActorFeedItemsNestedInput
   actorGroupMember?: Prisma.GroupMemberUpdateOneWithoutActorFeedItemsNestedInput
   subjectUser?: Prisma.UserUpdateOneWithoutSubjectFeedItemsNestedInput
+  groupHomeSummaries?: Prisma.GroupHomeSummaryUpdateManyWithoutLastRelevantFeedItemNestedInput
 }
 
 export type FeedItemUncheckedUpdateWithoutMatchInput = {
@@ -1349,6 +1476,7 @@ export type FeedItemUncheckedUpdateWithoutMatchInput = {
   metadata?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   occurredAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  groupHomeSummaries?: Prisma.GroupHomeSummaryUncheckedUpdateManyWithoutLastRelevantFeedItemNestedInput
 }
 
 export type FeedItemUncheckedUpdateManyWithoutMatchInput = {
@@ -1366,6 +1494,35 @@ export type FeedItemUncheckedUpdateManyWithoutMatchInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
+
+/**
+ * Count Type FeedItemCountOutputType
+ */
+
+export type FeedItemCountOutputType = {
+  groupHomeSummaries: number
+}
+
+export type FeedItemCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  groupHomeSummaries?: boolean | FeedItemCountOutputTypeCountGroupHomeSummariesArgs
+}
+
+/**
+ * FeedItemCountOutputType without action
+ */
+export type FeedItemCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the FeedItemCountOutputType
+   */
+  select?: Prisma.FeedItemCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * FeedItemCountOutputType without action
+ */
+export type FeedItemCountOutputTypeCountGroupHomeSummariesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.GroupHomeSummaryWhereInput
+}
 
 
 export type FeedItemSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1387,6 +1544,8 @@ export type FeedItemSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   actorGroupMember?: boolean | Prisma.FeedItem$actorGroupMemberArgs<ExtArgs>
   subjectUser?: boolean | Prisma.FeedItem$subjectUserArgs<ExtArgs>
   match?: boolean | Prisma.FeedItem$matchArgs<ExtArgs>
+  groupHomeSummaries?: boolean | Prisma.FeedItem$groupHomeSummariesArgs<ExtArgs>
+  _count?: boolean | Prisma.FeedItemCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["feedItem"]>
 
 export type FeedItemSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1454,6 +1613,8 @@ export type FeedItemInclude<ExtArgs extends runtime.Types.Extensions.InternalArg
   actorGroupMember?: boolean | Prisma.FeedItem$actorGroupMemberArgs<ExtArgs>
   subjectUser?: boolean | Prisma.FeedItem$subjectUserArgs<ExtArgs>
   match?: boolean | Prisma.FeedItem$matchArgs<ExtArgs>
+  groupHomeSummaries?: boolean | Prisma.FeedItem$groupHomeSummariesArgs<ExtArgs>
+  _count?: boolean | Prisma.FeedItemCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type FeedItemIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   group?: boolean | Prisma.FeedItem$groupArgs<ExtArgs>
@@ -1478,6 +1639,7 @@ export type $FeedItemPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     actorGroupMember: Prisma.$GroupMemberPayload<ExtArgs> | null
     subjectUser: Prisma.$UserPayload<ExtArgs> | null
     match: Prisma.$MatchPayload<ExtArgs> | null
+    groupHomeSummaries: Prisma.$GroupHomeSummaryPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1892,6 +2054,7 @@ export interface Prisma__FeedItemClient<T, Null = never, ExtArgs extends runtime
   actorGroupMember<T extends Prisma.FeedItem$actorGroupMemberArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.FeedItem$actorGroupMemberArgs<ExtArgs>>): Prisma.Prisma__GroupMemberClient<runtime.Types.Result.GetResult<Prisma.$GroupMemberPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   subjectUser<T extends Prisma.FeedItem$subjectUserArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.FeedItem$subjectUserArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   match<T extends Prisma.FeedItem$matchArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.FeedItem$matchArgs<ExtArgs>>): Prisma.Prisma__MatchClient<runtime.Types.Result.GetResult<Prisma.$MatchPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  groupHomeSummaries<T extends Prisma.FeedItem$groupHomeSummariesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.FeedItem$groupHomeSummariesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$GroupHomeSummaryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2427,6 +2590,30 @@ export type FeedItem$matchArgs<ExtArgs extends runtime.Types.Extensions.Internal
    */
   include?: Prisma.MatchInclude<ExtArgs> | null
   where?: Prisma.MatchWhereInput
+}
+
+/**
+ * FeedItem.groupHomeSummaries
+ */
+export type FeedItem$groupHomeSummariesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the GroupHomeSummary
+   */
+  select?: Prisma.GroupHomeSummarySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the GroupHomeSummary
+   */
+  omit?: Prisma.GroupHomeSummaryOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.GroupHomeSummaryInclude<ExtArgs> | null
+  where?: Prisma.GroupHomeSummaryWhereInput
+  orderBy?: Prisma.GroupHomeSummaryOrderByWithRelationInput | Prisma.GroupHomeSummaryOrderByWithRelationInput[]
+  cursor?: Prisma.GroupHomeSummaryWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.GroupHomeSummaryScalarFieldEnum | Prisma.GroupHomeSummaryScalarFieldEnum[]
 }
 
 /**

@@ -67,6 +67,10 @@ export type MatchMinAggregateOutputType = {
   teamARatingAfter: number | null
   teamBRatingAfter: number | null
   ratingAlgorithm: string | null
+  processingStatus: $Enums.MatchProcessingStatus | null
+  processedAt: Date | null
+  processingError: string | null
+  deletedAt: Date | null
   playedAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -87,6 +91,10 @@ export type MatchMaxAggregateOutputType = {
   teamARatingAfter: number | null
   teamBRatingAfter: number | null
   ratingAlgorithm: string | null
+  processingStatus: $Enums.MatchProcessingStatus | null
+  processedAt: Date | null
+  processingError: string | null
+  deletedAt: Date | null
   playedAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -107,6 +115,10 @@ export type MatchCountAggregateOutputType = {
   teamARatingAfter: number
   teamBRatingAfter: number
   ratingAlgorithm: number
+  processingStatus: number
+  processedAt: number
+  processingError: number
+  deletedAt: number
   playedAt: number
   createdAt: number
   updatedAt: number
@@ -155,6 +167,10 @@ export type MatchMinAggregateInputType = {
   teamARatingAfter?: true
   teamBRatingAfter?: true
   ratingAlgorithm?: true
+  processingStatus?: true
+  processedAt?: true
+  processingError?: true
+  deletedAt?: true
   playedAt?: true
   createdAt?: true
   updatedAt?: true
@@ -175,6 +191,10 @@ export type MatchMaxAggregateInputType = {
   teamARatingAfter?: true
   teamBRatingAfter?: true
   ratingAlgorithm?: true
+  processingStatus?: true
+  processedAt?: true
+  processingError?: true
+  deletedAt?: true
   playedAt?: true
   createdAt?: true
   updatedAt?: true
@@ -195,6 +215,10 @@ export type MatchCountAggregateInputType = {
   teamARatingAfter?: true
   teamBRatingAfter?: true
   ratingAlgorithm?: true
+  processingStatus?: true
+  processedAt?: true
+  processingError?: true
+  deletedAt?: true
   playedAt?: true
   createdAt?: true
   updatedAt?: true
@@ -302,6 +326,10 @@ export type MatchGroupByOutputType = {
   teamARatingAfter: number | null
   teamBRatingAfter: number | null
   ratingAlgorithm: string
+  processingStatus: $Enums.MatchProcessingStatus
+  processedAt: Date | null
+  processingError: string | null
+  deletedAt: Date | null
   playedAt: Date
   createdAt: Date
   updatedAt: Date
@@ -345,12 +373,19 @@ export type MatchWhereInput = {
   teamARatingAfter?: Prisma.FloatNullableFilter<"Match"> | number | null
   teamBRatingAfter?: Prisma.FloatNullableFilter<"Match"> | number | null
   ratingAlgorithm?: Prisma.StringFilter<"Match"> | string
+  processingStatus?: Prisma.EnumMatchProcessingStatusFilter<"Match"> | $Enums.MatchProcessingStatus
+  processedAt?: Prisma.DateTimeNullableFilter<"Match"> | Date | string | null
+  processingError?: Prisma.StringNullableFilter<"Match"> | string | null
+  deletedAt?: Prisma.DateTimeNullableFilter<"Match"> | Date | string | null
   playedAt?: Prisma.DateTimeFilter<"Match"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"Match"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Match"> | Date | string
   group?: Prisma.XOR<Prisma.GroupScalarRelationFilter, Prisma.GroupWhereInput>
   players?: Prisma.MatchPlayerListRelationFilter
   feedItems?: Prisma.FeedItemListRelationFilter
+  rankingMovements?: Prisma.RankingMovementListRelationFilter
+  rankingSnapshot?: Prisma.XOR<Prisma.MatchRankingSnapshotNullableScalarRelationFilter, Prisma.MatchRankingSnapshotWhereInput> | null
+  processingJobs?: Prisma.ProcessingJobListRelationFilter
 }
 
 export type MatchOrderByWithRelationInput = {
@@ -368,12 +403,19 @@ export type MatchOrderByWithRelationInput = {
   teamARatingAfter?: Prisma.SortOrderInput | Prisma.SortOrder
   teamBRatingAfter?: Prisma.SortOrderInput | Prisma.SortOrder
   ratingAlgorithm?: Prisma.SortOrder
+  processingStatus?: Prisma.SortOrder
+  processedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  processingError?: Prisma.SortOrderInput | Prisma.SortOrder
+  deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   playedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   group?: Prisma.GroupOrderByWithRelationInput
   players?: Prisma.MatchPlayerOrderByRelationAggregateInput
   feedItems?: Prisma.FeedItemOrderByRelationAggregateInput
+  rankingMovements?: Prisma.RankingMovementOrderByRelationAggregateInput
+  rankingSnapshot?: Prisma.MatchRankingSnapshotOrderByWithRelationInput
+  processingJobs?: Prisma.ProcessingJobOrderByRelationAggregateInput
 }
 
 export type MatchWhereUniqueInput = Prisma.AtLeast<{
@@ -395,12 +437,19 @@ export type MatchWhereUniqueInput = Prisma.AtLeast<{
   teamARatingAfter?: Prisma.FloatNullableFilter<"Match"> | number | null
   teamBRatingAfter?: Prisma.FloatNullableFilter<"Match"> | number | null
   ratingAlgorithm?: Prisma.StringFilter<"Match"> | string
+  processingStatus?: Prisma.EnumMatchProcessingStatusFilter<"Match"> | $Enums.MatchProcessingStatus
+  processedAt?: Prisma.DateTimeNullableFilter<"Match"> | Date | string | null
+  processingError?: Prisma.StringNullableFilter<"Match"> | string | null
+  deletedAt?: Prisma.DateTimeNullableFilter<"Match"> | Date | string | null
   playedAt?: Prisma.DateTimeFilter<"Match"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"Match"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Match"> | Date | string
   group?: Prisma.XOR<Prisma.GroupScalarRelationFilter, Prisma.GroupWhereInput>
   players?: Prisma.MatchPlayerListRelationFilter
   feedItems?: Prisma.FeedItemListRelationFilter
+  rankingMovements?: Prisma.RankingMovementListRelationFilter
+  rankingSnapshot?: Prisma.XOR<Prisma.MatchRankingSnapshotNullableScalarRelationFilter, Prisma.MatchRankingSnapshotWhereInput> | null
+  processingJobs?: Prisma.ProcessingJobListRelationFilter
 }, "id" | "id_groupId">
 
 export type MatchOrderByWithAggregationInput = {
@@ -418,6 +467,10 @@ export type MatchOrderByWithAggregationInput = {
   teamARatingAfter?: Prisma.SortOrderInput | Prisma.SortOrder
   teamBRatingAfter?: Prisma.SortOrderInput | Prisma.SortOrder
   ratingAlgorithm?: Prisma.SortOrder
+  processingStatus?: Prisma.SortOrder
+  processedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  processingError?: Prisma.SortOrderInput | Prisma.SortOrder
+  deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   playedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -446,6 +499,10 @@ export type MatchScalarWhereWithAggregatesInput = {
   teamARatingAfter?: Prisma.FloatNullableWithAggregatesFilter<"Match"> | number | null
   teamBRatingAfter?: Prisma.FloatNullableWithAggregatesFilter<"Match"> | number | null
   ratingAlgorithm?: Prisma.StringWithAggregatesFilter<"Match"> | string
+  processingStatus?: Prisma.EnumMatchProcessingStatusWithAggregatesFilter<"Match"> | $Enums.MatchProcessingStatus
+  processedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Match"> | Date | string | null
+  processingError?: Prisma.StringNullableWithAggregatesFilter<"Match"> | string | null
+  deletedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Match"> | Date | string | null
   playedAt?: Prisma.DateTimeWithAggregatesFilter<"Match"> | Date | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Match"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Match"> | Date | string
@@ -465,12 +522,19 @@ export type MatchCreateInput = {
   teamARatingAfter?: number | null
   teamBRatingAfter?: number | null
   ratingAlgorithm?: string
+  processingStatus?: $Enums.MatchProcessingStatus
+  processedAt?: Date | string | null
+  processingError?: string | null
+  deletedAt?: Date | string | null
   playedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
   group: Prisma.GroupCreateNestedOneWithoutMatchesInput
   players?: Prisma.MatchPlayerCreateNestedManyWithoutMatchInput
   feedItems?: Prisma.FeedItemCreateNestedManyWithoutMatchInput
+  rankingMovements?: Prisma.RankingMovementCreateNestedManyWithoutMatchInput
+  rankingSnapshot?: Prisma.MatchRankingSnapshotCreateNestedOneWithoutMatchInput
+  processingJobs?: Prisma.ProcessingJobCreateNestedManyWithoutMatchInput
 }
 
 export type MatchUncheckedCreateInput = {
@@ -488,11 +552,18 @@ export type MatchUncheckedCreateInput = {
   teamARatingAfter?: number | null
   teamBRatingAfter?: number | null
   ratingAlgorithm?: string
+  processingStatus?: $Enums.MatchProcessingStatus
+  processedAt?: Date | string | null
+  processingError?: string | null
+  deletedAt?: Date | string | null
   playedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
   players?: Prisma.MatchPlayerUncheckedCreateNestedManyWithoutMatchInput
   feedItems?: Prisma.FeedItemUncheckedCreateNestedManyWithoutMatchInput
+  rankingMovements?: Prisma.RankingMovementUncheckedCreateNestedManyWithoutMatchInput
+  rankingSnapshot?: Prisma.MatchRankingSnapshotUncheckedCreateNestedOneWithoutMatchInput
+  processingJobs?: Prisma.ProcessingJobUncheckedCreateNestedManyWithoutMatchInput
 }
 
 export type MatchUpdateInput = {
@@ -509,12 +580,19 @@ export type MatchUpdateInput = {
   teamARatingAfter?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   teamBRatingAfter?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   ratingAlgorithm?: Prisma.StringFieldUpdateOperationsInput | string
+  processingStatus?: Prisma.EnumMatchProcessingStatusFieldUpdateOperationsInput | $Enums.MatchProcessingStatus
+  processedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  processingError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   playedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   group?: Prisma.GroupUpdateOneRequiredWithoutMatchesNestedInput
   players?: Prisma.MatchPlayerUpdateManyWithoutMatchNestedInput
   feedItems?: Prisma.FeedItemUpdateManyWithoutMatchNestedInput
+  rankingMovements?: Prisma.RankingMovementUpdateManyWithoutMatchNestedInput
+  rankingSnapshot?: Prisma.MatchRankingSnapshotUpdateOneWithoutMatchNestedInput
+  processingJobs?: Prisma.ProcessingJobUpdateManyWithoutMatchNestedInput
 }
 
 export type MatchUncheckedUpdateInput = {
@@ -532,11 +610,18 @@ export type MatchUncheckedUpdateInput = {
   teamARatingAfter?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   teamBRatingAfter?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   ratingAlgorithm?: Prisma.StringFieldUpdateOperationsInput | string
+  processingStatus?: Prisma.EnumMatchProcessingStatusFieldUpdateOperationsInput | $Enums.MatchProcessingStatus
+  processedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  processingError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   playedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   players?: Prisma.MatchPlayerUncheckedUpdateManyWithoutMatchNestedInput
   feedItems?: Prisma.FeedItemUncheckedUpdateManyWithoutMatchNestedInput
+  rankingMovements?: Prisma.RankingMovementUncheckedUpdateManyWithoutMatchNestedInput
+  rankingSnapshot?: Prisma.MatchRankingSnapshotUncheckedUpdateOneWithoutMatchNestedInput
+  processingJobs?: Prisma.ProcessingJobUncheckedUpdateManyWithoutMatchNestedInput
 }
 
 export type MatchCreateManyInput = {
@@ -554,6 +639,10 @@ export type MatchCreateManyInput = {
   teamARatingAfter?: number | null
   teamBRatingAfter?: number | null
   ratingAlgorithm?: string
+  processingStatus?: $Enums.MatchProcessingStatus
+  processedAt?: Date | string | null
+  processingError?: string | null
+  deletedAt?: Date | string | null
   playedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -573,6 +662,10 @@ export type MatchUpdateManyMutationInput = {
   teamARatingAfter?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   teamBRatingAfter?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   ratingAlgorithm?: Prisma.StringFieldUpdateOperationsInput | string
+  processingStatus?: Prisma.EnumMatchProcessingStatusFieldUpdateOperationsInput | $Enums.MatchProcessingStatus
+  processedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  processingError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   playedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -593,6 +686,10 @@ export type MatchUncheckedUpdateManyInput = {
   teamARatingAfter?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   teamBRatingAfter?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   ratingAlgorithm?: Prisma.StringFieldUpdateOperationsInput | string
+  processingStatus?: Prisma.EnumMatchProcessingStatusFieldUpdateOperationsInput | $Enums.MatchProcessingStatus
+  processedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  processingError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   playedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -628,6 +725,10 @@ export type MatchCountOrderByAggregateInput = {
   teamARatingAfter?: Prisma.SortOrder
   teamBRatingAfter?: Prisma.SortOrder
   ratingAlgorithm?: Prisma.SortOrder
+  processingStatus?: Prisma.SortOrder
+  processedAt?: Prisma.SortOrder
+  processingError?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrder
   playedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -661,6 +762,10 @@ export type MatchMaxOrderByAggregateInput = {
   teamARatingAfter?: Prisma.SortOrder
   teamBRatingAfter?: Prisma.SortOrder
   ratingAlgorithm?: Prisma.SortOrder
+  processingStatus?: Prisma.SortOrder
+  processedAt?: Prisma.SortOrder
+  processingError?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrder
   playedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -681,6 +786,10 @@ export type MatchMinOrderByAggregateInput = {
   teamARatingAfter?: Prisma.SortOrder
   teamBRatingAfter?: Prisma.SortOrder
   ratingAlgorithm?: Prisma.SortOrder
+  processingStatus?: Prisma.SortOrder
+  processedAt?: Prisma.SortOrder
+  processingError?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrder
   playedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -755,6 +864,10 @@ export type NullableEnumMatchTeamFieldUpdateOperationsInput = {
   set?: $Enums.MatchTeam | null
 }
 
+export type EnumMatchProcessingStatusFieldUpdateOperationsInput = {
+  set?: $Enums.MatchProcessingStatus
+}
+
 export type MatchCreateNestedOneWithoutPlayersInput = {
   create?: Prisma.XOR<Prisma.MatchCreateWithoutPlayersInput, Prisma.MatchUncheckedCreateWithoutPlayersInput>
   connectOrCreate?: Prisma.MatchCreateOrConnectWithoutPlayersInput
@@ -767,6 +880,50 @@ export type MatchUpdateOneRequiredWithoutPlayersNestedInput = {
   upsert?: Prisma.MatchUpsertWithoutPlayersInput
   connect?: Prisma.MatchWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.MatchUpdateToOneWithWhereWithoutPlayersInput, Prisma.MatchUpdateWithoutPlayersInput>, Prisma.MatchUncheckedUpdateWithoutPlayersInput>
+}
+
+export type MatchCreateNestedOneWithoutRankingSnapshotInput = {
+  create?: Prisma.XOR<Prisma.MatchCreateWithoutRankingSnapshotInput, Prisma.MatchUncheckedCreateWithoutRankingSnapshotInput>
+  connectOrCreate?: Prisma.MatchCreateOrConnectWithoutRankingSnapshotInput
+  connect?: Prisma.MatchWhereUniqueInput
+}
+
+export type MatchUpdateOneRequiredWithoutRankingSnapshotNestedInput = {
+  create?: Prisma.XOR<Prisma.MatchCreateWithoutRankingSnapshotInput, Prisma.MatchUncheckedCreateWithoutRankingSnapshotInput>
+  connectOrCreate?: Prisma.MatchCreateOrConnectWithoutRankingSnapshotInput
+  upsert?: Prisma.MatchUpsertWithoutRankingSnapshotInput
+  connect?: Prisma.MatchWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.MatchUpdateToOneWithWhereWithoutRankingSnapshotInput, Prisma.MatchUpdateWithoutRankingSnapshotInput>, Prisma.MatchUncheckedUpdateWithoutRankingSnapshotInput>
+}
+
+export type MatchCreateNestedOneWithoutRankingMovementsInput = {
+  create?: Prisma.XOR<Prisma.MatchCreateWithoutRankingMovementsInput, Prisma.MatchUncheckedCreateWithoutRankingMovementsInput>
+  connectOrCreate?: Prisma.MatchCreateOrConnectWithoutRankingMovementsInput
+  connect?: Prisma.MatchWhereUniqueInput
+}
+
+export type MatchUpdateOneRequiredWithoutRankingMovementsNestedInput = {
+  create?: Prisma.XOR<Prisma.MatchCreateWithoutRankingMovementsInput, Prisma.MatchUncheckedCreateWithoutRankingMovementsInput>
+  connectOrCreate?: Prisma.MatchCreateOrConnectWithoutRankingMovementsInput
+  upsert?: Prisma.MatchUpsertWithoutRankingMovementsInput
+  connect?: Prisma.MatchWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.MatchUpdateToOneWithWhereWithoutRankingMovementsInput, Prisma.MatchUpdateWithoutRankingMovementsInput>, Prisma.MatchUncheckedUpdateWithoutRankingMovementsInput>
+}
+
+export type MatchCreateNestedOneWithoutProcessingJobsInput = {
+  create?: Prisma.XOR<Prisma.MatchCreateWithoutProcessingJobsInput, Prisma.MatchUncheckedCreateWithoutProcessingJobsInput>
+  connectOrCreate?: Prisma.MatchCreateOrConnectWithoutProcessingJobsInput
+  connect?: Prisma.MatchWhereUniqueInput
+}
+
+export type MatchUpdateOneWithoutProcessingJobsNestedInput = {
+  create?: Prisma.XOR<Prisma.MatchCreateWithoutProcessingJobsInput, Prisma.MatchUncheckedCreateWithoutProcessingJobsInput>
+  connectOrCreate?: Prisma.MatchCreateOrConnectWithoutProcessingJobsInput
+  upsert?: Prisma.MatchUpsertWithoutProcessingJobsInput
+  disconnect?: Prisma.MatchWhereInput | boolean
+  delete?: Prisma.MatchWhereInput | boolean
+  connect?: Prisma.MatchWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.MatchUpdateToOneWithWhereWithoutProcessingJobsInput, Prisma.MatchUpdateWithoutProcessingJobsInput>, Prisma.MatchUncheckedUpdateWithoutProcessingJobsInput>
 }
 
 export type MatchCreateNestedOneWithoutFeedItemsInput = {
@@ -799,11 +956,18 @@ export type MatchCreateWithoutGroupInput = {
   teamARatingAfter?: number | null
   teamBRatingAfter?: number | null
   ratingAlgorithm?: string
+  processingStatus?: $Enums.MatchProcessingStatus
+  processedAt?: Date | string | null
+  processingError?: string | null
+  deletedAt?: Date | string | null
   playedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
   players?: Prisma.MatchPlayerCreateNestedManyWithoutMatchInput
   feedItems?: Prisma.FeedItemCreateNestedManyWithoutMatchInput
+  rankingMovements?: Prisma.RankingMovementCreateNestedManyWithoutMatchInput
+  rankingSnapshot?: Prisma.MatchRankingSnapshotCreateNestedOneWithoutMatchInput
+  processingJobs?: Prisma.ProcessingJobCreateNestedManyWithoutMatchInput
 }
 
 export type MatchUncheckedCreateWithoutGroupInput = {
@@ -820,11 +984,18 @@ export type MatchUncheckedCreateWithoutGroupInput = {
   teamARatingAfter?: number | null
   teamBRatingAfter?: number | null
   ratingAlgorithm?: string
+  processingStatus?: $Enums.MatchProcessingStatus
+  processedAt?: Date | string | null
+  processingError?: string | null
+  deletedAt?: Date | string | null
   playedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
   players?: Prisma.MatchPlayerUncheckedCreateNestedManyWithoutMatchInput
   feedItems?: Prisma.FeedItemUncheckedCreateNestedManyWithoutMatchInput
+  rankingMovements?: Prisma.RankingMovementUncheckedCreateNestedManyWithoutMatchInput
+  rankingSnapshot?: Prisma.MatchRankingSnapshotUncheckedCreateNestedOneWithoutMatchInput
+  processingJobs?: Prisma.ProcessingJobUncheckedCreateNestedManyWithoutMatchInput
 }
 
 export type MatchCreateOrConnectWithoutGroupInput = {
@@ -871,6 +1042,10 @@ export type MatchScalarWhereInput = {
   teamARatingAfter?: Prisma.FloatNullableFilter<"Match"> | number | null
   teamBRatingAfter?: Prisma.FloatNullableFilter<"Match"> | number | null
   ratingAlgorithm?: Prisma.StringFilter<"Match"> | string
+  processingStatus?: Prisma.EnumMatchProcessingStatusFilter<"Match"> | $Enums.MatchProcessingStatus
+  processedAt?: Prisma.DateTimeNullableFilter<"Match"> | Date | string | null
+  processingError?: Prisma.StringNullableFilter<"Match"> | string | null
+  deletedAt?: Prisma.DateTimeNullableFilter<"Match"> | Date | string | null
   playedAt?: Prisma.DateTimeFilter<"Match"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"Match"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Match"> | Date | string
@@ -890,11 +1065,18 @@ export type MatchCreateWithoutPlayersInput = {
   teamARatingAfter?: number | null
   teamBRatingAfter?: number | null
   ratingAlgorithm?: string
+  processingStatus?: $Enums.MatchProcessingStatus
+  processedAt?: Date | string | null
+  processingError?: string | null
+  deletedAt?: Date | string | null
   playedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
   group: Prisma.GroupCreateNestedOneWithoutMatchesInput
   feedItems?: Prisma.FeedItemCreateNestedManyWithoutMatchInput
+  rankingMovements?: Prisma.RankingMovementCreateNestedManyWithoutMatchInput
+  rankingSnapshot?: Prisma.MatchRankingSnapshotCreateNestedOneWithoutMatchInput
+  processingJobs?: Prisma.ProcessingJobCreateNestedManyWithoutMatchInput
 }
 
 export type MatchUncheckedCreateWithoutPlayersInput = {
@@ -912,10 +1094,17 @@ export type MatchUncheckedCreateWithoutPlayersInput = {
   teamARatingAfter?: number | null
   teamBRatingAfter?: number | null
   ratingAlgorithm?: string
+  processingStatus?: $Enums.MatchProcessingStatus
+  processedAt?: Date | string | null
+  processingError?: string | null
+  deletedAt?: Date | string | null
   playedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
   feedItems?: Prisma.FeedItemUncheckedCreateNestedManyWithoutMatchInput
+  rankingMovements?: Prisma.RankingMovementUncheckedCreateNestedManyWithoutMatchInput
+  rankingSnapshot?: Prisma.MatchRankingSnapshotUncheckedCreateNestedOneWithoutMatchInput
+  processingJobs?: Prisma.ProcessingJobUncheckedCreateNestedManyWithoutMatchInput
 }
 
 export type MatchCreateOrConnectWithoutPlayersInput = {
@@ -948,11 +1137,18 @@ export type MatchUpdateWithoutPlayersInput = {
   teamARatingAfter?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   teamBRatingAfter?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   ratingAlgorithm?: Prisma.StringFieldUpdateOperationsInput | string
+  processingStatus?: Prisma.EnumMatchProcessingStatusFieldUpdateOperationsInput | $Enums.MatchProcessingStatus
+  processedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  processingError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   playedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   group?: Prisma.GroupUpdateOneRequiredWithoutMatchesNestedInput
   feedItems?: Prisma.FeedItemUpdateManyWithoutMatchNestedInput
+  rankingMovements?: Prisma.RankingMovementUpdateManyWithoutMatchNestedInput
+  rankingSnapshot?: Prisma.MatchRankingSnapshotUpdateOneWithoutMatchNestedInput
+  processingJobs?: Prisma.ProcessingJobUpdateManyWithoutMatchNestedInput
 }
 
 export type MatchUncheckedUpdateWithoutPlayersInput = {
@@ -970,10 +1166,401 @@ export type MatchUncheckedUpdateWithoutPlayersInput = {
   teamARatingAfter?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   teamBRatingAfter?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   ratingAlgorithm?: Prisma.StringFieldUpdateOperationsInput | string
+  processingStatus?: Prisma.EnumMatchProcessingStatusFieldUpdateOperationsInput | $Enums.MatchProcessingStatus
+  processedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  processingError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   playedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   feedItems?: Prisma.FeedItemUncheckedUpdateManyWithoutMatchNestedInput
+  rankingMovements?: Prisma.RankingMovementUncheckedUpdateManyWithoutMatchNestedInput
+  rankingSnapshot?: Prisma.MatchRankingSnapshotUncheckedUpdateOneWithoutMatchNestedInput
+  processingJobs?: Prisma.ProcessingJobUncheckedUpdateManyWithoutMatchNestedInput
+}
+
+export type MatchCreateWithoutRankingSnapshotInput = {
+  id?: string
+  gamesA: number
+  gamesB: number
+  winnerTeam?: $Enums.MatchTeam | null
+  teamAExpected?: number | null
+  teamBExpected?: number | null
+  teamAActual?: number | null
+  teamBActual?: number | null
+  teamARatingBefore?: number | null
+  teamBRatingBefore?: number | null
+  teamARatingAfter?: number | null
+  teamBRatingAfter?: number | null
+  ratingAlgorithm?: string
+  processingStatus?: $Enums.MatchProcessingStatus
+  processedAt?: Date | string | null
+  processingError?: string | null
+  deletedAt?: Date | string | null
+  playedAt?: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  group: Prisma.GroupCreateNestedOneWithoutMatchesInput
+  players?: Prisma.MatchPlayerCreateNestedManyWithoutMatchInput
+  feedItems?: Prisma.FeedItemCreateNestedManyWithoutMatchInput
+  rankingMovements?: Prisma.RankingMovementCreateNestedManyWithoutMatchInput
+  processingJobs?: Prisma.ProcessingJobCreateNestedManyWithoutMatchInput
+}
+
+export type MatchUncheckedCreateWithoutRankingSnapshotInput = {
+  id?: string
+  groupId: string
+  gamesA: number
+  gamesB: number
+  winnerTeam?: $Enums.MatchTeam | null
+  teamAExpected?: number | null
+  teamBExpected?: number | null
+  teamAActual?: number | null
+  teamBActual?: number | null
+  teamARatingBefore?: number | null
+  teamBRatingBefore?: number | null
+  teamARatingAfter?: number | null
+  teamBRatingAfter?: number | null
+  ratingAlgorithm?: string
+  processingStatus?: $Enums.MatchProcessingStatus
+  processedAt?: Date | string | null
+  processingError?: string | null
+  deletedAt?: Date | string | null
+  playedAt?: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  players?: Prisma.MatchPlayerUncheckedCreateNestedManyWithoutMatchInput
+  feedItems?: Prisma.FeedItemUncheckedCreateNestedManyWithoutMatchInput
+  rankingMovements?: Prisma.RankingMovementUncheckedCreateNestedManyWithoutMatchInput
+  processingJobs?: Prisma.ProcessingJobUncheckedCreateNestedManyWithoutMatchInput
+}
+
+export type MatchCreateOrConnectWithoutRankingSnapshotInput = {
+  where: Prisma.MatchWhereUniqueInput
+  create: Prisma.XOR<Prisma.MatchCreateWithoutRankingSnapshotInput, Prisma.MatchUncheckedCreateWithoutRankingSnapshotInput>
+}
+
+export type MatchUpsertWithoutRankingSnapshotInput = {
+  update: Prisma.XOR<Prisma.MatchUpdateWithoutRankingSnapshotInput, Prisma.MatchUncheckedUpdateWithoutRankingSnapshotInput>
+  create: Prisma.XOR<Prisma.MatchCreateWithoutRankingSnapshotInput, Prisma.MatchUncheckedCreateWithoutRankingSnapshotInput>
+  where?: Prisma.MatchWhereInput
+}
+
+export type MatchUpdateToOneWithWhereWithoutRankingSnapshotInput = {
+  where?: Prisma.MatchWhereInput
+  data: Prisma.XOR<Prisma.MatchUpdateWithoutRankingSnapshotInput, Prisma.MatchUncheckedUpdateWithoutRankingSnapshotInput>
+}
+
+export type MatchUpdateWithoutRankingSnapshotInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  gamesA?: Prisma.IntFieldUpdateOperationsInput | number
+  gamesB?: Prisma.IntFieldUpdateOperationsInput | number
+  winnerTeam?: Prisma.NullableEnumMatchTeamFieldUpdateOperationsInput | $Enums.MatchTeam | null
+  teamAExpected?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamBExpected?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamAActual?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamBActual?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamARatingBefore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamBRatingBefore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamARatingAfter?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamBRatingAfter?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  ratingAlgorithm?: Prisma.StringFieldUpdateOperationsInput | string
+  processingStatus?: Prisma.EnumMatchProcessingStatusFieldUpdateOperationsInput | $Enums.MatchProcessingStatus
+  processedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  processingError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  playedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  group?: Prisma.GroupUpdateOneRequiredWithoutMatchesNestedInput
+  players?: Prisma.MatchPlayerUpdateManyWithoutMatchNestedInput
+  feedItems?: Prisma.FeedItemUpdateManyWithoutMatchNestedInput
+  rankingMovements?: Prisma.RankingMovementUpdateManyWithoutMatchNestedInput
+  processingJobs?: Prisma.ProcessingJobUpdateManyWithoutMatchNestedInput
+}
+
+export type MatchUncheckedUpdateWithoutRankingSnapshotInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  groupId?: Prisma.StringFieldUpdateOperationsInput | string
+  gamesA?: Prisma.IntFieldUpdateOperationsInput | number
+  gamesB?: Prisma.IntFieldUpdateOperationsInput | number
+  winnerTeam?: Prisma.NullableEnumMatchTeamFieldUpdateOperationsInput | $Enums.MatchTeam | null
+  teamAExpected?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamBExpected?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamAActual?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamBActual?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamARatingBefore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamBRatingBefore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamARatingAfter?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamBRatingAfter?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  ratingAlgorithm?: Prisma.StringFieldUpdateOperationsInput | string
+  processingStatus?: Prisma.EnumMatchProcessingStatusFieldUpdateOperationsInput | $Enums.MatchProcessingStatus
+  processedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  processingError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  playedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  players?: Prisma.MatchPlayerUncheckedUpdateManyWithoutMatchNestedInput
+  feedItems?: Prisma.FeedItemUncheckedUpdateManyWithoutMatchNestedInput
+  rankingMovements?: Prisma.RankingMovementUncheckedUpdateManyWithoutMatchNestedInput
+  processingJobs?: Prisma.ProcessingJobUncheckedUpdateManyWithoutMatchNestedInput
+}
+
+export type MatchCreateWithoutRankingMovementsInput = {
+  id?: string
+  gamesA: number
+  gamesB: number
+  winnerTeam?: $Enums.MatchTeam | null
+  teamAExpected?: number | null
+  teamBExpected?: number | null
+  teamAActual?: number | null
+  teamBActual?: number | null
+  teamARatingBefore?: number | null
+  teamBRatingBefore?: number | null
+  teamARatingAfter?: number | null
+  teamBRatingAfter?: number | null
+  ratingAlgorithm?: string
+  processingStatus?: $Enums.MatchProcessingStatus
+  processedAt?: Date | string | null
+  processingError?: string | null
+  deletedAt?: Date | string | null
+  playedAt?: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  group: Prisma.GroupCreateNestedOneWithoutMatchesInput
+  players?: Prisma.MatchPlayerCreateNestedManyWithoutMatchInput
+  feedItems?: Prisma.FeedItemCreateNestedManyWithoutMatchInput
+  rankingSnapshot?: Prisma.MatchRankingSnapshotCreateNestedOneWithoutMatchInput
+  processingJobs?: Prisma.ProcessingJobCreateNestedManyWithoutMatchInput
+}
+
+export type MatchUncheckedCreateWithoutRankingMovementsInput = {
+  id?: string
+  groupId: string
+  gamesA: number
+  gamesB: number
+  winnerTeam?: $Enums.MatchTeam | null
+  teamAExpected?: number | null
+  teamBExpected?: number | null
+  teamAActual?: number | null
+  teamBActual?: number | null
+  teamARatingBefore?: number | null
+  teamBRatingBefore?: number | null
+  teamARatingAfter?: number | null
+  teamBRatingAfter?: number | null
+  ratingAlgorithm?: string
+  processingStatus?: $Enums.MatchProcessingStatus
+  processedAt?: Date | string | null
+  processingError?: string | null
+  deletedAt?: Date | string | null
+  playedAt?: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  players?: Prisma.MatchPlayerUncheckedCreateNestedManyWithoutMatchInput
+  feedItems?: Prisma.FeedItemUncheckedCreateNestedManyWithoutMatchInput
+  rankingSnapshot?: Prisma.MatchRankingSnapshotUncheckedCreateNestedOneWithoutMatchInput
+  processingJobs?: Prisma.ProcessingJobUncheckedCreateNestedManyWithoutMatchInput
+}
+
+export type MatchCreateOrConnectWithoutRankingMovementsInput = {
+  where: Prisma.MatchWhereUniqueInput
+  create: Prisma.XOR<Prisma.MatchCreateWithoutRankingMovementsInput, Prisma.MatchUncheckedCreateWithoutRankingMovementsInput>
+}
+
+export type MatchUpsertWithoutRankingMovementsInput = {
+  update: Prisma.XOR<Prisma.MatchUpdateWithoutRankingMovementsInput, Prisma.MatchUncheckedUpdateWithoutRankingMovementsInput>
+  create: Prisma.XOR<Prisma.MatchCreateWithoutRankingMovementsInput, Prisma.MatchUncheckedCreateWithoutRankingMovementsInput>
+  where?: Prisma.MatchWhereInput
+}
+
+export type MatchUpdateToOneWithWhereWithoutRankingMovementsInput = {
+  where?: Prisma.MatchWhereInput
+  data: Prisma.XOR<Prisma.MatchUpdateWithoutRankingMovementsInput, Prisma.MatchUncheckedUpdateWithoutRankingMovementsInput>
+}
+
+export type MatchUpdateWithoutRankingMovementsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  gamesA?: Prisma.IntFieldUpdateOperationsInput | number
+  gamesB?: Prisma.IntFieldUpdateOperationsInput | number
+  winnerTeam?: Prisma.NullableEnumMatchTeamFieldUpdateOperationsInput | $Enums.MatchTeam | null
+  teamAExpected?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamBExpected?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamAActual?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamBActual?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamARatingBefore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamBRatingBefore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamARatingAfter?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamBRatingAfter?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  ratingAlgorithm?: Prisma.StringFieldUpdateOperationsInput | string
+  processingStatus?: Prisma.EnumMatchProcessingStatusFieldUpdateOperationsInput | $Enums.MatchProcessingStatus
+  processedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  processingError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  playedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  group?: Prisma.GroupUpdateOneRequiredWithoutMatchesNestedInput
+  players?: Prisma.MatchPlayerUpdateManyWithoutMatchNestedInput
+  feedItems?: Prisma.FeedItemUpdateManyWithoutMatchNestedInput
+  rankingSnapshot?: Prisma.MatchRankingSnapshotUpdateOneWithoutMatchNestedInput
+  processingJobs?: Prisma.ProcessingJobUpdateManyWithoutMatchNestedInput
+}
+
+export type MatchUncheckedUpdateWithoutRankingMovementsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  groupId?: Prisma.StringFieldUpdateOperationsInput | string
+  gamesA?: Prisma.IntFieldUpdateOperationsInput | number
+  gamesB?: Prisma.IntFieldUpdateOperationsInput | number
+  winnerTeam?: Prisma.NullableEnumMatchTeamFieldUpdateOperationsInput | $Enums.MatchTeam | null
+  teamAExpected?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamBExpected?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamAActual?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamBActual?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamARatingBefore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamBRatingBefore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamARatingAfter?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamBRatingAfter?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  ratingAlgorithm?: Prisma.StringFieldUpdateOperationsInput | string
+  processingStatus?: Prisma.EnumMatchProcessingStatusFieldUpdateOperationsInput | $Enums.MatchProcessingStatus
+  processedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  processingError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  playedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  players?: Prisma.MatchPlayerUncheckedUpdateManyWithoutMatchNestedInput
+  feedItems?: Prisma.FeedItemUncheckedUpdateManyWithoutMatchNestedInput
+  rankingSnapshot?: Prisma.MatchRankingSnapshotUncheckedUpdateOneWithoutMatchNestedInput
+  processingJobs?: Prisma.ProcessingJobUncheckedUpdateManyWithoutMatchNestedInput
+}
+
+export type MatchCreateWithoutProcessingJobsInput = {
+  id?: string
+  gamesA: number
+  gamesB: number
+  winnerTeam?: $Enums.MatchTeam | null
+  teamAExpected?: number | null
+  teamBExpected?: number | null
+  teamAActual?: number | null
+  teamBActual?: number | null
+  teamARatingBefore?: number | null
+  teamBRatingBefore?: number | null
+  teamARatingAfter?: number | null
+  teamBRatingAfter?: number | null
+  ratingAlgorithm?: string
+  processingStatus?: $Enums.MatchProcessingStatus
+  processedAt?: Date | string | null
+  processingError?: string | null
+  deletedAt?: Date | string | null
+  playedAt?: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  group: Prisma.GroupCreateNestedOneWithoutMatchesInput
+  players?: Prisma.MatchPlayerCreateNestedManyWithoutMatchInput
+  feedItems?: Prisma.FeedItemCreateNestedManyWithoutMatchInput
+  rankingMovements?: Prisma.RankingMovementCreateNestedManyWithoutMatchInput
+  rankingSnapshot?: Prisma.MatchRankingSnapshotCreateNestedOneWithoutMatchInput
+}
+
+export type MatchUncheckedCreateWithoutProcessingJobsInput = {
+  id?: string
+  groupId: string
+  gamesA: number
+  gamesB: number
+  winnerTeam?: $Enums.MatchTeam | null
+  teamAExpected?: number | null
+  teamBExpected?: number | null
+  teamAActual?: number | null
+  teamBActual?: number | null
+  teamARatingBefore?: number | null
+  teamBRatingBefore?: number | null
+  teamARatingAfter?: number | null
+  teamBRatingAfter?: number | null
+  ratingAlgorithm?: string
+  processingStatus?: $Enums.MatchProcessingStatus
+  processedAt?: Date | string | null
+  processingError?: string | null
+  deletedAt?: Date | string | null
+  playedAt?: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  players?: Prisma.MatchPlayerUncheckedCreateNestedManyWithoutMatchInput
+  feedItems?: Prisma.FeedItemUncheckedCreateNestedManyWithoutMatchInput
+  rankingMovements?: Prisma.RankingMovementUncheckedCreateNestedManyWithoutMatchInput
+  rankingSnapshot?: Prisma.MatchRankingSnapshotUncheckedCreateNestedOneWithoutMatchInput
+}
+
+export type MatchCreateOrConnectWithoutProcessingJobsInput = {
+  where: Prisma.MatchWhereUniqueInput
+  create: Prisma.XOR<Prisma.MatchCreateWithoutProcessingJobsInput, Prisma.MatchUncheckedCreateWithoutProcessingJobsInput>
+}
+
+export type MatchUpsertWithoutProcessingJobsInput = {
+  update: Prisma.XOR<Prisma.MatchUpdateWithoutProcessingJobsInput, Prisma.MatchUncheckedUpdateWithoutProcessingJobsInput>
+  create: Prisma.XOR<Prisma.MatchCreateWithoutProcessingJobsInput, Prisma.MatchUncheckedCreateWithoutProcessingJobsInput>
+  where?: Prisma.MatchWhereInput
+}
+
+export type MatchUpdateToOneWithWhereWithoutProcessingJobsInput = {
+  where?: Prisma.MatchWhereInput
+  data: Prisma.XOR<Prisma.MatchUpdateWithoutProcessingJobsInput, Prisma.MatchUncheckedUpdateWithoutProcessingJobsInput>
+}
+
+export type MatchUpdateWithoutProcessingJobsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  gamesA?: Prisma.IntFieldUpdateOperationsInput | number
+  gamesB?: Prisma.IntFieldUpdateOperationsInput | number
+  winnerTeam?: Prisma.NullableEnumMatchTeamFieldUpdateOperationsInput | $Enums.MatchTeam | null
+  teamAExpected?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamBExpected?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamAActual?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamBActual?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamARatingBefore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamBRatingBefore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamARatingAfter?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamBRatingAfter?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  ratingAlgorithm?: Prisma.StringFieldUpdateOperationsInput | string
+  processingStatus?: Prisma.EnumMatchProcessingStatusFieldUpdateOperationsInput | $Enums.MatchProcessingStatus
+  processedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  processingError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  playedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  group?: Prisma.GroupUpdateOneRequiredWithoutMatchesNestedInput
+  players?: Prisma.MatchPlayerUpdateManyWithoutMatchNestedInput
+  feedItems?: Prisma.FeedItemUpdateManyWithoutMatchNestedInput
+  rankingMovements?: Prisma.RankingMovementUpdateManyWithoutMatchNestedInput
+  rankingSnapshot?: Prisma.MatchRankingSnapshotUpdateOneWithoutMatchNestedInput
+}
+
+export type MatchUncheckedUpdateWithoutProcessingJobsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  groupId?: Prisma.StringFieldUpdateOperationsInput | string
+  gamesA?: Prisma.IntFieldUpdateOperationsInput | number
+  gamesB?: Prisma.IntFieldUpdateOperationsInput | number
+  winnerTeam?: Prisma.NullableEnumMatchTeamFieldUpdateOperationsInput | $Enums.MatchTeam | null
+  teamAExpected?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamBExpected?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamAActual?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamBActual?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamARatingBefore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamBRatingBefore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamARatingAfter?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  teamBRatingAfter?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  ratingAlgorithm?: Prisma.StringFieldUpdateOperationsInput | string
+  processingStatus?: Prisma.EnumMatchProcessingStatusFieldUpdateOperationsInput | $Enums.MatchProcessingStatus
+  processedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  processingError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  playedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  players?: Prisma.MatchPlayerUncheckedUpdateManyWithoutMatchNestedInput
+  feedItems?: Prisma.FeedItemUncheckedUpdateManyWithoutMatchNestedInput
+  rankingMovements?: Prisma.RankingMovementUncheckedUpdateManyWithoutMatchNestedInput
+  rankingSnapshot?: Prisma.MatchRankingSnapshotUncheckedUpdateOneWithoutMatchNestedInput
 }
 
 export type MatchCreateWithoutFeedItemsInput = {
@@ -990,11 +1577,18 @@ export type MatchCreateWithoutFeedItemsInput = {
   teamARatingAfter?: number | null
   teamBRatingAfter?: number | null
   ratingAlgorithm?: string
+  processingStatus?: $Enums.MatchProcessingStatus
+  processedAt?: Date | string | null
+  processingError?: string | null
+  deletedAt?: Date | string | null
   playedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
   group: Prisma.GroupCreateNestedOneWithoutMatchesInput
   players?: Prisma.MatchPlayerCreateNestedManyWithoutMatchInput
+  rankingMovements?: Prisma.RankingMovementCreateNestedManyWithoutMatchInput
+  rankingSnapshot?: Prisma.MatchRankingSnapshotCreateNestedOneWithoutMatchInput
+  processingJobs?: Prisma.ProcessingJobCreateNestedManyWithoutMatchInput
 }
 
 export type MatchUncheckedCreateWithoutFeedItemsInput = {
@@ -1012,10 +1606,17 @@ export type MatchUncheckedCreateWithoutFeedItemsInput = {
   teamARatingAfter?: number | null
   teamBRatingAfter?: number | null
   ratingAlgorithm?: string
+  processingStatus?: $Enums.MatchProcessingStatus
+  processedAt?: Date | string | null
+  processingError?: string | null
+  deletedAt?: Date | string | null
   playedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
   players?: Prisma.MatchPlayerUncheckedCreateNestedManyWithoutMatchInput
+  rankingMovements?: Prisma.RankingMovementUncheckedCreateNestedManyWithoutMatchInput
+  rankingSnapshot?: Prisma.MatchRankingSnapshotUncheckedCreateNestedOneWithoutMatchInput
+  processingJobs?: Prisma.ProcessingJobUncheckedCreateNestedManyWithoutMatchInput
 }
 
 export type MatchCreateOrConnectWithoutFeedItemsInput = {
@@ -1048,11 +1649,18 @@ export type MatchUpdateWithoutFeedItemsInput = {
   teamARatingAfter?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   teamBRatingAfter?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   ratingAlgorithm?: Prisma.StringFieldUpdateOperationsInput | string
+  processingStatus?: Prisma.EnumMatchProcessingStatusFieldUpdateOperationsInput | $Enums.MatchProcessingStatus
+  processedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  processingError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   playedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   group?: Prisma.GroupUpdateOneRequiredWithoutMatchesNestedInput
   players?: Prisma.MatchPlayerUpdateManyWithoutMatchNestedInput
+  rankingMovements?: Prisma.RankingMovementUpdateManyWithoutMatchNestedInput
+  rankingSnapshot?: Prisma.MatchRankingSnapshotUpdateOneWithoutMatchNestedInput
+  processingJobs?: Prisma.ProcessingJobUpdateManyWithoutMatchNestedInput
 }
 
 export type MatchUncheckedUpdateWithoutFeedItemsInput = {
@@ -1070,10 +1678,17 @@ export type MatchUncheckedUpdateWithoutFeedItemsInput = {
   teamARatingAfter?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   teamBRatingAfter?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   ratingAlgorithm?: Prisma.StringFieldUpdateOperationsInput | string
+  processingStatus?: Prisma.EnumMatchProcessingStatusFieldUpdateOperationsInput | $Enums.MatchProcessingStatus
+  processedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  processingError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   playedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   players?: Prisma.MatchPlayerUncheckedUpdateManyWithoutMatchNestedInput
+  rankingMovements?: Prisma.RankingMovementUncheckedUpdateManyWithoutMatchNestedInput
+  rankingSnapshot?: Prisma.MatchRankingSnapshotUncheckedUpdateOneWithoutMatchNestedInput
+  processingJobs?: Prisma.ProcessingJobUncheckedUpdateManyWithoutMatchNestedInput
 }
 
 export type MatchCreateManyGroupInput = {
@@ -1090,6 +1705,10 @@ export type MatchCreateManyGroupInput = {
   teamARatingAfter?: number | null
   teamBRatingAfter?: number | null
   ratingAlgorithm?: string
+  processingStatus?: $Enums.MatchProcessingStatus
+  processedAt?: Date | string | null
+  processingError?: string | null
+  deletedAt?: Date | string | null
   playedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1109,11 +1728,18 @@ export type MatchUpdateWithoutGroupInput = {
   teamARatingAfter?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   teamBRatingAfter?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   ratingAlgorithm?: Prisma.StringFieldUpdateOperationsInput | string
+  processingStatus?: Prisma.EnumMatchProcessingStatusFieldUpdateOperationsInput | $Enums.MatchProcessingStatus
+  processedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  processingError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   playedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   players?: Prisma.MatchPlayerUpdateManyWithoutMatchNestedInput
   feedItems?: Prisma.FeedItemUpdateManyWithoutMatchNestedInput
+  rankingMovements?: Prisma.RankingMovementUpdateManyWithoutMatchNestedInput
+  rankingSnapshot?: Prisma.MatchRankingSnapshotUpdateOneWithoutMatchNestedInput
+  processingJobs?: Prisma.ProcessingJobUpdateManyWithoutMatchNestedInput
 }
 
 export type MatchUncheckedUpdateWithoutGroupInput = {
@@ -1130,11 +1756,18 @@ export type MatchUncheckedUpdateWithoutGroupInput = {
   teamARatingAfter?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   teamBRatingAfter?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   ratingAlgorithm?: Prisma.StringFieldUpdateOperationsInput | string
+  processingStatus?: Prisma.EnumMatchProcessingStatusFieldUpdateOperationsInput | $Enums.MatchProcessingStatus
+  processedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  processingError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   playedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   players?: Prisma.MatchPlayerUncheckedUpdateManyWithoutMatchNestedInput
   feedItems?: Prisma.FeedItemUncheckedUpdateManyWithoutMatchNestedInput
+  rankingMovements?: Prisma.RankingMovementUncheckedUpdateManyWithoutMatchNestedInput
+  rankingSnapshot?: Prisma.MatchRankingSnapshotUncheckedUpdateOneWithoutMatchNestedInput
+  processingJobs?: Prisma.ProcessingJobUncheckedUpdateManyWithoutMatchNestedInput
 }
 
 export type MatchUncheckedUpdateManyWithoutGroupInput = {
@@ -1151,6 +1784,10 @@ export type MatchUncheckedUpdateManyWithoutGroupInput = {
   teamARatingAfter?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   teamBRatingAfter?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   ratingAlgorithm?: Prisma.StringFieldUpdateOperationsInput | string
+  processingStatus?: Prisma.EnumMatchProcessingStatusFieldUpdateOperationsInput | $Enums.MatchProcessingStatus
+  processedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  processingError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   playedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1164,11 +1801,15 @@ export type MatchUncheckedUpdateManyWithoutGroupInput = {
 export type MatchCountOutputType = {
   players: number
   feedItems: number
+  rankingMovements: number
+  processingJobs: number
 }
 
 export type MatchCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   players?: boolean | MatchCountOutputTypeCountPlayersArgs
   feedItems?: boolean | MatchCountOutputTypeCountFeedItemsArgs
+  rankingMovements?: boolean | MatchCountOutputTypeCountRankingMovementsArgs
+  processingJobs?: boolean | MatchCountOutputTypeCountProcessingJobsArgs
 }
 
 /**
@@ -1195,6 +1836,20 @@ export type MatchCountOutputTypeCountFeedItemsArgs<ExtArgs extends runtime.Types
   where?: Prisma.FeedItemWhereInput
 }
 
+/**
+ * MatchCountOutputType without action
+ */
+export type MatchCountOutputTypeCountRankingMovementsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.RankingMovementWhereInput
+}
+
+/**
+ * MatchCountOutputType without action
+ */
+export type MatchCountOutputTypeCountProcessingJobsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ProcessingJobWhereInput
+}
+
 
 export type MatchSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1211,12 +1866,19 @@ export type MatchSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   teamARatingAfter?: boolean
   teamBRatingAfter?: boolean
   ratingAlgorithm?: boolean
+  processingStatus?: boolean
+  processedAt?: boolean
+  processingError?: boolean
+  deletedAt?: boolean
   playedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   group?: boolean | Prisma.GroupDefaultArgs<ExtArgs>
   players?: boolean | Prisma.Match$playersArgs<ExtArgs>
   feedItems?: boolean | Prisma.Match$feedItemsArgs<ExtArgs>
+  rankingMovements?: boolean | Prisma.Match$rankingMovementsArgs<ExtArgs>
+  rankingSnapshot?: boolean | Prisma.Match$rankingSnapshotArgs<ExtArgs>
+  processingJobs?: boolean | Prisma.Match$processingJobsArgs<ExtArgs>
   _count?: boolean | Prisma.MatchCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["match"]>
 
@@ -1235,6 +1897,10 @@ export type MatchSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   teamARatingAfter?: boolean
   teamBRatingAfter?: boolean
   ratingAlgorithm?: boolean
+  processingStatus?: boolean
+  processedAt?: boolean
+  processingError?: boolean
+  deletedAt?: boolean
   playedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -1256,6 +1922,10 @@ export type MatchSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   teamARatingAfter?: boolean
   teamBRatingAfter?: boolean
   ratingAlgorithm?: boolean
+  processingStatus?: boolean
+  processedAt?: boolean
+  processingError?: boolean
+  deletedAt?: boolean
   playedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -1277,16 +1947,23 @@ export type MatchSelectScalar = {
   teamARatingAfter?: boolean
   teamBRatingAfter?: boolean
   ratingAlgorithm?: boolean
+  processingStatus?: boolean
+  processedAt?: boolean
+  processingError?: boolean
+  deletedAt?: boolean
   playedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type MatchOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "groupId" | "gamesA" | "gamesB" | "winnerTeam" | "teamAExpected" | "teamBExpected" | "teamAActual" | "teamBActual" | "teamARatingBefore" | "teamBRatingBefore" | "teamARatingAfter" | "teamBRatingAfter" | "ratingAlgorithm" | "playedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["match"]>
+export type MatchOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "groupId" | "gamesA" | "gamesB" | "winnerTeam" | "teamAExpected" | "teamBExpected" | "teamAActual" | "teamBActual" | "teamARatingBefore" | "teamBRatingBefore" | "teamARatingAfter" | "teamBRatingAfter" | "ratingAlgorithm" | "processingStatus" | "processedAt" | "processingError" | "deletedAt" | "playedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["match"]>
 export type MatchInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   group?: boolean | Prisma.GroupDefaultArgs<ExtArgs>
   players?: boolean | Prisma.Match$playersArgs<ExtArgs>
   feedItems?: boolean | Prisma.Match$feedItemsArgs<ExtArgs>
+  rankingMovements?: boolean | Prisma.Match$rankingMovementsArgs<ExtArgs>
+  rankingSnapshot?: boolean | Prisma.Match$rankingSnapshotArgs<ExtArgs>
+  processingJobs?: boolean | Prisma.Match$processingJobsArgs<ExtArgs>
   _count?: boolean | Prisma.MatchCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type MatchIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1302,6 +1979,9 @@ export type $MatchPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     group: Prisma.$GroupPayload<ExtArgs>
     players: Prisma.$MatchPlayerPayload<ExtArgs>[]
     feedItems: Prisma.$FeedItemPayload<ExtArgs>[]
+    rankingMovements: Prisma.$RankingMovementPayload<ExtArgs>[]
+    rankingSnapshot: Prisma.$MatchRankingSnapshotPayload<ExtArgs> | null
+    processingJobs: Prisma.$ProcessingJobPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1318,6 +1998,10 @@ export type $MatchPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     teamARatingAfter: number | null
     teamBRatingAfter: number | null
     ratingAlgorithm: string
+    processingStatus: $Enums.MatchProcessingStatus
+    processedAt: Date | null
+    processingError: string | null
+    deletedAt: Date | null
     playedAt: Date
     createdAt: Date
     updatedAt: Date
@@ -1718,6 +2402,9 @@ export interface Prisma__MatchClient<T, Null = never, ExtArgs extends runtime.Ty
   group<T extends Prisma.GroupDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.GroupDefaultArgs<ExtArgs>>): Prisma.Prisma__GroupClient<runtime.Types.Result.GetResult<Prisma.$GroupPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   players<T extends Prisma.Match$playersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Match$playersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MatchPlayerPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   feedItems<T extends Prisma.Match$feedItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Match$feedItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FeedItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  rankingMovements<T extends Prisma.Match$rankingMovementsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Match$rankingMovementsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RankingMovementPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  rankingSnapshot<T extends Prisma.Match$rankingSnapshotArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Match$rankingSnapshotArgs<ExtArgs>>): Prisma.Prisma__MatchRankingSnapshotClient<runtime.Types.Result.GetResult<Prisma.$MatchRankingSnapshotPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  processingJobs<T extends Prisma.Match$processingJobsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Match$processingJobsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProcessingJobPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1761,6 +2448,10 @@ export interface MatchFieldRefs {
   readonly teamARatingAfter: Prisma.FieldRef<"Match", 'Float'>
   readonly teamBRatingAfter: Prisma.FieldRef<"Match", 'Float'>
   readonly ratingAlgorithm: Prisma.FieldRef<"Match", 'String'>
+  readonly processingStatus: Prisma.FieldRef<"Match", 'MatchProcessingStatus'>
+  readonly processedAt: Prisma.FieldRef<"Match", 'DateTime'>
+  readonly processingError: Prisma.FieldRef<"Match", 'String'>
+  readonly deletedAt: Prisma.FieldRef<"Match", 'DateTime'>
   readonly playedAt: Prisma.FieldRef<"Match", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"Match", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Match", 'DateTime'>
@@ -2210,6 +2901,73 @@ export type Match$feedItemsArgs<ExtArgs extends runtime.Types.Extensions.Interna
   take?: number
   skip?: number
   distinct?: Prisma.FeedItemScalarFieldEnum | Prisma.FeedItemScalarFieldEnum[]
+}
+
+/**
+ * Match.rankingMovements
+ */
+export type Match$rankingMovementsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the RankingMovement
+   */
+  select?: Prisma.RankingMovementSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the RankingMovement
+   */
+  omit?: Prisma.RankingMovementOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RankingMovementInclude<ExtArgs> | null
+  where?: Prisma.RankingMovementWhereInput
+  orderBy?: Prisma.RankingMovementOrderByWithRelationInput | Prisma.RankingMovementOrderByWithRelationInput[]
+  cursor?: Prisma.RankingMovementWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.RankingMovementScalarFieldEnum | Prisma.RankingMovementScalarFieldEnum[]
+}
+
+/**
+ * Match.rankingSnapshot
+ */
+export type Match$rankingSnapshotArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the MatchRankingSnapshot
+   */
+  select?: Prisma.MatchRankingSnapshotSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the MatchRankingSnapshot
+   */
+  omit?: Prisma.MatchRankingSnapshotOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.MatchRankingSnapshotInclude<ExtArgs> | null
+  where?: Prisma.MatchRankingSnapshotWhereInput
+}
+
+/**
+ * Match.processingJobs
+ */
+export type Match$processingJobsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ProcessingJob
+   */
+  select?: Prisma.ProcessingJobSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ProcessingJob
+   */
+  omit?: Prisma.ProcessingJobOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ProcessingJobInclude<ExtArgs> | null
+  where?: Prisma.ProcessingJobWhereInput
+  orderBy?: Prisma.ProcessingJobOrderByWithRelationInput | Prisma.ProcessingJobOrderByWithRelationInput[]
+  cursor?: Prisma.ProcessingJobWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ProcessingJobScalarFieldEnum | Prisma.ProcessingJobScalarFieldEnum[]
 }
 
 /**

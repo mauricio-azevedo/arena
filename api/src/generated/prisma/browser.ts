@@ -48,6 +48,31 @@ export type Match = Prisma.MatchModel
  */
 export type MatchPlayer = Prisma.MatchPlayerModel
 /**
+ * Model MatchRankingSnapshot
+ * 
+ */
+export type MatchRankingSnapshot = Prisma.MatchRankingSnapshotModel
+/**
+ * Model GroupRankingProjection
+ * 
+ */
+export type GroupRankingProjection = Prisma.GroupRankingProjectionModel
+/**
+ * Model GroupHomeSummary
+ * 
+ */
+export type GroupHomeSummary = Prisma.GroupHomeSummaryModel
+/**
+ * Model RankingMovement
+ * 
+ */
+export type RankingMovement = Prisma.RankingMovementModel
+/**
+ * Model ProcessingJob
+ * 
+ */
+export type ProcessingJob = Prisma.ProcessingJobModel
+/**
  * Model FeedItem
  * 
  */

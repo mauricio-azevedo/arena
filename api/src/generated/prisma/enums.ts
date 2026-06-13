@@ -32,6 +32,53 @@ export const MatchTeam = {
 export type MatchTeam = (typeof MatchTeam)[keyof typeof MatchTeam]
 
 
+export const MatchProcessingStatus = {
+  PENDING: 'PENDING',
+  PROCESSING: 'PROCESSING',
+  PROCESSED: 'PROCESSED',
+  FAILED: 'FAILED'
+} as const
+
+export type MatchProcessingStatus = (typeof MatchProcessingStatus)[keyof typeof MatchProcessingStatus]
+
+
+export const GroupRankingProjectionStatus = {
+  CURRENT: 'CURRENT',
+  PROCESSING: 'PROCESSING',
+  FAILED: 'FAILED'
+} as const
+
+export type GroupRankingProjectionStatus = (typeof GroupRankingProjectionStatus)[keyof typeof GroupRankingProjectionStatus]
+
+
+export const RankingMovementDirection = {
+  UP: 'UP',
+  DOWN: 'DOWN'
+} as const
+
+export type RankingMovementDirection = (typeof RankingMovementDirection)[keyof typeof RankingMovementDirection]
+
+
+export const ProcessingJobType = {
+  MATCH_CREATED: 'MATCH_CREATED',
+  MATCH_UPDATED: 'MATCH_UPDATED',
+  MATCH_DELETED: 'MATCH_DELETED',
+  GROUP_RANKING_REBUILD: 'GROUP_RANKING_REBUILD'
+} as const
+
+export type ProcessingJobType = (typeof ProcessingJobType)[keyof typeof ProcessingJobType]
+
+
+export const ProcessingJobStatus = {
+  PENDING: 'PENDING',
+  PROCESSING: 'PROCESSING',
+  DONE: 'DONE',
+  FAILED: 'FAILED'
+} as const
+
+export type ProcessingJobStatus = (typeof ProcessingJobStatus)[keyof typeof ProcessingJobStatus]
+
+
 export const FeedItemType = {
   GROUP_CREATED: 'GROUP_CREATED',
   MEMBER_JOINED: 'MEMBER_JOINED',

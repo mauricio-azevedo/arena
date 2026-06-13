@@ -203,6 +203,11 @@ export type GroupWhereInput = {
   matches?: Prisma.MatchListRelationFilter
   invites?: Prisma.GroupInviteListRelationFilter
   feedItems?: Prisma.FeedItemListRelationFilter
+  rankingMovements?: Prisma.RankingMovementListRelationFilter
+  processingJobs?: Prisma.ProcessingJobListRelationFilter
+  rankingProjection?: Prisma.XOR<Prisma.GroupRankingProjectionNullableScalarRelationFilter, Prisma.GroupRankingProjectionWhereInput> | null
+  matchRankingSnapshots?: Prisma.MatchRankingSnapshotListRelationFilter
+  homeSummary?: Prisma.XOR<Prisma.GroupHomeSummaryNullableScalarRelationFilter, Prisma.GroupHomeSummaryWhereInput> | null
 }
 
 export type GroupOrderByWithRelationInput = {
@@ -218,6 +223,11 @@ export type GroupOrderByWithRelationInput = {
   matches?: Prisma.MatchOrderByRelationAggregateInput
   invites?: Prisma.GroupInviteOrderByRelationAggregateInput
   feedItems?: Prisma.FeedItemOrderByRelationAggregateInput
+  rankingMovements?: Prisma.RankingMovementOrderByRelationAggregateInput
+  processingJobs?: Prisma.ProcessingJobOrderByRelationAggregateInput
+  rankingProjection?: Prisma.GroupRankingProjectionOrderByWithRelationInput
+  matchRankingSnapshots?: Prisma.MatchRankingSnapshotOrderByRelationAggregateInput
+  homeSummary?: Prisma.GroupHomeSummaryOrderByWithRelationInput
 }
 
 export type GroupWhereUniqueInput = Prisma.AtLeast<{
@@ -236,6 +246,11 @@ export type GroupWhereUniqueInput = Prisma.AtLeast<{
   matches?: Prisma.MatchListRelationFilter
   invites?: Prisma.GroupInviteListRelationFilter
   feedItems?: Prisma.FeedItemListRelationFilter
+  rankingMovements?: Prisma.RankingMovementListRelationFilter
+  processingJobs?: Prisma.ProcessingJobListRelationFilter
+  rankingProjection?: Prisma.XOR<Prisma.GroupRankingProjectionNullableScalarRelationFilter, Prisma.GroupRankingProjectionWhereInput> | null
+  matchRankingSnapshots?: Prisma.MatchRankingSnapshotListRelationFilter
+  homeSummary?: Prisma.XOR<Prisma.GroupHomeSummaryNullableScalarRelationFilter, Prisma.GroupHomeSummaryWhereInput> | null
 }, "id">
 
 export type GroupOrderByWithAggregationInput = {
@@ -276,6 +291,11 @@ export type GroupCreateInput = {
   matches?: Prisma.MatchCreateNestedManyWithoutGroupInput
   invites?: Prisma.GroupInviteCreateNestedManyWithoutGroupInput
   feedItems?: Prisma.FeedItemCreateNestedManyWithoutGroupInput
+  rankingMovements?: Prisma.RankingMovementCreateNestedManyWithoutGroupInput
+  processingJobs?: Prisma.ProcessingJobCreateNestedManyWithoutGroupInput
+  rankingProjection?: Prisma.GroupRankingProjectionCreateNestedOneWithoutGroupInput
+  matchRankingSnapshots?: Prisma.MatchRankingSnapshotCreateNestedManyWithoutGroupInput
+  homeSummary?: Prisma.GroupHomeSummaryCreateNestedOneWithoutGroupInput
 }
 
 export type GroupUncheckedCreateInput = {
@@ -290,6 +310,11 @@ export type GroupUncheckedCreateInput = {
   matches?: Prisma.MatchUncheckedCreateNestedManyWithoutGroupInput
   invites?: Prisma.GroupInviteUncheckedCreateNestedManyWithoutGroupInput
   feedItems?: Prisma.FeedItemUncheckedCreateNestedManyWithoutGroupInput
+  rankingMovements?: Prisma.RankingMovementUncheckedCreateNestedManyWithoutGroupInput
+  processingJobs?: Prisma.ProcessingJobUncheckedCreateNestedManyWithoutGroupInput
+  rankingProjection?: Prisma.GroupRankingProjectionUncheckedCreateNestedOneWithoutGroupInput
+  matchRankingSnapshots?: Prisma.MatchRankingSnapshotUncheckedCreateNestedManyWithoutGroupInput
+  homeSummary?: Prisma.GroupHomeSummaryUncheckedCreateNestedOneWithoutGroupInput
 }
 
 export type GroupUpdateInput = {
@@ -304,6 +329,11 @@ export type GroupUpdateInput = {
   matches?: Prisma.MatchUpdateManyWithoutGroupNestedInput
   invites?: Prisma.GroupInviteUpdateManyWithoutGroupNestedInput
   feedItems?: Prisma.FeedItemUpdateManyWithoutGroupNestedInput
+  rankingMovements?: Prisma.RankingMovementUpdateManyWithoutGroupNestedInput
+  processingJobs?: Prisma.ProcessingJobUpdateManyWithoutGroupNestedInput
+  rankingProjection?: Prisma.GroupRankingProjectionUpdateOneWithoutGroupNestedInput
+  matchRankingSnapshots?: Prisma.MatchRankingSnapshotUpdateManyWithoutGroupNestedInput
+  homeSummary?: Prisma.GroupHomeSummaryUpdateOneWithoutGroupNestedInput
 }
 
 export type GroupUncheckedUpdateInput = {
@@ -318,6 +348,11 @@ export type GroupUncheckedUpdateInput = {
   matches?: Prisma.MatchUncheckedUpdateManyWithoutGroupNestedInput
   invites?: Prisma.GroupInviteUncheckedUpdateManyWithoutGroupNestedInput
   feedItems?: Prisma.FeedItemUncheckedUpdateManyWithoutGroupNestedInput
+  rankingMovements?: Prisma.RankingMovementUncheckedUpdateManyWithoutGroupNestedInput
+  processingJobs?: Prisma.ProcessingJobUncheckedUpdateManyWithoutGroupNestedInput
+  rankingProjection?: Prisma.GroupRankingProjectionUncheckedUpdateOneWithoutGroupNestedInput
+  matchRankingSnapshots?: Prisma.MatchRankingSnapshotUncheckedUpdateManyWithoutGroupNestedInput
+  homeSummary?: Prisma.GroupHomeSummaryUncheckedUpdateOneWithoutGroupNestedInput
 }
 
 export type GroupCreateManyInput = {
@@ -491,6 +526,76 @@ export type GroupUpdateOneRequiredWithoutMatchesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.GroupUpdateToOneWithWhereWithoutMatchesInput, Prisma.GroupUpdateWithoutMatchesInput>, Prisma.GroupUncheckedUpdateWithoutMatchesInput>
 }
 
+export type GroupCreateNestedOneWithoutMatchRankingSnapshotsInput = {
+  create?: Prisma.XOR<Prisma.GroupCreateWithoutMatchRankingSnapshotsInput, Prisma.GroupUncheckedCreateWithoutMatchRankingSnapshotsInput>
+  connectOrCreate?: Prisma.GroupCreateOrConnectWithoutMatchRankingSnapshotsInput
+  connect?: Prisma.GroupWhereUniqueInput
+}
+
+export type GroupUpdateOneRequiredWithoutMatchRankingSnapshotsNestedInput = {
+  create?: Prisma.XOR<Prisma.GroupCreateWithoutMatchRankingSnapshotsInput, Prisma.GroupUncheckedCreateWithoutMatchRankingSnapshotsInput>
+  connectOrCreate?: Prisma.GroupCreateOrConnectWithoutMatchRankingSnapshotsInput
+  upsert?: Prisma.GroupUpsertWithoutMatchRankingSnapshotsInput
+  connect?: Prisma.GroupWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.GroupUpdateToOneWithWhereWithoutMatchRankingSnapshotsInput, Prisma.GroupUpdateWithoutMatchRankingSnapshotsInput>, Prisma.GroupUncheckedUpdateWithoutMatchRankingSnapshotsInput>
+}
+
+export type GroupCreateNestedOneWithoutRankingProjectionInput = {
+  create?: Prisma.XOR<Prisma.GroupCreateWithoutRankingProjectionInput, Prisma.GroupUncheckedCreateWithoutRankingProjectionInput>
+  connectOrCreate?: Prisma.GroupCreateOrConnectWithoutRankingProjectionInput
+  connect?: Prisma.GroupWhereUniqueInput
+}
+
+export type GroupUpdateOneRequiredWithoutRankingProjectionNestedInput = {
+  create?: Prisma.XOR<Prisma.GroupCreateWithoutRankingProjectionInput, Prisma.GroupUncheckedCreateWithoutRankingProjectionInput>
+  connectOrCreate?: Prisma.GroupCreateOrConnectWithoutRankingProjectionInput
+  upsert?: Prisma.GroupUpsertWithoutRankingProjectionInput
+  connect?: Prisma.GroupWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.GroupUpdateToOneWithWhereWithoutRankingProjectionInput, Prisma.GroupUpdateWithoutRankingProjectionInput>, Prisma.GroupUncheckedUpdateWithoutRankingProjectionInput>
+}
+
+export type GroupCreateNestedOneWithoutHomeSummaryInput = {
+  create?: Prisma.XOR<Prisma.GroupCreateWithoutHomeSummaryInput, Prisma.GroupUncheckedCreateWithoutHomeSummaryInput>
+  connectOrCreate?: Prisma.GroupCreateOrConnectWithoutHomeSummaryInput
+  connect?: Prisma.GroupWhereUniqueInput
+}
+
+export type GroupUpdateOneRequiredWithoutHomeSummaryNestedInput = {
+  create?: Prisma.XOR<Prisma.GroupCreateWithoutHomeSummaryInput, Prisma.GroupUncheckedCreateWithoutHomeSummaryInput>
+  connectOrCreate?: Prisma.GroupCreateOrConnectWithoutHomeSummaryInput
+  upsert?: Prisma.GroupUpsertWithoutHomeSummaryInput
+  connect?: Prisma.GroupWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.GroupUpdateToOneWithWhereWithoutHomeSummaryInput, Prisma.GroupUpdateWithoutHomeSummaryInput>, Prisma.GroupUncheckedUpdateWithoutHomeSummaryInput>
+}
+
+export type GroupCreateNestedOneWithoutRankingMovementsInput = {
+  create?: Prisma.XOR<Prisma.GroupCreateWithoutRankingMovementsInput, Prisma.GroupUncheckedCreateWithoutRankingMovementsInput>
+  connectOrCreate?: Prisma.GroupCreateOrConnectWithoutRankingMovementsInput
+  connect?: Prisma.GroupWhereUniqueInput
+}
+
+export type GroupUpdateOneRequiredWithoutRankingMovementsNestedInput = {
+  create?: Prisma.XOR<Prisma.GroupCreateWithoutRankingMovementsInput, Prisma.GroupUncheckedCreateWithoutRankingMovementsInput>
+  connectOrCreate?: Prisma.GroupCreateOrConnectWithoutRankingMovementsInput
+  upsert?: Prisma.GroupUpsertWithoutRankingMovementsInput
+  connect?: Prisma.GroupWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.GroupUpdateToOneWithWhereWithoutRankingMovementsInput, Prisma.GroupUpdateWithoutRankingMovementsInput>, Prisma.GroupUncheckedUpdateWithoutRankingMovementsInput>
+}
+
+export type GroupCreateNestedOneWithoutProcessingJobsInput = {
+  create?: Prisma.XOR<Prisma.GroupCreateWithoutProcessingJobsInput, Prisma.GroupUncheckedCreateWithoutProcessingJobsInput>
+  connectOrCreate?: Prisma.GroupCreateOrConnectWithoutProcessingJobsInput
+  connect?: Prisma.GroupWhereUniqueInput
+}
+
+export type GroupUpdateOneRequiredWithoutProcessingJobsNestedInput = {
+  create?: Prisma.XOR<Prisma.GroupCreateWithoutProcessingJobsInput, Prisma.GroupUncheckedCreateWithoutProcessingJobsInput>
+  connectOrCreate?: Prisma.GroupCreateOrConnectWithoutProcessingJobsInput
+  upsert?: Prisma.GroupUpsertWithoutProcessingJobsInput
+  connect?: Prisma.GroupWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.GroupUpdateToOneWithWhereWithoutProcessingJobsInput, Prisma.GroupUpdateWithoutProcessingJobsInput>, Prisma.GroupUncheckedUpdateWithoutProcessingJobsInput>
+}
+
 export type GroupCreateNestedOneWithoutFeedItemsInput = {
   create?: Prisma.XOR<Prisma.GroupCreateWithoutFeedItemsInput, Prisma.GroupUncheckedCreateWithoutFeedItemsInput>
   connectOrCreate?: Prisma.GroupCreateOrConnectWithoutFeedItemsInput
@@ -518,6 +623,11 @@ export type GroupCreateWithoutCreatedByInput = {
   matches?: Prisma.MatchCreateNestedManyWithoutGroupInput
   invites?: Prisma.GroupInviteCreateNestedManyWithoutGroupInput
   feedItems?: Prisma.FeedItemCreateNestedManyWithoutGroupInput
+  rankingMovements?: Prisma.RankingMovementCreateNestedManyWithoutGroupInput
+  processingJobs?: Prisma.ProcessingJobCreateNestedManyWithoutGroupInput
+  rankingProjection?: Prisma.GroupRankingProjectionCreateNestedOneWithoutGroupInput
+  matchRankingSnapshots?: Prisma.MatchRankingSnapshotCreateNestedManyWithoutGroupInput
+  homeSummary?: Prisma.GroupHomeSummaryCreateNestedOneWithoutGroupInput
 }
 
 export type GroupUncheckedCreateWithoutCreatedByInput = {
@@ -531,6 +641,11 @@ export type GroupUncheckedCreateWithoutCreatedByInput = {
   matches?: Prisma.MatchUncheckedCreateNestedManyWithoutGroupInput
   invites?: Prisma.GroupInviteUncheckedCreateNestedManyWithoutGroupInput
   feedItems?: Prisma.FeedItemUncheckedCreateNestedManyWithoutGroupInput
+  rankingMovements?: Prisma.RankingMovementUncheckedCreateNestedManyWithoutGroupInput
+  processingJobs?: Prisma.ProcessingJobUncheckedCreateNestedManyWithoutGroupInput
+  rankingProjection?: Prisma.GroupRankingProjectionUncheckedCreateNestedOneWithoutGroupInput
+  matchRankingSnapshots?: Prisma.MatchRankingSnapshotUncheckedCreateNestedManyWithoutGroupInput
+  homeSummary?: Prisma.GroupHomeSummaryUncheckedCreateNestedOneWithoutGroupInput
 }
 
 export type GroupCreateOrConnectWithoutCreatedByInput = {
@@ -583,6 +698,11 @@ export type GroupCreateWithoutInvitesInput = {
   members?: Prisma.GroupMemberCreateNestedManyWithoutGroupInput
   matches?: Prisma.MatchCreateNestedManyWithoutGroupInput
   feedItems?: Prisma.FeedItemCreateNestedManyWithoutGroupInput
+  rankingMovements?: Prisma.RankingMovementCreateNestedManyWithoutGroupInput
+  processingJobs?: Prisma.ProcessingJobCreateNestedManyWithoutGroupInput
+  rankingProjection?: Prisma.GroupRankingProjectionCreateNestedOneWithoutGroupInput
+  matchRankingSnapshots?: Prisma.MatchRankingSnapshotCreateNestedManyWithoutGroupInput
+  homeSummary?: Prisma.GroupHomeSummaryCreateNestedOneWithoutGroupInput
 }
 
 export type GroupUncheckedCreateWithoutInvitesInput = {
@@ -596,6 +716,11 @@ export type GroupUncheckedCreateWithoutInvitesInput = {
   members?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutGroupInput
   matches?: Prisma.MatchUncheckedCreateNestedManyWithoutGroupInput
   feedItems?: Prisma.FeedItemUncheckedCreateNestedManyWithoutGroupInput
+  rankingMovements?: Prisma.RankingMovementUncheckedCreateNestedManyWithoutGroupInput
+  processingJobs?: Prisma.ProcessingJobUncheckedCreateNestedManyWithoutGroupInput
+  rankingProjection?: Prisma.GroupRankingProjectionUncheckedCreateNestedOneWithoutGroupInput
+  matchRankingSnapshots?: Prisma.MatchRankingSnapshotUncheckedCreateNestedManyWithoutGroupInput
+  homeSummary?: Prisma.GroupHomeSummaryUncheckedCreateNestedOneWithoutGroupInput
 }
 
 export type GroupCreateOrConnectWithoutInvitesInput = {
@@ -625,6 +750,11 @@ export type GroupUpdateWithoutInvitesInput = {
   members?: Prisma.GroupMemberUpdateManyWithoutGroupNestedInput
   matches?: Prisma.MatchUpdateManyWithoutGroupNestedInput
   feedItems?: Prisma.FeedItemUpdateManyWithoutGroupNestedInput
+  rankingMovements?: Prisma.RankingMovementUpdateManyWithoutGroupNestedInput
+  processingJobs?: Prisma.ProcessingJobUpdateManyWithoutGroupNestedInput
+  rankingProjection?: Prisma.GroupRankingProjectionUpdateOneWithoutGroupNestedInput
+  matchRankingSnapshots?: Prisma.MatchRankingSnapshotUpdateManyWithoutGroupNestedInput
+  homeSummary?: Prisma.GroupHomeSummaryUpdateOneWithoutGroupNestedInput
 }
 
 export type GroupUncheckedUpdateWithoutInvitesInput = {
@@ -638,6 +768,11 @@ export type GroupUncheckedUpdateWithoutInvitesInput = {
   members?: Prisma.GroupMemberUncheckedUpdateManyWithoutGroupNestedInput
   matches?: Prisma.MatchUncheckedUpdateManyWithoutGroupNestedInput
   feedItems?: Prisma.FeedItemUncheckedUpdateManyWithoutGroupNestedInput
+  rankingMovements?: Prisma.RankingMovementUncheckedUpdateManyWithoutGroupNestedInput
+  processingJobs?: Prisma.ProcessingJobUncheckedUpdateManyWithoutGroupNestedInput
+  rankingProjection?: Prisma.GroupRankingProjectionUncheckedUpdateOneWithoutGroupNestedInput
+  matchRankingSnapshots?: Prisma.MatchRankingSnapshotUncheckedUpdateManyWithoutGroupNestedInput
+  homeSummary?: Prisma.GroupHomeSummaryUncheckedUpdateOneWithoutGroupNestedInput
 }
 
 export type GroupCreateWithoutMembersInput = {
@@ -651,6 +786,11 @@ export type GroupCreateWithoutMembersInput = {
   matches?: Prisma.MatchCreateNestedManyWithoutGroupInput
   invites?: Prisma.GroupInviteCreateNestedManyWithoutGroupInput
   feedItems?: Prisma.FeedItemCreateNestedManyWithoutGroupInput
+  rankingMovements?: Prisma.RankingMovementCreateNestedManyWithoutGroupInput
+  processingJobs?: Prisma.ProcessingJobCreateNestedManyWithoutGroupInput
+  rankingProjection?: Prisma.GroupRankingProjectionCreateNestedOneWithoutGroupInput
+  matchRankingSnapshots?: Prisma.MatchRankingSnapshotCreateNestedManyWithoutGroupInput
+  homeSummary?: Prisma.GroupHomeSummaryCreateNestedOneWithoutGroupInput
 }
 
 export type GroupUncheckedCreateWithoutMembersInput = {
@@ -664,6 +804,11 @@ export type GroupUncheckedCreateWithoutMembersInput = {
   matches?: Prisma.MatchUncheckedCreateNestedManyWithoutGroupInput
   invites?: Prisma.GroupInviteUncheckedCreateNestedManyWithoutGroupInput
   feedItems?: Prisma.FeedItemUncheckedCreateNestedManyWithoutGroupInput
+  rankingMovements?: Prisma.RankingMovementUncheckedCreateNestedManyWithoutGroupInput
+  processingJobs?: Prisma.ProcessingJobUncheckedCreateNestedManyWithoutGroupInput
+  rankingProjection?: Prisma.GroupRankingProjectionUncheckedCreateNestedOneWithoutGroupInput
+  matchRankingSnapshots?: Prisma.MatchRankingSnapshotUncheckedCreateNestedManyWithoutGroupInput
+  homeSummary?: Prisma.GroupHomeSummaryUncheckedCreateNestedOneWithoutGroupInput
 }
 
 export type GroupCreateOrConnectWithoutMembersInput = {
@@ -693,6 +838,11 @@ export type GroupUpdateWithoutMembersInput = {
   matches?: Prisma.MatchUpdateManyWithoutGroupNestedInput
   invites?: Prisma.GroupInviteUpdateManyWithoutGroupNestedInput
   feedItems?: Prisma.FeedItemUpdateManyWithoutGroupNestedInput
+  rankingMovements?: Prisma.RankingMovementUpdateManyWithoutGroupNestedInput
+  processingJobs?: Prisma.ProcessingJobUpdateManyWithoutGroupNestedInput
+  rankingProjection?: Prisma.GroupRankingProjectionUpdateOneWithoutGroupNestedInput
+  matchRankingSnapshots?: Prisma.MatchRankingSnapshotUpdateManyWithoutGroupNestedInput
+  homeSummary?: Prisma.GroupHomeSummaryUpdateOneWithoutGroupNestedInput
 }
 
 export type GroupUncheckedUpdateWithoutMembersInput = {
@@ -706,6 +856,11 @@ export type GroupUncheckedUpdateWithoutMembersInput = {
   matches?: Prisma.MatchUncheckedUpdateManyWithoutGroupNestedInput
   invites?: Prisma.GroupInviteUncheckedUpdateManyWithoutGroupNestedInput
   feedItems?: Prisma.FeedItemUncheckedUpdateManyWithoutGroupNestedInput
+  rankingMovements?: Prisma.RankingMovementUncheckedUpdateManyWithoutGroupNestedInput
+  processingJobs?: Prisma.ProcessingJobUncheckedUpdateManyWithoutGroupNestedInput
+  rankingProjection?: Prisma.GroupRankingProjectionUncheckedUpdateOneWithoutGroupNestedInput
+  matchRankingSnapshots?: Prisma.MatchRankingSnapshotUncheckedUpdateManyWithoutGroupNestedInput
+  homeSummary?: Prisma.GroupHomeSummaryUncheckedUpdateOneWithoutGroupNestedInput
 }
 
 export type GroupCreateWithoutMatchesInput = {
@@ -719,6 +874,11 @@ export type GroupCreateWithoutMatchesInput = {
   members?: Prisma.GroupMemberCreateNestedManyWithoutGroupInput
   invites?: Prisma.GroupInviteCreateNestedManyWithoutGroupInput
   feedItems?: Prisma.FeedItemCreateNestedManyWithoutGroupInput
+  rankingMovements?: Prisma.RankingMovementCreateNestedManyWithoutGroupInput
+  processingJobs?: Prisma.ProcessingJobCreateNestedManyWithoutGroupInput
+  rankingProjection?: Prisma.GroupRankingProjectionCreateNestedOneWithoutGroupInput
+  matchRankingSnapshots?: Prisma.MatchRankingSnapshotCreateNestedManyWithoutGroupInput
+  homeSummary?: Prisma.GroupHomeSummaryCreateNestedOneWithoutGroupInput
 }
 
 export type GroupUncheckedCreateWithoutMatchesInput = {
@@ -732,6 +892,11 @@ export type GroupUncheckedCreateWithoutMatchesInput = {
   members?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutGroupInput
   invites?: Prisma.GroupInviteUncheckedCreateNestedManyWithoutGroupInput
   feedItems?: Prisma.FeedItemUncheckedCreateNestedManyWithoutGroupInput
+  rankingMovements?: Prisma.RankingMovementUncheckedCreateNestedManyWithoutGroupInput
+  processingJobs?: Prisma.ProcessingJobUncheckedCreateNestedManyWithoutGroupInput
+  rankingProjection?: Prisma.GroupRankingProjectionUncheckedCreateNestedOneWithoutGroupInput
+  matchRankingSnapshots?: Prisma.MatchRankingSnapshotUncheckedCreateNestedManyWithoutGroupInput
+  homeSummary?: Prisma.GroupHomeSummaryUncheckedCreateNestedOneWithoutGroupInput
 }
 
 export type GroupCreateOrConnectWithoutMatchesInput = {
@@ -761,6 +926,11 @@ export type GroupUpdateWithoutMatchesInput = {
   members?: Prisma.GroupMemberUpdateManyWithoutGroupNestedInput
   invites?: Prisma.GroupInviteUpdateManyWithoutGroupNestedInput
   feedItems?: Prisma.FeedItemUpdateManyWithoutGroupNestedInput
+  rankingMovements?: Prisma.RankingMovementUpdateManyWithoutGroupNestedInput
+  processingJobs?: Prisma.ProcessingJobUpdateManyWithoutGroupNestedInput
+  rankingProjection?: Prisma.GroupRankingProjectionUpdateOneWithoutGroupNestedInput
+  matchRankingSnapshots?: Prisma.MatchRankingSnapshotUpdateManyWithoutGroupNestedInput
+  homeSummary?: Prisma.GroupHomeSummaryUpdateOneWithoutGroupNestedInput
 }
 
 export type GroupUncheckedUpdateWithoutMatchesInput = {
@@ -774,6 +944,451 @@ export type GroupUncheckedUpdateWithoutMatchesInput = {
   members?: Prisma.GroupMemberUncheckedUpdateManyWithoutGroupNestedInput
   invites?: Prisma.GroupInviteUncheckedUpdateManyWithoutGroupNestedInput
   feedItems?: Prisma.FeedItemUncheckedUpdateManyWithoutGroupNestedInput
+  rankingMovements?: Prisma.RankingMovementUncheckedUpdateManyWithoutGroupNestedInput
+  processingJobs?: Prisma.ProcessingJobUncheckedUpdateManyWithoutGroupNestedInput
+  rankingProjection?: Prisma.GroupRankingProjectionUncheckedUpdateOneWithoutGroupNestedInput
+  matchRankingSnapshots?: Prisma.MatchRankingSnapshotUncheckedUpdateManyWithoutGroupNestedInput
+  homeSummary?: Prisma.GroupHomeSummaryUncheckedUpdateOneWithoutGroupNestedInput
+}
+
+export type GroupCreateWithoutMatchRankingSnapshotsInput = {
+  id?: string
+  name: string
+  description?: string | null
+  visibility?: $Enums.GroupVisibility
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  createdBy: Prisma.UserCreateNestedOneWithoutCreatedGroupsInput
+  members?: Prisma.GroupMemberCreateNestedManyWithoutGroupInput
+  matches?: Prisma.MatchCreateNestedManyWithoutGroupInput
+  invites?: Prisma.GroupInviteCreateNestedManyWithoutGroupInput
+  feedItems?: Prisma.FeedItemCreateNestedManyWithoutGroupInput
+  rankingMovements?: Prisma.RankingMovementCreateNestedManyWithoutGroupInput
+  processingJobs?: Prisma.ProcessingJobCreateNestedManyWithoutGroupInput
+  rankingProjection?: Prisma.GroupRankingProjectionCreateNestedOneWithoutGroupInput
+  homeSummary?: Prisma.GroupHomeSummaryCreateNestedOneWithoutGroupInput
+}
+
+export type GroupUncheckedCreateWithoutMatchRankingSnapshotsInput = {
+  id?: string
+  name: string
+  description?: string | null
+  visibility?: $Enums.GroupVisibility
+  createdById: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  members?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutGroupInput
+  matches?: Prisma.MatchUncheckedCreateNestedManyWithoutGroupInput
+  invites?: Prisma.GroupInviteUncheckedCreateNestedManyWithoutGroupInput
+  feedItems?: Prisma.FeedItemUncheckedCreateNestedManyWithoutGroupInput
+  rankingMovements?: Prisma.RankingMovementUncheckedCreateNestedManyWithoutGroupInput
+  processingJobs?: Prisma.ProcessingJobUncheckedCreateNestedManyWithoutGroupInput
+  rankingProjection?: Prisma.GroupRankingProjectionUncheckedCreateNestedOneWithoutGroupInput
+  homeSummary?: Prisma.GroupHomeSummaryUncheckedCreateNestedOneWithoutGroupInput
+}
+
+export type GroupCreateOrConnectWithoutMatchRankingSnapshotsInput = {
+  where: Prisma.GroupWhereUniqueInput
+  create: Prisma.XOR<Prisma.GroupCreateWithoutMatchRankingSnapshotsInput, Prisma.GroupUncheckedCreateWithoutMatchRankingSnapshotsInput>
+}
+
+export type GroupUpsertWithoutMatchRankingSnapshotsInput = {
+  update: Prisma.XOR<Prisma.GroupUpdateWithoutMatchRankingSnapshotsInput, Prisma.GroupUncheckedUpdateWithoutMatchRankingSnapshotsInput>
+  create: Prisma.XOR<Prisma.GroupCreateWithoutMatchRankingSnapshotsInput, Prisma.GroupUncheckedCreateWithoutMatchRankingSnapshotsInput>
+  where?: Prisma.GroupWhereInput
+}
+
+export type GroupUpdateToOneWithWhereWithoutMatchRankingSnapshotsInput = {
+  where?: Prisma.GroupWhereInput
+  data: Prisma.XOR<Prisma.GroupUpdateWithoutMatchRankingSnapshotsInput, Prisma.GroupUncheckedUpdateWithoutMatchRankingSnapshotsInput>
+}
+
+export type GroupUpdateWithoutMatchRankingSnapshotsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  visibility?: Prisma.EnumGroupVisibilityFieldUpdateOperationsInput | $Enums.GroupVisibility
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdBy?: Prisma.UserUpdateOneRequiredWithoutCreatedGroupsNestedInput
+  members?: Prisma.GroupMemberUpdateManyWithoutGroupNestedInput
+  matches?: Prisma.MatchUpdateManyWithoutGroupNestedInput
+  invites?: Prisma.GroupInviteUpdateManyWithoutGroupNestedInput
+  feedItems?: Prisma.FeedItemUpdateManyWithoutGroupNestedInput
+  rankingMovements?: Prisma.RankingMovementUpdateManyWithoutGroupNestedInput
+  processingJobs?: Prisma.ProcessingJobUpdateManyWithoutGroupNestedInput
+  rankingProjection?: Prisma.GroupRankingProjectionUpdateOneWithoutGroupNestedInput
+  homeSummary?: Prisma.GroupHomeSummaryUpdateOneWithoutGroupNestedInput
+}
+
+export type GroupUncheckedUpdateWithoutMatchRankingSnapshotsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  visibility?: Prisma.EnumGroupVisibilityFieldUpdateOperationsInput | $Enums.GroupVisibility
+  createdById?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  members?: Prisma.GroupMemberUncheckedUpdateManyWithoutGroupNestedInput
+  matches?: Prisma.MatchUncheckedUpdateManyWithoutGroupNestedInput
+  invites?: Prisma.GroupInviteUncheckedUpdateManyWithoutGroupNestedInput
+  feedItems?: Prisma.FeedItemUncheckedUpdateManyWithoutGroupNestedInput
+  rankingMovements?: Prisma.RankingMovementUncheckedUpdateManyWithoutGroupNestedInput
+  processingJobs?: Prisma.ProcessingJobUncheckedUpdateManyWithoutGroupNestedInput
+  rankingProjection?: Prisma.GroupRankingProjectionUncheckedUpdateOneWithoutGroupNestedInput
+  homeSummary?: Prisma.GroupHomeSummaryUncheckedUpdateOneWithoutGroupNestedInput
+}
+
+export type GroupCreateWithoutRankingProjectionInput = {
+  id?: string
+  name: string
+  description?: string | null
+  visibility?: $Enums.GroupVisibility
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  createdBy: Prisma.UserCreateNestedOneWithoutCreatedGroupsInput
+  members?: Prisma.GroupMemberCreateNestedManyWithoutGroupInput
+  matches?: Prisma.MatchCreateNestedManyWithoutGroupInput
+  invites?: Prisma.GroupInviteCreateNestedManyWithoutGroupInput
+  feedItems?: Prisma.FeedItemCreateNestedManyWithoutGroupInput
+  rankingMovements?: Prisma.RankingMovementCreateNestedManyWithoutGroupInput
+  processingJobs?: Prisma.ProcessingJobCreateNestedManyWithoutGroupInput
+  matchRankingSnapshots?: Prisma.MatchRankingSnapshotCreateNestedManyWithoutGroupInput
+  homeSummary?: Prisma.GroupHomeSummaryCreateNestedOneWithoutGroupInput
+}
+
+export type GroupUncheckedCreateWithoutRankingProjectionInput = {
+  id?: string
+  name: string
+  description?: string | null
+  visibility?: $Enums.GroupVisibility
+  createdById: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  members?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutGroupInput
+  matches?: Prisma.MatchUncheckedCreateNestedManyWithoutGroupInput
+  invites?: Prisma.GroupInviteUncheckedCreateNestedManyWithoutGroupInput
+  feedItems?: Prisma.FeedItemUncheckedCreateNestedManyWithoutGroupInput
+  rankingMovements?: Prisma.RankingMovementUncheckedCreateNestedManyWithoutGroupInput
+  processingJobs?: Prisma.ProcessingJobUncheckedCreateNestedManyWithoutGroupInput
+  matchRankingSnapshots?: Prisma.MatchRankingSnapshotUncheckedCreateNestedManyWithoutGroupInput
+  homeSummary?: Prisma.GroupHomeSummaryUncheckedCreateNestedOneWithoutGroupInput
+}
+
+export type GroupCreateOrConnectWithoutRankingProjectionInput = {
+  where: Prisma.GroupWhereUniqueInput
+  create: Prisma.XOR<Prisma.GroupCreateWithoutRankingProjectionInput, Prisma.GroupUncheckedCreateWithoutRankingProjectionInput>
+}
+
+export type GroupUpsertWithoutRankingProjectionInput = {
+  update: Prisma.XOR<Prisma.GroupUpdateWithoutRankingProjectionInput, Prisma.GroupUncheckedUpdateWithoutRankingProjectionInput>
+  create: Prisma.XOR<Prisma.GroupCreateWithoutRankingProjectionInput, Prisma.GroupUncheckedCreateWithoutRankingProjectionInput>
+  where?: Prisma.GroupWhereInput
+}
+
+export type GroupUpdateToOneWithWhereWithoutRankingProjectionInput = {
+  where?: Prisma.GroupWhereInput
+  data: Prisma.XOR<Prisma.GroupUpdateWithoutRankingProjectionInput, Prisma.GroupUncheckedUpdateWithoutRankingProjectionInput>
+}
+
+export type GroupUpdateWithoutRankingProjectionInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  visibility?: Prisma.EnumGroupVisibilityFieldUpdateOperationsInput | $Enums.GroupVisibility
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdBy?: Prisma.UserUpdateOneRequiredWithoutCreatedGroupsNestedInput
+  members?: Prisma.GroupMemberUpdateManyWithoutGroupNestedInput
+  matches?: Prisma.MatchUpdateManyWithoutGroupNestedInput
+  invites?: Prisma.GroupInviteUpdateManyWithoutGroupNestedInput
+  feedItems?: Prisma.FeedItemUpdateManyWithoutGroupNestedInput
+  rankingMovements?: Prisma.RankingMovementUpdateManyWithoutGroupNestedInput
+  processingJobs?: Prisma.ProcessingJobUpdateManyWithoutGroupNestedInput
+  matchRankingSnapshots?: Prisma.MatchRankingSnapshotUpdateManyWithoutGroupNestedInput
+  homeSummary?: Prisma.GroupHomeSummaryUpdateOneWithoutGroupNestedInput
+}
+
+export type GroupUncheckedUpdateWithoutRankingProjectionInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  visibility?: Prisma.EnumGroupVisibilityFieldUpdateOperationsInput | $Enums.GroupVisibility
+  createdById?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  members?: Prisma.GroupMemberUncheckedUpdateManyWithoutGroupNestedInput
+  matches?: Prisma.MatchUncheckedUpdateManyWithoutGroupNestedInput
+  invites?: Prisma.GroupInviteUncheckedUpdateManyWithoutGroupNestedInput
+  feedItems?: Prisma.FeedItemUncheckedUpdateManyWithoutGroupNestedInput
+  rankingMovements?: Prisma.RankingMovementUncheckedUpdateManyWithoutGroupNestedInput
+  processingJobs?: Prisma.ProcessingJobUncheckedUpdateManyWithoutGroupNestedInput
+  matchRankingSnapshots?: Prisma.MatchRankingSnapshotUncheckedUpdateManyWithoutGroupNestedInput
+  homeSummary?: Prisma.GroupHomeSummaryUncheckedUpdateOneWithoutGroupNestedInput
+}
+
+export type GroupCreateWithoutHomeSummaryInput = {
+  id?: string
+  name: string
+  description?: string | null
+  visibility?: $Enums.GroupVisibility
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  createdBy: Prisma.UserCreateNestedOneWithoutCreatedGroupsInput
+  members?: Prisma.GroupMemberCreateNestedManyWithoutGroupInput
+  matches?: Prisma.MatchCreateNestedManyWithoutGroupInput
+  invites?: Prisma.GroupInviteCreateNestedManyWithoutGroupInput
+  feedItems?: Prisma.FeedItemCreateNestedManyWithoutGroupInput
+  rankingMovements?: Prisma.RankingMovementCreateNestedManyWithoutGroupInput
+  processingJobs?: Prisma.ProcessingJobCreateNestedManyWithoutGroupInput
+  rankingProjection?: Prisma.GroupRankingProjectionCreateNestedOneWithoutGroupInput
+  matchRankingSnapshots?: Prisma.MatchRankingSnapshotCreateNestedManyWithoutGroupInput
+}
+
+export type GroupUncheckedCreateWithoutHomeSummaryInput = {
+  id?: string
+  name: string
+  description?: string | null
+  visibility?: $Enums.GroupVisibility
+  createdById: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  members?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutGroupInput
+  matches?: Prisma.MatchUncheckedCreateNestedManyWithoutGroupInput
+  invites?: Prisma.GroupInviteUncheckedCreateNestedManyWithoutGroupInput
+  feedItems?: Prisma.FeedItemUncheckedCreateNestedManyWithoutGroupInput
+  rankingMovements?: Prisma.RankingMovementUncheckedCreateNestedManyWithoutGroupInput
+  processingJobs?: Prisma.ProcessingJobUncheckedCreateNestedManyWithoutGroupInput
+  rankingProjection?: Prisma.GroupRankingProjectionUncheckedCreateNestedOneWithoutGroupInput
+  matchRankingSnapshots?: Prisma.MatchRankingSnapshotUncheckedCreateNestedManyWithoutGroupInput
+}
+
+export type GroupCreateOrConnectWithoutHomeSummaryInput = {
+  where: Prisma.GroupWhereUniqueInput
+  create: Prisma.XOR<Prisma.GroupCreateWithoutHomeSummaryInput, Prisma.GroupUncheckedCreateWithoutHomeSummaryInput>
+}
+
+export type GroupUpsertWithoutHomeSummaryInput = {
+  update: Prisma.XOR<Prisma.GroupUpdateWithoutHomeSummaryInput, Prisma.GroupUncheckedUpdateWithoutHomeSummaryInput>
+  create: Prisma.XOR<Prisma.GroupCreateWithoutHomeSummaryInput, Prisma.GroupUncheckedCreateWithoutHomeSummaryInput>
+  where?: Prisma.GroupWhereInput
+}
+
+export type GroupUpdateToOneWithWhereWithoutHomeSummaryInput = {
+  where?: Prisma.GroupWhereInput
+  data: Prisma.XOR<Prisma.GroupUpdateWithoutHomeSummaryInput, Prisma.GroupUncheckedUpdateWithoutHomeSummaryInput>
+}
+
+export type GroupUpdateWithoutHomeSummaryInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  visibility?: Prisma.EnumGroupVisibilityFieldUpdateOperationsInput | $Enums.GroupVisibility
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdBy?: Prisma.UserUpdateOneRequiredWithoutCreatedGroupsNestedInput
+  members?: Prisma.GroupMemberUpdateManyWithoutGroupNestedInput
+  matches?: Prisma.MatchUpdateManyWithoutGroupNestedInput
+  invites?: Prisma.GroupInviteUpdateManyWithoutGroupNestedInput
+  feedItems?: Prisma.FeedItemUpdateManyWithoutGroupNestedInput
+  rankingMovements?: Prisma.RankingMovementUpdateManyWithoutGroupNestedInput
+  processingJobs?: Prisma.ProcessingJobUpdateManyWithoutGroupNestedInput
+  rankingProjection?: Prisma.GroupRankingProjectionUpdateOneWithoutGroupNestedInput
+  matchRankingSnapshots?: Prisma.MatchRankingSnapshotUpdateManyWithoutGroupNestedInput
+}
+
+export type GroupUncheckedUpdateWithoutHomeSummaryInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  visibility?: Prisma.EnumGroupVisibilityFieldUpdateOperationsInput | $Enums.GroupVisibility
+  createdById?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  members?: Prisma.GroupMemberUncheckedUpdateManyWithoutGroupNestedInput
+  matches?: Prisma.MatchUncheckedUpdateManyWithoutGroupNestedInput
+  invites?: Prisma.GroupInviteUncheckedUpdateManyWithoutGroupNestedInput
+  feedItems?: Prisma.FeedItemUncheckedUpdateManyWithoutGroupNestedInput
+  rankingMovements?: Prisma.RankingMovementUncheckedUpdateManyWithoutGroupNestedInput
+  processingJobs?: Prisma.ProcessingJobUncheckedUpdateManyWithoutGroupNestedInput
+  rankingProjection?: Prisma.GroupRankingProjectionUncheckedUpdateOneWithoutGroupNestedInput
+  matchRankingSnapshots?: Prisma.MatchRankingSnapshotUncheckedUpdateManyWithoutGroupNestedInput
+}
+
+export type GroupCreateWithoutRankingMovementsInput = {
+  id?: string
+  name: string
+  description?: string | null
+  visibility?: $Enums.GroupVisibility
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  createdBy: Prisma.UserCreateNestedOneWithoutCreatedGroupsInput
+  members?: Prisma.GroupMemberCreateNestedManyWithoutGroupInput
+  matches?: Prisma.MatchCreateNestedManyWithoutGroupInput
+  invites?: Prisma.GroupInviteCreateNestedManyWithoutGroupInput
+  feedItems?: Prisma.FeedItemCreateNestedManyWithoutGroupInput
+  processingJobs?: Prisma.ProcessingJobCreateNestedManyWithoutGroupInput
+  rankingProjection?: Prisma.GroupRankingProjectionCreateNestedOneWithoutGroupInput
+  matchRankingSnapshots?: Prisma.MatchRankingSnapshotCreateNestedManyWithoutGroupInput
+  homeSummary?: Prisma.GroupHomeSummaryCreateNestedOneWithoutGroupInput
+}
+
+export type GroupUncheckedCreateWithoutRankingMovementsInput = {
+  id?: string
+  name: string
+  description?: string | null
+  visibility?: $Enums.GroupVisibility
+  createdById: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  members?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutGroupInput
+  matches?: Prisma.MatchUncheckedCreateNestedManyWithoutGroupInput
+  invites?: Prisma.GroupInviteUncheckedCreateNestedManyWithoutGroupInput
+  feedItems?: Prisma.FeedItemUncheckedCreateNestedManyWithoutGroupInput
+  processingJobs?: Prisma.ProcessingJobUncheckedCreateNestedManyWithoutGroupInput
+  rankingProjection?: Prisma.GroupRankingProjectionUncheckedCreateNestedOneWithoutGroupInput
+  matchRankingSnapshots?: Prisma.MatchRankingSnapshotUncheckedCreateNestedManyWithoutGroupInput
+  homeSummary?: Prisma.GroupHomeSummaryUncheckedCreateNestedOneWithoutGroupInput
+}
+
+export type GroupCreateOrConnectWithoutRankingMovementsInput = {
+  where: Prisma.GroupWhereUniqueInput
+  create: Prisma.XOR<Prisma.GroupCreateWithoutRankingMovementsInput, Prisma.GroupUncheckedCreateWithoutRankingMovementsInput>
+}
+
+export type GroupUpsertWithoutRankingMovementsInput = {
+  update: Prisma.XOR<Prisma.GroupUpdateWithoutRankingMovementsInput, Prisma.GroupUncheckedUpdateWithoutRankingMovementsInput>
+  create: Prisma.XOR<Prisma.GroupCreateWithoutRankingMovementsInput, Prisma.GroupUncheckedCreateWithoutRankingMovementsInput>
+  where?: Prisma.GroupWhereInput
+}
+
+export type GroupUpdateToOneWithWhereWithoutRankingMovementsInput = {
+  where?: Prisma.GroupWhereInput
+  data: Prisma.XOR<Prisma.GroupUpdateWithoutRankingMovementsInput, Prisma.GroupUncheckedUpdateWithoutRankingMovementsInput>
+}
+
+export type GroupUpdateWithoutRankingMovementsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  visibility?: Prisma.EnumGroupVisibilityFieldUpdateOperationsInput | $Enums.GroupVisibility
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdBy?: Prisma.UserUpdateOneRequiredWithoutCreatedGroupsNestedInput
+  members?: Prisma.GroupMemberUpdateManyWithoutGroupNestedInput
+  matches?: Prisma.MatchUpdateManyWithoutGroupNestedInput
+  invites?: Prisma.GroupInviteUpdateManyWithoutGroupNestedInput
+  feedItems?: Prisma.FeedItemUpdateManyWithoutGroupNestedInput
+  processingJobs?: Prisma.ProcessingJobUpdateManyWithoutGroupNestedInput
+  rankingProjection?: Prisma.GroupRankingProjectionUpdateOneWithoutGroupNestedInput
+  matchRankingSnapshots?: Prisma.MatchRankingSnapshotUpdateManyWithoutGroupNestedInput
+  homeSummary?: Prisma.GroupHomeSummaryUpdateOneWithoutGroupNestedInput
+}
+
+export type GroupUncheckedUpdateWithoutRankingMovementsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  visibility?: Prisma.EnumGroupVisibilityFieldUpdateOperationsInput | $Enums.GroupVisibility
+  createdById?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  members?: Prisma.GroupMemberUncheckedUpdateManyWithoutGroupNestedInput
+  matches?: Prisma.MatchUncheckedUpdateManyWithoutGroupNestedInput
+  invites?: Prisma.GroupInviteUncheckedUpdateManyWithoutGroupNestedInput
+  feedItems?: Prisma.FeedItemUncheckedUpdateManyWithoutGroupNestedInput
+  processingJobs?: Prisma.ProcessingJobUncheckedUpdateManyWithoutGroupNestedInput
+  rankingProjection?: Prisma.GroupRankingProjectionUncheckedUpdateOneWithoutGroupNestedInput
+  matchRankingSnapshots?: Prisma.MatchRankingSnapshotUncheckedUpdateManyWithoutGroupNestedInput
+  homeSummary?: Prisma.GroupHomeSummaryUncheckedUpdateOneWithoutGroupNestedInput
+}
+
+export type GroupCreateWithoutProcessingJobsInput = {
+  id?: string
+  name: string
+  description?: string | null
+  visibility?: $Enums.GroupVisibility
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  createdBy: Prisma.UserCreateNestedOneWithoutCreatedGroupsInput
+  members?: Prisma.GroupMemberCreateNestedManyWithoutGroupInput
+  matches?: Prisma.MatchCreateNestedManyWithoutGroupInput
+  invites?: Prisma.GroupInviteCreateNestedManyWithoutGroupInput
+  feedItems?: Prisma.FeedItemCreateNestedManyWithoutGroupInput
+  rankingMovements?: Prisma.RankingMovementCreateNestedManyWithoutGroupInput
+  rankingProjection?: Prisma.GroupRankingProjectionCreateNestedOneWithoutGroupInput
+  matchRankingSnapshots?: Prisma.MatchRankingSnapshotCreateNestedManyWithoutGroupInput
+  homeSummary?: Prisma.GroupHomeSummaryCreateNestedOneWithoutGroupInput
+}
+
+export type GroupUncheckedCreateWithoutProcessingJobsInput = {
+  id?: string
+  name: string
+  description?: string | null
+  visibility?: $Enums.GroupVisibility
+  createdById: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  members?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutGroupInput
+  matches?: Prisma.MatchUncheckedCreateNestedManyWithoutGroupInput
+  invites?: Prisma.GroupInviteUncheckedCreateNestedManyWithoutGroupInput
+  feedItems?: Prisma.FeedItemUncheckedCreateNestedManyWithoutGroupInput
+  rankingMovements?: Prisma.RankingMovementUncheckedCreateNestedManyWithoutGroupInput
+  rankingProjection?: Prisma.GroupRankingProjectionUncheckedCreateNestedOneWithoutGroupInput
+  matchRankingSnapshots?: Prisma.MatchRankingSnapshotUncheckedCreateNestedManyWithoutGroupInput
+  homeSummary?: Prisma.GroupHomeSummaryUncheckedCreateNestedOneWithoutGroupInput
+}
+
+export type GroupCreateOrConnectWithoutProcessingJobsInput = {
+  where: Prisma.GroupWhereUniqueInput
+  create: Prisma.XOR<Prisma.GroupCreateWithoutProcessingJobsInput, Prisma.GroupUncheckedCreateWithoutProcessingJobsInput>
+}
+
+export type GroupUpsertWithoutProcessingJobsInput = {
+  update: Prisma.XOR<Prisma.GroupUpdateWithoutProcessingJobsInput, Prisma.GroupUncheckedUpdateWithoutProcessingJobsInput>
+  create: Prisma.XOR<Prisma.GroupCreateWithoutProcessingJobsInput, Prisma.GroupUncheckedCreateWithoutProcessingJobsInput>
+  where?: Prisma.GroupWhereInput
+}
+
+export type GroupUpdateToOneWithWhereWithoutProcessingJobsInput = {
+  where?: Prisma.GroupWhereInput
+  data: Prisma.XOR<Prisma.GroupUpdateWithoutProcessingJobsInput, Prisma.GroupUncheckedUpdateWithoutProcessingJobsInput>
+}
+
+export type GroupUpdateWithoutProcessingJobsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  visibility?: Prisma.EnumGroupVisibilityFieldUpdateOperationsInput | $Enums.GroupVisibility
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdBy?: Prisma.UserUpdateOneRequiredWithoutCreatedGroupsNestedInput
+  members?: Prisma.GroupMemberUpdateManyWithoutGroupNestedInput
+  matches?: Prisma.MatchUpdateManyWithoutGroupNestedInput
+  invites?: Prisma.GroupInviteUpdateManyWithoutGroupNestedInput
+  feedItems?: Prisma.FeedItemUpdateManyWithoutGroupNestedInput
+  rankingMovements?: Prisma.RankingMovementUpdateManyWithoutGroupNestedInput
+  rankingProjection?: Prisma.GroupRankingProjectionUpdateOneWithoutGroupNestedInput
+  matchRankingSnapshots?: Prisma.MatchRankingSnapshotUpdateManyWithoutGroupNestedInput
+  homeSummary?: Prisma.GroupHomeSummaryUpdateOneWithoutGroupNestedInput
+}
+
+export type GroupUncheckedUpdateWithoutProcessingJobsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  visibility?: Prisma.EnumGroupVisibilityFieldUpdateOperationsInput | $Enums.GroupVisibility
+  createdById?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  members?: Prisma.GroupMemberUncheckedUpdateManyWithoutGroupNestedInput
+  matches?: Prisma.MatchUncheckedUpdateManyWithoutGroupNestedInput
+  invites?: Prisma.GroupInviteUncheckedUpdateManyWithoutGroupNestedInput
+  feedItems?: Prisma.FeedItemUncheckedUpdateManyWithoutGroupNestedInput
+  rankingMovements?: Prisma.RankingMovementUncheckedUpdateManyWithoutGroupNestedInput
+  rankingProjection?: Prisma.GroupRankingProjectionUncheckedUpdateOneWithoutGroupNestedInput
+  matchRankingSnapshots?: Prisma.MatchRankingSnapshotUncheckedUpdateManyWithoutGroupNestedInput
+  homeSummary?: Prisma.GroupHomeSummaryUncheckedUpdateOneWithoutGroupNestedInput
 }
 
 export type GroupCreateWithoutFeedItemsInput = {
@@ -787,6 +1402,11 @@ export type GroupCreateWithoutFeedItemsInput = {
   members?: Prisma.GroupMemberCreateNestedManyWithoutGroupInput
   matches?: Prisma.MatchCreateNestedManyWithoutGroupInput
   invites?: Prisma.GroupInviteCreateNestedManyWithoutGroupInput
+  rankingMovements?: Prisma.RankingMovementCreateNestedManyWithoutGroupInput
+  processingJobs?: Prisma.ProcessingJobCreateNestedManyWithoutGroupInput
+  rankingProjection?: Prisma.GroupRankingProjectionCreateNestedOneWithoutGroupInput
+  matchRankingSnapshots?: Prisma.MatchRankingSnapshotCreateNestedManyWithoutGroupInput
+  homeSummary?: Prisma.GroupHomeSummaryCreateNestedOneWithoutGroupInput
 }
 
 export type GroupUncheckedCreateWithoutFeedItemsInput = {
@@ -800,6 +1420,11 @@ export type GroupUncheckedCreateWithoutFeedItemsInput = {
   members?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutGroupInput
   matches?: Prisma.MatchUncheckedCreateNestedManyWithoutGroupInput
   invites?: Prisma.GroupInviteUncheckedCreateNestedManyWithoutGroupInput
+  rankingMovements?: Prisma.RankingMovementUncheckedCreateNestedManyWithoutGroupInput
+  processingJobs?: Prisma.ProcessingJobUncheckedCreateNestedManyWithoutGroupInput
+  rankingProjection?: Prisma.GroupRankingProjectionUncheckedCreateNestedOneWithoutGroupInput
+  matchRankingSnapshots?: Prisma.MatchRankingSnapshotUncheckedCreateNestedManyWithoutGroupInput
+  homeSummary?: Prisma.GroupHomeSummaryUncheckedCreateNestedOneWithoutGroupInput
 }
 
 export type GroupCreateOrConnectWithoutFeedItemsInput = {
@@ -829,6 +1454,11 @@ export type GroupUpdateWithoutFeedItemsInput = {
   members?: Prisma.GroupMemberUpdateManyWithoutGroupNestedInput
   matches?: Prisma.MatchUpdateManyWithoutGroupNestedInput
   invites?: Prisma.GroupInviteUpdateManyWithoutGroupNestedInput
+  rankingMovements?: Prisma.RankingMovementUpdateManyWithoutGroupNestedInput
+  processingJobs?: Prisma.ProcessingJobUpdateManyWithoutGroupNestedInput
+  rankingProjection?: Prisma.GroupRankingProjectionUpdateOneWithoutGroupNestedInput
+  matchRankingSnapshots?: Prisma.MatchRankingSnapshotUpdateManyWithoutGroupNestedInput
+  homeSummary?: Prisma.GroupHomeSummaryUpdateOneWithoutGroupNestedInput
 }
 
 export type GroupUncheckedUpdateWithoutFeedItemsInput = {
@@ -842,6 +1472,11 @@ export type GroupUncheckedUpdateWithoutFeedItemsInput = {
   members?: Prisma.GroupMemberUncheckedUpdateManyWithoutGroupNestedInput
   matches?: Prisma.MatchUncheckedUpdateManyWithoutGroupNestedInput
   invites?: Prisma.GroupInviteUncheckedUpdateManyWithoutGroupNestedInput
+  rankingMovements?: Prisma.RankingMovementUncheckedUpdateManyWithoutGroupNestedInput
+  processingJobs?: Prisma.ProcessingJobUncheckedUpdateManyWithoutGroupNestedInput
+  rankingProjection?: Prisma.GroupRankingProjectionUncheckedUpdateOneWithoutGroupNestedInput
+  matchRankingSnapshots?: Prisma.MatchRankingSnapshotUncheckedUpdateManyWithoutGroupNestedInput
+  homeSummary?: Prisma.GroupHomeSummaryUncheckedUpdateOneWithoutGroupNestedInput
 }
 
 export type GroupCreateManyCreatedByInput = {
@@ -864,6 +1499,11 @@ export type GroupUpdateWithoutCreatedByInput = {
   matches?: Prisma.MatchUpdateManyWithoutGroupNestedInput
   invites?: Prisma.GroupInviteUpdateManyWithoutGroupNestedInput
   feedItems?: Prisma.FeedItemUpdateManyWithoutGroupNestedInput
+  rankingMovements?: Prisma.RankingMovementUpdateManyWithoutGroupNestedInput
+  processingJobs?: Prisma.ProcessingJobUpdateManyWithoutGroupNestedInput
+  rankingProjection?: Prisma.GroupRankingProjectionUpdateOneWithoutGroupNestedInput
+  matchRankingSnapshots?: Prisma.MatchRankingSnapshotUpdateManyWithoutGroupNestedInput
+  homeSummary?: Prisma.GroupHomeSummaryUpdateOneWithoutGroupNestedInput
 }
 
 export type GroupUncheckedUpdateWithoutCreatedByInput = {
@@ -877,6 +1517,11 @@ export type GroupUncheckedUpdateWithoutCreatedByInput = {
   matches?: Prisma.MatchUncheckedUpdateManyWithoutGroupNestedInput
   invites?: Prisma.GroupInviteUncheckedUpdateManyWithoutGroupNestedInput
   feedItems?: Prisma.FeedItemUncheckedUpdateManyWithoutGroupNestedInput
+  rankingMovements?: Prisma.RankingMovementUncheckedUpdateManyWithoutGroupNestedInput
+  processingJobs?: Prisma.ProcessingJobUncheckedUpdateManyWithoutGroupNestedInput
+  rankingProjection?: Prisma.GroupRankingProjectionUncheckedUpdateOneWithoutGroupNestedInput
+  matchRankingSnapshots?: Prisma.MatchRankingSnapshotUncheckedUpdateManyWithoutGroupNestedInput
+  homeSummary?: Prisma.GroupHomeSummaryUncheckedUpdateOneWithoutGroupNestedInput
 }
 
 export type GroupUncheckedUpdateManyWithoutCreatedByInput = {
@@ -898,6 +1543,9 @@ export type GroupCountOutputType = {
   matches: number
   invites: number
   feedItems: number
+  rankingMovements: number
+  processingJobs: number
+  matchRankingSnapshots: number
 }
 
 export type GroupCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -905,6 +1553,9 @@ export type GroupCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.
   matches?: boolean | GroupCountOutputTypeCountMatchesArgs
   invites?: boolean | GroupCountOutputTypeCountInvitesArgs
   feedItems?: boolean | GroupCountOutputTypeCountFeedItemsArgs
+  rankingMovements?: boolean | GroupCountOutputTypeCountRankingMovementsArgs
+  processingJobs?: boolean | GroupCountOutputTypeCountProcessingJobsArgs
+  matchRankingSnapshots?: boolean | GroupCountOutputTypeCountMatchRankingSnapshotsArgs
 }
 
 /**
@@ -945,6 +1596,27 @@ export type GroupCountOutputTypeCountFeedItemsArgs<ExtArgs extends runtime.Types
   where?: Prisma.FeedItemWhereInput
 }
 
+/**
+ * GroupCountOutputType without action
+ */
+export type GroupCountOutputTypeCountRankingMovementsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.RankingMovementWhereInput
+}
+
+/**
+ * GroupCountOutputType without action
+ */
+export type GroupCountOutputTypeCountProcessingJobsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ProcessingJobWhereInput
+}
+
+/**
+ * GroupCountOutputType without action
+ */
+export type GroupCountOutputTypeCountMatchRankingSnapshotsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.MatchRankingSnapshotWhereInput
+}
+
 
 export type GroupSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -959,6 +1631,11 @@ export type GroupSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   matches?: boolean | Prisma.Group$matchesArgs<ExtArgs>
   invites?: boolean | Prisma.Group$invitesArgs<ExtArgs>
   feedItems?: boolean | Prisma.Group$feedItemsArgs<ExtArgs>
+  rankingMovements?: boolean | Prisma.Group$rankingMovementsArgs<ExtArgs>
+  processingJobs?: boolean | Prisma.Group$processingJobsArgs<ExtArgs>
+  rankingProjection?: boolean | Prisma.Group$rankingProjectionArgs<ExtArgs>
+  matchRankingSnapshots?: boolean | Prisma.Group$matchRankingSnapshotsArgs<ExtArgs>
+  homeSummary?: boolean | Prisma.Group$homeSummaryArgs<ExtArgs>
   _count?: boolean | Prisma.GroupCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["group"]>
 
@@ -1001,6 +1678,11 @@ export type GroupInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   matches?: boolean | Prisma.Group$matchesArgs<ExtArgs>
   invites?: boolean | Prisma.Group$invitesArgs<ExtArgs>
   feedItems?: boolean | Prisma.Group$feedItemsArgs<ExtArgs>
+  rankingMovements?: boolean | Prisma.Group$rankingMovementsArgs<ExtArgs>
+  processingJobs?: boolean | Prisma.Group$processingJobsArgs<ExtArgs>
+  rankingProjection?: boolean | Prisma.Group$rankingProjectionArgs<ExtArgs>
+  matchRankingSnapshots?: boolean | Prisma.Group$matchRankingSnapshotsArgs<ExtArgs>
+  homeSummary?: boolean | Prisma.Group$homeSummaryArgs<ExtArgs>
   _count?: boolean | Prisma.GroupCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type GroupIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1018,6 +1700,11 @@ export type $GroupPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     matches: Prisma.$MatchPayload<ExtArgs>[]
     invites: Prisma.$GroupInvitePayload<ExtArgs>[]
     feedItems: Prisma.$FeedItemPayload<ExtArgs>[]
+    rankingMovements: Prisma.$RankingMovementPayload<ExtArgs>[]
+    processingJobs: Prisma.$ProcessingJobPayload<ExtArgs>[]
+    rankingProjection: Prisma.$GroupRankingProjectionPayload<ExtArgs> | null
+    matchRankingSnapshots: Prisma.$MatchRankingSnapshotPayload<ExtArgs>[]
+    homeSummary: Prisma.$GroupHomeSummaryPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1426,6 +2113,11 @@ export interface Prisma__GroupClient<T, Null = never, ExtArgs extends runtime.Ty
   matches<T extends Prisma.Group$matchesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Group$matchesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MatchPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   invites<T extends Prisma.Group$invitesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Group$invitesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$GroupInvitePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   feedItems<T extends Prisma.Group$feedItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Group$feedItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FeedItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  rankingMovements<T extends Prisma.Group$rankingMovementsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Group$rankingMovementsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RankingMovementPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  processingJobs<T extends Prisma.Group$processingJobsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Group$processingJobsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProcessingJobPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  rankingProjection<T extends Prisma.Group$rankingProjectionArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Group$rankingProjectionArgs<ExtArgs>>): Prisma.Prisma__GroupRankingProjectionClient<runtime.Types.Result.GetResult<Prisma.$GroupRankingProjectionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  matchRankingSnapshots<T extends Prisma.Group$matchRankingSnapshotsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Group$matchRankingSnapshotsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MatchRankingSnapshotPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  homeSummary<T extends Prisma.Group$homeSummaryArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Group$homeSummaryArgs<ExtArgs>>): Prisma.Prisma__GroupHomeSummaryClient<runtime.Types.Result.GetResult<Prisma.$GroupHomeSummaryPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1956,6 +2648,116 @@ export type Group$feedItemsArgs<ExtArgs extends runtime.Types.Extensions.Interna
   take?: number
   skip?: number
   distinct?: Prisma.FeedItemScalarFieldEnum | Prisma.FeedItemScalarFieldEnum[]
+}
+
+/**
+ * Group.rankingMovements
+ */
+export type Group$rankingMovementsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the RankingMovement
+   */
+  select?: Prisma.RankingMovementSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the RankingMovement
+   */
+  omit?: Prisma.RankingMovementOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RankingMovementInclude<ExtArgs> | null
+  where?: Prisma.RankingMovementWhereInput
+  orderBy?: Prisma.RankingMovementOrderByWithRelationInput | Prisma.RankingMovementOrderByWithRelationInput[]
+  cursor?: Prisma.RankingMovementWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.RankingMovementScalarFieldEnum | Prisma.RankingMovementScalarFieldEnum[]
+}
+
+/**
+ * Group.processingJobs
+ */
+export type Group$processingJobsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ProcessingJob
+   */
+  select?: Prisma.ProcessingJobSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ProcessingJob
+   */
+  omit?: Prisma.ProcessingJobOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ProcessingJobInclude<ExtArgs> | null
+  where?: Prisma.ProcessingJobWhereInput
+  orderBy?: Prisma.ProcessingJobOrderByWithRelationInput | Prisma.ProcessingJobOrderByWithRelationInput[]
+  cursor?: Prisma.ProcessingJobWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ProcessingJobScalarFieldEnum | Prisma.ProcessingJobScalarFieldEnum[]
+}
+
+/**
+ * Group.rankingProjection
+ */
+export type Group$rankingProjectionArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the GroupRankingProjection
+   */
+  select?: Prisma.GroupRankingProjectionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the GroupRankingProjection
+   */
+  omit?: Prisma.GroupRankingProjectionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.GroupRankingProjectionInclude<ExtArgs> | null
+  where?: Prisma.GroupRankingProjectionWhereInput
+}
+
+/**
+ * Group.matchRankingSnapshots
+ */
+export type Group$matchRankingSnapshotsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the MatchRankingSnapshot
+   */
+  select?: Prisma.MatchRankingSnapshotSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the MatchRankingSnapshot
+   */
+  omit?: Prisma.MatchRankingSnapshotOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.MatchRankingSnapshotInclude<ExtArgs> | null
+  where?: Prisma.MatchRankingSnapshotWhereInput
+  orderBy?: Prisma.MatchRankingSnapshotOrderByWithRelationInput | Prisma.MatchRankingSnapshotOrderByWithRelationInput[]
+  cursor?: Prisma.MatchRankingSnapshotWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.MatchRankingSnapshotScalarFieldEnum | Prisma.MatchRankingSnapshotScalarFieldEnum[]
+}
+
+/**
+ * Group.homeSummary
+ */
+export type Group$homeSummaryArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the GroupHomeSummary
+   */
+  select?: Prisma.GroupHomeSummarySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the GroupHomeSummary
+   */
+  omit?: Prisma.GroupHomeSummaryOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.GroupHomeSummaryInclude<ExtArgs> | null
+  where?: Prisma.GroupHomeSummaryWhereInput
 }
 
 /**
