@@ -39,13 +39,13 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
-  --radius-sm: calc(var(--radius) * 0.5);
-  --radius-md: calc(var(--radius) * 0.75);
+  --radius-sm: calc(var(--radius) * 0.55);
+  --radius-md: calc(var(--radius) * 0.72);
   --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) * 1.35);
-  --radius-2xl: calc(var(--radius) * 1.75);
-  --radius-3xl: calc(var(--radius) * 2.25);
-  --radius-4xl: calc(var(--radius) * 2.75);
+  --radius-xl: calc(var(--radius) * 1.18);
+  --radius-2xl: calc(var(--radius) * 1.38);
+  --radius-3xl: calc(var(--radius) * 1.65);
+  --radius-4xl: calc(var(--radius) * 2);
 }
 
 :root {
@@ -65,22 +65,22 @@
   --accent: oklch(0.9 0.042 198);
   --accent-foreground: oklch(0.22 0.038 210);
   --destructive: oklch(0.58 0.2 25);
-  --border: oklch(0.84 0.02 205 / 74%);
-  --input: oklch(0.84 0.02 205 / 78%);
+  --border: oklch(0.84 0.02 205 / 38%);
+  --input: oklch(0.84 0.02 205 / 38%);
   --ring: oklch(0.34 0.075 207);
   --chart-1: oklch(0.34 0.075 207);
   --chart-2: oklch(0.56 0.1 170);
   --chart-3: oklch(0.62 0.12 80);
   --chart-4: oklch(0.54 0.12 285);
   --chart-5: oklch(0.58 0.16 30);
-  --radius: 0.9rem;
+  --radius: 1.4rem;
   --sidebar: oklch(0.962 0.032 198);
   --sidebar-foreground: oklch(0.17 0.018 226);
   --sidebar-primary: oklch(0.34 0.075 207);
   --sidebar-primary-foreground: oklch(0.985 0.008 200);
   --sidebar-accent: oklch(0.925 0.024 200);
   --sidebar-accent-foreground: oklch(0.24 0.035 210);
-  --sidebar-border: oklch(0.84 0.02 205 / 74%);
+  --sidebar-border: oklch(0.84 0.02 205 / 38%);
   --sidebar-ring: oklch(0.34 0.075 207);
 }
 
@@ -101,8 +101,8 @@
   --accent: oklch(0.3 0.04 200);
   --accent-foreground: oklch(0.94 0.008 200);
   --destructive: oklch(0.7 0.19 24);
-  --border: oklch(1 0 0 / 12%);
-  --input: oklch(1 0 0 / 14%);
+  --border: oklch(1 0 0 / 8%);
+  --input: oklch(1 0 0 / 10%);
   --ring: oklch(0.72 0.09 200);
   --chart-1: oklch(0.72 0.09 200);
   --chart-2: oklch(0.68 0.11 170);
@@ -115,7 +115,7 @@
   --sidebar-primary-foreground: oklch(0.12 0.022 210);
   --sidebar-accent: oklch(0.27 0.026 210);
   --sidebar-accent-foreground: oklch(0.94 0.008 200);
-  --sidebar-border: oklch(1 0 0 / 12%);
+  --sidebar-border: oklch(1 0 0 / 8%);
   --sidebar-ring: oklch(0.72 0.09 200);
 }
 
@@ -157,7 +157,7 @@
 @layer utilities {
   .br-liquid-glass {
     background: var(--card);
-    box-shadow: 0 1px 2px color-mix(in oklch, var(--foreground) 7%, transparent);
+    box-shadow: 0 8px 24px color-mix(in oklch, var(--foreground) 5%, transparent);
   }
 
   .br-hairline {
