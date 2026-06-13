@@ -21,16 +21,16 @@ export function RankingMovementFeedCard({ item }: Props) {
   const loserScore = metadata.winnerTeam === 'TEAM_A' ? metadata.gamesB : metadata.gamesA;
 
   return (
-    <Card className="br-pressable bg-gradient-to-br from-card via-card to-primary/10">
+    <Card className="br-pressable">
       <CardContent className="p-4">
         <div className="flex items-start gap-3">
-          <div className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-[1.35rem] bg-primary text-primary-foreground ring-1 ring-primary/35">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border bg-muted text-foreground">
             <Trophy className="h-5 w-5" />
           </div>
 
           <div className="min-w-0 flex-1 space-y-3">
             <div className="flex items-start gap-2">
-              <p className="min-w-0 flex-1 text-sm font-semibold leading-5 tracking-[-0.015em] text-foreground">
+              <p className="min-w-0 flex-1 text-sm font-medium leading-5 text-foreground">
                 <HighlightedHeadline headline={metadata.headline} />
               </p>
               <p className="shrink-0 pt-0.5 text-xs text-muted-foreground">
@@ -75,7 +75,7 @@ function HighlightedHeadline({ headline }: { headline: string }) {
         }
 
         return (
-          <span key={`${part}-${index}`} className="text-base font-bold tracking-[-0.02em]">
+          <span key={`${part}-${index}`} className="font-semibold">
             {part}
           </span>
         );
@@ -102,8 +102,8 @@ function RankingMovementRow({
           <span
             className={
               isUp
-                ? 'flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-700'
-                : 'flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-red-500/10 text-red-700'
+                ? 'flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-300'
+                : 'flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-rose-200 bg-rose-50 text-rose-700 dark:border-rose-900 dark:bg-rose-950/40 dark:text-rose-300'
             }
           >
             <Icon className="h-3.5 w-3.5" />
@@ -116,8 +116,8 @@ function RankingMovementRow({
         <div
           className={
             isUp
-              ? 'shrink-0 text-sm font-semibold text-emerald-700'
-              : 'shrink-0 text-sm font-semibold text-red-700'
+              ? 'shrink-0 text-sm font-medium text-emerald-700 dark:text-emerald-300'
+              : 'shrink-0 text-sm font-medium text-rose-700 dark:text-rose-300'
           }
         >
           #{movement.previousRank} → #{movement.currentRank}
@@ -141,16 +141,14 @@ function RankingMovementScoreboard({
   loserScore: number;
 }) {
   return (
-    <div className="rounded-2xl border border-border/70 bg-background/55 px-3 py-2 text-sm text-muted-foreground">
+    <div className="rounded-xl border bg-muted/25 px-3 py-2 text-sm text-muted-foreground">
       <div className="grid grid-cols-[1fr_auto] items-center gap-x-4 gap-y-1">
         <div className="min-w-0 font-medium text-foreground">
           <FeedPlayerNames players={winners} />
         </div>
-        <div className="text-right text-xl font-bold leading-none tracking-[-0.04em] text-foreground">
-          {winnerScore}
-        </div>
+        <div className="text-right text-lg font-semibold leading-none text-foreground">{winnerScore}</div>
 
-        <div className="flex items-center gap-2 text-xs uppercase tracking-[0.18em] text-muted-foreground">
+        <div className="flex items-center gap-2 text-xs uppercase tracking-[0.14em] text-muted-foreground">
           <X className="h-3.5 w-3.5" />
         </div>
         <div aria-hidden="true" />
@@ -158,9 +156,7 @@ function RankingMovementScoreboard({
         <div className="min-w-0">
           <FeedPlayerNames players={losers} />
         </div>
-        <div className="text-right text-xl font-bold leading-none tracking-[-0.04em] text-foreground">
-          {loserScore}
-        </div>
+        <div className="text-right text-lg font-semibold leading-none text-foreground">{loserScore}</div>
       </div>
     </div>
   );
