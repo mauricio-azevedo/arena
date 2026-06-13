@@ -223,7 +223,7 @@ function MatchTeam({
     >
       <div
         className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-medium ${
-          isWinner ? 'bg-foreground text-background' : 'bg-muted text-muted-foreground'
+          isWinner ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'
         }`}
       >
         {score}
