@@ -258,5 +258,13 @@ function FeedActorName({ item }: { item: FeedItem }) {
 }
 
 function getActorName(item: FeedItem) {
-  return item.actor?.displayName ?? 'Alguém';
+  if (item.isActorCurrentUser) {
+    return 'Você';
+  }
+
+  if (!item.actorUser) {
+    return 'Alguém';
+  }
+
+  return `${item.actorUser.firstName} ${item.actorUser.lastName}`.trim();
 }
