@@ -22,7 +22,7 @@ export function ProfileTabs({ activeTab, onChange }: Props) {
           onClick={() => onChange(tab.value)}
           className={`min-h-11 rounded-xl px-2 transition-colors ${
             activeTab === tab.value
-              ? 'bg-foreground text-background'
+              ? 'bg-primary text-primary-foreground'
               : 'text-muted-foreground hover:bg-muted hover:text-foreground'
           }`}
         >
