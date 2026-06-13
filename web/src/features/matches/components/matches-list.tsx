@@ -45,7 +45,7 @@ export function MatchesList({
     return (
       <Card>
         <CardContent className="space-y-2 p-4">
-          <p className="text-sm font-semibold">{emptyTitle}</p>
+          <p className="text-sm font-medium text-foreground">{emptyTitle}</p>
           <p className="text-sm leading-6 text-muted-foreground">{emptyDescription}</p>
         </CardContent>
       </Card>
@@ -113,12 +113,12 @@ export function MatchCard({
 
   return (
     <>
-      <Card className="relative bg-gradient-to-br from-card via-card to-primary/8">
+      <Card className="relative">
         {showActions && (
           <div className="absolute right-3 top-3 z-10">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon-sm" className="bg-white/34 backdrop-blur-xl dark:bg-white/8">
+                <Button variant="ghost" size="icon-sm">
                   <MoreVertical className="h-4 w-4" />
                   <span className="sr-only">Abrir opções</span>
                 </Button>
@@ -154,21 +154,21 @@ export function MatchCard({
         <CardContent className="space-y-4 p-4 pr-12">
           <div className="flex items-start justify-between gap-4">
             <div>
-              <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-primary/75">
+              <p className="text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">
                 Partida
               </p>
               <p className="mt-1 text-xs text-muted-foreground">{formatDate(match.playedAt)}</p>
             </div>
 
-            <div className="rounded-[1.5rem] bg-foreground px-4 py-2 text-right text-background shadow-[0_16px_36px_color-mix(in_oklch,var(--foreground)_20%,transparent)]">
-              <p className="text-3xl font-semibold leading-none tracking-[-0.07em]">
+            <div className="rounded-xl border bg-muted px-3 py-2 text-right">
+              <p className="text-2xl font-semibold leading-none tracking-[-0.04em] text-foreground">
                 {match.gamesA}–{match.gamesB}
               </p>
-              <p className="mt-1 text-xs font-semibold text-background/72">{formatDelta(winningDelta)}</p>
+              <p className="mt-1 text-xs text-muted-foreground">{formatDelta(winningDelta)}</p>
             </div>
           </div>
 
-          <div className="space-y-2.5">
+          <div className="space-y-2">
             <MatchTeam players={teamA} score={match.gamesA} isWinner={teamAWon} />
             <MatchTeam players={teamB} score={match.gamesB} isWinner={!teamAWon} />
           </div>
@@ -217,21 +217,19 @@ function MatchTeam({
 }) {
   return (
     <div
-      className={`flex min-w-0 items-center gap-3 rounded-[1.35rem] px-3 py-2.5 ${
-        isWinner
-          ? 'bg-accent/55 text-accent-foreground ring-1 ring-accent/60'
-          : 'bg-white/36 text-muted-foreground ring-1 ring-border/50 dark:bg-white/8'
+      className={`flex min-w-0 items-center gap-3 rounded-xl border px-3 py-2.5 ${
+        isWinner ? 'bg-muted text-foreground' : 'bg-background text-muted-foreground'
       }`}
     >
       <div
-        className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-bold ${
-          isWinner ? 'bg-foreground text-background' : 'bg-background/80 text-muted-foreground'
+        className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-medium ${
+          isWinner ? 'bg-foreground text-background' : 'bg-muted text-muted-foreground'
         }`}
       >
         {score}
       </div>
 
-      <p className={`truncate text-sm ${isWinner ? 'font-semibold' : 'text-muted-foreground'}`}>
+      <p className={`truncate text-sm ${isWinner ? 'font-medium text-foreground' : 'text-muted-foreground'}`}>
         <MatchPlayerNames players={players} />
       </p>
     </div>
