@@ -56,17 +56,17 @@ export function GroupDetailTabs({
 
   return (
     <div className="space-y-5">
-      <div className="br-liquid-glass br-hairline grid grid-cols-4 rounded-[1.85rem] p-1.5 text-sm font-semibold">
+      <div className="grid grid-cols-4 rounded-[2rem] bg-card p-1 text-sm font-medium shadow-[0_8px_24px_color-mix(in_oklch,var(--foreground)_5%,transparent)]">
         {tabs.map((tab) => (
           <button
             key={tab.value}
             type="button"
             onClick={() => setTab(tab.value)}
             aria-current={selectedTab === tab.value ? 'page' : undefined}
-            className={`br-pressable rounded-[1.45rem] px-2 py-2.5 transition-all sm:px-3 ${
+            className={`min-h-11 rounded-full px-2 transition-colors sm:px-3 ${
               selectedTab === tab.value
-                ? 'bg-foreground text-background shadow-[0_12px_28px_color-mix(in_oklch,var(--foreground)_18%,transparent)]'
-                : 'text-muted-foreground hover:bg-white/45 hover:text-foreground dark:hover:bg-white/10'
+                ? 'bg-primary text-primary-foreground'
+                : 'text-muted-foreground hover:bg-muted hover:text-foreground'
             }`}
           >
             {tab.label}
@@ -98,17 +98,12 @@ function RankingTab({ ranking }: { ranking: GroupMember[] }) {
   return (
     <section className="space-y-3">
       {ranking.map((member, index) => (
-        <Card
-          key={member.id}
-          className={index === 0 ? 'bg-gradient-to-br from-card via-card to-accent/30' : undefined}
-        >
+        <Card key={member.id}>
           <CardContent className="flex items-center justify-between gap-4 p-4">
             <div className="flex min-w-0 items-center gap-3">
               <span
-                className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-[1.35rem] text-sm font-bold ${
-                  index === 0
-                    ? 'bg-foreground text-background shadow-[0_12px_28px_color-mix(in_oklch,var(--foreground)_20%,transparent)]'
-                    : 'bg-white/45 text-primary backdrop-blur-xl dark:bg-white/10'
+                className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-sm font-semibold ${
+                  index === 0 ? 'bg-primary text-primary-foreground' : 'bg-muted text-foreground'
                 }`}
               >
                 {index + 1}
@@ -116,7 +111,7 @@ function RankingTab({ ranking }: { ranking: GroupMember[] }) {
 
               <div className="min-w-0">
                 <div className="flex min-w-0 items-center gap-2">
-                  <p className="min-w-0 truncate font-semibold tracking-[-0.015em]">
+                  <p className="min-w-0 truncate font-medium text-foreground">
                     <UserNameLink userId={member.userId}>{getMemberDisplayName(member)}</UserNameLink>
                   </p>
                   <RankingMovementBadge movement={member.rankingMovement} />
@@ -128,8 +123,8 @@ function RankingTab({ ranking }: { ranking: GroupMember[] }) {
             </div>
 
             <div className="shrink-0 text-right">
-              <p className="text-2xl font-semibold tracking-[-0.055em]">{member.rating.toFixed(0)}</p>
-              <p className="text-[11px] uppercase tracking-wide text-muted-foreground">rating</p>
+              <p className="text-xl font-semibold tracking-[-0.03em]">{member.rating.toFixed(0)}</p>
+              <p className="text-xs text-muted-foreground">rating</p>
             </div>
           </CardContent>
         </Card>
@@ -148,14 +143,14 @@ function RankingMovementBadge({ movement }: { movement?: RankingMovement | null 
   const verb = isUp ? 'Subiu' : 'Caiu';
   const label = `${verb} ${movement.positions} ${movement.positions === 1 ? 'posição' : 'posições'} no ranking`;
   const className = isUp
-    ? 'bg-emerald-500/12 text-emerald-700 dark:text-emerald-300'
-    : 'bg-rose-500/12 text-rose-700 dark:text-rose-300';
+    ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300'
+    : 'bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300';
 
   return (
     <span
       aria-label={label}
       title={label}
-      className={`inline-flex shrink-0 items-center gap-0.5 rounded-full px-2 py-0.5 text-[11px] font-bold leading-none ${className}`}
+      className={`inline-flex shrink-0 items-center gap-0.5 rounded-full px-2 py-0.5 text-[11px] font-medium leading-none ${className}`}
     >
       <Icon className="h-3 w-3" aria-hidden="true" />
       {movement.positions}
@@ -225,7 +220,7 @@ function ActivityTab({ groupId }: { groupId: string }) {
   }, [groupId]);
 
   if (status === 'loading' || status === 'idle') {
-    return <ActivityStateCard title="Carregando atividade" description="Buscando os acontecimentos mais recentes da arena." />;
+    return <ActivityStateCard title="Carregando atividade" description="Buscando os acontecimentos mais recentes do grupo." />;
   }
 
   if (status === 'signed-out') {
@@ -253,7 +248,7 @@ function ActivityStateCard({ title, description }: { title: string; description:
   return (
     <Card>
       <CardContent className="space-y-1 p-4">
-        <p className="text-sm font-medium">{title}</p>
+        <p className="text-sm font-medium text-foreground">{title}</p>
         <p className="text-sm leading-6 text-muted-foreground">{description}</p>
       </CardContent>
     </Card>
@@ -277,7 +272,7 @@ function MembersTab({ members }: { members: GroupMember[] }) {
         <Card key={member.id}>
           <CardContent className="flex items-center justify-between gap-4 p-4">
             <div className="min-w-0">
-              <p className="truncate font-semibold tracking-[-0.015em]">
+              <p className="truncate font-medium text-foreground">
                 <UserNameLink userId={member.userId}>{getMemberDisplayName(member)}</UserNameLink>
               </p>
               <p className="text-xs text-muted-foreground">
@@ -285,7 +280,7 @@ function MembersTab({ members }: { members: GroupMember[] }) {
               </p>
             </div>
 
-            <span className="rounded-full bg-white/45 px-3 py-1 text-xs font-semibold text-muted-foreground backdrop-blur-xl dark:bg-white/10">
+            <span className="rounded-full bg-muted px-3 py-1 text-xs font-medium text-muted-foreground">
               {member.rating.toFixed(0)}
             </span>
           </CardContent>

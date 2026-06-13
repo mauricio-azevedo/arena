@@ -12,7 +12,7 @@ function Card({
       data-slot="card"
       data-size={size}
       className={cn(
-        'br-liquid-glass br-hairline group/card flex flex-col gap-4 overflow-hidden rounded-[2rem] py-4 text-sm text-card-foreground transition-all has-data-[slot=card-footer]:pb-0 has-[>img:first-child]:pt-0 hover:-translate-y-0.5 data-[size=sm]:gap-3 data-[size=sm]:rounded-[1.5rem] data-[size=sm]:py-3 data-[size=sm]:has-data-[slot=card-footer]:pb-0 *:[img:first-child]:rounded-t-[2rem] *:[img:last-child]:rounded-b-[2rem]',
+        'group/card br-liquid-glass flex flex-col gap-4 rounded-[2rem] bg-card py-4 text-sm text-card-foreground shadow-[0_10px_30px_color-mix(in_oklch,var(--foreground)_5%,transparent)] has-data-[slot=card-footer]:pb-0 data-[size=sm]:gap-3 data-[size=sm]:rounded-[1.5rem] data-[size=sm]:py-3 data-[size=sm]:has-data-[slot=card-footer]:pb-0',
         className,
       )}
       {...props}
@@ -38,7 +38,7 @@ function CardTitle({ className, ...props }: React.ComponentProps<'div'>) {
     <div
       data-slot="card-title"
       className={cn(
-        'font-heading text-base leading-snug font-semibold tracking-[-0.025em] group-data-[size=sm]/card:text-sm',
+        'font-heading text-base leading-snug font-semibold tracking-[-0.02em] group-data-[size=sm]/card:text-sm',
         className,
       )}
       {...props}
@@ -66,11 +66,7 @@ function CardAction({ className, ...props }: React.ComponentProps<'div'>) {
   );
 }
 
-function CardContent({
-  className,
-  children,
-  ...props
-}: React.ComponentProps<'div'>) {
+function CardContent({ className, children, ...props }: React.ComponentProps<'div'>) {
   const loadingLabel = getLoadingLabel(children);
 
   if (loadingLabel) {
@@ -105,8 +101,8 @@ function LoadingContentSkeleton() {
     <div className="min-w-0 flex-1 space-y-3">
       <div className="h-4 w-2/3 animate-pulse rounded-full bg-muted" />
       <div className="space-y-2">
-        <div className="h-3 w-full animate-pulse rounded-full bg-muted/80" />
-        <div className="h-3 w-1/2 animate-pulse rounded-full bg-muted/70" />
+        <div className="h-3 w-full animate-pulse rounded-full bg-muted" />
+        <div className="h-3 w-1/2 animate-pulse rounded-full bg-muted" />
       </div>
     </div>
   );
@@ -132,10 +128,7 @@ function CardFooter({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
       data-slot="card-footer"
-      className={cn(
-        'flex items-center border-t bg-white/28 p-4 backdrop-blur-xl group-data-[size=sm]/card:p-3 dark:bg-white/8',
-        className,
-      )}
+      className={cn('flex items-center bg-muted/35 p-4 group-data-[size=sm]/card:p-3', className)}
       {...props}
     />
   );
