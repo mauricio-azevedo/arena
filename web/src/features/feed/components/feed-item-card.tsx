@@ -42,9 +42,9 @@ export function FeedItemCard({ item, context = 'global' }: Props) {
     <Card className="br-pressable">
       <CardContent className="p-4">
         <div className="flex items-start gap-3">
-          <div className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border bg-muted text-sm font-semibold text-foreground">
+          <div className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-muted text-sm font-semibold text-foreground">
             {getGroupInitials(title)}
-            <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full border bg-card text-muted-foreground">
+            <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-card text-muted-foreground shadow-[0_4px_12px_color-mix(in_oklch,var(--foreground)_6%,transparent)]">
               <Sparkles className="h-3 w-3" />
             </span>
           </div>
@@ -76,7 +76,7 @@ function DominantWinFeedCard({ item, context }: { item: FeedItem; context: 'glob
     <Card className="br-pressable">
       <CardContent className="p-4">
         <div className="flex items-start gap-3">
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border bg-muted text-foreground">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-muted text-foreground">
             <Flame className="h-5 w-5" />
           </div>
 
@@ -112,7 +112,7 @@ function CloseMatchFeedCard({ item, context }: { item: FeedItem; context: 'globa
     <Card className="br-pressable">
       <CardContent className="p-4">
         <div className="flex items-start gap-3">
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border bg-muted text-foreground">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-muted text-foreground">
             <CircleDot className="h-5 w-5" />
           </div>
 
