@@ -45,7 +45,7 @@ export function BottomNav() {
               className={cn(
                 'flex min-h-11 flex-col items-center justify-center gap-1 rounded-xl text-[11px] font-medium transition-colors',
                 isActive
-                  ? 'bg-foreground text-background'
+                  ? 'bg-primary text-primary-foreground'
                   : 'text-muted-foreground hover:bg-muted hover:text-foreground',
               )}
             >
