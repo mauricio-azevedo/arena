@@ -24,7 +24,7 @@ export function RankingMovementFeedCard({ item }: Props) {
     <Card className="br-pressable">
       <CardContent className="p-4">
         <div className="flex items-start gap-3">
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border bg-muted text-foreground">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-muted text-foreground">
             <Trophy className="h-5 w-5" />
           </div>
 
@@ -102,8 +102,8 @@ function RankingMovementRow({
           <span
             className={
               isUp
-                ? 'flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-300'
-                : 'flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-rose-200 bg-rose-50 text-rose-700 dark:border-rose-900 dark:bg-rose-950/40 dark:text-rose-300'
+                ? 'flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300'
+                : 'flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300'
             }
           >
             <Icon className="h-3.5 w-3.5" />
@@ -141,7 +141,7 @@ function RankingMovementScoreboard({
   loserScore: number;
 }) {
   return (
-    <div className="rounded-xl border bg-muted/25 px-3 py-2 text-sm text-muted-foreground">
+    <div className="rounded-[1.5rem] bg-muted/25 px-3 py-2 text-sm text-muted-foreground">
       <div className="grid grid-cols-[1fr_auto] items-center gap-x-4 gap-y-1">
         <div className="min-w-0 font-medium text-foreground">
           <FeedPlayerNames players={winners} />
