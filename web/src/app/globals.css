@@ -133,7 +133,7 @@
     body {
         @apply min-h-screen text-foreground antialiased;
         position: relative;
-        background: color-mix(in oklch, var(--background) 10%, white);
+        background: white;
         text-rendering: optimizeLegibility;
         -webkit-tap-highlight-color: transparent;
     }
@@ -141,29 +141,27 @@
     body::before {
         content: '';
         position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 100lvh;
-        min-height: 100dvh;
+        inset: 0;
         z-index: 0;
         pointer-events: none;
         background:
                 radial-gradient(
-                        circle at 92% 8%,
-                        color-mix(in oklch, var(--primary) 12%, transparent),
-                        transparent 14rem
+                        circle at 92% 18%,
+                        color-mix(in oklch, var(--primary) 10%, transparent),
+                        transparent 15rem
                 ),
                 radial-gradient(
-                        circle at 18% 34%,
-                        color-mix(in oklch, var(--accent) 94%, transparent),
-                        transparent 10rem
+                        circle at 18% 40%,
+                        color-mix(in oklch, var(--accent) 82%, transparent),
+                        transparent 13rem
                 ),
                 linear-gradient(
                         180deg,
-                        color-mix(in oklch, var(--background) 10%, white),
-                        var(--background) 100%,
-                        color-mix(in oklch, var(--background) 0%, var(--accent)) 0%
+                        white 0%,
+                        color-mix(in oklch, var(--background) 42%, white) 10%,
+                        var(--background) 42%,
+                        color-mix(in oklch, var(--background) 84%, var(--accent)) 72%,
+                        white 100%
                 );
         background-repeat: no-repeat;
         background-size: 100vw 100lvh;
