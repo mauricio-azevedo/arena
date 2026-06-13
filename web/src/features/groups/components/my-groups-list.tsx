@@ -61,7 +61,7 @@ export function MyGroupsList({ loadGroups, ratingLabel = 'Você' }: Props) {
     return (
       <Card>
         <CardContent className="space-y-2 p-4">
-          <p className="text-sm font-semibold">Algo deu errado</p>
+          <p className="text-sm font-medium text-foreground">Algo deu errado</p>
           <p className="text-sm leading-6 text-muted-foreground">{error}</p>
         </CardContent>
       </Card>
@@ -86,19 +86,19 @@ function MyGroupCard({ membership, ratingLabel }: { membership: MyGroup; ratingL
 
   return (
     <Link href={`/groups/${group.id}`} className="block">
-      <Card className="br-pressable">
+      <Card className="br-pressable hover:border-foreground/20">
         <CardContent className="space-y-4 p-4">
           <div className="flex items-start gap-3">
-            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-[1.5rem] bg-gradient-to-br from-primary/18 via-white/22 to-accent/55 text-sm font-bold text-primary ring-1 ring-primary/10 dark:via-white/8">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border bg-muted text-sm font-semibold text-foreground">
               {getGroupInitials(group.name)}
             </div>
 
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2">
-                <h2 className="truncate text-lg font-semibold tracking-[-0.035em]">{group.name}</h2>
+                <h2 className="truncate text-base font-semibold tracking-[-0.02em] text-foreground">{group.name}</h2>
 
                 {membership.role === 'ADMIN' && (
-                  <span className="rounded-full bg-foreground px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-background">
+                  <span className="rounded-full border px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
                     Admin
                   </span>
                 )}
@@ -125,11 +125,11 @@ function MyGroupCard({ membership, ratingLabel }: { membership: MyGroup; ratingL
   );
 }
 
-function GroupMetric({ label, value }: { label: string; value: string | number }) {
+function GroupMetric({ label, value }: { label: string | number; value: string | number }) {
   return (
-    <div className="rounded-[1.25rem] bg-white/42 px-3 py-2 shadow-[inset_0_1px_0_color-mix(in_oklch,white_58%,transparent)] backdrop-blur-xl dark:bg-white/8">
-      <p className="font-semibold text-foreground">{value}</p>
-      <p className="mt-0.5 truncate text-[11px] text-muted-foreground">{label}</p>
+    <div className="rounded-xl border bg-muted/35 px-3 py-2">
+      <p className="font-medium text-foreground">{value}</p>
+      <p className="mt-0.5 truncate text-xs text-muted-foreground">{label}</p>
     </div>
   );
 }
@@ -139,10 +139,10 @@ function SignedOutGroupsState() {
     <Card>
       <CardContent className="space-y-4 p-4">
         <div className="space-y-2">
-          <div className="flex h-12 w-12 items-center justify-center rounded-[1.35rem] bg-accent text-accent-foreground">
+          <div className="flex h-11 w-11 items-center justify-center rounded-xl border bg-muted text-foreground">
             <UsersRound className="h-5 w-5" />
           </div>
-          <p className="text-sm font-semibold">Entre para ver seus grupos</p>
+          <p className="text-sm font-medium text-foreground">Entre para ver seus grupos</p>
           <p className="text-sm leading-6 text-muted-foreground">
             Seus grupos aparecem aqui quando você entra na sua conta.
           </p>
@@ -150,11 +150,11 @@ function SignedOutGroupsState() {
 
         <div className="grid grid-cols-2 gap-2">
           <Button asChild>
-            <Link href="/login?redirect=/groups">Entrar</Link>
+            <Link href="/login?redirect=/">Entrar</Link>
           </Button>
 
           <Button asChild variant="outline">
-            <Link href="/register?redirect=/groups">Criar conta</Link>
+            <Link href="/register?redirect=/">Criar conta</Link>
           </Button>
         </div>
       </CardContent>
@@ -167,10 +167,10 @@ function EmptyGroupsState() {
     <Card>
       <CardContent className="space-y-4 p-4">
         <div className="space-y-2">
-          <div className="flex h-12 w-12 items-center justify-center rounded-[1.35rem] bg-accent text-accent-foreground">
+          <div className="flex h-11 w-11 items-center justify-center rounded-xl border bg-muted text-foreground">
             <UsersRound className="h-5 w-5" />
           </div>
-          <p className="text-sm font-semibold">Você ainda não tem grupos</p>
+          <p className="text-sm font-medium text-foreground">Você ainda não tem grupos</p>
           <p className="text-sm leading-6 text-muted-foreground">
             Crie um grupo ou entre por um convite para começar.
           </p>
