@@ -130,10 +130,10 @@ function AccessGuardSkeleton() {
       role="status"
       aria-live="polite"
       aria-busy="true"
-      className="space-y-4 rounded-2xl border bg-card p-4 shadow-sm"
+      className="space-y-4 rounded-[2rem] bg-card p-4 shadow-[0_10px_30px_color-mix(in_oklch,var(--foreground)_5%,transparent)]"
     >
       <span className="sr-only">Carregando página</span>
-      <div className="h-28 animate-pulse rounded-xl bg-muted" />
+      <div className="h-28 animate-pulse rounded-[1.5rem] bg-muted" />
       <div className="space-y-2">
         <div className="h-3 w-2/3 animate-pulse rounded-full bg-muted" />
         <div className="h-3 w-1/2 animate-pulse rounded-full bg-muted" />
