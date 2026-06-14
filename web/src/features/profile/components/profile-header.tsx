@@ -1,5 +1,6 @@
 import { Activity, ShieldCheck, Trophy } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
 import type { ProfileUser } from '../types/profile-user.type';
 
 type Props = {
@@ -12,21 +13,21 @@ export function ProfileHeader({ user, isPublicProfile = false }: Props) {
   const initials = `${user.firstName[0] ?? ''}${user.lastName[0] ?? ''}`.toUpperCase();
 
   return (
-    <header className="rounded-[2rem] bg-primary p-5 text-primary-foreground shadow-[0_10px_30px_color-mix(in_oklch,var(--primary)_12%,transparent)]">
-      <div className="space-y-5">
+    <Card>
+      <CardContent className="space-y-5 p-5">
         <div className="flex items-start gap-4 pr-10">
-          <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-primary-foreground/10 text-xl font-semibold">
+          <div className="flex h-16 w-16 shrink-0 items-center justify-center text-xl font-semibold">
             {initials}
           </div>
 
           <div className="min-w-0 pt-1">
-            <p className="text-xs font-medium uppercase tracking-[0.16em] text-primary-foreground/70">
+            <p className="text-xs font-medium uppercase tracking-[0.16em] text-muted-foreground">
               {isPublicProfile ? 'Perfil de jogador' : 'Meu perfil'}
             </p>
             <h1 className="mt-2 truncate text-3xl font-semibold leading-tight tracking-[-0.035em]">
               {fullName}
             </h1>
-            {user.email ? <p className="mt-1 truncate text-sm text-primary-foreground/70">{user.email}</p> : null}
+            {user.email ? <p className="mt-1 truncate text-sm text-muted-foreground">{user.email}</p> : null}
           </div>
         </div>
 
@@ -35,16 +36,16 @@ export function ProfileHeader({ user, isPublicProfile = false }: Props) {
           <ProfileSignal icon={Activity} label="Histórico" />
           <ProfileSignal icon={ShieldCheck} label="Conta" />
         </div>
-      </div>
-    </header>
+      </CardContent>
+    </Card>
   );
 }
 
 function ProfileSignal({ icon: Icon, label }: { icon: LucideIcon; label: string }) {
   return (
-    <div className="rounded-full bg-primary-foreground/10 px-3 py-2">
+    <div className="px-3 py-2">
       <Icon className="h-3.5 w-3.5" />
-      <p className="mt-1.5 font-medium text-primary-foreground/80">{label}</p>
+      <p className="mt-1.5 font-medium">{label}</p>
     </div>
   );
 }
