@@ -2,6 +2,7 @@
 
 import type { ReactNode } from 'react';
 import { useSetPageChrome } from '@/components/page-chrome';
+import { TypographyMuted, TypographySmall } from '@/components/ui/typography';
 import { cn } from '@/lib/utils';
 
 type PageHeaderProps = {
@@ -21,16 +22,14 @@ export function PageHeader({ title, description, eyebrow, action, className }: P
 
   return (
     <header className={cn('space-y-3', className)}>
-      {eyebrow && (
-        <p className="text-xs font-medium uppercase tracking-[0.16em] text-muted-foreground">
-          {eyebrow}
-        </p>
-      )}
+      {eyebrow && <TypographySmall>{eyebrow}</TypographySmall>}
 
       {(description || action) && (
         <div className="flex items-start justify-between gap-4">
           {description && (
-            <p className="max-w-sm text-sm leading-6 text-muted-foreground">{description}</p>
+            <div className="max-w-sm">
+              <TypographyMuted>{description}</TypographyMuted>
+            </div>
           )}
 
           {action && <div className="shrink-0">{action}</div>}
