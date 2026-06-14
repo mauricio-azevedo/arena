@@ -28,20 +28,15 @@ export function BottomNav() {
   const activeValue = items.find((item) => isActivePath(pathname, item.href))?.href ?? '/';
 
   return (
-    <nav className="fixed inset-x-0 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-50 px-4">
+    <nav className="fixed inset-x-0 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-50 justify-center flex">
       <Tabs value={activeValue}>
-        <TabsList className="mx-auto grid h-16 w-full max-w-md grid-cols-3 p-1">
+        <TabsList>
           {items.map((item) => {
             const Icon = item.icon;
             const isActive = activeValue === item.href;
 
             return (
-              <TabsTrigger
-                key={item.href}
-                value={item.href}
-                asChild
-                className="min-h-11 flex-col gap-1 text-[11px]"
-              >
+              <TabsTrigger key={item.href} value={item.href} asChild>
                 <Link
                   href={item.href}
                   aria-label={item.label}
