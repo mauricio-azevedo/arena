@@ -166,16 +166,7 @@ function AppHeader({ chrome }: { chrome: ResolvedAppShellChrome }) {
       <div className="relative mx-auto grid h-11 w-full max-w-md grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center">
         <div className="min-w-0 justify-self-start">
           {chrome.showBack && (
-            // <button
-            //   type="button"
-            //   onClick={handleBack}
-            //   aria-label="Voltar"
-            //   className="-ml-2 inline-flex h-10 w-10 items-center justify-center rounded-full text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/30"
-            // >
-            //   <ArrowLeft className="h-5 w-5" />
-            // </button>
-
-            <Button variant="secondary" size="icon" aria-label="Submit">
+            <Button onClick={handleBack} variant="secondary" size="icon" aria-label="Submit">
               <ArrowLeft />
             </Button>
           )}
