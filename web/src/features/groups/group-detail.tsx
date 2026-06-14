@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import { GroupDetailTabs } from '@/features/groups/components/group-detail-tabs';
-import { PageHeader } from '@/components/page-header';
 import { GroupActions } from '@/features/groups/components/group-actions';
 import {
   getGroup,
@@ -96,10 +95,7 @@ export function GroupDetail({ groupId, tab }: Props) {
 
   return (
     <div className="space-y-6">
-      <div className="space-y-4">
-        <PageHeader description={data.group.description ?? 'Grupo público do Arena.'} title={data.group.name} />
-        <GroupActions groupId={data.group.id} isAdmin={isAdmin} />
-      </div>
+      <GroupActions groupId={data.group.id} isAdmin={isAdmin} />
 
       <GroupDetailTabs
         groupId={data.group.id}
