@@ -37,7 +37,7 @@ function StatCard({
 }) {
   return (
     <Card size="sm" className="rounded-[1.6rem]">
-      <CardContent className="flex min-h-[5rem] items-center gap-2.5 px-3 py-2.5">
+      <CardContent className="flex items-center gap-2.5">
         <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[1.15rem] bg-primary/12 text-primary ring-1 ring-primary/10">
           {icon}
         </div>
