@@ -28,7 +28,7 @@ export function BottomNav() {
 
   return (
     <nav className="fixed inset-x-0 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-50 px-4">
-      <div className="mx-auto grid h-16 max-w-md grid-cols-3 rounded-[2rem] bg-card/92 p-1 shadow-[0_14px_34px_rgb(0_0_0/0.14)] ring-1 ring-white/[0.05] backdrop-blur-xs">
+      <div className="mx-auto grid h-16 max-w-md grid-cols-3 rounded-[2rem] bg-background/40 br-liquid-glass p-1 backdrop-blur-xs">
         {items.map((item) => {
           const Icon = item.icon;
           const isActive =
@@ -46,7 +46,7 @@ export function BottomNav() {
                 'flex min-h-11 flex-col items-center justify-center gap-1 rounded-full text-[11px] font-medium transition-colors',
                 isActive
                   ? 'bg-primary text-primary-foreground'
-                  : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground',
+                  : 'text-muted-foreground hover:bg-card/20 hover:text-foreground',
               )}
             >
               <Icon className="h-4 w-4" />
