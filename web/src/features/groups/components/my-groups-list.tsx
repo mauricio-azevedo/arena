@@ -86,10 +86,10 @@ function MyGroupCard({ membership, ratingLabel }: { membership: MyGroup; ratingL
 
   return (
     <Link href={`/groups/${group.id}`} className="block">
-      <Card className="br-pressable hover:bg-card/95">
+      <Card>
         <CardContent className="space-y-4 p-4">
           <div className="flex items-start gap-3">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-muted text-sm font-semibold text-foreground">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center text-sm font-semibold">
               {getGroupInitials(group.name)}
             </div>
 
@@ -98,7 +98,7 @@ function MyGroupCard({ membership, ratingLabel }: { membership: MyGroup; ratingL
                 <h2 className="truncate text-base font-semibold tracking-[-0.02em] text-foreground">{group.name}</h2>
 
                 {membership.role === 'ADMIN' && (
-                  <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
+                  <span className="px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
                     Admin
                   </span>
                 )}
@@ -111,7 +111,7 @@ function MyGroupCard({ membership, ratingLabel }: { membership: MyGroup; ratingL
               )}
             </div>
 
-            <ChevronRight className="mt-1 h-4 w-4 shrink-0 text-muted-foreground" />
+            <ChevronRight className="mt-1 h-4 w-4 shrink-0" />
           </div>
 
           <div className="grid grid-cols-3 gap-2 text-xs">
@@ -127,7 +127,7 @@ function MyGroupCard({ membership, ratingLabel }: { membership: MyGroup; ratingL
 
 function GroupMetric({ label, value }: { label: string | number; value: string | number }) {
   return (
-    <div className="rounded-[1.5rem] bg-muted/35 px-3 py-2">
+    <div className="px-3 py-2">
       <p className="font-medium text-foreground">{value}</p>
       <p className="mt-0.5 truncate text-xs text-muted-foreground">{label}</p>
     </div>
@@ -139,7 +139,7 @@ function SignedOutGroupsState() {
     <Card>
       <CardContent className="space-y-4 p-4">
         <div className="space-y-2">
-          <div className="flex h-11 w-11 items-center justify-center rounded-full bg-muted text-foreground">
+          <div className="flex h-11 w-11 items-center justify-center">
             <UsersRound className="h-5 w-5" />
           </div>
           <p className="text-sm font-medium text-foreground">Entre para ver seus grupos</p>
@@ -167,7 +167,7 @@ function EmptyGroupsState() {
     <Card>
       <CardContent className="space-y-4 p-4">
         <div className="space-y-2">
-          <div className="flex h-11 w-11 items-center justify-center rounded-full bg-muted text-foreground">
+          <div className="flex h-11 w-11 items-center justify-center">
             <UsersRound className="h-5 w-5" />
           </div>
           <p className="text-sm font-medium text-foreground">Você ainda não tem grupos</p>
