@@ -21,10 +21,10 @@ export function RankingMovementFeedCard({ item }: Props) {
   const loserScore = metadata.winnerTeam === 'TEAM_A' ? metadata.gamesB : metadata.gamesA;
 
   return (
-    <Card className="br-pressable">
+    <Card>
       <CardContent className="p-4">
         <div className="flex items-start gap-3">
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-muted text-foreground">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center">
             <Trophy className="h-5 w-5" />
           </div>
 
@@ -99,13 +99,7 @@ function RankingMovementRow({
     <div className="space-y-1">
       <div className="flex items-center justify-between gap-3">
         <div className="flex min-w-0 items-center gap-2">
-          <span
-            className={
-              isUp
-                ? 'flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300'
-                : 'flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300'
-            }
-          >
+          <span className="flex h-6 w-6 shrink-0 items-center justify-center">
             <Icon className="h-3.5 w-3.5" />
           </span>
           <UserNameLink userId={movement.userId} variant="feed">
@@ -113,13 +107,7 @@ function RankingMovementRow({
           </UserNameLink>
         </div>
 
-        <div
-          className={
-            isUp
-              ? 'shrink-0 text-sm font-medium text-emerald-700 dark:text-emerald-300'
-              : 'shrink-0 text-sm font-medium text-rose-700 dark:text-rose-300'
-          }
-        >
+        <div className="shrink-0 text-sm font-medium">
           #{movement.previousRank} → #{movement.currentRank}
         </div>
       </div>
@@ -141,7 +129,7 @@ function RankingMovementScoreboard({
   loserScore: number;
 }) {
   return (
-    <div className="rounded-[1.5rem] bg-muted/25 px-3 py-2 text-sm text-muted-foreground">
+    <div className="px-3 py-2 text-sm text-muted-foreground">
       <div className="grid grid-cols-[1fr_auto] items-center gap-x-4 gap-y-1">
         <div className="min-w-0 font-medium text-foreground">
           <FeedPlayerNames players={winners} />

@@ -19,7 +19,7 @@ export function ProfileLoadingState() {
         </CardContent>
       </Card>
 
-      <div className="grid grid-cols-4 gap-1 rounded-[2rem] bg-card p-1 shadow-[0_8px_24px_color-mix(in_oklch,var(--foreground)_5%,transparent)]">
+      <div className="grid grid-cols-4 gap-1 rounded-[2rem] bg-card p-1">
         <div className="h-11 animate-pulse rounded-full bg-muted" />
         <div className="h-11 animate-pulse rounded-full bg-muted" />
         <div className="h-11 animate-pulse rounded-full bg-muted" />

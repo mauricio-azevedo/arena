@@ -8,6 +8,7 @@ import { getMyGroups } from '@/features/groups/api/groups.api';
 import { getAccessToken } from '@/lib/auth';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { TypographyH4, TypographyLarge, TypographyMuted, TypographySmall } from '@/components/ui/typography';
 import { getGroupInitials } from '@/features/groups/helpers/group-initials.helper';
 
 type Props = {
@@ -52,7 +53,9 @@ export function MyGroupsList({ loadGroups, ratingLabel = 'Você' }: Props) {
   if (isLoading) {
     return (
       <Card>
-        <CardContent className="p-4 text-sm text-muted-foreground">Carregando grupos...</CardContent>
+        <CardContent className="p-4">
+          <TypographyMuted>Carregando grupos...</TypographyMuted>
+        </CardContent>
       </Card>
     );
   }
@@ -61,8 +64,8 @@ export function MyGroupsList({ loadGroups, ratingLabel = 'Você' }: Props) {
     return (
       <Card>
         <CardContent className="space-y-2 p-4">
-          <p className="text-sm font-medium text-foreground">Algo deu errado</p>
-          <p className="text-sm leading-6 text-muted-foreground">{error}</p>
+          <TypographySmall>Algo deu errado</TypographySmall>
+          <TypographyMuted>{error}</TypographyMuted>
         </CardContent>
       </Card>
     );
@@ -86,35 +89,27 @@ function MyGroupCard({ membership, ratingLabel }: { membership: MyGroup; ratingL
 
   return (
     <Link href={`/groups/${group.id}`} className="block">
-      <Card className="br-pressable hover:bg-card/95">
+      <Card>
         <CardContent className="space-y-4 p-4">
           <div className="flex items-start gap-3">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-muted text-sm font-semibold text-foreground">
-              {getGroupInitials(group.name)}
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center">
+              <TypographySmall>{getGroupInitials(group.name)}</TypographySmall>
             </div>
 
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2">
-                <h2 className="truncate text-base font-semibold tracking-[-0.02em] text-foreground">{group.name}</h2>
+                <TypographyH4>{group.name}</TypographyH4>
 
-                {membership.role === 'ADMIN' && (
-                  <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
-                    Admin
-                  </span>
-                )}
+                {membership.role === 'ADMIN' && <TypographySmall>Admin</TypographySmall>}
               </div>
 
-              {group.description && (
-                <p className="mt-1 line-clamp-2 text-sm leading-6 text-muted-foreground">
-                  {group.description}
-                </p>
-              )}
+              {group.description && <TypographyMuted>{group.description}</TypographyMuted>}
             </div>
 
-            <ChevronRight className="mt-1 h-4 w-4 shrink-0 text-muted-foreground" />
+            <ChevronRight className="mt-1 h-4 w-4 shrink-0" />
           </div>
 
-          <div className="grid grid-cols-3 gap-2 text-xs">
+          <div className="grid grid-cols-3 gap-2">
             <GroupMetric label="Membros" value={group._count?.members ?? 0} />
             <GroupMetric label="Partidas" value={group._count?.matches ?? 0} />
             <GroupMetric label={ratingLabel} value={membership.rating.toFixed(0)} />
@@ -127,9 +122,9 @@ function MyGroupCard({ membership, ratingLabel }: { membership: MyGroup; ratingL
 
 function GroupMetric({ label, value }: { label: string | number; value: string | number }) {
   return (
-    <div className="rounded-[1.5rem] bg-muted/35 px-3 py-2">
-      <p className="font-medium text-foreground">{value}</p>
-      <p className="mt-0.5 truncate text-xs text-muted-foreground">{label}</p>
+    <div className="px-3 py-2">
+      <TypographyLarge>{value}</TypographyLarge>
+      <TypographyMuted>{label}</TypographyMuted>
     </div>
   );
 }
@@ -139,13 +134,11 @@ function SignedOutGroupsState() {
     <Card>
       <CardContent className="space-y-4 p-4">
         <div className="space-y-2">
-          <div className="flex h-11 w-11 items-center justify-center rounded-full bg-muted text-foreground">
+          <div className="flex h-11 w-11 items-center justify-center">
             <UsersRound className="h-5 w-5" />
           </div>
-          <p className="text-sm font-medium text-foreground">Entre para ver seus grupos</p>
-          <p className="text-sm leading-6 text-muted-foreground">
-            Seus grupos aparecem aqui quando você entra na sua conta.
-          </p>
+          <TypographySmall>Entre para ver seus grupos</TypographySmall>
+          <TypographyMuted>Seus grupos aparecem aqui quando você entra na sua conta.</TypographyMuted>
         </div>
 
         <div className="grid grid-cols-2 gap-2">
@@ -167,13 +160,11 @@ function EmptyGroupsState() {
     <Card>
       <CardContent className="space-y-4 p-4">
         <div className="space-y-2">
-          <div className="flex h-11 w-11 items-center justify-center rounded-full bg-muted text-foreground">
+          <div className="flex h-11 w-11 items-center justify-center">
             <UsersRound className="h-5 w-5" />
           </div>
-          <p className="text-sm font-medium text-foreground">Você ainda não tem grupos</p>
-          <p className="text-sm leading-6 text-muted-foreground">
-            Crie um grupo ou entre por um convite para começar.
-          </p>
+          <TypographySmall>Você ainda não tem grupos</TypographySmall>
+          <TypographyMuted>Crie um grupo ou entre por um convite para começar.</TypographyMuted>
         </div>
 
         <Button asChild className="w-full">
@@ -190,8 +181,8 @@ function EmptyGroupsState() {
 function EmptyPublicGroupsState() {
   return (
     <Card>
-      <CardContent className="p-4 text-sm leading-6 text-muted-foreground">
-        Este jogador ainda não participa de grupos.
+      <CardContent className="p-4">
+        <TypographyMuted>Este jogador ainda não participa de grupos.</TypographyMuted>
       </CardContent>
     </Card>
   );

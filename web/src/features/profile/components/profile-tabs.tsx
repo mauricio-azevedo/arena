@@ -1,3 +1,4 @@
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ProfileTab } from '@/features/profile/types/profile-tab.type';
 
 type Props = {
@@ -14,21 +15,14 @@ const tabs: Array<{ value: ProfileTab; label: string }> = [
 
 export function ProfileTabs({ activeTab, onChange }: Props) {
   return (
-    <div className="grid grid-cols-4 rounded-[2rem] bg-card p-1 text-xs font-medium shadow-[0_8px_24px_color-mix(in_oklch,var(--foreground)_5%,transparent)]">
-      {tabs.map((tab) => (
-        <button
-          key={tab.value}
-          type="button"
-          onClick={() => onChange(tab.value)}
-          className={`min-h-11 rounded-full px-2 transition-colors ${
-            activeTab === tab.value
-              ? 'bg-primary text-primary-foreground'
-              : 'text-muted-foreground hover:bg-muted hover:text-foreground'
-          }`}
-        >
-          {tab.label}
-        </button>
-      ))}
-    </div>
+    <Tabs value={activeTab} onValueChange={(value) => onChange(value as ProfileTab)}>
+      <TabsList className="w-full">
+        {tabs.map((tab) => (
+          <TabsTrigger key={tab.value} value={tab.value}>
+            {tab.label}
+          </TabsTrigger>
+        ))}
+      </TabsList>
+    </Tabs>
   );
 }

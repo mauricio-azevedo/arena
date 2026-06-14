@@ -1,11 +1,13 @@
 'use client';
 
-import { useEffect, useMemo, useState, type ReactNode } from 'react';
+import { type ReactNode, useEffect, useMemo, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { ArrowLeft } from 'lucide-react';
 import { BottomNav } from '@/components/bottom-nav';
+import { TypographySmall } from '@/components/ui/typography';
 import { getMyGroups } from '@/features/groups/api/groups.api';
 import { getAccessToken } from '@/lib/auth';
+import { Button } from '@/components/ui/button';
+import { ArrowLeft } from 'lucide-react';
 
 export type AppShellChrome = {
   title?: string;
@@ -46,10 +48,7 @@ export function AppShell({ children, chrome }: AppShellProps) {
   const currentPathname = pathname ?? '/';
   const routeAccess = useMemo(() => getRouteAccess(currentPathname), [currentPathname]);
   const routeChrome = useMemo(() => getRouteChrome(currentPathname), [currentPathname]);
-  const resolvedChrome = useMemo(
-    () => resolveChrome(routeChrome, chrome),
-    [chrome, routeChrome],
-  );
+  const resolvedChrome = useMemo(() => resolveChrome(routeChrome, chrome), [chrome, routeChrome]);
   const [accessState, setAccessState] = useState<AccessState>(
     routeAccess.requiresCheck ? 'checking' : 'allowed',
   );
@@ -162,25 +161,27 @@ function AppHeader({ chrome }: { chrome: ResolvedAppShellChrome }) {
 
   return (
     <header className="fixed inset-x-0 top-0 z-50 px-4 pb-3 pt-[max(0.75rem,env(safe-area-inset-top))]">
-      <div className="pointer-events-none absolute inset-0 bg-card/[0.08] backdrop-blur-2xl" />
+      <div className="pointer-events-none absolute inset-0 bg-background/40 backdrop-blur-xs" />
 
       <div className="relative mx-auto grid h-11 w-full max-w-md grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center">
         <div className="min-w-0 justify-self-start">
           {chrome.showBack && (
-            <button
-              type="button"
-              onClick={handleBack}
-              aria-label="Voltar"
-              className="-ml-2 inline-flex h-10 w-10 items-center justify-center rounded-full text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/30"
-            >
-              <ArrowLeft className="h-5 w-5" />
-            </button>
+            // <button
+            //   type="button"
+            //   onClick={handleBack}
+            //   aria-label="Voltar"
+            //   className="-ml-2 inline-flex h-10 w-10 items-center justify-center rounded-full text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/30"
+            // >
+            //   <ArrowLeft className="h-5 w-5" />
+            // </button>
+
+            <Button variant="secondary" size="icon" aria-label="Submit">
+              <ArrowLeft />
+            </Button>
           )}
         </div>
 
-        <h1 className="max-w-[13rem] truncate text-center text-sm font-semibold tracking-[-0.02em] text-foreground">
-          {chrome.title}
-        </h1>
+        <TypographySmall>{chrome.title}</TypographySmall>
 
         <div aria-hidden="true" />
       </div>
@@ -194,7 +195,7 @@ function AccessGuardSkeleton() {
       role="status"
       aria-live="polite"
       aria-busy="true"
-      className="space-y-4 rounded-[2rem] bg-card p-4 shadow-[0_10px_30px_color-mix(in_oklch,var(--foreground)_5%,transparent)]"
+      className="space-y-4 rounded-[2rem] bg-card p-4"
     >
       <span className="sr-only">Carregando página</span>
       <div className="h-28 animate-pulse rounded-[1.5rem] bg-muted" />
@@ -301,11 +302,21 @@ function getRouteChrome(pathname: string): ResolvedAppShellChrome {
   }
 
   if (normalizedPathname === '/profile/settings/profile') {
-    return { title: 'Alterar perfil', showBack: true, backHref: '/profile/settings', preferBackHref: true };
+    return {
+      title: 'Alterar perfil',
+      showBack: true,
+      backHref: '/profile/settings',
+      preferBackHref: true,
+    };
   }
 
   if (normalizedPathname === '/profile/settings/password') {
-    return { title: 'Alterar senha', showBack: true, backHref: '/profile/settings', preferBackHref: true };
+    return {
+      title: 'Alterar senha',
+      showBack: true,
+      backHref: '/profile/settings',
+      preferBackHref: true,
+    };
   }
 
   const newMatchMatch = normalizedPathname.match(/^\/groups\/([^/]+)\/matches\/new$/);
@@ -401,12 +412,6 @@ function getSafeRedirectUrl(redirect: string | null) {
     return null;
   }
 
-  const pathname = redirect.split('?')[0] ?? redirect;
-
-  if (pathname === '/login' || pathname === '/register') {
-    return null;
-  }
-
   return redirect;
 }
 
@@ -415,13 +420,5 @@ function canSafelyGoBack() {
     return false;
   }
 
-  if (window.history.length <= 1 || !document.referrer) {
-    return false;
-  }
-
-  try {
-    return new URL(document.referrer).origin === window.location.origin;
-  } catch {
-    return false;
-  }
+  return window.history.length > 1;
 }
