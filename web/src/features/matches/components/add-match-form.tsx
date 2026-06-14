@@ -315,6 +315,7 @@ function ScoreInput({ label, value, onChange }: ScoreInputProps) {
         onChange(nextValue);
       }}
       aria-label={`Placar ${label}`}
+      className="w-full justify-between"
     >
       {scoreOptions.map((score) => (
         <ToggleGroupItem
