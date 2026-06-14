@@ -1,11 +1,6 @@
 import type { LucideIcon } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
-import {
-  TypographyH1,
-  TypographyH4,
-  TypographyMuted,
-  TypographySmall,
-} from '@/components/ui/typography';
+import { TypographyH4, TypographyMuted, TypographySmall } from '@/components/ui/typography';
 import type { ProfileUser } from '../types/profile-user.type';
 
 type Props = {
@@ -19,17 +14,14 @@ export function ProfileHeader({ user, isPublicProfile = false }: Props) {
 
   return (
     <Card>
-      <CardContent className="space-y-5 p-5">
+      <CardContent>
         <div className="flex items-start gap-4 pr-10">
           <div className="flex h-16 w-16 shrink-0 items-center justify-center">
             <TypographyH4>{initials}</TypographyH4>
           </div>
 
           <div className="min-w-0 pt-1">
-            <TypographySmall>
-              {isPublicProfile ? 'Perfil de jogador' : 'Meu perfil'}
-            </TypographySmall>
-            <TypographyH1>{fullName}</TypographyH1>
+            <TypographyH4 className="truncate">{fullName}</TypographyH4>
             {user.email ? <TypographyMuted>{user.email}</TypographyMuted> : null}
           </div>
         </div>
