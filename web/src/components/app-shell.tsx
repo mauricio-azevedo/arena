@@ -4,12 +4,21 @@ import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
 import { BottomNav } from '@/components/bottom-nav';
-import { PageChromeProvider, usePageChrome } from '@/components/page-chrome';
 import { getMyGroups } from '@/features/groups/api/groups.api';
 import { getAccessToken } from '@/lib/auth';
 
+export type AppShellChrome = {
+  title?: string;
+  showBack?: boolean;
+  backHref?: string;
+  preferBackHref?: boolean;
+};
+
+type ResolvedAppShellChrome = Required<AppShellChrome>;
+
 type AppShellProps = {
   children: ReactNode;
+  chrome?: AppShellChrome;
 };
 
 type AccessState = 'checking' | 'allowed' | 'redirecting';
@@ -30,20 +39,17 @@ type RouteAccess =
       requiredRole?: 'MEMBER' | 'ADMIN';
     };
 
-type RouteChrome = {
-  title: string;
-  showBack: boolean;
-  backHref: string;
-  preferBackHref?: boolean;
-};
-
-export function AppShell({ children }: AppShellProps) {
+export function AppShell({ children, chrome }: AppShellProps) {
   const pathname = usePathname();
   const router = useRouter();
 
   const currentPathname = pathname ?? '/';
   const routeAccess = useMemo(() => getRouteAccess(currentPathname), [currentPathname]);
   const routeChrome = useMemo(() => getRouteChrome(currentPathname), [currentPathname]);
+  const resolvedChrome = useMemo(
+    () => resolveChrome(routeChrome, chrome),
+    [chrome, routeChrome],
+  );
   const [accessState, setAccessState] = useState<AccessState>(
     routeAccess.requiresCheck ? 'checking' : 'allowed',
   );
@@ -125,60 +131,56 @@ export function AppShell({ children }: AppShellProps) {
   const shouldHoldContent = routeAccess.requiresCheck && accessState !== 'allowed';
 
   return (
-    <PageChromeProvider key={currentPathname} {...routeChrome}>
-      <main className="relative flex h-[100dvh] min-h-[100dvh] flex-col overflow-hidden text-foreground">
-        <AppHeader />
+    <main className="relative flex h-[100dvh] min-h-[100dvh] flex-col overflow-hidden text-foreground">
+      <AppHeader chrome={resolvedChrome} />
 
-        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-[calc(6rem+env(safe-area-inset-bottom))] pt-2 [-webkit-overflow-scrolling:touch]">
-          <div className="mx-auto w-full max-w-md space-y-6">
-            {shouldHoldContent ? <AccessGuardSkeleton /> : children}
-          </div>
+      <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-[calc(6rem+env(safe-area-inset-bottom))] pt-2 [-webkit-overflow-scrolling:touch]">
+        <div className="mx-auto w-full max-w-md space-y-6">
+          {shouldHoldContent ? <AccessGuardSkeleton /> : children}
         </div>
+      </div>
 
-        <BottomNav />
-      </main>
-    </PageChromeProvider>
+      <BottomNav />
+    </main>
   );
 }
 
-function AppHeader() {
+function AppHeader({ chrome }: { chrome: ResolvedAppShellChrome }) {
   const router = useRouter();
-  const { title, showBack, backHref, preferBackHref } = usePageChrome();
 
   function handleBack() {
-    if (!showBack) {
+    if (!chrome.showBack) {
       return;
     }
 
-    if (!preferBackHref && canSafelyGoBack()) {
+    if (!chrome.preferBackHref && canSafelyGoBack()) {
       router.back();
       return;
     }
 
-    router.push(backHref);
+    router.push(chrome.backHref);
   }
 
   return (
     <header className="sticky top-0 z-40 shrink-0 px-4 pb-3 pt-[max(0.75rem,env(safe-area-inset-top))]">
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-[calc(100%+2rem)] backdrop-blur-xl [mask-image:linear-gradient(to_bottom,black_64%,transparent)] [-webkit-mask-image:linear-gradient(to_bottom,black_64%,transparent)]" />
+      <div className="pointer-events-none absolute inset-0 backdrop-blur-xl" />
 
       <div className="relative mx-auto grid h-11 w-full max-w-md grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center">
         <div className="min-w-0 justify-self-start">
-          {showBack && (
+          {chrome.showBack && (
             <button
               type="button"
               onClick={handleBack}
               aria-label="Voltar"
-              className="-ml-2 inline-flex h-10 items-center gap-1.5 rounded-full px-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/30"
+              className="-ml-2 inline-flex h-10 w-10 items-center justify-center rounded-full text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/30"
             >
               <ArrowLeft className="h-5 w-5" />
-              <span className="sr-only">Voltar</span>
             </button>
           )}
         </div>
 
         <h1 className="max-w-[13rem] truncate text-center text-sm font-semibold tracking-[-0.02em] text-foreground">
-          {title}
+          {chrome.title}
         </h1>
 
         <div aria-hidden="true" />
@@ -268,19 +270,19 @@ function getRouteAccess(pathname: string): RouteAccess {
   };
 }
 
-function getRouteChrome(pathname: string): RouteChrome {
+function getRouteChrome(pathname: string): ResolvedAppShellChrome {
   const normalizedPathname = normalizePathname(pathname);
 
   if (normalizedPathname === '/') {
-    return { title: 'Seus grupos', showBack: false, backHref: '/' };
+    return { title: 'Seus grupos', showBack: false, backHref: '/', preferBackHref: false };
   }
 
   if (normalizedPathname === '/search') {
-    return { title: 'Buscar', showBack: false, backHref: '/' };
+    return { title: 'Buscar', showBack: false, backHref: '/', preferBackHref: false };
   }
 
   if (normalizedPathname === '/profile') {
-    return { title: 'Perfil', showBack: false, backHref: '/' };
+    return { title: 'Perfil', showBack: false, backHref: '/', preferBackHref: false };
   }
 
   if (normalizedPathname === '/login') {
@@ -292,26 +294,26 @@ function getRouteChrome(pathname: string): RouteChrome {
   }
 
   if (normalizedPathname === '/groups/new') {
-    return { title: 'Novo grupo', showBack: true, backHref: '/', preferBackHref: true };
+    return { title: 'Criar grupo', showBack: true, backHref: '/', preferBackHref: true };
   }
 
   if (normalizedPathname === '/profile/settings') {
     return { title: 'Configurações', showBack: true, backHref: '/profile', preferBackHref: true };
   }
 
-  if (normalizedPathname === '/profile/settings/edit') {
-    return { title: 'Editar perfil', showBack: true, backHref: '/profile/settings', preferBackHref: true };
+  if (normalizedPathname === '/profile/settings/profile') {
+    return { title: 'Alterar perfil', showBack: true, backHref: '/profile/settings', preferBackHref: true };
   }
 
   if (normalizedPathname === '/profile/settings/password') {
-    return { title: 'Senha', showBack: true, backHref: '/profile/settings', preferBackHref: true };
+    return { title: 'Alterar senha', showBack: true, backHref: '/profile/settings', preferBackHref: true };
   }
 
   const newMatchMatch = normalizedPathname.match(/^\/groups\/([^/]+)\/matches\/new$/);
 
   if (newMatchMatch?.[1]) {
     return {
-      title: 'Nova partida',
+      title: 'Registrar partida',
       showBack: true,
       backHref: `/groups/${newMatchMatch[1]}`,
       preferBackHref: true,
@@ -333,7 +335,7 @@ function getRouteChrome(pathname: string): RouteChrome {
 
   if (inviteMatch?.[1]) {
     return {
-      title: 'Convidar',
+      title: 'Convidar pessoas',
       showBack: true,
       backHref: `/groups/${inviteMatch[1]}`,
       preferBackHref: true,
@@ -343,7 +345,7 @@ function getRouteChrome(pathname: string): RouteChrome {
   const groupMatch = normalizedPathname.match(/^\/groups\/([^/]+)$/);
 
   if (groupMatch?.[1]) {
-    return { title: 'Grupo', showBack: true, backHref: '/', preferBackHref: true };
+    return { title: '', showBack: true, backHref: '/', preferBackHref: true };
   }
 
   const userMatch = normalizedPathname.match(/^\/users\/([^/]+)$/);
@@ -353,6 +355,18 @@ function getRouteChrome(pathname: string): RouteChrome {
   }
 
   return { title: 'Arena', showBack: true, backHref: '/', preferBackHref: true };
+}
+
+function resolveChrome(
+  routeChrome: ResolvedAppShellChrome,
+  chrome?: AppShellChrome,
+): ResolvedAppShellChrome {
+  return {
+    title: chrome?.title ?? routeChrome.title,
+    showBack: chrome?.showBack ?? routeChrome.showBack,
+    backHref: chrome?.backHref ?? routeChrome.backHref,
+    preferBackHref: chrome?.preferBackHref ?? routeChrome.preferBackHref,
+  };
 }
 
 function normalizePathname(pathname: string) {
