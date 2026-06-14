@@ -1,5 +1,6 @@
 import { AppShell } from '@/components/app-shell';
 import { GroupInviteClient } from '@/features/invites/components/group-invite-client';
+import { PageHeader } from '@/components/page-header';
 
 type Props = {
   params: Promise<{
@@ -12,7 +13,13 @@ export default async function GroupInvitePage({ params }: Props) {
 
   return (
     <AppShell>
-      <GroupInviteClient groupId={groupId} />
+      <div className="space-y-6">
+        <PageHeader
+          title="Convidar pessoas"
+          description="Gere um link para chamar pessoas para este grupo."
+        />
+        <GroupInviteClient groupId={groupId} />
+      </div>
     </AppShell>
   );
 }
