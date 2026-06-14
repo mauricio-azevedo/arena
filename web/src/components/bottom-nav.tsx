@@ -36,7 +36,7 @@ export function BottomNav() {
             const isActive = activeValue === item.href;
 
             return (
-              <TabsTrigger key={item.href} value={item.href} asChild>
+              <TabsTrigger key={item.href} value={item.href} size="56" asChild>
                 <Link
                   href={item.href}
                   aria-label={item.label}

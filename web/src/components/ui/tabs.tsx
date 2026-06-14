@@ -53,8 +53,24 @@ function TabsList({
   );
 }
 
-function TabsTrigger({ className, ...props }: React.ComponentProps<typeof TabsPrimitive.Trigger>) {
-  const custom = 'h-12';
+const tabsTriggerVariants = cva('', {
+  variants: {
+    size: {
+      '44': 'h-11', // Área clicável real de exatamente 44px
+      '48': 'h-12', // Área clicável real de exatamente 48px
+      '56': 'h-14', // Área clicável real de exatamente 56px
+    },
+  },
+  defaultVariants: {
+    size: '48',
+  },
+});
+
+function TabsTrigger({
+  className,
+  size = '48',
+  ...props
+}: React.ComponentProps<typeof TabsPrimitive.Trigger> & VariantProps<typeof tabsTriggerVariants>) {
   return (
     <TabsPrimitive.Trigger
       data-slot="tabs-trigger"
@@ -64,7 +80,7 @@ function TabsTrigger({ className, ...props }: React.ComponentProps<typeof TabsPr
         'data-active:bg-background data-active:text-foreground dark:data-active:border-input dark:data-active:bg-input/30 dark:data-active:text-foreground',
         'after:absolute after:bg-foreground after:opacity-0 after:transition-opacity group-data-horizontal/tabs:after:inset-x-0 group-data-horizontal/tabs:after:bottom-[-5px] group-data-horizontal/tabs:after:h-0.5 group-data-vertical/tabs:after:inset-y-0 group-data-vertical/tabs:after:-right-1 group-data-vertical/tabs:after:w-0.5 group-data-[variant=line]/tabs-list:data-active:after:opacity-100',
         className,
-        custom,
+        tabsTriggerVariants({ size }),
       )}
       {...props}
     />
