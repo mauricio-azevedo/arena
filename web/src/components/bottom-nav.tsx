@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Home, Search, UserRound } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 const items = [
   {
@@ -25,32 +25,45 @@ const items = [
 
 export function BottomNav() {
   const pathname = usePathname();
+  const activeValue = items.find((item) => isActivePath(pathname, item.href))?.href ?? '/';
 
   return (
     <nav className="fixed inset-x-0 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-50 px-4">
-      <div className="mx-auto grid h-16 max-w-md grid-cols-3 p-1">
-        {items.map((item) => {
-          const Icon = item.icon;
-          const isActive =
-            item.href === '/'
-              ? pathname === '/' || Boolean(pathname?.startsWith('/groups/'))
-              : pathname === item.href || Boolean(pathname?.startsWith(`${item.href}/`));
+      <Tabs value={activeValue}>
+        <TabsList className="mx-auto grid h-16 w-full max-w-md grid-cols-3 p-1">
+          {items.map((item) => {
+            const Icon = item.icon;
+            const isActive = activeValue === item.href;
 
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              aria-label={item.label}
-              title={item.label}
-              aria-current={isActive ? 'page' : undefined}
-              className={cn('flex min-h-11 flex-col items-center justify-center gap-1 text-[11px] font-medium')}
-            >
-              <Icon className="h-4 w-4" />
-              <span>{item.label}</span>
-            </Link>
-          );
-        })}
-      </div>
+            return (
+              <TabsTrigger
+                key={item.href}
+                value={item.href}
+                asChild
+                className="min-h-11 flex-col gap-1 text-[11px]"
+              >
+                <Link
+                  href={item.href}
+                  aria-label={item.label}
+                  title={item.label}
+                  aria-current={isActive ? 'page' : undefined}
+                >
+                  <Icon className="h-4 w-4" />
+                  <span>{item.label}</span>
+                </Link>
+              </TabsTrigger>
+            );
+          })}
+        </TabsList>
+      </Tabs>
     </nav>
   );
+}
+
+function isActivePath(pathname: string | null, href: string) {
+  if (href === '/') {
+    return pathname === '/' || Boolean(pathname?.startsWith('/groups/'));
+  }
+
+  return pathname === href || Boolean(pathname?.startsWith(`${href}/`));
 }
