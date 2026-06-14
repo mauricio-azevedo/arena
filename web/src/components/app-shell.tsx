@@ -2,11 +2,12 @@
 
 import { type ReactNode, useEffect, useMemo, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { ArrowLeft } from 'lucide-react';
 import { BottomNav } from '@/components/bottom-nav';
 import { TypographySmall } from '@/components/ui/typography';
 import { getMyGroups } from '@/features/groups/api/groups.api';
 import { getAccessToken } from '@/lib/auth';
+import { Button } from '@/components/ui/button';
+import { ArrowLeft } from 'lucide-react';
 
 export type AppShellChrome = {
   title?: string;
@@ -165,14 +166,18 @@ function AppHeader({ chrome }: { chrome: ResolvedAppShellChrome }) {
       <div className="relative mx-auto grid h-11 w-full max-w-md grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center">
         <div className="min-w-0 justify-self-start">
           {chrome.showBack && (
-            <button
-              type="button"
-              onClick={handleBack}
-              aria-label="Voltar"
-              className="-ml-2 inline-flex h-10 w-10 items-center justify-center rounded-full text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/30"
-            >
-              <ArrowLeft className="h-5 w-5" />
-            </button>
+            // <button
+            //   type="button"
+            //   onClick={handleBack}
+            //   aria-label="Voltar"
+            //   className="-ml-2 inline-flex h-10 w-10 items-center justify-center rounded-full text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/30"
+            // >
+            //   <ArrowLeft className="h-5 w-5" />
+            // </button>
+
+            <Button variant="secondary" size="icon" aria-label="Submit">
+              <ArrowLeft />
+            </Button>
           )}
         </div>
 

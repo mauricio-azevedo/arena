@@ -7,7 +7,7 @@ function Card({
   size = 'default',
   ...props
 }: React.ComponentProps<'div'> & { size?: 'default' | 'sm' }) {
-  const custom = 'dark:ring-border';
+  const custom = 'border-1 ring-0 dark:border-border';
   return (
     <div
       data-slot="card"

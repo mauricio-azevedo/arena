@@ -14,7 +14,7 @@ export function GroupActions({ groupId, isAdmin }: Props) {
       </Button>
 
       {isAdmin && (
-        <Button asChild variant="outline" size="lg">
+        <Button asChild variant="secondary" size="lg">
           <Link href={`/groups/${groupId}/invite`}>Convidar</Link>
         </Button>
       )}

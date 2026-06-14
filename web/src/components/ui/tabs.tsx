@@ -42,7 +42,7 @@ function TabsList({
   variant = 'default',
   ...props
 }: React.ComponentProps<typeof TabsPrimitive.List> & VariantProps<typeof tabsListVariants>) {
-  const custom = 'ring-1 ring-border';
+  const custom = 'ring-0 border-1 border-border';
   return (
     <TabsPrimitive.List
       data-slot="tabs-list"
