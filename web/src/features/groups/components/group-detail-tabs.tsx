@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { ArrowDown, ArrowUp } from 'lucide-react';
 import type { GroupMember, Match, RankingMovement } from '@/types/api';
 import { Card, CardContent } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { MatchesList } from '@/features/matches/components/matches-list';
 import { UserNameLink } from '@/features/users/components/user-name-link';
 import { getAccessToken } from '@/lib/auth';
@@ -55,28 +56,31 @@ export function GroupDetailTabs({
   }
 
   return (
-    <div className="space-y-5">
-      <div className="grid grid-cols-4 gap-1 text-sm font-medium">
+    <Tabs value={selectedTab} onValueChange={(value) => setTab(value as GroupTab)} className="gap-5">
+      <TabsList className="grid h-auto w-full grid-cols-4">
         {tabs.map((tab) => (
-          <button
-            key={tab.value}
-            type="button"
-            onClick={() => setTab(tab.value)}
-            aria-current={selectedTab === tab.value ? 'page' : undefined}
-            className="min-h-11 px-2 sm:px-3"
-          >
+          <TabsTrigger key={tab.value} value={tab.value} className="min-h-11 px-2 sm:px-3">
             {tab.label}
-          </button>
+          </TabsTrigger>
         ))}
-      </div>
+      </TabsList>
 
-      {selectedTab === 'ranking' && <RankingTab ranking={ranking} />}
-      {selectedTab === 'matches' && (
+      <TabsContent value="ranking">
+        <RankingTab ranking={ranking} />
+      </TabsContent>
+
+      <TabsContent value="matches">
         <MatchesTab matches={matches} groupId={groupId} canManage={canManageMatches} />
-      )}
-      {selectedTab === 'activity' && <ActivityTab groupId={groupId} />}
-      {selectedTab === 'members' && <MembersTab members={members} />}
-    </div>
+      </TabsContent>
+
+      <TabsContent value="activity">
+        <ActivityTab groupId={groupId} />
+      </TabsContent>
+
+      <TabsContent value="members">
+        <MembersTab members={members} />
+      </TabsContent>
+    </Tabs>
   );
 }
 
