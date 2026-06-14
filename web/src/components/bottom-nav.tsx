@@ -30,7 +30,7 @@ export function BottomNav() {
   return (
     <nav className="fixed inset-x-0 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-50 justify-center flex">
       <Tabs value={activeValue}>
-        <TabsList>
+        <TabsList className="backdrop-blur">
           {items.map((item) => {
             const Icon = item.icon;
             const isActive = activeValue === item.href;
