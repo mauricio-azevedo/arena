@@ -15,7 +15,6 @@ import {
   ComboboxList,
 } from '@/components/ui/combobox';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
-import { Card, CardContent } from '@/components/ui/card';
 import { X } from 'lucide-react';
 
 type Props = {
@@ -122,41 +121,41 @@ export function AddMatchForm({ groupId, members, match }: Props) {
 
   return (
     <form onSubmit={handleSubmit} className="mt-6 space-y-4">
-      <Card>
-        <CardContent className="space-y-4">
-          <TeamSection
-            scoreLabel="A"
-            scoreValue={gamesA}
-            onScoreChange={setGamesA}
-            isWinner={winner === 'A'}
-            members={members}
-            selectedPlayerIds={selectedPlayerIds}
-            player1Id={teamAPlayer1Id}
-            player2Id={teamAPlayer2Id}
-            onPlayer1Change={setTeamAPlayer1Id}
-            onPlayer2Change={setTeamAPlayer2Id}
-          />
+      {/*<Card>*/}
+      <div className="space-y-4">
+        <TeamSection
+          scoreLabel="A"
+          scoreValue={gamesA}
+          onScoreChange={setGamesA}
+          isWinner={winner === 'A'}
+          members={members}
+          selectedPlayerIds={selectedPlayerIds}
+          player1Id={teamAPlayer1Id}
+          player2Id={teamAPlayer2Id}
+          onPlayer1Change={setTeamAPlayer1Id}
+          onPlayer2Change={setTeamAPlayer2Id}
+        />
 
-          <div className="flex items-center gap-3 text-muted-foreground">
-            <div className="h-px flex-1 bg-border" />
-            <X className="size-5" aria-hidden="true" />
-            <div className="h-px flex-1 bg-border" />
-          </div>
+        <div className="flex items-center gap-3 text-muted-foreground">
+          <div className="h-px flex-1 bg-border" />
+          <X className="size-5" aria-hidden="true" />
+          <div className="h-px flex-1 bg-border" />
+        </div>
 
-          <TeamSection
-            scoreLabel="B"
-            scoreValue={gamesB}
-            onScoreChange={setGamesB}
-            isWinner={winner === 'B'}
-            members={members}
-            selectedPlayerIds={selectedPlayerIds}
-            player1Id={teamBPlayer1Id}
-            player2Id={teamBPlayer2Id}
-            onPlayer1Change={setTeamBPlayer1Id}
-            onPlayer2Change={setTeamBPlayer2Id}
-          />
-        </CardContent>
-      </Card>
+        <TeamSection
+          scoreLabel="B"
+          scoreValue={gamesB}
+          onScoreChange={setGamesB}
+          isWinner={winner === 'B'}
+          members={members}
+          selectedPlayerIds={selectedPlayerIds}
+          player1Id={teamBPlayer1Id}
+          player2Id={teamBPlayer2Id}
+          onPlayer1Change={setTeamBPlayer1Id}
+          onPlayer2Change={setTeamBPlayer2Id}
+        />
+      </div>
+      {/*</Card>*/}
 
       {message && <p className="px-1 text-center text-sm text-muted-foreground">{message}</p>}
 
@@ -267,6 +266,7 @@ function PlayerSelect({
         aria-label={placeholder}
         placeholder={placeholder}
         showClear={Boolean(value)}
+        variant="custom"
       />
 
       <ComboboxContent variant="custom" width="comfortable" align="center" alignOffset={12}>
@@ -285,10 +285,6 @@ function PlayerSelect({
                 variant="custom"
               >
                 <span className="truncate">{option.label}</span>
-
-                {isSelectedElsewhere && (
-                  <span className="ml-auto text-xs text-muted-foreground">Já selecionado</span>
-                )}
               </ComboboxItem>
             );
           }}
@@ -312,6 +308,7 @@ function ScoreInput({ label, value, onChange }: ScoreInputProps) {
       type="single"
       variant="default"
       value={value}
+      spacing={0}
       onValueChange={(nextValue) => {
         if (!nextValue) return;
 
@@ -320,7 +317,12 @@ function ScoreInput({ label, value, onChange }: ScoreInputProps) {
       aria-label={`Placar ${label}`}
     >
       {scoreOptions.map((score) => (
-        <ToggleGroupItem key={score} value={score} aria-label={`Time ${label}: ${score} games`}>
+        <ToggleGroupItem
+          key={score}
+          value={score}
+          aria-label={`Time ${label}: ${score} games`}
+          size="lg"
+        >
           {score}
         </ToggleGroupItem>
       ))}

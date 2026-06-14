@@ -75,6 +75,7 @@ function ToggleGroupItem({
           size: context.size || size,
         }),
         className,
+        'h-12 w-12 rounded-full!',
       )}
       {...props}
     >

@@ -46,19 +46,32 @@ function ComboboxClear({ className, ...props }: ComboboxPrimitive.Clear.Props) {
   );
 }
 
+const comboboxInputVariants = cva('w-auto', {
+  variants: {
+    variant: {
+      default: '',
+      custom: 'h-12 border-border bg-secondary',
+    },
+  },
+  defaultVariants: {
+    variant: 'default',
+  },
+});
 function ComboboxInput({
   className,
+  variant,
   children,
   disabled = false,
   showTrigger = true,
   showClear = false,
   ...props
-}: ComboboxPrimitive.Input.Props & {
-  showTrigger?: boolean;
-  showClear?: boolean;
-}) {
+}: ComboboxPrimitive.Input.Props &
+  VariantProps<typeof comboboxInputVariants> & {
+    showTrigger?: boolean;
+    showClear?: boolean;
+  }) {
   return (
-    <InputGroup className={cn('w-auto', className)}>
+    <InputGroup className={cn(comboboxInputVariants({ variant }), className)}>
       <ComboboxPrimitive.Input render={<InputGroupInput disabled={disabled} />} {...props} />
       <InputGroupAddon align="inline-end">
         {showTrigger && (
@@ -86,7 +99,7 @@ const comboboxContentVariants = cva(
     variants: {
       variant: {
         default: 'bg-popover',
-        custom: 'bg-secondary backdrop-blur',
+        custom: 'bg-popover backdrop-blur',
       },
       width: {
         default:
