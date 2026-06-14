@@ -16,7 +16,7 @@ export default function SearchPage() {
 
         <Card>
           <CardContent className="space-y-5 p-5">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/12 text-primary">
+            <div className="flex h-12 w-12 items-center justify-center">
               <Search className="h-5 w-5" />
             </div>
 
@@ -41,8 +41,8 @@ export default function SearchPage() {
 
 function SearchPreviewItem({ icon: Icon, label }: { icon: LucideIcon; label: string }) {
   return (
-    <div className="rounded-2xl bg-muted/60 p-3">
-      <Icon className="h-4 w-4 text-primary" />
+    <div className="p-3">
+      <Icon className="h-4 w-4" />
       <p className="mt-2 font-semibold">{label}</p>
     </div>
   );
