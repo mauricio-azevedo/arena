@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import type { ReactNode } from 'react';
 import { BackButton } from '@/components/back-button';
 import { Card, CardContent } from '@/components/ui/card';
+import { TypographyH1, TypographyMuted, TypographySmall } from '@/components/ui/typography';
 import { getAccessToken } from '@/lib/auth';
 import { ProfileSignedOutState } from './components/profile-signed-out-state';
 
@@ -22,11 +23,9 @@ export function ProfileSettings() {
         <BackButton href="/profile" />
 
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">Conta</p>
-          <h1 className="mt-1 text-3xl font-semibold tracking-[-0.06em]">Configurações</h1>
-          <p className="mt-2 text-sm leading-6 text-muted-foreground">
-            Atualize suas informações de conta.
-          </p>
+          <TypographySmall>Conta</TypographySmall>
+          <TypographyH1>Configurações</TypographyH1>
+          <TypographyMuted>Atualize suas informações de conta.</TypographyMuted>
         </div>
       </header>
 
@@ -67,8 +66,8 @@ function SettingsOption({
           <div className="flex h-11 w-11 shrink-0 items-center justify-center">{icon}</div>
 
           <div className="min-w-0 flex-1">
-            <p className="font-semibold tracking-[-0.02em]">{title}</p>
-            <p className="mt-1 text-sm leading-5 text-muted-foreground">{description}</p>
+            <TypographySmall>{title}</TypographySmall>
+            <TypographyMuted>{description}</TypographyMuted>
           </div>
 
           <ChevronRight className="h-5 w-5 shrink-0" />
