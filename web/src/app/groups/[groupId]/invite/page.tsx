@@ -1,5 +1,4 @@
 import { AppShell } from '@/components/app-shell';
-import { BackButton } from '@/components/back-button';
 import { GroupInviteClient } from '@/features/invites/components/group-invite-client';
 import { PageHeader } from '@/components/page-header';
 
@@ -15,7 +14,6 @@ export default async function GroupInvitePage({ params }: Props) {
   return (
     <AppShell>
       <div className="space-y-6">
-        <BackButton href={['', 'groups', groupId].join('/')} />
         <PageHeader
           title="Convidar pessoas"
           description="Gere um link para chamar pessoas para este grupo."
