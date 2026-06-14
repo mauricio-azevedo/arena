@@ -127,12 +127,15 @@
 
     html {
         @apply scroll-smooth font-sans;
+        height: 100%;
+        overflow: hidden;
         background: color-mix(in oklch, var(--background) 10%, white);
     }
 
     body {
-        @apply min-h-screen text-foreground antialiased;
+        @apply h-full text-foreground antialiased;
         position: relative;
+        overflow: hidden;
         background: white;
         text-rendering: optimizeLegibility;
         -webkit-tap-highlight-color: transparent;
