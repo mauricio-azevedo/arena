@@ -28,7 +28,7 @@ export function BottomNav() {
 
   return (
     <nav className="fixed inset-x-0 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-50 px-4">
-      <div className="mx-auto grid h-16 max-w-md grid-cols-3 rounded-[2rem] bg-background/40 br-liquid-glass p-1 backdrop-blur-xs">
+      <div className="mx-auto grid h-16 max-w-md grid-cols-3 p-1">
         {items.map((item) => {
           const Icon = item.icon;
           const isActive =
@@ -42,12 +42,8 @@ export function BottomNav() {
               href={item.href}
               aria-label={item.label}
               title={item.label}
-              className={cn(
-                'flex min-h-11 flex-col items-center justify-center gap-1 rounded-full text-[11px] font-medium transition-colors',
-                isActive
-                  ? 'bg-primary text-primary-foreground'
-                  : 'text-muted-foreground hover:bg-card/20 hover:text-foreground',
-              )}
+              aria-current={isActive ? 'page' : undefined}
+              className={cn('flex min-h-11 flex-col items-center justify-center gap-1 text-[11px] font-medium')}
             >
               <Icon className="h-4 w-4" />
               <span>{item.label}</span>
