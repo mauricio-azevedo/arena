@@ -56,10 +56,10 @@ export function GroupDetailTabs({
   }
 
   return (
-    <Tabs value={selectedTab} onValueChange={(value) => setTab(value as GroupTab)} className="gap-5">
-      <TabsList className="grid h-auto w-full grid-cols-4">
+    <Tabs value={selectedTab} onValueChange={(value) => setTab(value as GroupTab)}>
+      <TabsList className="w-full">
         {tabs.map((tab) => (
-          <TabsTrigger key={tab.value} value={tab.value} className="min-h-11 px-2 sm:px-3">
+          <TabsTrigger key={tab.value} value={tab.value}>
             {tab.label}
           </TabsTrigger>
         ))}
@@ -99,7 +99,7 @@ function RankingTab({ ranking }: { ranking: GroupMember[] }) {
     <section className="space-y-3">
       {ranking.map((member, index) => (
         <Card key={member.id}>
-          <CardContent className="flex items-center justify-between gap-4 p-4">
+          <CardContent className="flex items-center justify-between gap-4">
             <div className="flex min-w-0 items-center gap-3">
               <span className="flex h-11 w-11 shrink-0 items-center justify-center text-sm font-semibold">
                 {index + 1}
@@ -108,7 +108,9 @@ function RankingTab({ ranking }: { ranking: GroupMember[] }) {
               <div className="min-w-0">
                 <div className="flex min-w-0 items-center gap-2">
                   <p className="min-w-0 truncate font-medium text-foreground">
-                    <UserNameLink userId={member.userId}>{getMemberDisplayName(member)}</UserNameLink>
+                    <UserNameLink userId={member.userId}>
+                      {getMemberDisplayName(member)}
+                    </UserNameLink>
                   </p>
                   <RankingMovementBadge movement={member.rankingMovement} />
                 </div>

@@ -16,9 +16,9 @@ const tabs: Array<{ value: ProfileTab; label: string }> = [
 export function ProfileTabs({ activeTab, onChange }: Props) {
   return (
     <Tabs value={activeTab} onValueChange={(value) => onChange(value as ProfileTab)}>
-      <TabsList className="grid h-auto w-full grid-cols-4">
+      <TabsList className="w-full">
         {tabs.map((tab) => (
-          <TabsTrigger key={tab.value} value={tab.value} className="min-h-11 px-2 text-xs">
+          <TabsTrigger key={tab.value} value={tab.value}>
             {tab.label}
           </TabsTrigger>
         ))}
