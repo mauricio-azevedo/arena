@@ -1,72 +1,170 @@
-export function TypographyMuted() {
-  return <p className="text-sm text-muted-foreground">Enter your email address.</p>;
+import * as React from "react"
+import { Slot } from "radix-ui"
+
+import { cn } from "@/lib/utils"
+
+type TypographyProps<T extends React.ElementType> = React.ComponentPropsWithoutRef<T> & {
+  asChild?: boolean
 }
-export function TypographySmall() {
-  return <small className="text-sm leading-none font-medium">Email address</small>;
-}
-export function TypographyLarge() {
-  return <div className="text-lg font-semibold">Are you absolutely sure?</div>;
-}
-export function TypographyLead() {
+
+function TypographyH1({ className, asChild, ...props }: TypographyProps<"h1">) {
+  const Comp = asChild ? Slot.Root : "h1"
+
   return (
-    <p className="text-xl text-muted-foreground">
-      A modal dialog that interrupts the user with important content and expects a response.
-    </p>
-  );
+    <Comp
+      data-slot="typography-h1"
+      className={cn("scroll-m-20 text-4xl font-extrabold tracking-tight text-balance", className)}
+      {...props}
+    />
+  )
 }
-export function TypographyInlineCode() {
+
+function TypographyH2({ className, asChild, ...props }: TypographyProps<"h2">) {
+  const Comp = asChild ? Slot.Root : "h2"
+
   return (
-    <code className="relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold">
-      @radix-ui/react-alert-dialog
-    </code>
-  );
+    <Comp
+      data-slot="typography-h2"
+      className={cn("scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0", className)}
+      {...props}
+    />
+  )
 }
-export function TypographyList() {
+
+function TypographyH3({ className, asChild, ...props }: TypographyProps<"h3">) {
+  const Comp = asChild ? Slot.Root : "h3"
+
   return (
-    <ul className="my-6 ml-6 list-disc [&>li]:mt-2">
-      <li>1st level of puns: 5 gold coins</li>
-      <li>2nd level of jokes: 10 gold coins</li>
-      <li>3rd level of one-liners : 20 gold coins</li>
-    </ul>
-  );
+    <Comp
+      data-slot="typography-h3"
+      className={cn("scroll-m-20 text-2xl font-semibold tracking-tight", className)}
+      {...props}
+    />
+  )
 }
-export function TypographyBlockquote() {
+
+function TypographyH4({ className, asChild, ...props }: TypographyProps<"h4">) {
+  const Comp = asChild ? Slot.Root : "h4"
+
   return (
-    <blockquote className="mt-6 border-l-2 pl-6 italic">
-      &quot;After all,&quot; he said, &quot;everyone enjoys a good joke, so it&apos;s only fair that
-      they should pay for the privilege.&quot;
-    </blockquote>
-  );
+    <Comp
+      data-slot="typography-h4"
+      className={cn("scroll-m-20 text-xl font-semibold tracking-tight", className)}
+      {...props}
+    />
+  )
 }
-export function TypographyP() {
+
+function TypographyP({ className, asChild, ...props }: TypographyProps<"p">) {
+  const Comp = asChild ? Slot.Root : "p"
+
   return (
-    <p className="leading-7 [&:not(:first-child)]:mt-6">
-      The king, seeing how much happier his subjects were, realized the error of his ways and
-      repealed the joke tax.
-    </p>
-  );
+    <Comp
+      data-slot="typography-p"
+      className={cn("leading-7 [&:not(:first-child)]:mt-6", className)}
+      {...props}
+    />
+  )
 }
-export function TypographyH4() {
+
+function TypographyBlockquote({ className, asChild, ...props }: TypographyProps<"blockquote">) {
+  const Comp = asChild ? Slot.Root : "blockquote"
+
   return (
-    <h4 className="scroll-m-20 text-xl font-semibold tracking-tight">
-      People stopped telling jokes
-    </h4>
-  );
+    <Comp
+      data-slot="typography-blockquote"
+      className={cn("mt-6 border-l-2 pl-6 italic", className)}
+      {...props}
+    />
+  )
 }
-export function TypographyH3() {
-  return <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">The Joke Tax</h3>;
-}
-export function TypographyH2() {
+
+function TypographyList({ className, asChild, ...props }: TypographyProps<"ul">) {
+  const Comp = asChild ? Slot.Root : "ul"
+
   return (
-    <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0">
-      The People of the Kingdom
-    </h2>
-  );
+    <Comp
+      data-slot="typography-list"
+      className={cn("my-6 ml-6 list-disc [&>li]:mt-2", className)}
+      {...props}
+    />
+  )
 }
-export function TypographyH1() {
+
+function TypographyInlineCode({ className, asChild, ...props }: TypographyProps<"code">) {
+  const Comp = asChild ? Slot.Root : "code"
+
   return (
-    <h1 className="scroll-m-20 text-center text-4xl font-extrabold tracking-tight text-balance">
-      Taxing Laughter: The Joke Tax Chronicles
-    </h1>
-  );
+    <Comp
+      data-slot="typography-inline-code"
+      className={cn(
+        "relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+function TypographyLead({ className, asChild, ...props }: TypographyProps<"p">) {
+  const Comp = asChild ? Slot.Root : "p"
+
+  return (
+    <Comp
+      data-slot="typography-lead"
+      className={cn("text-xl text-muted-foreground", className)}
+      {...props}
+    />
+  )
+}
+
+function TypographyLarge({ className, asChild, ...props }: TypographyProps<"div">) {
+  const Comp = asChild ? Slot.Root : "div"
+
+  return (
+    <Comp
+      data-slot="typography-large"
+      className={cn("text-lg font-semibold", className)}
+      {...props}
+    />
+  )
+}
+
+function TypographySmall({ className, asChild, ...props }: TypographyProps<"small">) {
+  const Comp = asChild ? Slot.Root : "small"
+
+  return (
+    <Comp
+      data-slot="typography-small"
+      className={cn("text-sm leading-none font-medium", className)}
+      {...props}
+    />
+  )
+}
+
+function TypographyMuted({ className, asChild, ...props }: TypographyProps<"p">) {
+  const Comp = asChild ? Slot.Root : "p"
+
+  return (
+    <Comp
+      data-slot="typography-muted"
+      className={cn("text-sm text-muted-foreground", className)}
+      {...props}
+    />
+  )
+}
+
+export {
+  TypographyBlockquote,
+  TypographyH1,
+  TypographyH2,
+  TypographyH3,
+  TypographyH4,
+  TypographyInlineCode,
+  TypographyLarge,
+  TypographyLead,
+  TypographyList,
+  TypographyMuted,
+  TypographyP,
+  TypographySmall,
 }
