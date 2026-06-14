@@ -1,7 +1,11 @@
-import { Activity, ShieldCheck, Trophy } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
-import { TypographyH1, TypographyH4, TypographyMuted, TypographySmall } from '@/components/ui/typography';
+import {
+  TypographyH1,
+  TypographyH4,
+  TypographyMuted,
+  TypographySmall,
+} from '@/components/ui/typography';
 import type { ProfileUser } from '../types/profile-user.type';
 
 type Props = {
@@ -22,16 +26,12 @@ export function ProfileHeader({ user, isPublicProfile = false }: Props) {
           </div>
 
           <div className="min-w-0 pt-1">
-            <TypographySmall>{isPublicProfile ? 'Perfil de jogador' : 'Meu perfil'}</TypographySmall>
+            <TypographySmall>
+              {isPublicProfile ? 'Perfil de jogador' : 'Meu perfil'}
+            </TypographySmall>
             <TypographyH1>{fullName}</TypographyH1>
             {user.email ? <TypographyMuted>{user.email}</TypographyMuted> : null}
           </div>
-        </div>
-
-        <div className="grid grid-cols-3 gap-2">
-          <ProfileSignal icon={Trophy} label="Ranking" />
-          <ProfileSignal icon={Activity} label="Histórico" />
-          <ProfileSignal icon={ShieldCheck} label="Conta" />
         </div>
       </CardContent>
     </Card>
