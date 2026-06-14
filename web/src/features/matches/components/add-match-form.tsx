@@ -269,7 +269,7 @@ function PlayerSelect({
         showClear={Boolean(value)}
       />
 
-      <ComboboxContent width="comfortable" align="center" alignOffset={12}>
+      <ComboboxContent variant="custom" width="comfortable" align="center" alignOffset={12}>
         <ComboboxEmpty>Nenhum jogador encontrado.</ComboboxEmpty>
 
         <ComboboxList>
@@ -278,7 +278,12 @@ function PlayerSelect({
             const isSelectedElsewhere = selectedPlayerIds.includes(option.value) && !isSelected;
 
             return (
-              <ComboboxItem key={option.value} value={option} disabled={isSelectedElsewhere}>
+              <ComboboxItem
+                key={option.value}
+                value={option}
+                disabled={isSelectedElsewhere}
+                variant="custom"
+              >
                 <span className="truncate">{option.label}</span>
 
                 {isSelectedElsewhere && (
