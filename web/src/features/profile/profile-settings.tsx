@@ -22,7 +22,7 @@ export function ProfileSettings() {
         <BackButton href="/profile" />
 
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary/75">Conta</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">Conta</p>
           <h1 className="mt-1 text-3xl font-semibold tracking-[-0.06em]">Configurações</h1>
           <p className="mt-2 text-sm leading-6 text-muted-foreground">
             Atualize suas informações de conta.
@@ -62,18 +62,16 @@ function SettingsOption({
 }) {
   return (
     <button type="button" onClick={onClick} className="w-full text-left">
-      <Card className="transition-colors hover:bg-muted/35">
+      <Card>
         <CardContent className="flex items-center gap-4 p-4">
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-primary/12 text-primary">
-            {icon}
-          </div>
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center">{icon}</div>
 
           <div className="min-w-0 flex-1">
             <p className="font-semibold tracking-[-0.02em]">{title}</p>
             <p className="mt-1 text-sm leading-5 text-muted-foreground">{description}</p>
           </div>
 
-          <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground" />
+          <ChevronRight className="h-5 w-5 shrink-0" />
         </CardContent>
       </Card>
     </button>
