@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { BackButton } from '@/components/back-button';
 import { GroupDetailTabs } from '@/features/groups/components/group-detail-tabs';
 import { PageHeader } from '@/components/page-header';
 import { GroupActions } from '@/features/groups/components/group-actions';
@@ -98,13 +97,7 @@ export function GroupDetail({ groupId, tab }: Props) {
   return (
     <div className="space-y-6">
       <div className="space-y-4">
-        <BackButton href="/" />
-
-        <PageHeader
-          title={data.group.name}
-          description={data.group.description ?? 'Grupo público do Arena.'}
-        />
-
+        <PageHeader description={data.group.description ?? 'Grupo público do Arena.'} title={data.group.name} />
         <GroupActions groupId={data.group.id} isAdmin={isAdmin} />
       </div>
 
@@ -122,17 +115,13 @@ export function GroupDetail({ groupId, tab }: Props) {
 
 function GroupDetailErrorState() {
   return (
-    <div className="space-y-6">
-      <BackButton href="/" />
-
-      <Card>
-        <CardContent className="space-y-2 p-4">
-          <p className="text-sm font-medium text-foreground">Não foi possível carregar o grupo</p>
-          <p className="text-sm leading-6 text-muted-foreground">
-            Verifique sua conexão e tente abrir o grupo novamente.
-          </p>
-        </CardContent>
-      </Card>
-    </div>
+    <Card>
+      <CardContent className="space-y-2 p-4">
+        <p className="text-sm font-medium text-foreground">Não foi possível carregar o grupo</p>
+        <p className="text-sm leading-6 text-muted-foreground">
+          Verifique sua conexão e tente abrir o grupo novamente.
+        </p>
+      </CardContent>
+    </Card>
   );
 }
