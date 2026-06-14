@@ -48,10 +48,16 @@ export function PageChromeProvider({
   });
 
   const setPageChrome = useCallback((nextChrome: PageChromeInput) => {
-    setChrome((currentChrome) => ({
-      ...currentChrome,
-      ...nextChrome,
-    }));
+    setChrome((currentChrome) => {
+      const definedChrome = Object.fromEntries(
+        Object.entries(nextChrome).filter(([, value]) => value !== undefined),
+      ) as PageChromeInput;
+
+      return {
+        ...currentChrome,
+        ...definedChrome,
+      };
+    });
   }, []);
 
   const value = useMemo(
