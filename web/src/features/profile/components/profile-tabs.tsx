@@ -1,6 +1,6 @@
 import { ProfileTab } from '@/features/profile/types/profile-tab.type';
 
-type Props = {
+ type Props = {
   activeTab: ProfileTab;
   onChange: (tab: ProfileTab) => void;
 };
@@ -14,17 +14,14 @@ const tabs: Array<{ value: ProfileTab; label: string }> = [
 
 export function ProfileTabs({ activeTab, onChange }: Props) {
   return (
-    <div className="grid grid-cols-4 rounded-[2rem] bg-card p-1 text-xs font-medium">
+    <div className="grid grid-cols-4 gap-1 text-xs font-medium">
       {tabs.map((tab) => (
         <button
           key={tab.value}
           type="button"
           onClick={() => onChange(tab.value)}
-          className={`min-h-11 rounded-full px-2 transition-colors ${
-            activeTab === tab.value
-              ? 'bg-primary text-primary-foreground'
-              : 'text-muted-foreground hover:bg-muted hover:text-foreground'
-          }`}
+          aria-current={activeTab === tab.value ? 'page' : undefined}
+          className="min-h-11 px-2"
         >
           {tab.label}
         </button>
