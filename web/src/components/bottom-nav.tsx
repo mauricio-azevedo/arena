@@ -28,7 +28,7 @@ export function BottomNav() {
 
   return (
     <nav className="fixed inset-x-0 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-50 px-4">
-      <div className="mx-auto grid h-16 max-w-md grid-cols-3 rounded-[2rem] bg-card/[0.12] p-1 shadow-[0_10px_30px_color-mix(in_oklch,var(--foreground)_5%,transparent)] backdrop-blur-2xl">
+      <div className="mx-auto grid h-16 max-w-md grid-cols-3 rounded-[2rem] bg-background/40 br-liquid-glass p-1 backdrop-blur-xs">
         {items.map((item) => {
           const Icon = item.icon;
           const isActive =

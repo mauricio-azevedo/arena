@@ -56,7 +56,7 @@ export function GroupDetailTabs({
 
   return (
     <div className="space-y-5">
-      <div className="grid grid-cols-4 rounded-[2rem] bg-card p-1 text-sm font-medium shadow-[0_8px_24px_color-mix(in_oklch,var(--foreground)_5%,transparent)]">
+      <div className="grid grid-cols-4 rounded-[2rem] bg-card p-1 text-sm font-medium br-liquid-glass">
         {tabs.map((tab) => (
           <button
             key={tab.value}
@@ -112,7 +112,9 @@ function RankingTab({ ranking }: { ranking: GroupMember[] }) {
               <div className="min-w-0">
                 <div className="flex min-w-0 items-center gap-2">
                   <p className="min-w-0 truncate font-medium text-foreground">
-                    <UserNameLink userId={member.userId}>{getMemberDisplayName(member)}</UserNameLink>
+                    <UserNameLink userId={member.userId}>
+                      {getMemberDisplayName(member)}
+                    </UserNameLink>
                   </p>
                   <RankingMovementBadge movement={member.rankingMovement} />
                 </div>
@@ -180,7 +182,9 @@ function MatchesTab({
 
 function ActivityTab({ groupId }: { groupId: string }) {
   const [items, setItems] = useState<FeedItem[]>([]);
-  const [status, setStatus] = useState<'idle' | 'loading' | 'ready' | 'signed-out' | 'error'>('idle');
+  const [status, setStatus] = useState<'idle' | 'loading' | 'ready' | 'signed-out' | 'error'>(
+    'idle',
+  );
 
   useEffect(() => {
     let isCurrent = true;
@@ -220,19 +224,39 @@ function ActivityTab({ groupId }: { groupId: string }) {
   }, [groupId]);
 
   if (status === 'loading' || status === 'idle') {
-    return <ActivityStateCard title="Carregando atividade" description="Buscando os acontecimentos mais recentes do grupo." />;
+    return (
+      <ActivityStateCard
+        title="Carregando atividade"
+        description="Buscando os acontecimentos mais recentes do grupo."
+      />
+    );
   }
 
   if (status === 'signed-out') {
-    return <ActivityStateCard title="Entre para ver a atividade" description="A atividade do grupo fica disponível para membros autenticados." />;
+    return (
+      <ActivityStateCard
+        title="Entre para ver a atividade"
+        description="A atividade do grupo fica disponível para membros autenticados."
+      />
+    );
   }
 
   if (status === 'error') {
-    return <ActivityStateCard title="Não foi possível carregar a atividade" description="Verifique sua conexão e tente novamente." />;
+    return (
+      <ActivityStateCard
+        title="Não foi possível carregar a atividade"
+        description="Verifique sua conexão e tente novamente."
+      />
+    );
   }
 
   if (items.length === 0) {
-    return <ActivityStateCard title="Nada aconteceu ainda" description="Quando partidas e mudanças de ranking forem registradas, elas aparecem aqui." />;
+    return (
+      <ActivityStateCard
+        title="Nada aconteceu ainda"
+        description="Quando partidas e mudanças de ranking forem registradas, elas aparecem aqui."
+      />
+    );
   }
 
   return (

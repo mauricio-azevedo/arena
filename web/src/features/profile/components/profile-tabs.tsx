@@ -14,7 +14,7 @@ const tabs: Array<{ value: ProfileTab; label: string }> = [
 
 export function ProfileTabs({ activeTab, onChange }: Props) {
   return (
-    <div className="grid grid-cols-4 rounded-[2rem] bg-card p-1 text-xs font-medium shadow-[0_8px_24px_color-mix(in_oklch,var(--foreground)_5%,transparent)]">
+    <div className="grid grid-cols-4 rounded-[2rem] bg-card p-1 text-xs font-medium">
       {tabs.map((tab) => (
         <button
           key={tab.value}
