@@ -131,15 +131,14 @@ export function AppShell({ children, chrome }: AppShellProps) {
   const shouldHoldContent = routeAccess.requiresCheck && accessState !== 'allowed';
 
   return (
-    <main className="relative flex h-[100dvh] min-h-[100dvh] flex-col overflow-hidden text-foreground">
-      <AppHeader chrome={resolvedChrome} />
-
-      <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-[calc(6rem+env(safe-area-inset-bottom))] pt-2 [-webkit-overflow-scrolling:touch]">
+    <main className="relative h-[100dvh] min-h-[100dvh] overflow-hidden text-foreground">
+      <div className="absolute inset-0 z-10 overflow-y-auto overscroll-contain px-4 pb-[calc(6rem+env(safe-area-inset-bottom))] pt-[calc(4.75rem+env(safe-area-inset-top))] [-webkit-overflow-scrolling:touch]">
         <div className="mx-auto w-full max-w-md space-y-6">
           {shouldHoldContent ? <AccessGuardSkeleton /> : children}
         </div>
       </div>
 
+      <AppHeader chrome={resolvedChrome} />
       <BottomNav />
     </main>
   );
@@ -162,8 +161,8 @@ function AppHeader({ chrome }: { chrome: ResolvedAppShellChrome }) {
   }
 
   return (
-    <header className="sticky top-0 z-40 shrink-0 px-4 pb-3 pt-[max(0.75rem,env(safe-area-inset-top))]">
-      <div className="pointer-events-none absolute inset-0 backdrop-blur-xl" />
+    <header className="fixed inset-x-0 top-0 z-50 px-4 pb-3 pt-[max(0.75rem,env(safe-area-inset-top))]">
+      <div className="pointer-events-none absolute inset-0 bg-card/[0.08] backdrop-blur-2xl" />
 
       <div className="relative mx-auto grid h-11 w-full max-w-md grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center">
         <div className="min-w-0 justify-self-start">
