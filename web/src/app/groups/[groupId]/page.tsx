@@ -1,4 +1,6 @@
+import { notFound } from 'next/navigation';
 import { AppShell } from '@/components/app-shell';
+import { getGroup } from '@/features/groups/api/groups.api';
 import { GroupDetail } from '@/features/groups/group-detail';
 
 type Props = {
@@ -13,9 +15,10 @@ type Props = {
 export default async function GroupDetailPage({ params, searchParams }: Props) {
   const { groupId } = await params;
   const { tab } = await searchParams;
+  const group = await getGroup(groupId).catch(() => notFound());
 
   return (
-    <AppShell>
+    <AppShell chrome={{ title: group.name, showBack: true, backHref: '/', preferBackHref: true }}>
       <GroupDetail groupId={groupId} tab={tab} />
     </AppShell>
   );
