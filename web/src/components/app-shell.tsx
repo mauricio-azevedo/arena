@@ -4,6 +4,7 @@ import { type ReactNode, useEffect, useMemo, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
 import { BottomNav } from '@/components/bottom-nav';
+import { TypographySmall } from '@/components/ui/typography';
 import { getMyGroups } from '@/features/groups/api/groups.api';
 import { getAccessToken } from '@/lib/auth';
 
@@ -175,9 +176,7 @@ function AppHeader({ chrome }: { chrome: ResolvedAppShellChrome }) {
           )}
         </div>
 
-        <h1 className="max-w-[13rem] truncate text-center text-sm font-semibold tracking-[-0.02em] text-foreground">
-          {chrome.title}
-        </h1>
+        <TypographySmall>{chrome.title}</TypographySmall>
 
         <div aria-hidden="true" />
       </div>
@@ -408,12 +407,6 @@ function getSafeRedirectUrl(redirect: string | null) {
     return null;
   }
 
-  const pathname = redirect.split('?')[0] ?? redirect;
-
-  if (pathname === '/login' || pathname === '/register') {
-    return null;
-  }
-
   return redirect;
 }
 
@@ -422,13 +415,5 @@ function canSafelyGoBack() {
     return false;
   }
 
-  if (window.history.length <= 1 || !document.referrer) {
-    return false;
-  }
-
-  try {
-    return new URL(document.referrer).origin === window.location.origin;
-  } catch {
-    return false;
-  }
+  return window.history.length > 1;
 }
