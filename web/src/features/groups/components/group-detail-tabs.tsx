@@ -56,18 +56,14 @@ export function GroupDetailTabs({
 
   return (
     <div className="space-y-5">
-      <div className="grid grid-cols-4 rounded-[2rem] bg-card p-1 text-sm font-medium br-liquid-glass">
+      <div className="grid grid-cols-4 gap-1 text-sm font-medium">
         {tabs.map((tab) => (
           <button
             key={tab.value}
             type="button"
             onClick={() => setTab(tab.value)}
             aria-current={selectedTab === tab.value ? 'page' : undefined}
-            className={`min-h-11 rounded-full px-2 transition-colors sm:px-3 ${
-              selectedTab === tab.value
-                ? 'bg-primary text-primary-foreground'
-                : 'text-muted-foreground hover:bg-muted hover:text-foreground'
-            }`}
+            className="min-h-11 px-2 sm:px-3"
           >
             {tab.label}
           </button>
@@ -101,20 +97,14 @@ function RankingTab({ ranking }: { ranking: GroupMember[] }) {
         <Card key={member.id}>
           <CardContent className="flex items-center justify-between gap-4 p-4">
             <div className="flex min-w-0 items-center gap-3">
-              <span
-                className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-sm font-semibold ${
-                  index === 0 ? 'bg-primary text-primary-foreground' : 'bg-muted text-foreground'
-                }`}
-              >
+              <span className="flex h-11 w-11 shrink-0 items-center justify-center text-sm font-semibold">
                 {index + 1}
               </span>
 
               <div className="min-w-0">
                 <div className="flex min-w-0 items-center gap-2">
                   <p className="min-w-0 truncate font-medium text-foreground">
-                    <UserNameLink userId={member.userId}>
-                      {getMemberDisplayName(member)}
-                    </UserNameLink>
+                    <UserNameLink userId={member.userId}>{getMemberDisplayName(member)}</UserNameLink>
                   </p>
                   <RankingMovementBadge movement={member.rankingMovement} />
                 </div>
@@ -144,15 +134,12 @@ function RankingMovementBadge({ movement }: { movement?: RankingMovement | null 
   const Icon = isUp ? ArrowUp : ArrowDown;
   const verb = isUp ? 'Subiu' : 'Caiu';
   const label = `${verb} ${movement.positions} ${movement.positions === 1 ? 'posição' : 'posições'} no ranking`;
-  const className = isUp
-    ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300'
-    : 'bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300';
 
   return (
     <span
       aria-label={label}
       title={label}
-      className={`inline-flex shrink-0 items-center gap-0.5 rounded-full px-2 py-0.5 text-[11px] font-medium leading-none ${className}`}
+      className="inline-flex shrink-0 items-center gap-0.5 px-2 py-0.5 text-[11px] font-medium leading-none"
     >
       <Icon className="h-3 w-3" aria-hidden="true" />
       {movement.positions}
@@ -304,7 +291,7 @@ function MembersTab({ members }: { members: GroupMember[] }) {
               </p>
             </div>
 
-            <span className="rounded-full bg-muted px-3 py-1 text-xs font-medium text-muted-foreground">
+            <span className="px-3 py-1 text-xs font-medium text-muted-foreground">
               {member.rating.toFixed(0)}
             </span>
           </CardContent>
