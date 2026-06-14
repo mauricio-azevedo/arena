@@ -39,12 +39,12 @@ export function FeedItemCard({ item, context = 'global' }: Props) {
   const title = item.group?.name ?? 'Arena';
 
   return (
-    <Card className="br-pressable">
+    <Card>
       <CardContent className="p-4">
         <div className="flex items-start gap-3">
-          <div className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-muted text-sm font-semibold text-foreground">
+          <div className="relative flex h-11 w-11 shrink-0 items-center justify-center text-sm font-semibold">
             {getGroupInitials(title)}
-            <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-card text-muted-foreground shadow-[0_4px_12px_color-mix(in_oklch,var(--foreground)_6%,transparent)]">
+            <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center">
               <Sparkles className="h-3 w-3" />
             </span>
           </div>
@@ -73,10 +73,10 @@ function DominantWinFeedCard({ item, context }: { item: FeedItem; context: 'glob
   const loserScore = Math.min(metadata.gamesA, metadata.gamesB);
 
   return (
-    <Card className="br-pressable">
+    <Card>
       <CardContent className="p-4">
         <div className="flex items-start gap-3">
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-muted text-foreground">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center">
             <Flame className="h-5 w-5" />
           </div>
 
@@ -109,10 +109,10 @@ function CloseMatchFeedCard({ item, context }: { item: FeedItem; context: 'globa
   const loserScore = Math.min(metadata.gamesA, metadata.gamesB);
 
   return (
-    <Card className="br-pressable">
+    <Card>
       <CardContent className="p-4">
         <div className="flex items-start gap-3">
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-muted text-foreground">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center">
             <CircleDot className="h-5 w-5" />
           </div>
 
@@ -141,10 +141,7 @@ function CloseMatchFeedCard({ item, context }: { item: FeedItem; context: 'globa
 
 function FeedItemTitle({ item, children }: { item: FeedItem; children: string }) {
   return (
-    <Link
-      href={getFeedItemHref(item)}
-      className="truncate text-sm font-medium text-foreground underline-offset-4 hover:underline"
-    >
+    <Link href={getFeedItemHref(item)} className="truncate text-sm font-medium underline-offset-4 hover:underline">
       {children}
     </Link>
   );
@@ -233,7 +230,7 @@ function FeedGroupLink({ item, children }: { item: FeedItem; children: string })
   return (
     <Link
       href={`/groups/${item.group.id}`}
-      className="font-medium text-foreground underline decoration-primary/30 underline-offset-[3px] focus-visible:rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+      className="font-medium underline-offset-4 hover:underline"
       onClick={(event) => event.stopPropagation()}
     >
       {children}
