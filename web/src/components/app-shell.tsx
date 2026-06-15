@@ -1,11 +1,12 @@
 'use client';
 
-import { type ReactNode, useEffect, useMemo, useState } from 'react';
+import { Suspense, type ReactNode, useEffect, useMemo, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { AppTopBar, type AppTopBarBack } from '@/components/app-top-bar';
 import { BottomNav } from '@/components/bottom-nav';
 import { getMyGroups } from '@/features/groups/api/groups.api';
 import { getAccessToken } from '@/lib/auth';
+import { NavigationTracker } from '@/providers/navigation-tracker';
 
 export type AppShellChrome = {
   title?: string;
@@ -123,6 +124,7 @@ export function AppShell({ children, chrome }: AppShellProps) {
 
   const shouldHoldContent = routeAccess.requiresCheck && accessState !== 'allowed';
   const showBottomNav = chrome?.bottomNav ?? true;
+  const shouldTrackNavigation = !shouldHoldContent && chrome?.back?.behavior !== 'fallback';
 
   return (
     <main className="relative h-[100dvh] min-h-[100dvh] overflow-hidden text-foreground">
@@ -134,6 +136,9 @@ export function AppShell({ children, chrome }: AppShellProps) {
 
       <AppTopBar title={chrome?.title} back={chrome?.back} trailing={chrome?.trailing} />
       {showBottomNav && <BottomNav />}
+      <Suspense fallback={null}>
+        <NavigationTracker enabled={shouldTrackNavigation} />
+      </Suspense>
     </main>
   );
 }
