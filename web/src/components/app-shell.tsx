@@ -166,7 +166,7 @@ function AppHeader({ chrome }: { chrome: ResolvedAppShellChrome }) {
       <div className="relative mx-auto grid h-11 w-full max-w-md grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center">
         <div className="min-w-0 justify-self-start">
           {chrome.showBack && (
-            <Button onClick={handleBack} variant="secondary" size="icon" aria-label="Submit">
+            <Button type="button" onClick={handleBack} variant="secondary" size="icon" aria-label="Voltar">
               <ArrowLeft />
             </Button>
           )}
