@@ -9,7 +9,7 @@ export function getSafeAuthRedirectPath(
   redirect: unknown,
   fallback = DEFAULT_AUTH_REDIRECT,
 ) {
-  const safeFallback = getSafeInternalHref(fallback, DEFAULT_AUTH_REDIRECT);
+  const safeFallback = getSafeAuthRedirectFallback(fallback);
   const safeRedirect = getSafeInternalHref(redirect, safeFallback);
   const pathname = getInternalPathname(safeRedirect);
 
@@ -28,4 +28,15 @@ export function buildAuthHref(
   const safeRedirect = getSafeAuthRedirectPath(redirect, fallback);
 
   return `${route}?redirect=${encodeURIComponent(safeRedirect)}`;
+}
+
+function getSafeAuthRedirectFallback(fallback: unknown) {
+  const safeFallback = getSafeInternalHref(fallback, DEFAULT_AUTH_REDIRECT);
+  const fallbackPathname = getInternalPathname(safeFallback);
+
+  if (!fallbackPathname || authPathnames.has(fallbackPathname as AuthRoute)) {
+    return DEFAULT_AUTH_REDIRECT;
+  }
+
+  return safeFallback;
 }
