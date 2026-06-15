@@ -98,7 +98,11 @@ export function Profile({ userId }: Props) {
         user={summary.user}
         stats={summary.stats}
         isPublicProfile={isPublicProfile}
-        action={!isPublicProfile ? <ProfileActions onSettings={() => router.push('/profile/settings')} /> : undefined}
+        action={
+          !isPublicProfile ? (
+            <ProfileActions onSettings={() => router.push('/profile/settings')} />
+          ) : undefined
+        }
       />
 
       <ProfileTabs activeTab={activeTab} onChange={setActiveTab} />
@@ -120,12 +124,7 @@ function ProfileActions({ onSettings }: { onSettings: () => void }) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon"
-          className="h-11 w-11 rounded-full border border-border/50 bg-white/42 text-foreground shadow-sm backdrop-blur-xl hover:bg-white/55 hover:text-foreground dark:bg-white/8 dark:hover:bg-white/12"
-        >
+        <Button type="button" variant="secondary" size="icon">
           <MoreHorizontal className="h-4 w-4" />
           <span className="sr-only">Abrir opções do perfil</span>
         </Button>
