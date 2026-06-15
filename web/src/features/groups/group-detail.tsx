@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { GroupDetailTabs } from '@/features/groups/components/group-detail-tabs';
 import { PageHeader } from '@/components/page-header';
 import { GroupActions } from '@/features/groups/components/group-actions';
+import { GroupSummaryCard } from '@/features/groups/components/group-summary-card';
 import {
   getGroup,
   getGroupMembers,
@@ -15,6 +16,9 @@ import { getAccessToken } from '@/lib/auth';
 import type { Group, GroupMember, Match, MyGroup } from '@/types/api';
 import { GroupDetailLoadingState } from '@/features/groups/components/group-detail-loading-state';
 import { Card, CardContent } from '@/components/ui/card';
+
+const groupTabs = ['ranking', 'matches', 'members'] as const;
+type GroupTab = (typeof groupTabs)[number];
 
 type Props = {
   groupId: string;
@@ -30,10 +34,7 @@ type GroupDetailData = {
 };
 
 export function GroupDetail({ groupId, tab }: Props) {
-  const activeTab =
-    tab === 'matches' || tab === 'members' || tab === 'activity' || tab === 'ranking'
-      ? tab
-      : 'ranking';
+  const activeTab: GroupTab = groupTabs.includes(tab as GroupTab) ? (tab as GroupTab) : 'ranking';
   const [data, setData] = useState<GroupDetailData | null>(null);
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
 
@@ -93,12 +94,22 @@ export function GroupDetail({ groupId, tab }: Props) {
 
   const isAdmin = data.membership?.role === 'ADMIN';
   const canManageMatches = Boolean(data.membership);
+  const currentMembershipId = data.membership?.id ?? null;
 
   return (
     <div className="space-y-6">
       <div className="space-y-4">
         <PageHeader description={data.group.description ?? 'Grupo público do Arena.'} title={data.group.name} />
-        <GroupActions groupId={data.group.id} isAdmin={isAdmin} />
+
+        <GroupSummaryCard
+          group={data.group}
+          ranking={data.ranking}
+          members={data.members}
+          matches={data.matches}
+          membership={data.membership}
+        />
+
+        <GroupActions groupId={data.group.id} isAdmin={isAdmin} canManageMatches={canManageMatches} />
       </div>
 
       <GroupDetailTabs
@@ -108,6 +119,7 @@ export function GroupDetail({ groupId, tab }: Props) {
         members={data.members}
         matches={data.matches}
         canManageMatches={canManageMatches}
+        currentMembershipId={currentMembershipId}
       />
     </div>
   );
