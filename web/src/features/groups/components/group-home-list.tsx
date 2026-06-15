@@ -28,6 +28,14 @@ type GroupSystemStatus =
   | { kind: 'failed'; label: 'Atenção' }
   | { kind: 'processing'; label: 'Atualizando' };
 
+type StandingDisplay = {
+  rank: number | null;
+  headline: string;
+  detail: string;
+  movement: { direction: 'UP' | 'DOWN'; positions: number } | null;
+  rating: number | null;
+};
+
 export function GroupHomeList() {
   const [state, setState] = useState<LoadState>('loading');
   const [items, setItems] = useState<GroupHomeCard[]>([]);
@@ -116,22 +124,25 @@ export function GroupHomeList() {
 function HomeTopline({ items }: { items: GroupHomeCard[] }) {
   const bestRank = getBestRank(items);
   const latestItem = getLatestActivityItem(items);
+  const latestLine = latestItem
+    ? `${formatFeedItemTime(getActivityDate(latestItem))} em ${latestItem.group.name}`
+    : 'Registre uma partida para movimentar o ranking';
+  const isSingleGroup = items.length === 1;
+  const primaryLine = isSingleGroup
+    ? bestRank
+      ? `#${bestRank} é sua melhor posição`
+      : latestLine
+    : `${formatGroupsCount(items.length)}${bestRank ? ` · #${bestRank} é sua melhor posição` : ''}`;
+  const secondaryLine = isSingleGroup && bestRank ? null : latestLine;
 
   return (
     <div className="flex items-start justify-between gap-4 px-1">
       <div className="min-w-0 space-y-1">
-        <p className="text-sm font-semibold tracking-[-0.015em] text-foreground">
-          {formatGroupsCount(items.length)}
-          {bestRank ? ` · #${bestRank} é sua melhor posição` : ''}
-        </p>
-        <p className="text-sm leading-6 text-muted-foreground">
-          {latestItem
-            ? `${formatFeedItemTime(getActivityDate(latestItem))} em ${latestItem.group.name}`
-            : 'Registre uma partida para movimentar o ranking'}
-        </p>
+        <p className="text-sm font-semibold tracking-[-0.015em] text-foreground">{primaryLine}</p>
+        {secondaryLine && <p className="text-sm leading-6 text-muted-foreground">{secondaryLine}</p>}
       </div>
 
-      <Button asChild size="icon" variant="secondary" className="h-10 w-10 shrink-0 rounded-full">
+      <Button asChild size="icon" variant="secondary" className="h-11 w-11 shrink-0 rounded-full">
         <Link href="/groups/new" aria-label="Criar grupo">
           <Plus className="h-4 w-4" />
         </Link>
@@ -143,7 +154,7 @@ function HomeTopline({ items }: { items: GroupHomeCard[] }) {
 function FeaturedGroupCard({ item }: { item: GroupHomeCard }) {
   const systemStatus = getGroupSystemStatus(item);
   const standing = getStandingDisplay(item);
-  const leaderLine = getLeaderLine(item);
+  const leaderLine = getLeaderLine(item, standing);
   const activityLine = getActivityLine(item);
 
   return (
@@ -158,12 +169,9 @@ function FeaturedGroupCard({ item }: { item: GroupHomeCard }) {
               <GroupAvatar name={item.group.name} size="lg" />
 
               <div className="min-w-0 flex-1 space-y-1">
-                <div className="flex min-w-0 items-center gap-2">
-                  <h2 className="min-w-0 truncate text-lg font-semibold tracking-[-0.035em]">
-                    {item.group.name}
-                  </h2>
-                  {item.currentUser?.role === 'ADMIN' && <AdminBadge />}
-                </div>
+                <h2 className="min-w-0 truncate text-lg font-semibold tracking-[-0.035em]">
+                  {item.group.name}
+                </h2>
                 <p className="text-xs text-muted-foreground">{formatMembersCount(item.group.membersCount)}</p>
               </div>
 
@@ -174,21 +182,17 @@ function FeaturedGroupCard({ item }: { item: GroupHomeCard }) {
             </div>
 
             <div className="space-y-2 rounded-[1.75rem] bg-white/42 p-4 ring-1 ring-border/50 backdrop-blur-xl dark:bg-white/8">
-              <div className="flex items-start justify-between gap-4">
-                <div className="min-w-0 space-y-1">
-                  <p className="text-3xl font-semibold tracking-[-0.075em] text-foreground">
-                    {standing.headline}
-                  </p>
-                  <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
-                    <span>{standing.detail}</span>
-                    {standing.movement && <MovementBadge movement={standing.movement} />}
-                  </div>
+              <div className="min-w-0 space-y-1">
+                <FeaturedStanding standing={standing} />
+                <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
+                  <span>{standing.detail}</span>
+                  {standing.movement && <MovementBadge movement={standing.movement} />}
                 </div>
               </div>
 
               <div className="space-y-1 border-t border-border/50 pt-3 text-sm leading-6">
                 <p className="text-foreground">{leaderLine}</p>
-                {activityLine && <p className="line-clamp-2 text-muted-foreground">{activityLine}</p>}
+                {activityLine && <p className="line-clamp-1 text-muted-foreground">{activityLine}</p>}
               </div>
             </div>
           </div>
@@ -205,10 +209,31 @@ function FeaturedGroupCard({ item }: { item: GroupHomeCard }) {
   );
 }
 
+function FeaturedStanding({ standing }: { standing: StandingDisplay }) {
+  if (!standing.rank) {
+    return (
+      <p className="text-3xl font-semibold tracking-[-0.075em] text-foreground">
+        {standing.headline}
+      </p>
+    );
+  }
+
+  return (
+    <div className="flex items-end gap-2">
+      <p className="text-5xl font-semibold leading-none tracking-[-0.09em] text-foreground">
+        #{standing.rank}
+      </p>
+      <p className="pb-1 text-sm font-semibold text-muted-foreground">
+        {standing.rank === 1 ? 'liderando' : 'no ranking'}
+      </p>
+    </div>
+  );
+}
+
 function CompactGroupCard({ item }: { item: GroupHomeCard }) {
   const systemStatus = getGroupSystemStatus(item);
   const standing = getStandingDisplay(item);
-  const leaderLine = getLeaderLine(item);
+  const leaderLine = getLeaderLine(item, standing);
   const activityLine = getActivityLine(item);
 
   return (
@@ -219,12 +244,9 @@ function CompactGroupCard({ item }: { item: GroupHomeCard }) {
             <GroupAvatar name={item.group.name} />
 
             <div className="min-w-0 flex-1">
-              <div className="flex min-w-0 items-center gap-2">
-                <h2 className="min-w-0 truncate text-base font-semibold tracking-[-0.025em]">
-                  {item.group.name}
-                </h2>
-                {item.currentUser?.role === 'ADMIN' && <AdminBadge />}
-              </div>
+              <h2 className="min-w-0 truncate text-base font-semibold tracking-[-0.025em]">
+                {item.group.name}
+              </h2>
               <p className="mt-0.5 text-xs text-muted-foreground">{formatMembersCount(item.group.membersCount)}</p>
             </div>
 
@@ -291,14 +313,6 @@ function GroupAvatar({ name, size = 'default' }: { name: string; size?: 'default
     <div className={`flex shrink-0 items-center justify-center bg-muted font-semibold text-foreground ${className}`}>
       {getGroupInitials(name)}
     </div>
-  );
-}
-
-function AdminBadge() {
-  return (
-    <span className="shrink-0 rounded-full bg-muted px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
-      Admin
-    </span>
   );
 }
 
@@ -377,7 +391,7 @@ function GroupHomeLoadingState() {
           <div className="h-4 w-40 animate-pulse rounded-full bg-muted" />
           <div className="h-3 w-52 animate-pulse rounded-full bg-muted/70" />
         </div>
-        <div className="h-10 w-10 animate-pulse rounded-full bg-muted" />
+        <div className="h-11 w-11 animate-pulse rounded-full bg-muted" />
       </div>
 
       <Card className="bg-gradient-to-br from-card via-card to-primary/12">
@@ -483,12 +497,14 @@ function getGroupSystemStatus(item: GroupHomeCard): GroupSystemStatus | null {
   return null;
 }
 
-function getStandingDisplay(item: GroupHomeCard) {
+function getStandingDisplay(item: GroupHomeCard): StandingDisplay {
   if (!item.currentUser) {
     return {
+      rank: null,
       headline: 'Entre para competir',
       detail: formatMembersCount(item.group.membersCount),
       movement: null,
+      rating: null,
     };
   }
 
@@ -496,24 +512,40 @@ function getStandingDisplay(item: GroupHomeCard) {
 
   if (standing.kind === 'UNRANKED') {
     return {
+      rank: null,
       headline: 'Pronto para começar',
       detail: `${Math.round(standing.rating)} rating inicial`,
       movement: null,
+      rating: standing.rating,
     };
   }
 
   return {
+    rank: standing.rank,
     headline: standing.rank === 1 ? 'Você lidera' : `#${standing.rank} no ranking`,
     detail: `${Math.round(standing.rating)} rating`,
     movement: standing.rankingMovement,
+    rating: standing.rating,
   };
 }
 
-function getLeaderLine(item: GroupHomeCard) {
+function getLeaderLine(item: GroupHomeCard, standing?: StandingDisplay) {
   const leader = item.leaders[0];
 
   if (!leader) {
     return 'Ranking ainda não começou';
+  }
+
+  if (standing?.rank && standing.rating !== null) {
+    if (standing.rank === 1) {
+      return 'Você lidera';
+    }
+
+    const gap = Math.round(leader.rating - standing.rating);
+
+    if (gap > 0) {
+      return `${gap} atrás de ${getFirstName(leader.displayName)}`;
+    }
   }
 
   return `${getFirstName(leader.displayName)} lidera · ${Math.round(leader.rating)}`;
