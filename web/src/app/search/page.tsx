@@ -1,17 +1,16 @@
 import type { LucideIcon } from 'lucide-react';
 import { Search, Sparkles, UsersRound } from 'lucide-react';
 import { AppShell } from '@/components/app-shell';
-import { PageHeader } from '@/components/page-header';
+import { PageIntro } from '@/components/page-intro';
 import { Card, CardContent } from '@/components/ui/card';
 import { TypographyH4, TypographyMuted, TypographySmall } from '@/components/ui/typography';
 
 export default function SearchPage() {
   return (
-    <AppShell>
+    <AppShell chrome={{ title: 'Buscar' }}>
       <div className="space-y-6">
-        <PageHeader
+        <PageIntro
           eyebrow="Descobrir"
-          title="Buscar"
           description="Encontre grupos, pessoas e comunidades movimentadas no Arena."
         />
 
