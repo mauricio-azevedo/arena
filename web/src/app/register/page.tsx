@@ -51,7 +51,7 @@ export default function RegisterPage() {
 
       setAccessToken(result.accessToken);
       const searchParams = new URLSearchParams(window.location.search);
-      router.push(getSafeRedirectUrl(searchParams.get('redirect')));
+      router.replace(getSafeRedirectUrl(searchParams.get('redirect')));
       router.refresh();
     } catch {
       setError('Não foi possível criar sua conta. Verifique os dados e tente de novo.');
