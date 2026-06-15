@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { GroupDetailTabs } from '@/features/groups/components/group-detail-tabs';
-import { PageHeader } from '@/components/page-header';
+import { PageIntro } from '@/components/page-intro';
 import { GroupActions } from '@/features/groups/components/group-actions';
 import { GroupSummaryCard } from '@/features/groups/components/group-summary-card';
 import {
@@ -99,7 +99,7 @@ export function GroupDetail({ groupId, tab }: Props) {
   return (
     <div className="space-y-6">
       <div className="space-y-4">
-        <PageHeader description={data.group.description ?? 'Grupo público do Arena.'} title={data.group.name} />
+        <PageIntro description={data.group.description ?? 'Grupo público do Arena.'} />
 
         <GroupSummaryCard
           group={data.group}
