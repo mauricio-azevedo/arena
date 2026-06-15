@@ -1,19 +1,11 @@
 import { AppShell } from '@/components/app-shell';
-import { BackButton } from '@/components/back-button';
 import { Card, CardContent } from '@/components/ui/card';
 
 export default function EditGroupMatchLoading() {
   return (
-    <AppShell>
-      <div
-        role="status"
-        aria-live="polite"
-        aria-busy="true"
-        className="space-y-6"
-      >
+    <AppShell chrome={{ title: 'Corrigir partida', back: { fallbackHref: '/' } }}>
+      <div role="status" aria-live="polite" aria-busy="true" className="space-y-6">
         <span className="sr-only">Carregando correção de partida</span>
-
-        <BackButton href="/groups" />
 
         <div className="space-y-2">
           <div className="h-8 w-44 animate-pulse rounded-full bg-muted" />
