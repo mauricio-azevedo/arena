@@ -1,12 +1,13 @@
 'use client';
 
-import { useEffect, useMemo, useState, type ReactNode } from 'react';
+import { type ReactNode, useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowDown, ArrowUp, Crown } from 'lucide-react';
 import type { GroupMember, Match, RankingMovement } from '@/types/api';
 import { Card, CardContent } from '@/components/ui/card';
 import { MatchesList } from '@/features/matches/components/matches-list';
 import { UserNameLink } from '@/features/users/components/user-name-link';
+import { cn } from '@/lib/utils';
 
 export type GroupTab = 'ranking' | 'matches' | 'members';
 
@@ -69,7 +70,13 @@ export function GroupDetailTabs({
               }`}
             >
               <span>{tab.label}</span>
-              <span className={isSelected ? 'text-[11px] text-background/70' : 'text-[11px] text-muted-foreground/75'}>
+              <span
+                className={
+                  isSelected
+                    ? 'text-[11px] text-background/70'
+                    : 'text-[11px] text-muted-foreground/75'
+                }
+              >
                 {tab.count}
               </span>
             </button>
@@ -183,7 +190,9 @@ function RankingPodium({
                   : 'bg-gradient-to-br from-card via-card to-accent/18'
             }
           >
-            <CardContent className={`flex flex-col items-center p-3 text-center ${isLeader ? 'gap-3 py-5' : 'gap-2 py-4'}`}>
+            <CardContent
+              className={`flex flex-col items-center justify-center text-center gap-2 ${isLeader ? 'h-44' : 'h-38'}`}
+            >
               <span
                 className={`flex shrink-0 items-center justify-center rounded-full font-bold ${
                   isLeader
@@ -195,14 +204,25 @@ function RankingPodium({
               </span>
 
               <div className="min-w-0 space-y-1">
-                <p className={`truncate text-sm font-semibold ${isLeader ? 'text-background' : 'text-foreground'}`}>
+                <p
+                  className={`truncate text-sm font-semibold ${isLeader ? 'text-background' : 'text-foreground'}`}
+                >
                   <UserNameLink userId={member.userId}>{getFirstName(member)}</UserNameLink>
                 </p>
-                <p className={isLeader ? 'text-2xl font-semibold tracking-[-0.06em]' : 'text-xl font-semibold tracking-[-0.05em]'}>
+                <p
+                  className={cn(
+                    'font-semibold tracking-tighter',
+                    isLeader ? 'text-2xl' : 'text-xl',
+                  )}
+                >
                   {member.rating.toFixed(0)}
                 </p>
-                <div className="flex justify-center">
-                  {isCurrent ? <InlineBadge>Você</InlineBadge> : <RankingMovementBadge movement={member.rankingMovement} />}
+                <div className="flex h-4 items-center justify-center">
+                  {isCurrent ? (
+                    <InlineBadge>Você</InlineBadge>
+                  ) : (
+                    <RankingMovementBadge movement={member.rankingMovement} />
+                  )}
                 </div>
               </div>
             </CardContent>
@@ -213,7 +233,15 @@ function RankingPodium({
   );
 }
 
-function RankingRow({ member, rank, isCurrent }: { member: GroupMember; rank: number; isCurrent: boolean }) {
+function RankingRow({
+  member,
+  rank,
+  isCurrent,
+}: {
+  member: GroupMember;
+  rank: number;
+  isCurrent: boolean;
+}) {
   const isLeader = rank === 1;
 
   return (
@@ -254,7 +282,15 @@ function RankingRow({ member, rank, isCurrent }: { member: GroupMember; rank: nu
   );
 }
 
-function RankBadge({ rank, isLeader, isCurrent }: { rank: number; isLeader: boolean; isCurrent: boolean }) {
+function RankBadge({
+  rank,
+  isLeader,
+  isCurrent,
+}: {
+  rank: number;
+  isLeader: boolean;
+  isCurrent: boolean;
+}) {
   const className = isLeader
     ? 'bg-foreground text-background shadow-[0_12px_28px_color-mix(in_oklch,var(--foreground)_20%,transparent)]'
     : isCurrent
@@ -262,7 +298,9 @@ function RankBadge({ rank, isLeader, isCurrent }: { rank: number; isLeader: bool
       : 'bg-white/45 text-primary backdrop-blur-xl dark:bg-white/10';
 
   return (
-    <span className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-[1.35rem] text-sm font-bold ${className}`}>
+    <span
+      className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-[1.35rem] text-sm font-bold ${className}`}
+    >
       {rank}
     </span>
   );
@@ -358,7 +396,9 @@ function MembersTab({
               <div className="min-w-0">
                 <div className="flex min-w-0 items-center gap-2">
                   <p className="truncate font-semibold tracking-[-0.015em]">
-                    <UserNameLink userId={member.userId}>{getMemberDisplayName(member)}</UserNameLink>
+                    <UserNameLink userId={member.userId}>
+                      {getMemberDisplayName(member)}
+                    </UserNameLink>
                   </p>
                   {isCurrent && <InlineBadge>Você</InlineBadge>}
                 </div>

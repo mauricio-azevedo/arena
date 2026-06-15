@@ -2,29 +2,28 @@ import { Card, CardContent } from '@/components/ui/card';
 
 export function GroupDetailLoadingState() {
   return (
-    <div
-      role="status"
-      aria-live="polite"
-      aria-busy="true"
-      className="space-y-6"
-    >
+    <div role="status" aria-live="polite" aria-busy="true" className="space-y-6">
       <span className="sr-only">Carregando grupo</span>
 
       <Card className="bg-gradient-to-br from-card via-card to-primary/10">
         <CardContent className="space-y-5 p-5">
           <div className="space-y-3">
-            <div className="h-3 w-32 animate-pulse rounded-full bg-muted" />
+            <div className="flex items-start justify-between gap-3">
+              <div className="h-14 w-14 shrink-0 animate-pulse rounded-[1.45rem] bg-muted" />
+
+              <div className="grid shrink-0 grid-cols-2 gap-2">
+                <div className="h-12 w-16 animate-pulse rounded-[1.2rem] bg-muted/80" />
+                <div className="h-12 w-16 animate-pulse rounded-[1.2rem] bg-muted/70" />
+              </div>
+            </div>
+
             <div className="space-y-2">
-              <div className="h-8 w-3/4 animate-pulse rounded-full bg-muted" />
-              <div className="h-4 w-1/2 animate-pulse rounded-full bg-muted/70" />
+              <div className="h-4 w-full animate-pulse rounded-full bg-muted/70" />
+              <div className="h-4 w-2/3 animate-pulse rounded-full bg-muted/60" />
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-2">
-            <div className="h-28 animate-pulse rounded-[1.5rem] bg-muted/80" />
-            <div className="h-28 animate-pulse rounded-[1.5rem] bg-muted/70" />
-          </div>
-
+          <div className="h-24 animate-pulse rounded-[1.75rem] bg-muted/70" />
           <div className="h-16 animate-pulse rounded-[1.5rem] bg-muted/70" />
         </CardContent>
       </Card>
