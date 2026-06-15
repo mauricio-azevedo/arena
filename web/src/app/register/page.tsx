@@ -61,7 +61,7 @@ export default function RegisterPage() {
   }
 
   return (
-    <AppShell>
+    <AppShell chrome={{ title: 'Criar conta', back: { fallbackHref: '/', behavior: 'fallback' } }}>
       <div className="space-y-6">
         <PageHeader
           title="Criar conta"
