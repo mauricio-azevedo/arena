@@ -122,10 +122,53 @@ function RankingTab({
     );
   }
 
+  const topMembers = ranking.slice(0, 3);
+  const listMembers = ranking.slice(3);
+  const currentIndex = ranking.findIndex((member) => member.id === currentMembershipId);
+  const currentMember = currentIndex >= 3 ? ranking[currentIndex] : null;
+
   return (
-    <section className="space-y-3" aria-label="Ranking do grupo">
-      {ranking.map((member, index) => {
-        const rank = index + 1;
+    <section className="space-y-5" aria-label="Ranking do grupo">
+      <RankingPodium members={topMembers} currentMembershipId={currentMembershipId} />
+
+      {currentMember && (
+        <div className="space-y-2">
+          <p className="px-1 text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground">
+            Sua posição
+          </p>
+          <RankingRow member={currentMember} rank={currentIndex + 1} isCurrent />
+        </div>
+      )}
+
+      {listMembers.length > 0 && (
+        <div className="space-y-3">
+          {listMembers.map((member, index) => (
+            <RankingRow
+              key={member.id}
+              member={member}
+              rank={index + 4}
+              isCurrent={member.id === currentMembershipId}
+            />
+          ))}
+        </div>
+      )}
+    </section>
+  );
+}
+
+function RankingPodium({
+  members,
+  currentMembershipId,
+}: {
+  members: GroupMember[];
+  currentMembershipId: string | null;
+}) {
+  const podium = [members[1], members[0], members[2]].filter(Boolean) as GroupMember[];
+
+  return (
+    <div className="grid grid-cols-3 items-end gap-2" aria-label="Top 3 do ranking">
+      {podium.map((member) => {
+        const rank = members.indexOf(member) + 1;
         const isLeader = rank === 1;
         const isCurrent = member.id === currentMembershipId;
 
@@ -133,43 +176,81 @@ function RankingTab({
           <Card
             key={member.id}
             className={
-              isCurrent
-                ? 'bg-gradient-to-br from-card via-card to-primary/18 ring-2 ring-primary/35'
-                : isLeader
-                  ? 'bg-gradient-to-br from-card via-card to-accent/30'
-                  : undefined
+              isLeader
+                ? 'bg-gradient-to-br from-foreground to-foreground/86 text-background'
+                : isCurrent
+                  ? 'bg-gradient-to-br from-card via-card to-primary/18 ring-2 ring-primary/35'
+                  : 'bg-gradient-to-br from-card via-card to-accent/18'
             }
           >
-            <CardContent className="flex items-center justify-between gap-4 p-4">
-              <div className="flex min-w-0 items-center gap-3">
-                <RankBadge rank={rank} isLeader={isLeader} isCurrent={isCurrent} />
+            <CardContent className={`flex flex-col items-center p-3 text-center ${isLeader ? 'gap-3 py-5' : 'gap-2 py-4'}`}>
+              <span
+                className={`flex shrink-0 items-center justify-center rounded-full font-bold ${
+                  isLeader
+                    ? 'h-12 w-12 bg-background text-foreground'
+                    : 'h-10 w-10 bg-white/45 text-primary backdrop-blur-xl dark:bg-white/10'
+                }`}
+              >
+                {rank}
+              </span>
 
-                <div className="min-w-0">
-                  <div className="flex min-w-0 items-center gap-2">
-                    <p className="min-w-0 truncate font-semibold tracking-[-0.015em]">
-                      <UserNameLink userId={member.userId}>{getMemberDisplayName(member)}</UserNameLink>
-                    </p>
-
-                    {isCurrent && <InlineBadge>Você</InlineBadge>}
-                    {isLeader && <LeaderBadge />}
-                    <RankingMovementBadge movement={member.rankingMovement} />
-                  </div>
-
-                  <p className="text-xs text-muted-foreground">
-                    {getRankingDetail(member, rank)}
-                  </p>
+              <div className="min-w-0 space-y-1">
+                <p className={`truncate text-sm font-semibold ${isLeader ? 'text-background' : 'text-foreground'}`}>
+                  <UserNameLink userId={member.userId}>{getFirstName(member)}</UserNameLink>
+                </p>
+                <p className={isLeader ? 'text-2xl font-semibold tracking-[-0.06em]' : 'text-xl font-semibold tracking-[-0.05em]'}>
+                  {member.rating.toFixed(0)}
+                </p>
+                <div className="flex justify-center">
+                  {isCurrent ? <InlineBadge>Você</InlineBadge> : <RankingMovementBadge movement={member.rankingMovement} />}
                 </div>
-              </div>
-
-              <div className="shrink-0 text-right">
-                <p className="text-2xl font-semibold tracking-[-0.055em]">{member.rating.toFixed(0)}</p>
-                <p className="text-[11px] uppercase tracking-wide text-muted-foreground">rating</p>
               </div>
             </CardContent>
           </Card>
         );
       })}
-    </section>
+    </div>
+  );
+}
+
+function RankingRow({ member, rank, isCurrent }: { member: GroupMember; rank: number; isCurrent: boolean }) {
+  const isLeader = rank === 1;
+
+  return (
+    <Card
+      className={
+        isCurrent
+          ? 'bg-gradient-to-br from-card via-card to-primary/18 ring-2 ring-primary/35'
+          : isLeader
+            ? 'bg-gradient-to-br from-card via-card to-accent/30'
+            : undefined
+      }
+    >
+      <CardContent className="flex items-center justify-between gap-4 p-4">
+        <div className="flex min-w-0 items-center gap-3">
+          <RankBadge rank={rank} isLeader={isLeader} isCurrent={isCurrent} />
+
+          <div className="min-w-0">
+            <div className="flex min-w-0 items-center gap-2">
+              <p className="min-w-0 truncate font-semibold tracking-[-0.015em]">
+                <UserNameLink userId={member.userId}>{getMemberDisplayName(member)}</UserNameLink>
+              </p>
+
+              {isCurrent && <InlineBadge>Você</InlineBadge>}
+              {isLeader && <LeaderBadge />}
+              <RankingMovementBadge movement={member.rankingMovement} />
+            </div>
+
+            <p className="text-xs text-muted-foreground">{getRankingDetail(member, rank)}</p>
+          </div>
+        </div>
+
+        <div className="shrink-0 text-right">
+          <p className="text-2xl font-semibold tracking-[-0.055em]">{member.rating.toFixed(0)}</p>
+          <p className="text-[11px] uppercase tracking-wide text-muted-foreground">rating</p>
+        </div>
+      </CardContent>
+    </Card>
   );
 }
 
@@ -303,6 +384,10 @@ function getRankingDetail(member: GroupMember, rank: number) {
   }
 
   return member.role === 'ADMIN' ? 'Disputando posição · Admin' : 'Disputando posição';
+}
+
+function getFirstName(member: GroupMember) {
+  return getMemberDisplayName(member).split(' ')[0] ?? 'Jogador';
 }
 
 function getMemberDisplayName(member: GroupMember) {
