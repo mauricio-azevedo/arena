@@ -1,9 +1,5 @@
-'use client';
-
 import type { ReactNode } from 'react';
-import { useSetPageChrome } from '@/components/page-chrome';
-import { TypographyMuted, TypographySmall } from '@/components/ui/typography';
-import { cn } from '@/lib/utils';
+import { PageIntro } from '@/components/page-intro';
 
 type PageHeaderProps = {
   title: string;
@@ -13,28 +9,6 @@ type PageHeaderProps = {
   className?: string;
 };
 
-export function PageHeader({ title, description, eyebrow, action, className }: PageHeaderProps) {
-  useSetPageChrome({ title });
-
-  if (!description && !eyebrow && !action) {
-    return null;
-  }
-
-  return (
-    <header className={cn('space-y-3', className)}>
-      {eyebrow && <TypographySmall>{eyebrow}</TypographySmall>}
-
-      {(description || action) && (
-        <div className="flex items-start justify-between gap-4">
-          {description && (
-            <div className="max-w-sm">
-              <TypographyMuted>{description}</TypographyMuted>
-            </div>
-          )}
-
-          {action && <div className="shrink-0">{action}</div>}
-        </div>
-      )}
-    </header>
-  );
+export function PageHeader({ description, eyebrow, action, className }: PageHeaderProps) {
+  return <PageIntro eyebrow={eyebrow} description={description} action={action} className={className} />;
 }
