@@ -1,7 +1,11 @@
 import type { Metadata, Viewport } from 'next';
+import type { ReactNode } from 'react';
+import { Suspense } from 'react';
 import { Geist, Geist_Mono, Inter } from 'next/font/google';
 import './globals.css';
 import { cn } from '@/lib/utils';
+import { NavigationProvider } from '@/providers/navigation-provider';
+import { NavigationTracker } from '@/providers/navigation-tracker';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
 
@@ -45,7 +49,7 @@ export const viewport: Viewport = {
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: ReactNode;
 }>) {
   return (
     <html
@@ -59,7 +63,14 @@ export default function RootLayout({
         inter.variable,
       )}
     >
-      <body className="min-h-full flex flex-col dark">{children}</body>
+      <body className="min-h-full flex flex-col dark">
+        <NavigationProvider>
+          {children}
+          <Suspense fallback={null}>
+            <NavigationTracker />
+          </Suspense>
+        </NavigationProvider>
+      </body>
     </html>
   );
 }
