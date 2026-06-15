@@ -6,13 +6,17 @@ import { AppTopBar, type AppTopBarBack } from '@/components/app-top-bar';
 import { BottomNav } from '@/components/bottom-nav';
 import { getMyGroups } from '@/features/groups/api/groups.api';
 import { getAccessToken } from '@/lib/auth';
+import { cn } from '@/lib/utils';
+import { getRoutePolicy } from '@/lib/route-policy';
 import { NavigationTracker } from '@/providers/navigation-tracker';
 
 export type AppShellChrome = {
   title?: string;
   back?: AppTopBarBack;
   trailing?: ReactNode;
+  topBar?: boolean;
   bottomNav?: boolean;
+  trackNavigation?: boolean;
 };
 
 type AppShellProps = {
@@ -22,28 +26,13 @@ type AppShellProps = {
 
 type AccessState = 'checking' | 'allowed' | 'redirecting';
 
-type RouteAccess =
-  | {
-      kind: 'public';
-      requiresCheck: false;
-    }
-  | {
-      kind: 'guest';
-      requiresCheck: true;
-    }
-  | {
-      kind: 'auth';
-      requiresCheck: true;
-      groupId?: string;
-      requiredRole?: 'MEMBER' | 'ADMIN';
-    };
-
 export function AppShell({ children, chrome }: AppShellProps) {
   const pathname = usePathname();
   const router = useRouter();
 
   const currentPathname = pathname ?? '/';
-  const routeAccess = useMemo(() => getRouteAccess(currentPathname), [currentPathname]);
+  const routePolicy = useMemo(() => getRoutePolicy(currentPathname), [currentPathname]);
+  const routeAccess = routePolicy.access;
   const [accessState, setAccessState] = useState<AccessState>(
     routeAccess.requiresCheck ? 'checking' : 'allowed',
   );
@@ -123,18 +112,34 @@ export function AppShell({ children, chrome }: AppShellProps) {
   }, [routeAccess, router]);
 
   const shouldHoldContent = routeAccess.requiresCheck && accessState !== 'allowed';
-  const showBottomNav = chrome?.bottomNav ?? true;
-  const shouldTrackNavigation = !shouldHoldContent && chrome?.back?.behavior !== 'fallback';
+  const showTopBar = chrome?.topBar ?? routePolicy.chrome.topBar;
+  const showBottomNav = chrome?.bottomNav ?? routePolicy.chrome.bottomNav;
+  const shouldTrackNavigation =
+    !shouldHoldContent &&
+    (chrome?.trackNavigation ?? routePolicy.chrome.trackNavigation) &&
+    chrome?.back?.behavior !== 'fallback';
+  const contentTopPadding = showTopBar
+    ? 'pt-[calc(4.75rem+env(safe-area-inset-top))]'
+    : 'pt-[calc(1.5rem+env(safe-area-inset-top))]';
+  const contentBottomPadding = showBottomNav
+    ? 'pb-[calc(6rem+env(safe-area-inset-bottom))]'
+    : 'pb-[calc(1.5rem+env(safe-area-inset-bottom))]';
 
   return (
     <main className="relative h-[100dvh] min-h-[100dvh] overflow-hidden text-foreground">
-      <div className="absolute inset-0 z-10 overflow-y-auto overscroll-contain px-4 pb-[calc(6rem+env(safe-area-inset-bottom))] pt-[calc(4.75rem+env(safe-area-inset-top))] [-webkit-overflow-scrolling:touch]">
+      <div
+        className={cn(
+          'absolute inset-0 z-10 overflow-y-auto overscroll-contain px-4 [-webkit-overflow-scrolling:touch]',
+          contentTopPadding,
+          contentBottomPadding,
+        )}
+      >
         <div className="mx-auto w-full max-w-md space-y-6">
           {shouldHoldContent ? <AccessGuardSkeleton /> : children}
         </div>
       </div>
 
-      <AppTopBar title={chrome?.title} back={chrome?.back} trailing={chrome?.trailing} />
+      {showTopBar && <AppTopBar title={chrome?.title} back={chrome?.back} trailing={chrome?.trailing} />}
       {showBottomNav && <BottomNav />}
       <Suspense fallback={null}>
         <NavigationTracker enabled={shouldTrackNavigation} />
@@ -159,77 +164,6 @@ function AccessGuardSkeleton() {
       </div>
     </div>
   );
-}
-
-function getRouteAccess(pathname: string): RouteAccess {
-  const normalizedPathname = normalizePathname(pathname);
-
-  if (normalizedPathname === '/login' || normalizedPathname === '/register') {
-    return {
-      kind: 'guest',
-      requiresCheck: true,
-    };
-  }
-
-  if (normalizedPathname === '/profile') {
-    return {
-      kind: 'auth',
-      requiresCheck: true,
-    };
-  }
-
-  if (normalizedPathname === '/groups/new') {
-    return {
-      kind: 'auth',
-      requiresCheck: true,
-    };
-  }
-
-  const inviteMatch = normalizedPathname.match(/^\/groups\/([^/]+)\/invite$/);
-
-  if (inviteMatch?.[1]) {
-    return {
-      kind: 'auth',
-      requiresCheck: true,
-      groupId: inviteMatch[1],
-      requiredRole: 'ADMIN',
-    };
-  }
-
-  const newMatchMatch = normalizedPathname.match(/^\/groups\/([^/]+)\/matches\/new$/);
-
-  if (newMatchMatch?.[1]) {
-    return {
-      kind: 'auth',
-      requiresCheck: true,
-      groupId: newMatchMatch[1],
-      requiredRole: 'MEMBER',
-    };
-  }
-
-  const editMatchMatch = normalizedPathname.match(/^\/groups\/([^/]+)\/matches\/([^/]+)\/edit$/);
-
-  if (editMatchMatch?.[1]) {
-    return {
-      kind: 'auth',
-      requiresCheck: true,
-      groupId: editMatchMatch[1],
-      requiredRole: 'MEMBER',
-    };
-  }
-
-  return {
-    kind: 'public',
-    requiresCheck: false,
-  };
-}
-
-function normalizePathname(pathname: string) {
-  if (pathname.length > 1 && pathname.endsWith('/')) {
-    return pathname.slice(0, -1);
-  }
-
-  return pathname;
 }
 
 function getCurrentPathWithSearch() {
