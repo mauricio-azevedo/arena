@@ -4,7 +4,11 @@ import { useEffect, useMemo } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { useSafeNavigation } from '@/providers/navigation-provider';
 
-export function NavigationTracker() {
+type NavigationTrackerProps = {
+  enabled?: boolean;
+};
+
+export function NavigationTracker({ enabled = true }: NavigationTrackerProps) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const { registerHref } = useSafeNavigation();
@@ -15,8 +19,12 @@ export function NavigationTracker() {
   }, [pathname, searchParams]);
 
   useEffect(() => {
+    if (!enabled) {
+      return;
+    }
+
     registerHref(href);
-  }, [href, registerHref]);
+  }, [enabled, href, registerHref]);
 
   return null;
 }
