@@ -3,7 +3,7 @@ import { ProfilePasswordSettings } from '@/features/profile/profile-password-set
 
 export default function ProfilePasswordSettingsPage() {
   return (
-    <AppShell>
+    <AppShell chrome={{ title: 'Alterar senha', back: { fallbackHref: '/profile/settings' } }}>
       <ProfilePasswordSettings />
     </AppShell>
   );
