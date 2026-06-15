@@ -4,6 +4,10 @@ import { Suspense, type ReactNode, useEffect, useMemo, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { AppTopBar, type AppTopBarBack } from '@/components/app-top-bar';
 import { BottomNav } from '@/components/bottom-nav';
+import {
+  buildAuthHref,
+  getSafeAuthRedirectPath,
+} from '@/features/auth/helpers/auth-redirect.helper';
 import { getMyGroups } from '@/features/groups/api/groups.api';
 import { getAccessToken } from '@/lib/auth';
 import { cn } from '@/lib/utils';
@@ -57,13 +61,13 @@ export function AppShell({ children, chrome }: AppShellProps) {
         }
 
         setAccessState('redirecting');
-        router.replace(getSafeRedirectUrl(getRedirectParam()) ?? '/');
+        router.replace(getSafeAuthRedirectPath(getRedirectParam()));
         return;
       }
 
       if (!token) {
         setAccessState('redirecting');
-        router.replace(`/login?redirect=${encodeURIComponent(getCurrentPathWithSearch())}`);
+        router.replace(buildAuthHref('/login', getCurrentPathWithSearch()));
         return;
       }
 
@@ -180,16 +184,4 @@ function getRedirectParam() {
   }
 
   return new URLSearchParams(window.location.search).get('redirect');
-}
-
-function getSafeRedirectUrl(redirect: string | null) {
-  if (!redirect) {
-    return null;
-  }
-
-  if (!redirect.startsWith('/') || redirect.startsWith('//')) {
-    return null;
-  }
-
-  return redirect;
 }
