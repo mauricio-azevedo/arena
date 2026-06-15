@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { FormEvent, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { AppShell } from '@/components/app-shell';
-import { PageHeader } from '@/components/page-header';
+import { PageIntro } from '@/components/page-intro';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -14,11 +14,11 @@ import { setAccessToken } from '@/lib/auth';
 
 function getSafeRedirectUrl(redirect: string | null) {
   if (!redirect) {
-    return '/groups';
+    return '/';
   }
 
   if (!redirect.startsWith('/') || redirect.startsWith('//')) {
-    return '/groups';
+    return '/';
   }
 
   return redirect;
@@ -27,8 +27,8 @@ function getSafeRedirectUrl(redirect: string | null) {
 export default function LoginPage() {
   const router = useRouter();
 
-  const [email, setEmail] = useState('mauricio@test.com');
-  const [password, setPassword] = useState('123456');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -56,12 +56,9 @@ export default function LoginPage() {
   }
 
   return (
-    <AppShell>
+    <AppShell chrome={{ title: 'Entrar', back: { fallbackHref: '/', behavior: 'fallback' } }}>
       <div className="space-y-6">
-        <PageHeader
-          title="Entrar"
-          description="Acesse sua conta para ver seus grupos e registrar partidas."
-        />
+        <PageIntro description="Acesse sua conta para ver seus grupos e registrar partidas." />
 
         <Card>
           <CardContent className="p-4">
