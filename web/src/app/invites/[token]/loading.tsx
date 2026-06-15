@@ -1,19 +1,11 @@
 import { AppShell } from '@/components/app-shell';
-import { BackButton } from '@/components/back-button';
 import { Card, CardContent } from '@/components/ui/card';
 
 export default function InviteLoading() {
   return (
-    <AppShell>
-      <div
-        role="status"
-        aria-live="polite"
-        aria-busy="true"
-        className="space-y-6"
-      >
+    <AppShell chrome={{ title: 'Convite para grupo', back: { fallbackHref: '/' } }}>
+      <div role="status" aria-live="polite" aria-busy="true" className="space-y-6">
         <span className="sr-only">Carregando convite</span>
-
-        <BackButton href="/groups" />
 
         <div className="space-y-2">
           <div className="h-8 w-52 animate-pulse rounded-full bg-muted" />
