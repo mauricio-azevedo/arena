@@ -11,7 +11,7 @@ export default async function NewGroupMatchPage({ params }: Props) {
   const { groupId } = await params;
 
   return (
-    <AppShell>
+    <AppShell chrome={{ title: 'Registrar partida', back: { fallbackHref: '/groups/' + groupId } }}>
       <NewGroupMatch groupId={groupId} />
     </AppShell>
   );
