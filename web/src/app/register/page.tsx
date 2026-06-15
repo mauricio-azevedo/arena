@@ -14,11 +14,11 @@ import { setAccessToken } from '@/lib/auth';
 
 function getSafeRedirectUrl(redirect: string | null) {
   if (!redirect) {
-    return '/groups';
+    return '/';
   }
 
   if (!redirect.startsWith('/') || redirect.startsWith('//')) {
-    return '/groups';
+    return '/';
   }
 
   return redirect;
