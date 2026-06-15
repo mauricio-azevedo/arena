@@ -16,7 +16,7 @@ export function PageIntro({ eyebrow, title, description, action, className }: Pa
   }
 
   return (
-    <header className={cn('space-y-3', className)}>
+    <div className={cn('space-y-3', className)}>
       {(eyebrow || title) && (
         <div className="space-y-1">
           {eyebrow && <TypographySmall>{eyebrow}</TypographySmall>}
@@ -35,6 +35,6 @@ export function PageIntro({ eyebrow, title, description, action, className }: Pa
           {action && <div className="shrink-0">{action}</div>}
         </div>
       )}
-    </header>
+    </div>
   );
 }
