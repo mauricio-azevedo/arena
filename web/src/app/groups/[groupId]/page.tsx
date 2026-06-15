@@ -18,7 +18,7 @@ export default async function GroupDetailPage({ params, searchParams }: Props) {
   const group = await getGroup(groupId).catch(() => notFound());
 
   return (
-    <AppShell chrome={{ title: group.name, showBack: true, backHref: '/', preferBackHref: true }}>
+    <AppShell chrome={{ title: group.name, back: { fallbackHref: '/' } }}>
       <GroupDetail groupId={groupId} tab={tab} />
     </AppShell>
   );
