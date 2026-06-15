@@ -46,7 +46,7 @@ export default function LoginPage() {
 
       setAccessToken(result.accessToken);
       const searchParams = new URLSearchParams(window.location.search);
-      router.push(getSafeRedirectUrl(searchParams.get('redirect')));
+      router.replace(getSafeRedirectUrl(searchParams.get('redirect')));
       router.refresh();
     } catch {
       setError('Não foi possível entrar. Verifique seu e-mail e senha.');
