@@ -1,9 +1,9 @@
 'use client';
 
-import * as React from 'react';
-import { ArrowDown, ArrowUp, Trophy, Users } from 'lucide-react';
+import { ArrowDown, ArrowUp } from 'lucide-react';
 import type { Group, GroupMember, Match, MyGroup, RankingMovement } from '@/types/api';
 import { Card, CardContent } from '@/components/ui/card';
+import { getGroupInitials } from '@/features/groups/helpers/group-initials.helper';
 
 export type GroupSummaryCardProps = {
   group: Group;
@@ -27,119 +27,159 @@ export function GroupSummaryCard({
   const currentMember = membership
     ? (ranking[currentRankIndex] ?? members.find((member) => member.id === membership.id) ?? null)
     : null;
-  const leader = ranking[0] ?? null;
   const latestMatch = matches[0] ?? null;
   const memberCount = group._count?.members ?? members.length;
-  const activeMatchCount = matches.length;
+  const matchCount = group._count?.matches ?? matches.length;
+  const currentRating = currentMember?.rating ?? membership?.rating ?? null;
 
   return (
     <Card className="bg-gradient-to-br from-card via-card to-primary/10">
       <CardContent className="space-y-5 p-5">
-        <div className="space-y-3">
-          <p className="text-xs font-bold uppercase tracking-[0.22em] text-primary/75">
-            Estado do grupo
-          </p>
+        <GroupHeader group={group} memberCount={memberCount} matchCount={matchCount} />
 
-          {membership ? (
-            <div className="space-y-1.5">
-              <div className="flex items-end justify-between gap-4">
-                <div className="min-w-0">
-                  <p className="text-sm font-medium text-muted-foreground">Sua posição</p>
-                  <h2 className="truncate text-3xl font-semibold tracking-[-0.06em]">
-                    {currentRank ? `${currentRank}º no ranking` : 'Sem posição ainda'}
-                  </h2>
-                </div>
-
-                <div className="shrink-0 rounded-[1.35rem] bg-foreground px-4 py-2 text-right text-background shadow-[0_16px_36px_color-mix(in_oklch,var(--foreground)_18%,transparent)]">
-                  <p className="text-2xl font-semibold leading-none tracking-[-0.06em]">
-                    {(currentMember?.rating ?? membership.rating).toFixed(0)}
-                  </p>
-                  <p className="mt-1 text-[11px] font-semibold uppercase tracking-wide text-background/70">
-                    rating
-                  </p>
-                </div>
-              </div>
-
-              <MovementSummary movement={currentMember?.rankingMovement} ranked={Boolean(currentRank)} />
-            </div>
-          ) : (
-            <div className="space-y-1.5">
-              <p className="text-sm font-medium text-muted-foreground">Grupo público</p>
-              <h2 className="text-3xl font-semibold tracking-[-0.06em]">Acompanhe o ranking</h2>
-              <p className="text-sm leading-6 text-muted-foreground">
-                Entre no grupo para registrar partidas e aparecer na disputa.
-              </p>
-            </div>
-          )}
-        </div>
-
-        <div className="grid grid-cols-2 gap-2">
-          <SummaryStat
-            label="Líder"
-            value={leader ? getMemberDisplayName(leader) : 'Sem líder'}
-            detail={leader ? `${leader.rating.toFixed(0)} rating` : 'Registre partidas'}
-            icon={<Trophy className="h-4 w-4" />}
+        {membership && currentRating !== null && (
+          <CurrentMemberSummary
+            rank={currentRank}
+            rating={currentRating}
+            movement={currentMember?.rankingMovement}
           />
+        )}
 
-          <SummaryStat
-            label="Grupo"
-            value={`${memberCount} ${memberCount === 1 ? 'membro' : 'membros'}`}
-            detail={`${activeMatchCount} ${activeMatchCount === 1 ? 'partida' : 'partidas'}`}
-            icon={<Users className="h-4 w-4" />}
-          />
-        </div>
-
-        <div className="rounded-[1.5rem] bg-white/40 px-4 py-3 text-sm leading-6 text-muted-foreground ring-1 ring-border/50 backdrop-blur-xl dark:bg-white/8">
-          {latestMatch ? formatLatestMatch(latestMatch) : 'Nenhuma partida registrada ainda.'}
-        </div>
+        <LatestActivity latestMatch={latestMatch} />
       </CardContent>
     </Card>
   );
 }
 
-function SummaryStat({
-  label,
-  value,
-  detail,
-  icon,
+function GroupHeader({
+  group,
+  memberCount,
+  matchCount,
 }: {
-  label: string;
-  value: string;
-  detail: string;
-  icon: React.ReactNode;
+  group: Group;
+  memberCount: number;
+  matchCount: number;
 }) {
   return (
-    <div className="rounded-[1.5rem] bg-white/40 p-4 ring-1 ring-border/50 backdrop-blur-xl dark:bg-white/8">
-      <div className="mb-3 flex h-8 w-8 items-center justify-center rounded-full bg-secondary text-secondary-foreground">
-        {icon}
+    <div className="space-y-3">
+      <div className="flex items-start justify-between gap-3">
+        <GroupAvatar name={group.name} />
+
+        <div className="grid shrink-0 grid-cols-2 gap-2">
+          <MetricPill value={memberCount} label={memberCount === 1 ? 'membro' : 'membros'} />
+          <MetricPill value={matchCount} label={matchCount === 1 ? 'partida' : 'partidas'} />
+        </div>
       </div>
-      <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-muted-foreground">
-        {label}
-      </p>
-      <p className="mt-1 truncate text-sm font-semibold tracking-[-0.01em]">{value}</p>
-      <p className="mt-0.5 truncate text-xs text-muted-foreground">{detail}</p>
+
+      {group.description && (
+        <p className="text-sm leading-6 text-muted-foreground">{group.description}</p>
+      )}
     </div>
   );
 }
 
-function MovementSummary({ movement, ranked }: { movement?: RankingMovement | null; ranked: boolean }) {
-  if (!ranked) {
-    return <p className="text-sm leading-6 text-muted-foreground">Registre partidas para entrar no ranking.</p>;
-  }
+function GroupAvatar({ name }: { name: string }) {
+  return (
+    <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-[1.45rem] bg-muted text-base font-semibold text-foreground">
+      {getGroupInitials(name)}
+    </div>
+  );
+}
 
-  if (!movement) {
-    return <p className="text-sm leading-6 text-muted-foreground">Sem mudança recente de posição.</p>;
-  }
+function MetricPill({ value, label }: { value: number; label: string }) {
+  return (
+    <div className="min-w-16 rounded-[1.2rem] bg-white/42 px-3 py-2 text-center ring-1 ring-border/50 backdrop-blur-xl dark:bg-white/8">
+      <p className="text-lg font-semibold leading-none tracking-[-0.05em] text-foreground">{value}</p>
+      <p className="mt-1 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+        {label}
+      </p>
+    </div>
+  );
+}
 
-  const isUp = movement.direction === 'UP';
-  const Icon = isUp ? ArrowUp : ArrowDown;
-  const verb = isUp ? 'Subiu' : 'Caiu';
+function CurrentMemberSummary({
+  rank,
+  rating,
+  movement,
+}: {
+  rank: number | null;
+  rating: number;
+  movement?: RankingMovement | null;
+}) {
+  return (
+    <div className="space-y-2 rounded-[1.75rem] bg-white/42 p-4 ring-1 ring-border/50 backdrop-blur-xl dark:bg-white/8">
+      <MemberStanding rank={rank} movement={movement} />
+      <MemberRating rating={rating} isRanked={Boolean(rank)} />
+    </div>
+  );
+}
+
+function MemberStanding({
+  rank,
+  movement,
+}: {
+  rank: number | null;
+  movement?: RankingMovement | null;
+}) {
+  if (!rank) {
+    return (
+      <p className="text-2xl font-semibold tracking-[-0.06em] text-foreground">
+        Sem posição ainda
+      </p>
+    );
+  }
 
   return (
-    <p className="inline-flex items-center gap-1.5 rounded-full bg-white/42 px-3 py-1 text-sm font-semibold text-foreground ring-1 ring-border/50 backdrop-blur-xl dark:bg-white/8">
-      <Icon className={isUp ? 'h-4 w-4 text-emerald-600' : 'h-4 w-4 text-rose-600'} />
-      {verb} {movement.positions} {movement.positions === 1 ? 'posição' : 'posições'} na última atualização.
+    <div className="flex flex-wrap items-end gap-x-2 gap-y-1">
+      <p className="text-5xl font-semibold leading-none tracking-[-0.09em] text-foreground">
+        #{rank}
+      </p>
+
+      <div className="flex items-center gap-2 pb-1.5">
+        <p className="text-sm font-semibold text-muted-foreground">
+          {rank === 1 ? 'liderando' : 'no ranking'}
+        </p>
+        {movement && <MovementBadge movement={movement} />}
+      </div>
+    </div>
+  );
+}
+
+function MemberRating({ rating, isRanked }: { rating: number; isRanked: boolean }) {
+  return (
+    <p className="text-sm text-muted-foreground">
+      <span className="font-semibold text-foreground">{Math.round(rating)}</span>{' '}
+      {isRanked ? 'rating' : 'rating inicial'}
     </p>
+  );
+}
+
+function MovementBadge({ movement }: { movement: RankingMovement }) {
+  const isUp = movement.direction === 'UP';
+  const Icon = isUp ? ArrowUp : ArrowDown;
+  const verb = isUp ? 'subiu' : 'caiu';
+  const label = `${verb} ${movement.positions} ${movement.positions === 1 ? 'posição' : 'posições'}`;
+  const className = isUp
+    ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300'
+    : 'bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300';
+
+  return (
+    <span
+      aria-label={label}
+      title={label}
+      className={`inline-flex shrink-0 items-center gap-0.5 rounded-full px-2 py-0.5 text-[11px] font-semibold leading-none ${className}`}
+    >
+      <Icon className="h-3 w-3" aria-hidden="true" />
+      {movement.positions}
+    </span>
+  );
+}
+
+function LatestActivity({ latestMatch }: { latestMatch: Match | null }) {
+  return (
+    <div className="rounded-[1.5rem] bg-white/40 px-4 py-3 text-sm leading-6 text-muted-foreground ring-1 ring-border/50 backdrop-blur-xl dark:bg-white/8">
+      {latestMatch ? formatLatestMatch(latestMatch) : 'Nenhuma partida registrada ainda.'}
+    </div>
   );
 }
 
