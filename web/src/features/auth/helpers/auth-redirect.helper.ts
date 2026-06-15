@@ -3,7 +3,6 @@ import { getInternalPathname, getSafeInternalHref } from '@/lib/internal-href';
 export type AuthRoute = '/login' | '/register';
 
 const DEFAULT_AUTH_REDIRECT = '/';
-const authPathnames = new Set<AuthRoute>(['/login', '/register']);
 
 export function getSafeAuthRedirectPath(
   redirect: unknown,
@@ -13,7 +12,7 @@ export function getSafeAuthRedirectPath(
   const safeRedirect = getSafeInternalHref(redirect, safeFallback);
   const pathname = getInternalPathname(safeRedirect);
 
-  if (!pathname || authPathnames.has(pathname as AuthRoute)) {
+  if (!pathname || isAuthPathname(pathname)) {
     return safeFallback;
   }
 
@@ -34,9 +33,13 @@ function getSafeAuthRedirectFallback(fallback: unknown) {
   const safeFallback = getSafeInternalHref(fallback, DEFAULT_AUTH_REDIRECT);
   const fallbackPathname = getInternalPathname(safeFallback);
 
-  if (!fallbackPathname || authPathnames.has(fallbackPathname as AuthRoute)) {
+  if (!fallbackPathname || isAuthPathname(fallbackPathname)) {
     return DEFAULT_AUTH_REDIRECT;
   }
 
   return safeFallback;
+}
+
+function isAuthPathname(pathname: string): pathname is AuthRoute {
+  return pathname === '/login' || pathname === '/register';
 }
