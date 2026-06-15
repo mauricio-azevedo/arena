@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { FormEvent, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { AppShell } from '@/components/app-shell';
-import { PageHeader } from '@/components/page-header';
+import { PageIntro } from '@/components/page-intro';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -63,10 +63,7 @@ export default function RegisterPage() {
   return (
     <AppShell chrome={{ title: 'Criar conta', back: { fallbackHref: '/', behavior: 'fallback' } }}>
       <div className="space-y-6">
-        <PageHeader
-          title="Criar conta"
-          description="Crie sua conta para participar de grupos e acompanhar seu ranking."
-        />
+        <PageIntro description="Crie sua conta para participar de grupos e acompanhar seu ranking." />
 
         <Card>
           <CardContent className="p-4">
