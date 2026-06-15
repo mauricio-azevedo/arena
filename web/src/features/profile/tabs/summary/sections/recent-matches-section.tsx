@@ -13,24 +13,26 @@ type Props = {
 
 export function RecentMatchesSection({ matches, onViewAll }: Props) {
   return (
-    <Card className="rounded-2xl">
+    <Card className="bg-gradient-to-br from-card via-card to-primary/8">
       <CardContent className="space-y-4 p-4">
         <div className="flex items-center justify-between gap-3">
-          <h2 className="text-lg font-semibold tracking-tight">Últimas partidas</h2>
+          <h2 className="text-lg font-semibold tracking-[-0.035em]">Últimas partidas</h2>
 
-          <button
-            type="button"
-            onClick={onViewAll}
-            className="text-sm font-medium text-muted-foreground"
-          >
-            Ver todas
-          </button>
+          {matches.length > 0 && (
+            <button
+              type="button"
+              onClick={onViewAll}
+              className="rounded-full px-2 py-1 text-sm font-semibold text-muted-foreground transition-colors hover:bg-white/45 hover:text-foreground dark:hover:bg-white/10"
+            >
+              Ver todas
+            </button>
+          )}
         </div>
 
         {matches.length === 0 ? (
           <p className="text-sm text-muted-foreground">Nenhuma partida registrada ainda.</p>
         ) : (
-          <div className="divide-y">
+          <div className="space-y-2">
             {matches.map((match) => (
               <RecentMatchRow key={match.id} match={match} />
             ))}
@@ -48,39 +50,32 @@ function RecentMatchRow({ match }: { match: ProfileSummaryMatch }) {
   const teamBWon = match.winnerTeam === 'TEAM_B';
 
   return (
-    <article className="flex gap-3 py-3 first:pt-0 last:pb-0">
-      <div
-        className={cn(
-          'mt-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-sm font-semibold',
-          isWin ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700',
-        )}
-        aria-label={result}
-      >
-        {isWin ? 'V' : 'D'}
-      </div>
-
-      <div className="min-w-0 flex-1 space-y-2">
-        <div className="rounded-2xl bg-muted/35 px-3 py-2.5">
-          <MatchTeamLine
-            players={match.teamA}
-            score={match.gamesA}
-            isWinner={teamAWon}
-          />
-          <div className="my-2 h-px bg-border/70" />
-          <MatchTeamLine
-            players={match.teamB}
-            score={match.gamesB}
-            isWinner={teamBWon}
-          />
-        </div>
-
-        <p className="text-xs leading-5 text-muted-foreground">
-          <GroupLink groupId={match.groupId}>{match.groupName}</GroupLink>
-          {' · '}
+    <article className="rounded-[1.5rem] bg-white/42 p-3 ring-1 ring-border/50 backdrop-blur-xl dark:bg-white/8">
+      <div className="flex items-start gap-3">
+        <span
+          className={cn(
+            'mt-0.5 shrink-0 rounded-full px-2.5 py-1 text-xs font-bold leading-none',
+            isWin
+              ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300'
+              : 'bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300',
+          )}
+        >
           {result}
-          {' · '}
-          {formatProfileRelativeDate(match.playedAt)}
-        </p>
+        </span>
+
+        <div className="min-w-0 flex-1 space-y-2">
+          <div className="rounded-[1.25rem] bg-background/70 px-3 py-2.5 dark:bg-background/35">
+            <MatchTeamLine players={match.teamA} score={match.gamesA} isWinner={teamAWon} />
+            <div className="my-2 h-px bg-border/60" />
+            <MatchTeamLine players={match.teamB} score={match.gamesB} isWinner={teamBWon} />
+          </div>
+
+          <p className="text-xs leading-5 text-muted-foreground">
+            <GroupLink groupId={match.groupId}>{match.groupName}</GroupLink>
+            {' · '}
+            {formatProfileRelativeDate(match.playedAt)}
+          </p>
+        </div>
       </div>
     </article>
   );
@@ -109,7 +104,7 @@ function MatchTeamLine({
       <span
         className={cn(
           'rounded-full px-2.5 py-1 text-sm font-bold leading-none tabular-nums',
-          isWinner ? 'bg-primary/12 text-secondary-foreground' : 'bg-background text-muted-foreground',
+          isWinner ? 'bg-primary/12 text-secondary-foreground' : 'bg-muted text-muted-foreground',
         )}
       >
         {score}

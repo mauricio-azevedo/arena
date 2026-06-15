@@ -43,13 +43,7 @@ export function ProfileMatchesTab({ userId }: Props) {
   }, [userId]);
 
   if (isLoading) {
-    return (
-      <Card>
-        <CardContent className="p-4 text-sm text-muted-foreground">
-          Carregando partidas...
-        </CardContent>
-      </Card>
-    );
+    return <ProfileMatchesLoadingState />;
   }
 
   if (error) {
@@ -61,4 +55,23 @@ export function ProfileMatchesTab({ userId }: Props) {
   }
 
   return <ProfileMatchesList matches={matches} />;
+}
+
+function ProfileMatchesLoadingState() {
+  return (
+    <section className="space-y-3" aria-label="Carregando partidas">
+      {Array.from({ length: 3 }).map((_, index) => (
+        <Card key={index} className="rounded-[1.75rem] bg-gradient-to-br from-card via-card to-primary/8">
+          <CardContent className="space-y-3 p-4">
+            <div className="flex items-center gap-2">
+              <div className="h-6 w-16 animate-pulse rounded-full bg-muted" />
+              <div className="h-3 w-40 animate-pulse rounded-full bg-muted/70" />
+            </div>
+            <div className="h-5 w-full animate-pulse rounded-full bg-muted" />
+            <div className="h-10 animate-pulse rounded-[1.25rem] bg-muted/70" />
+          </CardContent>
+        </Card>
+      ))}
+    </section>
+  );
 }

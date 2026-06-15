@@ -1,4 +1,3 @@
-import { ProfileSummaryStatsGrid } from '@/features/profile/tabs/summary/sections/profile-summary-stats-grid';
 import { ProfileSummary } from '@/features/profile/tabs/summary/types/profile-summary.type';
 import { RecentGroupsSection } from '@/features/profile/tabs/summary/sections/recent-groups-section';
 import { RecentMatchesSection } from '@/features/profile/tabs/summary/sections/recent-matches-section';
@@ -12,7 +11,6 @@ type Props = {
 export function ProfileSummaryTab({ summary, onViewAllMatches, onViewAllGroups }: Props) {
   return (
     <div className="space-y-4">
-      <ProfileSummaryStatsGrid stats={summary.stats} />
       <RecentMatchesSection matches={summary.recentMatches} onViewAll={onViewAllMatches} />
       <RecentGroupsSection groups={summary.recentGroups} onViewAll={onViewAllGroups} />
     </div>
