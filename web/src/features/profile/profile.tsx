@@ -24,7 +24,6 @@ import { ProfileSignedOutState } from './components/profile-signed-out-state';
 import { ProfileTabs } from './components/profile-tabs';
 import { ProfileGroupsTab } from './tabs/groups/profile-groups-tab';
 import { ProfileMatchesTab } from './tabs/matches/profile-matches-tab';
-import { ProfileStatsTab } from './tabs/stats/profile-stats-tab';
 import { ProfileSummaryTab } from './tabs/summary/profile-summary-tab';
 import type { ProfileTab } from '@/features/profile/types/profile-tab.type';
 
@@ -95,37 +94,12 @@ export function Profile({ userId }: Props) {
 
   return (
     <div className="space-y-6">
-      <div className="relative">
-        <ProfileHeader user={summary.user} isPublicProfile={isPublicProfile} />
-
-        {!isPublicProfile && (
-          <div className="absolute right-4 top-4">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon-sm"
-                  className="border border-white/15 bg-white/12 text-primary-foreground shadow-sm backdrop-blur-sm hover:bg-white/20 hover:text-primary-foreground"
-                >
-                  <MoreHorizontal className="h-4 w-4" />
-                  <span className="sr-only">Abrir opções do perfil</span>
-                </Button>
-              </DropdownMenuTrigger>
-
-              <DropdownMenuContent align="end" className="w-52">
-                <DropdownMenuLabel>Conta</DropdownMenuLabel>
-                <DropdownMenuItem onSelect={() => router.push('/profile/settings')}>
-                  <Settings className="h-4 w-4" />
-                  Configurações
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <LogoutButton className="w-full justify-start border-0 bg-transparent px-2 text-destructive shadow-none hover:bg-destructive/10 hover:text-destructive" />
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        )}
-      </div>
+      <ProfileHeader
+        user={summary.user}
+        stats={summary.stats}
+        isPublicProfile={isPublicProfile}
+        action={!isPublicProfile ? <ProfileActions onSettings={() => router.push('/profile/settings')} /> : undefined}
+      />
 
       <ProfileTabs activeTab={activeTab} onChange={setActiveTab} />
       {activeTab === 'summary' && (
@@ -138,7 +112,34 @@ export function Profile({ userId }: Props) {
 
       {activeTab === 'matches' && <ProfileMatchesTab userId={userId} />}
       {activeTab === 'groups' && <ProfileGroupsTab userId={userId} />}
-      {activeTab === 'stats' && <ProfileStatsTab />}
     </div>
+  );
+}
+
+function ProfileActions({ onSettings }: { onSettings: () => void }) {
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          className="h-11 w-11 rounded-full border border-border/50 bg-white/42 text-foreground shadow-sm backdrop-blur-xl hover:bg-white/55 hover:text-foreground dark:bg-white/8 dark:hover:bg-white/12"
+        >
+          <MoreHorizontal className="h-4 w-4" />
+          <span className="sr-only">Abrir opções do perfil</span>
+        </Button>
+      </DropdownMenuTrigger>
+
+      <DropdownMenuContent align="end" className="w-52">
+        <DropdownMenuLabel>Conta</DropdownMenuLabel>
+        <DropdownMenuItem onSelect={onSettings}>
+          <Settings className="h-4 w-4" />
+          Configurações
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <LogoutButton className="w-full justify-start border-0 bg-transparent px-2 text-destructive shadow-none hover:bg-destructive/10 hover:text-destructive" />
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
