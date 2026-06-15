@@ -3,9 +3,9 @@
 import { ChevronRight, KeyRound, UserRound } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import type { ReactNode } from 'react';
-import { BackButton } from '@/components/back-button';
+import { PageIntro } from '@/components/page-intro';
 import { Card, CardContent } from '@/components/ui/card';
-import { TypographyH1, TypographyMuted, TypographySmall } from '@/components/ui/typography';
+import { TypographyMuted, TypographySmall } from '@/components/ui/typography';
 import { getAccessToken } from '@/lib/auth';
 import { ProfileSignedOutState } from './components/profile-signed-out-state';
 
@@ -19,15 +19,7 @@ export function ProfileSettings() {
 
   return (
     <div className="space-y-6">
-      <header className="space-y-3">
-        <BackButton href="/profile" />
-
-        <div>
-          <TypographySmall>Conta</TypographySmall>
-          <TypographyH1>Configurações</TypographyH1>
-          <TypographyMuted>Atualize suas informações de conta.</TypographyMuted>
-        </div>
-      </header>
+      <PageIntro description="Atualize suas informações de conta." />
 
       <section className="space-y-3">
         <SettingsOption

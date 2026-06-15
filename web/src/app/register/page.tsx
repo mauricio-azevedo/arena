@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { FormEvent, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { AppShell } from '@/components/app-shell';
-import { PageHeader } from '@/components/page-header';
+import { PageIntro } from '@/components/page-intro';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -14,11 +14,11 @@ import { setAccessToken } from '@/lib/auth';
 
 function getSafeRedirectUrl(redirect: string | null) {
   if (!redirect) {
-    return '/groups';
+    return '/';
   }
 
   if (!redirect.startsWith('/') || redirect.startsWith('//')) {
-    return '/groups';
+    return '/';
   }
 
   return redirect;
@@ -51,7 +51,7 @@ export default function RegisterPage() {
 
       setAccessToken(result.accessToken);
       const searchParams = new URLSearchParams(window.location.search);
-      router.push(getSafeRedirectUrl(searchParams.get('redirect')));
+      router.replace(getSafeRedirectUrl(searchParams.get('redirect')));
       router.refresh();
     } catch {
       setError('Não foi possível criar sua conta. Verifique os dados e tente de novo.');
@@ -61,12 +61,9 @@ export default function RegisterPage() {
   }
 
   return (
-    <AppShell>
+    <AppShell chrome={{ title: 'Criar conta', back: { fallbackHref: '/', behavior: 'fallback' } }}>
       <div className="space-y-6">
-        <PageHeader
-          title="Criar conta"
-          description="Crie sua conta para participar de grupos e acompanhar seu ranking."
-        />
+        <PageIntro description="Crie sua conta para participar de grupos e acompanhar seu ranking." />
 
         <Card>
           <CardContent className="p-4">

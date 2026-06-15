@@ -3,7 +3,7 @@ import { ProfileSettings } from '@/features/profile/profile-settings';
 
 export default function ProfileSettingsPage() {
   return (
-    <AppShell>
+    <AppShell chrome={{ title: 'Configurações', back: { fallbackHref: '/profile' } }}>
       <ProfileSettings />
     </AppShell>
   );

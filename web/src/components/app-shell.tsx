@@ -1,22 +1,19 @@
 'use client';
 
-import { type ReactNode, useEffect, useMemo, useState } from 'react';
+import { Suspense, type ReactNode, useEffect, useMemo, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
+import { AppTopBar, type AppTopBarBack } from '@/components/app-top-bar';
 import { BottomNav } from '@/components/bottom-nav';
-import { TypographySmall } from '@/components/ui/typography';
 import { getMyGroups } from '@/features/groups/api/groups.api';
 import { getAccessToken } from '@/lib/auth';
-import { Button } from '@/components/ui/button';
-import { ArrowLeft } from 'lucide-react';
+import { NavigationTracker } from '@/providers/navigation-tracker';
 
 export type AppShellChrome = {
   title?: string;
-  showBack?: boolean;
-  backHref?: string;
-  preferBackHref?: boolean;
+  back?: AppTopBarBack;
+  trailing?: ReactNode;
+  bottomNav?: boolean;
 };
-
-type ResolvedAppShellChrome = Required<AppShellChrome>;
 
 type AppShellProps = {
   children: ReactNode;
@@ -47,8 +44,6 @@ export function AppShell({ children, chrome }: AppShellProps) {
 
   const currentPathname = pathname ?? '/';
   const routeAccess = useMemo(() => getRouteAccess(currentPathname), [currentPathname]);
-  const routeChrome = useMemo(() => getRouteChrome(currentPathname), [currentPathname]);
-  const resolvedChrome = useMemo(() => resolveChrome(routeChrome, chrome), [chrome, routeChrome]);
   const [accessState, setAccessState] = useState<AccessState>(
     routeAccess.requiresCheck ? 'checking' : 'allowed',
   );
@@ -128,6 +123,8 @@ export function AppShell({ children, chrome }: AppShellProps) {
   }, [routeAccess, router]);
 
   const shouldHoldContent = routeAccess.requiresCheck && accessState !== 'allowed';
+  const showBottomNav = chrome?.bottomNav ?? true;
+  const shouldTrackNavigation = !shouldHoldContent && chrome?.back?.behavior !== 'fallback';
 
   return (
     <main className="relative h-[100dvh] min-h-[100dvh] overflow-hidden text-foreground">
@@ -137,46 +134,12 @@ export function AppShell({ children, chrome }: AppShellProps) {
         </div>
       </div>
 
-      <AppHeader chrome={resolvedChrome} />
-      <BottomNav />
+      <AppTopBar title={chrome?.title} back={chrome?.back} trailing={chrome?.trailing} />
+      {showBottomNav && <BottomNav />}
+      <Suspense fallback={null}>
+        <NavigationTracker enabled={shouldTrackNavigation} />
+      </Suspense>
     </main>
-  );
-}
-
-function AppHeader({ chrome }: { chrome: ResolvedAppShellChrome }) {
-  const router = useRouter();
-
-  function handleBack() {
-    if (!chrome.showBack) {
-      return;
-    }
-
-    if (!chrome.preferBackHref && canSafelyGoBack()) {
-      router.back();
-      return;
-    }
-
-    router.push(chrome.backHref);
-  }
-
-  return (
-    <header className="fixed inset-x-0 top-0 z-50 px-4 pb-3 pt-[max(0.75rem,env(safe-area-inset-top))]">
-      <div className="pointer-events-none absolute inset-0 bg-background/40 backdrop-blur-xs" />
-
-      <div className="relative mx-auto grid h-11 w-full max-w-md grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center">
-        <div className="min-w-0 justify-self-start">
-          {chrome.showBack && (
-            <Button type="button" onClick={handleBack} variant="secondary" size="icon" aria-label="Voltar">
-              <ArrowLeft />
-            </Button>
-          )}
-        </div>
-
-        <TypographySmall>{chrome.title}</TypographySmall>
-
-        <div aria-hidden="true" />
-      </div>
-    </header>
   );
 }
 
@@ -261,115 +224,6 @@ function getRouteAccess(pathname: string): RouteAccess {
   };
 }
 
-function getRouteChrome(pathname: string): ResolvedAppShellChrome {
-  const normalizedPathname = normalizePathname(pathname);
-
-  if (normalizedPathname === '/') {
-    return { title: 'Seus grupos', showBack: false, backHref: '/', preferBackHref: false };
-  }
-
-  if (normalizedPathname === '/search') {
-    return { title: 'Buscar', showBack: false, backHref: '/', preferBackHref: false };
-  }
-
-  if (normalizedPathname === '/profile') {
-    return { title: 'Perfil', showBack: false, backHref: '/', preferBackHref: false };
-  }
-
-  if (normalizedPathname === '/login') {
-    return { title: 'Entrar', showBack: true, backHref: '/', preferBackHref: true };
-  }
-
-  if (normalizedPathname === '/register') {
-    return { title: 'Criar conta', showBack: true, backHref: '/', preferBackHref: true };
-  }
-
-  if (normalizedPathname === '/groups/new') {
-    return { title: 'Criar grupo', showBack: true, backHref: '/', preferBackHref: true };
-  }
-
-  if (normalizedPathname === '/profile/settings') {
-    return { title: 'Configurações', showBack: true, backHref: '/profile', preferBackHref: true };
-  }
-
-  if (normalizedPathname === '/profile/settings/profile') {
-    return {
-      title: 'Alterar perfil',
-      showBack: true,
-      backHref: '/profile/settings',
-      preferBackHref: true,
-    };
-  }
-
-  if (normalizedPathname === '/profile/settings/password') {
-    return {
-      title: 'Alterar senha',
-      showBack: true,
-      backHref: '/profile/settings',
-      preferBackHref: true,
-    };
-  }
-
-  const newMatchMatch = normalizedPathname.match(/^\/groups\/([^/]+)\/matches\/new$/);
-
-  if (newMatchMatch?.[1]) {
-    return {
-      title: 'Registrar partida',
-      showBack: true,
-      backHref: `/groups/${newMatchMatch[1]}`,
-      preferBackHref: true,
-    };
-  }
-
-  const editMatchMatch = normalizedPathname.match(/^\/groups\/([^/]+)\/matches\/([^/]+)\/edit$/);
-
-  if (editMatchMatch?.[1]) {
-    return {
-      title: 'Corrigir partida',
-      showBack: true,
-      backHref: `/groups/${editMatchMatch[1]}`,
-      preferBackHref: true,
-    };
-  }
-
-  const inviteMatch = normalizedPathname.match(/^\/groups\/([^/]+)\/invite$/);
-
-  if (inviteMatch?.[1]) {
-    return {
-      title: 'Convidar pessoas',
-      showBack: true,
-      backHref: `/groups/${inviteMatch[1]}`,
-      preferBackHref: true,
-    };
-  }
-
-  const groupMatch = normalizedPathname.match(/^\/groups\/([^/]+)$/);
-
-  if (groupMatch?.[1]) {
-    return { title: '', showBack: true, backHref: '/', preferBackHref: true };
-  }
-
-  const userMatch = normalizedPathname.match(/^\/users\/([^/]+)$/);
-
-  if (userMatch?.[1]) {
-    return { title: 'Perfil', showBack: true, backHref: '/', preferBackHref: true };
-  }
-
-  return { title: 'Arena', showBack: true, backHref: '/', preferBackHref: true };
-}
-
-function resolveChrome(
-  routeChrome: ResolvedAppShellChrome,
-  chrome?: AppShellChrome,
-): ResolvedAppShellChrome {
-  return {
-    title: chrome?.title ?? routeChrome.title,
-    showBack: chrome?.showBack ?? routeChrome.showBack,
-    backHref: chrome?.backHref ?? routeChrome.backHref,
-    preferBackHref: chrome?.preferBackHref ?? routeChrome.preferBackHref,
-  };
-}
-
 function normalizePathname(pathname: string) {
   if (pathname.length > 1 && pathname.endsWith('/')) {
     return pathname.slice(0, -1);
@@ -404,12 +258,4 @@ function getSafeRedirectUrl(redirect: string | null) {
   }
 
   return redirect;
-}
-
-function canSafelyGoBack() {
-  if (typeof window === 'undefined') {
-    return false;
-  }
-
-  return window.history.length > 1;
 }
