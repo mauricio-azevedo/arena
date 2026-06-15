@@ -12,7 +12,7 @@ export default async function EditGroupMatchPage({ params }: Props) {
   const { groupId, matchId } = await params;
 
   return (
-    <AppShell>
+    <AppShell chrome={{ title: 'Corrigir partida', back: { fallbackHref: '/groups/' + groupId } }}>
       <EditGroupMatch groupId={groupId} matchId={matchId} />
     </AppShell>
   );
