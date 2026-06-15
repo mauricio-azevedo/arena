@@ -1,1 +1,1 @@
-export type ProfileTab = 'summary' | 'matches' | 'groups' | 'stats';
+export type ProfileTab = 'summary' | 'matches' | 'groups';
