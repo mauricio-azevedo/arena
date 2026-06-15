@@ -1,13 +1,18 @@
 'use client';
 
-import { type ReactNode, useEffect, useMemo, useState } from 'react';
-import { usePathname, useRouter } from 'next/navigation';
-import { BottomNav } from '@/components/bottom-nav';
-import { TypographySmall } from '@/components/ui/typography';
+import Link from 'next/link';
+import { useEffect, useMemo, useState, type ReactNode } from 'react';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { ArrowLeft, Search, Trophy, UserCircle } from 'lucide-react';
 import { getMyGroups } from '@/features/groups/api/groups.api';
 import { getAccessToken } from '@/lib/auth';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft } from 'lucide-react';
+import { TypographySmall } from '@/components/ui/typography';
+
+type AppShellProps = {
+  children: ReactNode;
+  chrome?: AppShellChrome;
+};
 
 export type AppShellChrome = {
   title?: string;
@@ -18,120 +23,96 @@ export type AppShellChrome = {
 
 type ResolvedAppShellChrome = Required<AppShellChrome>;
 
-type AppShellProps = {
-  children: ReactNode;
-  chrome?: AppShellChrome;
+type RouteAccess =
+  | { type: 'public' }
+  | { type: 'guest' }
+  | { type: 'auth' }
+  | { type: 'group'; groupId: string; minRole?: 'ADMIN' | 'MEMBER' };
+
+const defaultChrome: ResolvedAppShellChrome = {
+  title: 'Arena',
+  showBack: false,
+  backHref: '/',
+  preferBackHref: false,
 };
 
-type AccessState = 'checking' | 'allowed' | 'redirecting';
-
-type RouteAccess =
-  | {
-      kind: 'public';
-      requiresCheck: false;
-    }
-  | {
-      kind: 'guest';
-      requiresCheck: true;
-    }
-  | {
-      kind: 'auth';
-      requiresCheck: true;
-      groupId?: string;
-      requiredRole?: 'MEMBER' | 'ADMIN';
-    };
-
 export function AppShell({ children, chrome }: AppShellProps) {
-  const pathname = usePathname();
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const [shouldHoldContent, setShouldHoldContent] = useState(true);
 
   const currentPathname = pathname ?? '/';
   const routeAccess = useMemo(() => getRouteAccess(currentPathname), [currentPathname]);
   const routeChrome = useMemo(() => getRouteChrome(currentPathname), [currentPathname]);
   const resolvedChrome = useMemo(() => resolveChrome(routeChrome, chrome), [chrome, routeChrome]);
-  const [accessState, setAccessState] = useState<AccessState>(
-    routeAccess.requiresCheck ? 'checking' : 'allowed',
-  );
 
   useEffect(() => {
-    let isCurrent = true;
+    let isActive = true;
 
-    async function checkAccess() {
-      if (!routeAccess.requiresCheck) {
-        setAccessState('allowed');
+    async function enforceAccess() {
+      if (routeAccess.type === 'public') {
+        if (isActive) setShouldHoldContent(false);
         return;
       }
 
-      setAccessState('checking');
-
       const token = getAccessToken();
+      const redirect = getSafeRedirectUrl(`${currentPathname}${getSearchSuffix(searchParams)}`);
 
-      if (routeAccess.kind === 'guest') {
-        if (!token) {
-          setAccessState('allowed');
+      if (routeAccess.type === 'guest') {
+        if (token) {
+          router.replace('/');
           return;
         }
 
-        setAccessState('redirecting');
-        router.replace(getSafeRedirectUrl(getRedirectParam()) ?? '/');
+        if (isActive) setShouldHoldContent(false);
         return;
       }
 
       if (!token) {
-        setAccessState('redirecting');
-        router.replace(`/login?redirect=${encodeURIComponent(getCurrentPathWithSearch())}`);
+        router.replace(`/login?redirect=${encodeURIComponent(redirect)}`);
         return;
       }
 
-      if (!routeAccess.groupId) {
-        setAccessState('allowed');
+      if (routeAccess.type === 'auth') {
+        if (isActive) setShouldHoldContent(false);
         return;
       }
 
       try {
-        const memberships = await getMyGroups(token);
+        const groups = await getMyGroups(token);
+        const membership = groups.find((group) => group.groupId === routeAccess.groupId);
+        const isMember = Boolean(membership);
+        const isAdmin = membership?.role === 'ADMIN';
+        const hasAccess =
+          routeAccess.minRole === 'ADMIN'
+            ? isAdmin
+            : routeAccess.minRole === 'MEMBER'
+              ? isMember
+              : isMember;
 
-        if (!isCurrent) {
-          return;
-        }
-
-        const membership = memberships.find((item) => item.groupId === routeAccess.groupId);
-
-        if (!membership) {
-          setAccessState('redirecting');
+        if (!hasAccess) {
           router.replace(`/groups/${routeAccess.groupId}`);
           return;
         }
 
-        if (routeAccess.requiredRole === 'ADMIN' && membership.role !== 'ADMIN') {
-          setAccessState('redirecting');
-          router.replace(`/groups/${routeAccess.groupId}`);
-          return;
-        }
-
-        setAccessState('allowed');
+        if (isActive) setShouldHoldContent(false);
       } catch {
-        if (!isCurrent) {
-          return;
-        }
-
-        setAccessState('redirecting');
-        router.replace('/');
+        router.replace(`/groups/${routeAccess.groupId}`);
       }
     }
 
-    checkAccess();
+    setShouldHoldContent(true);
+    enforceAccess();
 
     return () => {
-      isCurrent = false;
+      isActive = false;
     };
-  }, [routeAccess, router]);
-
-  const shouldHoldContent = routeAccess.requiresCheck && accessState !== 'allowed';
+  }, [currentPathname, routeAccess, router, searchParams]);
 
   return (
     <main className="relative h-[100dvh] min-h-[100dvh] overflow-hidden text-foreground">
-      <div className="absolute inset-0 z-10 overflow-y-auto overscroll-contain px-4 pb-[calc(6rem+env(safe-area-inset-bottom))] pt-[calc(4.75rem+env(safe-area-inset-top))] [-webkit-overflow-scrolling:touch]">
+      <div className="absolute inset-0 z-10 overflow-y-auto overscroll-contain px-4 pt-[calc(max(0.75rem,env(safe-area-inset-top))+4.25rem)] pb-[calc(max(1rem,env(safe-area-inset-bottom))+5.5rem)]">
         <div className="mx-auto w-full max-w-md space-y-6">
           {shouldHoldContent ? <AccessGuardSkeleton /> : children}
         </div>
@@ -166,7 +147,7 @@ function AppHeader({ chrome }: { chrome: ResolvedAppShellChrome }) {
       <div className="relative mx-auto grid h-11 w-full max-w-md grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center">
         <div className="min-w-0 justify-self-start">
           {chrome.showBack && (
-            <Button onClick={handleBack} variant="secondary" size="icon" aria-label="Submit">
+            <Button type="button" onClick={handleBack} variant="secondary" size="icon" aria-label="Voltar">
               <ArrowLeft />
             </Button>
           )}
@@ -188,13 +169,51 @@ function AccessGuardSkeleton() {
       aria-busy="true"
       className="space-y-4 rounded-[2rem] bg-card p-4"
     >
-      <span className="sr-only">Carregando página</span>
-      <div className="h-28 animate-pulse rounded-[1.5rem] bg-muted" />
-      <div className="space-y-2">
-        <div className="h-3 w-2/3 animate-pulse rounded-full bg-muted" />
-        <div className="h-3 w-1/2 animate-pulse rounded-full bg-muted" />
-      </div>
+      <span className="sr-only">Carregando conteúdo</span>
+      <div className="h-8 w-2/3 animate-pulse rounded-full bg-muted" />
+      <div className="h-24 animate-pulse rounded-3xl bg-muted/70" />
+      <div className="h-24 animate-pulse rounded-3xl bg-muted/60" />
     </div>
+  );
+}
+
+function BottomNav() {
+  const pathname = usePathname();
+  const currentPathname = pathname ?? '/';
+
+  const items = [
+    { href: '/', label: 'Grupos', icon: Trophy, match: (path: string) => path === '/' || path.startsWith('/groups') },
+    { href: '/search', label: 'Buscar', icon: Search, match: (path: string) => path.startsWith('/search') },
+    { href: '/profile', label: 'Perfil', icon: UserCircle, match: (path: string) => path.startsWith('/profile') },
+  ];
+
+  return (
+    <nav className="fixed inset-x-0 bottom-0 z-50 px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3">
+      <div className="pointer-events-none absolute inset-0 bg-background/35 backdrop-blur-xs" />
+
+      <div className="br-liquid-glass br-hairline relative mx-auto grid h-16 w-full max-w-md grid-cols-3 rounded-[2rem] p-1.5">
+        {items.map((item) => {
+          const Icon = item.icon;
+          const isActive = item.match(currentPathname);
+
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              aria-current={isActive ? 'page' : undefined}
+              className={`br-pressable flex flex-col items-center justify-center rounded-[1.5rem] text-[11px] font-semibold transition-all ${
+                isActive
+                  ? 'bg-foreground text-background shadow-[0_14px_30px_color-mix(in_oklch,var(--foreground)_16%,transparent)]'
+                  : 'text-muted-foreground hover:bg-white/40 hover:text-foreground dark:hover:bg-white/10'
+              }`}
+            >
+              <Icon className="mb-0.5 h-5 w-5" />
+              {item.label}
+            </Link>
+          );
+        })}
+      </div>
+    </nav>
   );
 }
 
@@ -202,166 +221,122 @@ function getRouteAccess(pathname: string): RouteAccess {
   const normalizedPathname = normalizePathname(pathname);
 
   if (normalizedPathname === '/login' || normalizedPathname === '/register') {
-    return {
-      kind: 'guest',
-      requiresCheck: true,
-    };
+    return { type: 'guest' };
   }
 
-  if (normalizedPathname === '/profile') {
-    return {
-      kind: 'auth',
-      requiresCheck: true,
-    };
-  }
-
-  if (normalizedPathname === '/groups/new') {
-    return {
-      kind: 'auth',
-      requiresCheck: true,
-    };
+  if (normalizedPathname === '/profile' || normalizedPathname === '/groups/new') {
+    return { type: 'auth' };
   }
 
   const inviteMatch = normalizedPathname.match(/^\/groups\/([^/]+)\/invite$/);
 
-  if (inviteMatch?.[1]) {
-    return {
-      kind: 'auth',
-      requiresCheck: true,
-      groupId: inviteMatch[1],
-      requiredRole: 'ADMIN',
-    };
+  if (inviteMatch) {
+    return { type: 'group', groupId: inviteMatch[1], minRole: 'ADMIN' };
   }
 
   const newMatchMatch = normalizedPathname.match(/^\/groups\/([^/]+)\/matches\/new$/);
 
-  if (newMatchMatch?.[1]) {
-    return {
-      kind: 'auth',
-      requiresCheck: true,
-      groupId: newMatchMatch[1],
-      requiredRole: 'MEMBER',
-    };
+  if (newMatchMatch) {
+    return { type: 'group', groupId: newMatchMatch[1], minRole: 'MEMBER' };
   }
 
   const editMatchMatch = normalizedPathname.match(/^\/groups\/([^/]+)\/matches\/([^/]+)\/edit$/);
 
-  if (editMatchMatch?.[1]) {
-    return {
-      kind: 'auth',
-      requiresCheck: true,
-      groupId: editMatchMatch[1],
-      requiredRole: 'MEMBER',
-    };
+  if (editMatchMatch) {
+    return { type: 'group', groupId: editMatchMatch[1], minRole: 'MEMBER' };
   }
 
-  return {
-    kind: 'public',
-    requiresCheck: false,
-  };
+  return { type: 'public' };
 }
 
 function getRouteChrome(pathname: string): ResolvedAppShellChrome {
   const normalizedPathname = normalizePathname(pathname);
 
   if (normalizedPathname === '/') {
-    return { title: 'Seus grupos', showBack: false, backHref: '/', preferBackHref: false };
+    return { ...defaultChrome, title: 'Seus grupos' };
   }
 
   if (normalizedPathname === '/search') {
-    return { title: 'Buscar', showBack: false, backHref: '/', preferBackHref: false };
+    return { ...defaultChrome, title: 'Buscar' };
   }
 
   if (normalizedPathname === '/profile') {
-    return { title: 'Perfil', showBack: false, backHref: '/', preferBackHref: false };
+    return { ...defaultChrome, title: 'Perfil' };
   }
 
   if (normalizedPathname === '/login') {
-    return { title: 'Entrar', showBack: true, backHref: '/', preferBackHref: true };
+    return { ...defaultChrome, title: 'Entrar', showBack: true, backHref: '/', preferBackHref: true };
   }
 
   if (normalizedPathname === '/register') {
-    return { title: 'Criar conta', showBack: true, backHref: '/', preferBackHref: true };
+    return { ...defaultChrome, title: 'Criar conta', showBack: true, backHref: '/' };
   }
 
   if (normalizedPathname === '/groups/new') {
-    return { title: 'Criar grupo', showBack: true, backHref: '/', preferBackHref: true };
+    return { ...defaultChrome, title: 'Criar grupo', showBack: true, backHref: '/' };
   }
 
   if (normalizedPathname === '/profile/settings') {
-    return { title: 'Configurações', showBack: true, backHref: '/profile', preferBackHref: true };
+    return { ...defaultChrome, title: 'Configurações', showBack: true, backHref: '/profile' };
   }
 
   if (normalizedPathname === '/profile/settings/profile') {
-    return {
-      title: 'Alterar perfil',
-      showBack: true,
-      backHref: '/profile/settings',
-      preferBackHref: true,
-    };
+    return { ...defaultChrome, title: 'Alterar perfil', showBack: true, backHref: '/profile/settings' };
   }
 
   if (normalizedPathname === '/profile/settings/password') {
-    return {
-      title: 'Alterar senha',
-      showBack: true,
-      backHref: '/profile/settings',
-      preferBackHref: true,
-    };
+    return { ...defaultChrome, title: 'Alterar senha', showBack: true, backHref: '/profile/settings' };
   }
 
   const newMatchMatch = normalizedPathname.match(/^\/groups\/([^/]+)\/matches\/new$/);
 
-  if (newMatchMatch?.[1]) {
+  if (newMatchMatch) {
     return {
+      ...defaultChrome,
       title: 'Registrar partida',
       showBack: true,
       backHref: `/groups/${newMatchMatch[1]}`,
-      preferBackHref: true,
     };
   }
 
   const editMatchMatch = normalizedPathname.match(/^\/groups\/([^/]+)\/matches\/([^/]+)\/edit$/);
 
-  if (editMatchMatch?.[1]) {
+  if (editMatchMatch) {
     return {
+      ...defaultChrome,
       title: 'Corrigir partida',
       showBack: true,
       backHref: `/groups/${editMatchMatch[1]}`,
-      preferBackHref: true,
     };
   }
 
   const inviteMatch = normalizedPathname.match(/^\/groups\/([^/]+)\/invite$/);
 
-  if (inviteMatch?.[1]) {
+  if (inviteMatch) {
     return {
+      ...defaultChrome,
       title: 'Convidar pessoas',
       showBack: true,
       backHref: `/groups/${inviteMatch[1]}`,
-      preferBackHref: true,
     };
   }
 
   const groupMatch = normalizedPathname.match(/^\/groups\/([^/]+)$/);
 
-  if (groupMatch?.[1]) {
-    return { title: '', showBack: true, backHref: '/', preferBackHref: true };
+  if (groupMatch) {
+    return { ...defaultChrome, title: '', showBack: true, backHref: '/' };
   }
 
-  const userMatch = normalizedPathname.match(/^\/users\/([^/]+)$/);
+  const userProfileMatch = normalizedPathname.match(/^\/users\/([^/]+)$/);
 
-  if (userMatch?.[1]) {
-    return { title: 'Perfil', showBack: true, backHref: '/', preferBackHref: true };
+  if (userProfileMatch) {
+    return { ...defaultChrome, title: 'Perfil', showBack: true, backHref: '/' };
   }
 
-  return { title: 'Arena', showBack: true, backHref: '/', preferBackHref: true };
+  return { ...defaultChrome };
 }
 
-function resolveChrome(
-  routeChrome: ResolvedAppShellChrome,
-  chrome?: AppShellChrome,
-): ResolvedAppShellChrome {
+function resolveChrome(routeChrome: ResolvedAppShellChrome, chrome?: AppShellChrome): ResolvedAppShellChrome {
   return {
     title: chrome?.title ?? routeChrome.title,
     showBack: chrome?.showBack ?? routeChrome.showBack,
@@ -370,46 +345,24 @@ function resolveChrome(
   };
 }
 
-function normalizePathname(pathname: string) {
-  if (pathname.length > 1 && pathname.endsWith('/')) {
-    return pathname.slice(0, -1);
-  }
-
-  return pathname;
-}
-
-function getCurrentPathWithSearch() {
-  if (typeof window === 'undefined') {
-    return '/';
-  }
-
-  return `${window.location.pathname}${window.location.search}`;
-}
-
-function getRedirectParam() {
-  if (typeof window === 'undefined') {
-    return null;
-  }
-
-  return new URLSearchParams(window.location.search).get('redirect');
-}
-
-function getSafeRedirectUrl(redirect: string | null) {
-  if (!redirect) {
-    return null;
-  }
-
-  if (!redirect.startsWith('/') || redirect.startsWith('//')) {
-    return null;
-  }
-
-  return redirect;
-}
-
 function canSafelyGoBack() {
-  if (typeof window === 'undefined') {
-    return false;
+  return typeof window !== 'undefined' && window.history.length > 1;
+}
+
+function getSearchSuffix(searchParams: ReturnType<typeof useSearchParams>) {
+  const queryString = searchParams.toString();
+
+  return queryString ? `?${queryString}` : '';
+}
+
+function getSafeRedirectUrl(url: string) {
+  return url.startsWith('/') && !url.startsWith('//') ? url : '/';
+}
+
+function normalizePathname(pathname: string) {
+  if (pathname.length <= 1) {
+    return pathname;
   }
 
-  return window.history.length > 1;
+  return pathname.replace(/\/+$/, '');
 }
