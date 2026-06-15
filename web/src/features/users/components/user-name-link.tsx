@@ -1,7 +1,6 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname, useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { cn } from '@/lib/utils';
 import { getCurrentUserIdFromAccessToken } from '@/lib/auth';
@@ -12,7 +11,6 @@ type Props = {
   userId?: string | null;
   children: ReactNode;
   className?: string;
-  returnTo?: string;
   variant?: UserNameLinkVariant;
 };
 
@@ -22,19 +20,13 @@ const linkVariantClassNames: Record<UserNameLinkVariant, string> = {
   inline: 'font-semibold underline-offset-4 hover:underline',
 };
 
-export function UserNameLink({ userId, children, className, returnTo, variant = 'default' }: Props) {
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
+export function UserNameLink({ userId, children, className, variant = 'default' }: Props) {
   const [currentUserId, setCurrentUserId] = useState<string | null>(() =>
     typeof window === 'undefined' ? null : getCurrentUserIdFromAccessToken(),
-  );
-  const [currentReturnTo, setCurrentReturnTo] = useState(() =>
-    typeof window === 'undefined' ? '' : `${window.location.pathname}${window.location.search}`,
   );
 
   useEffect(() => {
     setCurrentUserId(getCurrentUserIdFromAccessToken());
-    setCurrentReturnTo(`${window.location.pathname}${window.location.search}`);
   }, []);
 
   const href = useMemo(() => {
@@ -46,12 +38,8 @@ export function UserNameLink({ userId, children, className, returnTo, variant = 
       return '/profile';
     }
 
-    const search = searchParams.toString();
-    const fallbackReturnTo = `${pathname}${search ? `?${search}` : ''}`;
-    const targetReturnTo = returnTo ?? currentReturnTo ?? fallbackReturnTo;
-
-    return `/users/${userId}?returnTo=${encodeURIComponent(targetReturnTo)}`;
-  }, [currentReturnTo, currentUserId, pathname, returnTo, searchParams, userId]);
+    return `/users/${userId}`;
+  }, [currentUserId, userId]);
 
   if (!userId) {
     return <span className={className}>{children}</span>;
