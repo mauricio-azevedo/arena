@@ -94,7 +94,8 @@ export function GroupHomeList() {
     );
   }
 
-  const [featuredItem, ...compactItems] = memberItems;
+  const featuredItem = memberItems[0]!;
+  const compactItems = memberItems.slice(1);
 
   return (
     <section className="space-y-5">
@@ -298,20 +299,6 @@ function AdminBadge() {
     <span className="shrink-0 rounded-full bg-muted px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
       Admin
     </span>
-  );
-}
-
-function CurrentUserStanding({ item }: { item: GroupHomeCard }) {
-  const standing = getStandingDisplay(item);
-
-  return (
-    <div className="rounded-[1.5rem] bg-muted/35 px-3 py-3">
-      <p className="text-sm font-medium text-foreground">{standing.headline}</p>
-      <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-        <span>{standing.detail}</span>
-        {standing.movement && <MovementBadge movement={standing.movement} compact />}
-      </div>
-    </div>
   );
 }
 
@@ -604,17 +591,16 @@ function buildMatchHeadline(metadata: Partial<DominantWinFeedMetadata | CloseMat
     return `Partida terminou ${winnerScore}–${loserScore}`;
   }
 
-  const winners = formatNames(
-    metadata.winners
-      .map((player) => player.displayName)
-      .filter((name): name is string => Boolean(name)),
-  );
+  const winnerNames = metadata.winners
+    .map((player) => player.displayName)
+    .filter((name): name is string => Boolean(name));
+  const winners = formatNames(winnerNames);
 
   if (!winners) {
     return `Partida terminou ${winnerScore}–${loserScore}`;
   }
 
-  return `${winners} venceu por ${winnerScore}–${loserScore}`;
+  return `${winners} ${winnerNames.length === 1 ? 'venceu' : 'venceram'} por ${winnerScore}–${loserScore}`;
 }
 
 function formatGroupsCount(count: number) {
