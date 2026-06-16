@@ -79,6 +79,14 @@ export const ProcessingJobStatus = {
 export type ProcessingJobStatus = (typeof ProcessingJobStatus)[keyof typeof ProcessingJobStatus]
 
 
+export const ProcessingJobScope = {
+  GROUP: 'GROUP',
+  PLATFORM: 'PLATFORM'
+} as const
+
+export type ProcessingJobScope = (typeof ProcessingJobScope)[keyof typeof ProcessingJobScope]
+
+
 export const FeedItemType = {
   GROUP_CREATED: 'GROUP_CREATED',
   MEMBER_JOINED: 'MEMBER_JOINED',
