@@ -187,7 +187,7 @@ model GroupMember {
   @@index([groupId])
   @@index([userId])
   @@index([groupId, rating])
-  @@index([groupId, currentRank rating])
+  @@index([groupId, currentRank, rating])
   @@index([groupId, role])
 }
 
