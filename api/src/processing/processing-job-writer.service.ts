@@ -20,6 +20,13 @@ export class ProcessingJobWriterService {
 
   constructor(private readonly prisma: PrismaService) {}
 
+  async enqueueGroupJob(
+    input: EnqueueJobInput,
+    tx: PrismaClientLike = this.prisma,
+  ) {
+    return this.enqueue(input, tx);
+  }
+
   async enqueue(input: EnqueueJobInput, tx: PrismaClientLike = this.prisma) {
     const job = await tx.processingJob.create({
       data: {
