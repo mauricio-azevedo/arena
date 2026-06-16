@@ -256,7 +256,7 @@ export type ProcessingJobGroupByOutputType = {
   type: $Enums.ProcessingJobType
   scope: $Enums.ProcessingJobScope
   status: $Enums.ProcessingJobStatus
-  groupId: string
+  groupId: string | null
   matchId: string | null
   dedupeKey: string | null
   payload: runtime.JsonValue
@@ -299,7 +299,7 @@ export type ProcessingJobWhereInput = {
   type?: Prisma.EnumProcessingJobTypeFilter<"ProcessingJob"> | $Enums.ProcessingJobType
   scope?: Prisma.EnumProcessingJobScopeFilter<"ProcessingJob"> | $Enums.ProcessingJobScope
   status?: Prisma.EnumProcessingJobStatusFilter<"ProcessingJob"> | $Enums.ProcessingJobStatus
-  groupId?: Prisma.StringFilter<"ProcessingJob"> | string
+  groupId?: Prisma.StringNullableFilter<"ProcessingJob"> | string | null
   matchId?: Prisma.StringNullableFilter<"ProcessingJob"> | string | null
   dedupeKey?: Prisma.StringNullableFilter<"ProcessingJob"> | string | null
   payload?: Prisma.JsonFilter<"ProcessingJob">
@@ -312,7 +312,7 @@ export type ProcessingJobWhereInput = {
   processedAt?: Prisma.DateTimeNullableFilter<"ProcessingJob"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"ProcessingJob"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ProcessingJob"> | Date | string
-  group?: Prisma.XOR<Prisma.GroupScalarRelationFilter, Prisma.GroupWhereInput>
+  group?: Prisma.XOR<Prisma.GroupNullableScalarRelationFilter, Prisma.GroupWhereInput> | null
   match?: Prisma.XOR<Prisma.MatchNullableScalarRelationFilter, Prisma.MatchWhereInput> | null
 }
 
@@ -321,7 +321,7 @@ export type ProcessingJobOrderByWithRelationInput = {
   type?: Prisma.SortOrder
   scope?: Prisma.SortOrder
   status?: Prisma.SortOrder
-  groupId?: Prisma.SortOrder
+  groupId?: Prisma.SortOrderInput | Prisma.SortOrder
   matchId?: Prisma.SortOrderInput | Prisma.SortOrder
   dedupeKey?: Prisma.SortOrderInput | Prisma.SortOrder
   payload?: Prisma.SortOrder
@@ -346,7 +346,7 @@ export type ProcessingJobWhereUniqueInput = Prisma.AtLeast<{
   type?: Prisma.EnumProcessingJobTypeFilter<"ProcessingJob"> | $Enums.ProcessingJobType
   scope?: Prisma.EnumProcessingJobScopeFilter<"ProcessingJob"> | $Enums.ProcessingJobScope
   status?: Prisma.EnumProcessingJobStatusFilter<"ProcessingJob"> | $Enums.ProcessingJobStatus
-  groupId?: Prisma.StringFilter<"ProcessingJob"> | string
+  groupId?: Prisma.StringNullableFilter<"ProcessingJob"> | string | null
   matchId?: Prisma.StringNullableFilter<"ProcessingJob"> | string | null
   dedupeKey?: Prisma.StringNullableFilter<"ProcessingJob"> | string | null
   payload?: Prisma.JsonFilter<"ProcessingJob">
@@ -359,7 +359,7 @@ export type ProcessingJobWhereUniqueInput = Prisma.AtLeast<{
   processedAt?: Prisma.DateTimeNullableFilter<"ProcessingJob"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"ProcessingJob"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ProcessingJob"> | Date | string
-  group?: Prisma.XOR<Prisma.GroupScalarRelationFilter, Prisma.GroupWhereInput>
+  group?: Prisma.XOR<Prisma.GroupNullableScalarRelationFilter, Prisma.GroupWhereInput> | null
   match?: Prisma.XOR<Prisma.MatchNullableScalarRelationFilter, Prisma.MatchWhereInput> | null
 }, "id">
 
@@ -368,7 +368,7 @@ export type ProcessingJobOrderByWithAggregationInput = {
   type?: Prisma.SortOrder
   scope?: Prisma.SortOrder
   status?: Prisma.SortOrder
-  groupId?: Prisma.SortOrder
+  groupId?: Prisma.SortOrderInput | Prisma.SortOrder
   matchId?: Prisma.SortOrderInput | Prisma.SortOrder
   dedupeKey?: Prisma.SortOrderInput | Prisma.SortOrder
   payload?: Prisma.SortOrder
@@ -396,7 +396,7 @@ export type ProcessingJobScalarWhereWithAggregatesInput = {
   type?: Prisma.EnumProcessingJobTypeWithAggregatesFilter<"ProcessingJob"> | $Enums.ProcessingJobType
   scope?: Prisma.EnumProcessingJobScopeWithAggregatesFilter<"ProcessingJob"> | $Enums.ProcessingJobScope
   status?: Prisma.EnumProcessingJobStatusWithAggregatesFilter<"ProcessingJob"> | $Enums.ProcessingJobStatus
-  groupId?: Prisma.StringWithAggregatesFilter<"ProcessingJob"> | string
+  groupId?: Prisma.StringNullableWithAggregatesFilter<"ProcessingJob"> | string | null
   matchId?: Prisma.StringNullableWithAggregatesFilter<"ProcessingJob"> | string | null
   dedupeKey?: Prisma.StringNullableWithAggregatesFilter<"ProcessingJob"> | string | null
   payload?: Prisma.JsonWithAggregatesFilter<"ProcessingJob">
@@ -427,7 +427,7 @@ export type ProcessingJobCreateInput = {
   processedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  group: Prisma.GroupCreateNestedOneWithoutProcessingJobsInput
+  group?: Prisma.GroupCreateNestedOneWithoutProcessingJobsInput
   match?: Prisma.MatchCreateNestedOneWithoutProcessingJobsInput
 }
 
@@ -436,7 +436,7 @@ export type ProcessingJobUncheckedCreateInput = {
   type: $Enums.ProcessingJobType
   scope?: $Enums.ProcessingJobScope
   status?: $Enums.ProcessingJobStatus
-  groupId: string
+  groupId?: string | null
   matchId?: string | null
   dedupeKey?: string | null
   payload?: Prisma.JsonNullValueInput | runtime.InputJsonValue
@@ -467,7 +467,7 @@ export type ProcessingJobUpdateInput = {
   processedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  group?: Prisma.GroupUpdateOneRequiredWithoutProcessingJobsNestedInput
+  group?: Prisma.GroupUpdateOneWithoutProcessingJobsNestedInput
   match?: Prisma.MatchUpdateOneWithoutProcessingJobsNestedInput
 }
 
@@ -476,7 +476,7 @@ export type ProcessingJobUncheckedUpdateInput = {
   type?: Prisma.EnumProcessingJobTypeFieldUpdateOperationsInput | $Enums.ProcessingJobType
   scope?: Prisma.EnumProcessingJobScopeFieldUpdateOperationsInput | $Enums.ProcessingJobScope
   status?: Prisma.EnumProcessingJobStatusFieldUpdateOperationsInput | $Enums.ProcessingJobStatus
-  groupId?: Prisma.StringFieldUpdateOperationsInput | string
+  groupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   matchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dedupeKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   payload?: Prisma.JsonNullValueInput | runtime.InputJsonValue
@@ -496,7 +496,7 @@ export type ProcessingJobCreateManyInput = {
   type: $Enums.ProcessingJobType
   scope?: $Enums.ProcessingJobScope
   status?: $Enums.ProcessingJobStatus
-  groupId: string
+  groupId?: string | null
   matchId?: string | null
   dedupeKey?: string | null
   payload?: Prisma.JsonNullValueInput | runtime.InputJsonValue
@@ -534,7 +534,7 @@ export type ProcessingJobUncheckedUpdateManyInput = {
   type?: Prisma.EnumProcessingJobTypeFieldUpdateOperationsInput | $Enums.ProcessingJobType
   scope?: Prisma.EnumProcessingJobScopeFieldUpdateOperationsInput | $Enums.ProcessingJobScope
   status?: Prisma.EnumProcessingJobStatusFieldUpdateOperationsInput | $Enums.ProcessingJobStatus
-  groupId?: Prisma.StringFieldUpdateOperationsInput | string
+  groupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   matchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dedupeKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   payload?: Prisma.JsonNullValueInput | runtime.InputJsonValue
@@ -795,7 +795,7 @@ export type ProcessingJobScalarWhereInput = {
   type?: Prisma.EnumProcessingJobTypeFilter<"ProcessingJob"> | $Enums.ProcessingJobType
   scope?: Prisma.EnumProcessingJobScopeFilter<"ProcessingJob"> | $Enums.ProcessingJobScope
   status?: Prisma.EnumProcessingJobStatusFilter<"ProcessingJob"> | $Enums.ProcessingJobStatus
-  groupId?: Prisma.StringFilter<"ProcessingJob"> | string
+  groupId?: Prisma.StringNullableFilter<"ProcessingJob"> | string | null
   matchId?: Prisma.StringNullableFilter<"ProcessingJob"> | string | null
   dedupeKey?: Prisma.StringNullableFilter<"ProcessingJob"> | string | null
   payload?: Prisma.JsonFilter<"ProcessingJob">
@@ -826,7 +826,7 @@ export type ProcessingJobCreateWithoutMatchInput = {
   processedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  group: Prisma.GroupCreateNestedOneWithoutProcessingJobsInput
+  group?: Prisma.GroupCreateNestedOneWithoutProcessingJobsInput
 }
 
 export type ProcessingJobUncheckedCreateWithoutMatchInput = {
@@ -983,7 +983,7 @@ export type ProcessingJobUpdateWithoutMatchInput = {
   processedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  group?: Prisma.GroupUpdateOneRequiredWithoutProcessingJobsNestedInput
+  group?: Prisma.GroupUpdateOneWithoutProcessingJobsNestedInput
 }
 
 export type ProcessingJobUncheckedUpdateWithoutMatchInput = {
@@ -1042,7 +1042,7 @@ export type ProcessingJobSelect<ExtArgs extends runtime.Types.Extensions.Interna
   processedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  group?: boolean | Prisma.GroupDefaultArgs<ExtArgs>
+  group?: boolean | Prisma.ProcessingJob$groupArgs<ExtArgs>
   match?: boolean | Prisma.ProcessingJob$matchArgs<ExtArgs>
 }, ExtArgs["result"]["processingJob"]>
 
@@ -1064,7 +1064,7 @@ export type ProcessingJobSelectCreateManyAndReturn<ExtArgs extends runtime.Types
   processedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  group?: boolean | Prisma.GroupDefaultArgs<ExtArgs>
+  group?: boolean | Prisma.ProcessingJob$groupArgs<ExtArgs>
   match?: boolean | Prisma.ProcessingJob$matchArgs<ExtArgs>
 }, ExtArgs["result"]["processingJob"]>
 
@@ -1086,7 +1086,7 @@ export type ProcessingJobSelectUpdateManyAndReturn<ExtArgs extends runtime.Types
   processedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  group?: boolean | Prisma.GroupDefaultArgs<ExtArgs>
+  group?: boolean | Prisma.ProcessingJob$groupArgs<ExtArgs>
   match?: boolean | Prisma.ProcessingJob$matchArgs<ExtArgs>
 }, ExtArgs["result"]["processingJob"]>
 
@@ -1112,22 +1112,22 @@ export type ProcessingJobSelectScalar = {
 
 export type ProcessingJobOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "type" | "scope" | "status" | "groupId" | "matchId" | "dedupeKey" | "payload" | "attemptCount" | "maxAttempts" | "availableAt" | "lockedAt" | "lockedBy" | "lastError" | "processedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["processingJob"]>
 export type ProcessingJobInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  group?: boolean | Prisma.GroupDefaultArgs<ExtArgs>
+  group?: boolean | Prisma.ProcessingJob$groupArgs<ExtArgs>
   match?: boolean | Prisma.ProcessingJob$matchArgs<ExtArgs>
 }
 export type ProcessingJobIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  group?: boolean | Prisma.GroupDefaultArgs<ExtArgs>
+  group?: boolean | Prisma.ProcessingJob$groupArgs<ExtArgs>
   match?: boolean | Prisma.ProcessingJob$matchArgs<ExtArgs>
 }
 export type ProcessingJobIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  group?: boolean | Prisma.GroupDefaultArgs<ExtArgs>
+  group?: boolean | Prisma.ProcessingJob$groupArgs<ExtArgs>
   match?: boolean | Prisma.ProcessingJob$matchArgs<ExtArgs>
 }
 
 export type $ProcessingJobPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "ProcessingJob"
   objects: {
-    group: Prisma.$GroupPayload<ExtArgs>
+    group: Prisma.$GroupPayload<ExtArgs> | null
     match: Prisma.$MatchPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -1135,7 +1135,7 @@ export type $ProcessingJobPayload<ExtArgs extends runtime.Types.Extensions.Inter
     type: $Enums.ProcessingJobType
     scope: $Enums.ProcessingJobScope
     status: $Enums.ProcessingJobStatus
-    groupId: string
+    groupId: string | null
     matchId: string | null
     dedupeKey: string | null
     payload: runtime.JsonValue
@@ -1542,7 +1542,7 @@ readonly fields: ProcessingJobFieldRefs;
  */
 export interface Prisma__ProcessingJobClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  group<T extends Prisma.GroupDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.GroupDefaultArgs<ExtArgs>>): Prisma.Prisma__GroupClient<runtime.Types.Result.GetResult<Prisma.$GroupPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  group<T extends Prisma.ProcessingJob$groupArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProcessingJob$groupArgs<ExtArgs>>): Prisma.Prisma__GroupClient<runtime.Types.Result.GetResult<Prisma.$GroupPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   match<T extends Prisma.ProcessingJob$matchArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProcessingJob$matchArgs<ExtArgs>>): Prisma.Prisma__MatchClient<runtime.Types.Result.GetResult<Prisma.$MatchPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -1988,6 +1988,25 @@ export type ProcessingJobDeleteManyArgs<ExtArgs extends runtime.Types.Extensions
    * Limit how many ProcessingJobs to delete.
    */
   limit?: number
+}
+
+/**
+ * ProcessingJob.group
+ */
+export type ProcessingJob$groupArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Group
+   */
+  select?: Prisma.GroupSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Group
+   */
+  omit?: Prisma.GroupOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.GroupInclude<ExtArgs> | null
+  where?: Prisma.GroupWhereInput
 }
 
 /**
