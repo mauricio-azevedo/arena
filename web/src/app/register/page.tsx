@@ -2,6 +2,7 @@ import { AppShell } from '@/components/app-shell';
 import { PageIntro } from '@/components/page-intro';
 import { RegisterForm } from '@/features/auth/components/register-form';
 import { getSafeAuthRedirectPath } from '@/features/auth/helpers/auth-redirect.helper';
+import { getFirstSearchParam } from '@/lib/search-params';
 
 type RegisterPageProps = {
   searchParams: Promise<{
@@ -11,7 +12,7 @@ type RegisterPageProps = {
 
 export default async function RegisterPage({ searchParams }: RegisterPageProps) {
   const params = await searchParams;
-  const redirectPath = getSafeAuthRedirectPath(getSingleSearchParam(params.redirect));
+  const redirectPath = getSafeAuthRedirectPath(getFirstSearchParam(params.redirect));
 
   return (
     <AppShell chrome={{ title: 'Criar conta', back: { fallbackHref: '/', behavior: 'fallback' } }}>
@@ -21,8 +22,4 @@ export default async function RegisterPage({ searchParams }: RegisterPageProps) 
       </div>
     </AppShell>
   );
-}
-
-function getSingleSearchParam(value: string | string[] | undefined) {
-  return Array.isArray(value) ? value[0] : value;
 }
