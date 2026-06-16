@@ -31,6 +31,7 @@ export class ProcessingJobWriterService {
     const job = await tx.processingJob.create({
       data: {
         type: input.type,
+        scope: 'GROUP',
         status: 'PENDING',
         groupId: input.groupId,
         matchId: input.matchId ?? null,
@@ -43,6 +44,7 @@ export class ProcessingJobWriterService {
       structuredLog('processing_job.enqueued', {
         jobId: job.id,
         jobType: job.type,
+        jobScope: job.scope,
         jobStatus: job.status,
         groupId: job.groupId,
         matchId: job.matchId,

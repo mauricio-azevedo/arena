@@ -467,6 +467,13 @@ export type EnumProcessingJobTypeFilter<$PrismaModel = never> = {
   not?: Prisma.NestedEnumProcessingJobTypeFilter<$PrismaModel> | $Enums.ProcessingJobType
 }
 
+export type EnumProcessingJobScopeFilter<$PrismaModel = never> = {
+  equals?: $Enums.ProcessingJobScope | Prisma.EnumProcessingJobScopeFieldRefInput<$PrismaModel>
+  in?: $Enums.ProcessingJobScope[] | Prisma.ListEnumProcessingJobScopeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ProcessingJobScope[] | Prisma.ListEnumProcessingJobScopeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumProcessingJobScopeFilter<$PrismaModel> | $Enums.ProcessingJobScope
+}
+
 export type EnumProcessingJobStatusFilter<$PrismaModel = never> = {
   equals?: $Enums.ProcessingJobStatus | Prisma.EnumProcessingJobStatusFieldRefInput<$PrismaModel>
   in?: $Enums.ProcessingJobStatus[] | Prisma.ListEnumProcessingJobStatusFieldRefInput<$PrismaModel>
@@ -482,6 +489,16 @@ export type EnumProcessingJobTypeWithAggregatesFilter<$PrismaModel = never> = {
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumProcessingJobTypeFilter<$PrismaModel>
   _max?: Prisma.NestedEnumProcessingJobTypeFilter<$PrismaModel>
+}
+
+export type EnumProcessingJobScopeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ProcessingJobScope | Prisma.EnumProcessingJobScopeFieldRefInput<$PrismaModel>
+  in?: $Enums.ProcessingJobScope[] | Prisma.ListEnumProcessingJobScopeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ProcessingJobScope[] | Prisma.ListEnumProcessingJobScopeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumProcessingJobScopeWithAggregatesFilter<$PrismaModel> | $Enums.ProcessingJobScope
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumProcessingJobScopeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumProcessingJobScopeFilter<$PrismaModel>
 }
 
 export type EnumProcessingJobStatusWithAggregatesFilter<$PrismaModel = never> = {
@@ -962,6 +979,13 @@ export type NestedEnumProcessingJobTypeFilter<$PrismaModel = never> = {
   not?: Prisma.NestedEnumProcessingJobTypeFilter<$PrismaModel> | $Enums.ProcessingJobType
 }
 
+export type NestedEnumProcessingJobScopeFilter<$PrismaModel = never> = {
+  equals?: $Enums.ProcessingJobScope | Prisma.EnumProcessingJobScopeFieldRefInput<$PrismaModel>
+  in?: $Enums.ProcessingJobScope[] | Prisma.ListEnumProcessingJobScopeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ProcessingJobScope[] | Prisma.ListEnumProcessingJobScopeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumProcessingJobScopeFilter<$PrismaModel> | $Enums.ProcessingJobScope
+}
+
 export type NestedEnumProcessingJobStatusFilter<$PrismaModel = never> = {
   equals?: $Enums.ProcessingJobStatus | Prisma.EnumProcessingJobStatusFieldRefInput<$PrismaModel>
   in?: $Enums.ProcessingJobStatus[] | Prisma.ListEnumProcessingJobStatusFieldRefInput<$PrismaModel>
@@ -977,6 +1001,16 @@ export type NestedEnumProcessingJobTypeWithAggregatesFilter<$PrismaModel = never
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumProcessingJobTypeFilter<$PrismaModel>
   _max?: Prisma.NestedEnumProcessingJobTypeFilter<$PrismaModel>
+}
+
+export type NestedEnumProcessingJobScopeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ProcessingJobScope | Prisma.EnumProcessingJobScopeFieldRefInput<$PrismaModel>
+  in?: $Enums.ProcessingJobScope[] | Prisma.ListEnumProcessingJobScopeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ProcessingJobScope[] | Prisma.ListEnumProcessingJobScopeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumProcessingJobScopeWithAggregatesFilter<$PrismaModel> | $Enums.ProcessingJobScope
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumProcessingJobScopeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumProcessingJobScopeFilter<$PrismaModel>
 }
 
 export type NestedEnumProcessingJobStatusWithAggregatesFilter<$PrismaModel = never> = {
