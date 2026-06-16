@@ -46,4 +46,9 @@ Future platform jobs must add stricter constraints together with their first con
 
 The worker claims pending jobs ordered by `availableAt` and `createdAt` using `FOR UPDATE SKIP LOCKED`.
 
+The runner dispatches claimed jobs by `scope`:
+
+- `GROUP` jobs run the current group projection pipeline.
+- `PLATFORM` jobs fail explicitly until a concrete platform job type and handler are added.
+
 Group jobs continue to update group ranking projection state, feed projections, member stats, and group home summaries.
