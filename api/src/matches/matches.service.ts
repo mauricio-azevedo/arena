@@ -77,7 +77,7 @@ export class MatchesService {
       });
 
       await this.markMatchPending(tx, match.id, groupId);
-      await this.processingJobs.enqueue(
+      await this.processingJobs.enqueueGroupJob(
         {
           type: 'MATCH_CREATED',
           groupId,
@@ -141,7 +141,7 @@ export class MatchesService {
       });
 
       await this.markMatchPending(tx, id, groupId);
-      await this.processingJobs.enqueue(
+      await this.processingJobs.enqueueGroupJob(
         {
           type: 'MATCH_UPDATED',
           groupId,
@@ -179,7 +179,7 @@ export class MatchesService {
           AND "groupId" = ${groupId}
       `;
 
-      await this.processingJobs.enqueue(
+      await this.processingJobs.enqueueGroupJob(
         {
           type: 'MATCH_DELETED',
           groupId,
