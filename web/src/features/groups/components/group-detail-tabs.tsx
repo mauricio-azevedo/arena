@@ -269,7 +269,7 @@ function RankingRow({
               <RankingMovementBadge movement={member.rankingMovement} />
             </div>
 
-            <p className="text-xs text-muted-foreground">{getRankingDetail(member, rank)}</p>
+            <p className="text-xs text-muted-foreground">{getRankingDetail(member)}</p>
           </div>
         </div>
 
@@ -418,12 +418,16 @@ function MembersTab({
   );
 }
 
-function getRankingDetail(member: GroupMember, rank: number) {
-  if (rank === 1) {
-    return member.role === 'ADMIN' ? 'Líder do ranking · Admin' : 'Líder do ranking';
-  }
+function getRankingDetail(member: GroupMember) {
+  const stats = member.stats ?? { matchesCount: 0, winsCount: 0 };
+  const winRate = stats.matchesCount > 0 ? Math.round((stats.winsCount / stats.matchesCount) * 100) : 0;
+  const detail = `${formatMatchesCount(stats.matchesCount)} · ${winRate}% vitórias`;
 
-  return member.role === 'ADMIN' ? 'Disputando posição · Admin' : 'Disputando posição';
+  return member.role === 'ADMIN' ? `${detail} · Admin` : detail;
+}
+
+function formatMatchesCount(count: number) {
+  return `${count} ${count === 1 ? 'partida' : 'partidas'}`;
 }
 
 function getFirstName(member: GroupMember) {
