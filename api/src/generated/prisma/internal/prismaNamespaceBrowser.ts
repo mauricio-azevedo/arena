@@ -285,9 +285,11 @@ export type RankingMovementScalarFieldEnum = (typeof RankingMovementScalarFieldE
 export const ProcessingJobScalarFieldEnum = {
   id: 'id',
   type: 'type',
+  scope: 'scope',
   status: 'status',
   groupId: 'groupId',
   matchId: 'matchId',
+  dedupeKey: 'dedupeKey',
   payload: 'payload',
   attemptCount: 'attemptCount',
   maxAttempts: 'maxAttempts',

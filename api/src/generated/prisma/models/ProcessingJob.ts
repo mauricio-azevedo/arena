@@ -39,9 +39,11 @@ export type ProcessingJobSumAggregateOutputType = {
 export type ProcessingJobMinAggregateOutputType = {
   id: string | null
   type: $Enums.ProcessingJobType | null
+  scope: $Enums.ProcessingJobScope | null
   status: $Enums.ProcessingJobStatus | null
   groupId: string | null
   matchId: string | null
+  dedupeKey: string | null
   attemptCount: number | null
   maxAttempts: number | null
   availableAt: Date | null
@@ -56,9 +58,11 @@ export type ProcessingJobMinAggregateOutputType = {
 export type ProcessingJobMaxAggregateOutputType = {
   id: string | null
   type: $Enums.ProcessingJobType | null
+  scope: $Enums.ProcessingJobScope | null
   status: $Enums.ProcessingJobStatus | null
   groupId: string | null
   matchId: string | null
+  dedupeKey: string | null
   attemptCount: number | null
   maxAttempts: number | null
   availableAt: Date | null
@@ -73,9 +77,11 @@ export type ProcessingJobMaxAggregateOutputType = {
 export type ProcessingJobCountAggregateOutputType = {
   id: number
   type: number
+  scope: number
   status: number
   groupId: number
   matchId: number
+  dedupeKey: number
   payload: number
   attemptCount: number
   maxAttempts: number
@@ -103,9 +109,11 @@ export type ProcessingJobSumAggregateInputType = {
 export type ProcessingJobMinAggregateInputType = {
   id?: true
   type?: true
+  scope?: true
   status?: true
   groupId?: true
   matchId?: true
+  dedupeKey?: true
   attemptCount?: true
   maxAttempts?: true
   availableAt?: true
@@ -120,9 +128,11 @@ export type ProcessingJobMinAggregateInputType = {
 export type ProcessingJobMaxAggregateInputType = {
   id?: true
   type?: true
+  scope?: true
   status?: true
   groupId?: true
   matchId?: true
+  dedupeKey?: true
   attemptCount?: true
   maxAttempts?: true
   availableAt?: true
@@ -137,9 +147,11 @@ export type ProcessingJobMaxAggregateInputType = {
 export type ProcessingJobCountAggregateInputType = {
   id?: true
   type?: true
+  scope?: true
   status?: true
   groupId?: true
   matchId?: true
+  dedupeKey?: true
   payload?: true
   attemptCount?: true
   maxAttempts?: true
@@ -242,9 +254,11 @@ export type ProcessingJobGroupByArgs<ExtArgs extends runtime.Types.Extensions.In
 export type ProcessingJobGroupByOutputType = {
   id: string
   type: $Enums.ProcessingJobType
+  scope: $Enums.ProcessingJobScope
   status: $Enums.ProcessingJobStatus
   groupId: string
   matchId: string | null
+  dedupeKey: string | null
   payload: runtime.JsonValue
   attemptCount: number
   maxAttempts: number
@@ -283,9 +297,11 @@ export type ProcessingJobWhereInput = {
   NOT?: Prisma.ProcessingJobWhereInput | Prisma.ProcessingJobWhereInput[]
   id?: Prisma.StringFilter<"ProcessingJob"> | string
   type?: Prisma.EnumProcessingJobTypeFilter<"ProcessingJob"> | $Enums.ProcessingJobType
+  scope?: Prisma.EnumProcessingJobScopeFilter<"ProcessingJob"> | $Enums.ProcessingJobScope
   status?: Prisma.EnumProcessingJobStatusFilter<"ProcessingJob"> | $Enums.ProcessingJobStatus
   groupId?: Prisma.StringFilter<"ProcessingJob"> | string
   matchId?: Prisma.StringNullableFilter<"ProcessingJob"> | string | null
+  dedupeKey?: Prisma.StringNullableFilter<"ProcessingJob"> | string | null
   payload?: Prisma.JsonFilter<"ProcessingJob">
   attemptCount?: Prisma.IntFilter<"ProcessingJob"> | number
   maxAttempts?: Prisma.IntFilter<"ProcessingJob"> | number
@@ -303,9 +319,11 @@ export type ProcessingJobWhereInput = {
 export type ProcessingJobOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   type?: Prisma.SortOrder
+  scope?: Prisma.SortOrder
   status?: Prisma.SortOrder
   groupId?: Prisma.SortOrder
   matchId?: Prisma.SortOrderInput | Prisma.SortOrder
+  dedupeKey?: Prisma.SortOrderInput | Prisma.SortOrder
   payload?: Prisma.SortOrder
   attemptCount?: Prisma.SortOrder
   maxAttempts?: Prisma.SortOrder
@@ -326,9 +344,11 @@ export type ProcessingJobWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.ProcessingJobWhereInput[]
   NOT?: Prisma.ProcessingJobWhereInput | Prisma.ProcessingJobWhereInput[]
   type?: Prisma.EnumProcessingJobTypeFilter<"ProcessingJob"> | $Enums.ProcessingJobType
+  scope?: Prisma.EnumProcessingJobScopeFilter<"ProcessingJob"> | $Enums.ProcessingJobScope
   status?: Prisma.EnumProcessingJobStatusFilter<"ProcessingJob"> | $Enums.ProcessingJobStatus
   groupId?: Prisma.StringFilter<"ProcessingJob"> | string
   matchId?: Prisma.StringNullableFilter<"ProcessingJob"> | string | null
+  dedupeKey?: Prisma.StringNullableFilter<"ProcessingJob"> | string | null
   payload?: Prisma.JsonFilter<"ProcessingJob">
   attemptCount?: Prisma.IntFilter<"ProcessingJob"> | number
   maxAttempts?: Prisma.IntFilter<"ProcessingJob"> | number
@@ -346,9 +366,11 @@ export type ProcessingJobWhereUniqueInput = Prisma.AtLeast<{
 export type ProcessingJobOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   type?: Prisma.SortOrder
+  scope?: Prisma.SortOrder
   status?: Prisma.SortOrder
   groupId?: Prisma.SortOrder
   matchId?: Prisma.SortOrderInput | Prisma.SortOrder
+  dedupeKey?: Prisma.SortOrderInput | Prisma.SortOrder
   payload?: Prisma.SortOrder
   attemptCount?: Prisma.SortOrder
   maxAttempts?: Prisma.SortOrder
@@ -372,9 +394,11 @@ export type ProcessingJobScalarWhereWithAggregatesInput = {
   NOT?: Prisma.ProcessingJobScalarWhereWithAggregatesInput | Prisma.ProcessingJobScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"ProcessingJob"> | string
   type?: Prisma.EnumProcessingJobTypeWithAggregatesFilter<"ProcessingJob"> | $Enums.ProcessingJobType
+  scope?: Prisma.EnumProcessingJobScopeWithAggregatesFilter<"ProcessingJob"> | $Enums.ProcessingJobScope
   status?: Prisma.EnumProcessingJobStatusWithAggregatesFilter<"ProcessingJob"> | $Enums.ProcessingJobStatus
   groupId?: Prisma.StringWithAggregatesFilter<"ProcessingJob"> | string
   matchId?: Prisma.StringNullableWithAggregatesFilter<"ProcessingJob"> | string | null
+  dedupeKey?: Prisma.StringNullableWithAggregatesFilter<"ProcessingJob"> | string | null
   payload?: Prisma.JsonWithAggregatesFilter<"ProcessingJob">
   attemptCount?: Prisma.IntWithAggregatesFilter<"ProcessingJob"> | number
   maxAttempts?: Prisma.IntWithAggregatesFilter<"ProcessingJob"> | number
@@ -390,7 +414,9 @@ export type ProcessingJobScalarWhereWithAggregatesInput = {
 export type ProcessingJobCreateInput = {
   id?: string
   type: $Enums.ProcessingJobType
+  scope?: $Enums.ProcessingJobScope
   status?: $Enums.ProcessingJobStatus
+  dedupeKey?: string | null
   payload?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   attemptCount?: number
   maxAttempts?: number
@@ -408,9 +434,11 @@ export type ProcessingJobCreateInput = {
 export type ProcessingJobUncheckedCreateInput = {
   id?: string
   type: $Enums.ProcessingJobType
+  scope?: $Enums.ProcessingJobScope
   status?: $Enums.ProcessingJobStatus
   groupId: string
   matchId?: string | null
+  dedupeKey?: string | null
   payload?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   attemptCount?: number
   maxAttempts?: number
@@ -426,7 +454,9 @@ export type ProcessingJobUncheckedCreateInput = {
 export type ProcessingJobUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumProcessingJobTypeFieldUpdateOperationsInput | $Enums.ProcessingJobType
+  scope?: Prisma.EnumProcessingJobScopeFieldUpdateOperationsInput | $Enums.ProcessingJobScope
   status?: Prisma.EnumProcessingJobStatusFieldUpdateOperationsInput | $Enums.ProcessingJobStatus
+  dedupeKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   payload?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   attemptCount?: Prisma.IntFieldUpdateOperationsInput | number
   maxAttempts?: Prisma.IntFieldUpdateOperationsInput | number
@@ -444,9 +474,11 @@ export type ProcessingJobUpdateInput = {
 export type ProcessingJobUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumProcessingJobTypeFieldUpdateOperationsInput | $Enums.ProcessingJobType
+  scope?: Prisma.EnumProcessingJobScopeFieldUpdateOperationsInput | $Enums.ProcessingJobScope
   status?: Prisma.EnumProcessingJobStatusFieldUpdateOperationsInput | $Enums.ProcessingJobStatus
   groupId?: Prisma.StringFieldUpdateOperationsInput | string
   matchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dedupeKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   payload?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   attemptCount?: Prisma.IntFieldUpdateOperationsInput | number
   maxAttempts?: Prisma.IntFieldUpdateOperationsInput | number
@@ -462,9 +494,11 @@ export type ProcessingJobUncheckedUpdateInput = {
 export type ProcessingJobCreateManyInput = {
   id?: string
   type: $Enums.ProcessingJobType
+  scope?: $Enums.ProcessingJobScope
   status?: $Enums.ProcessingJobStatus
   groupId: string
   matchId?: string | null
+  dedupeKey?: string | null
   payload?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   attemptCount?: number
   maxAttempts?: number
@@ -480,7 +514,9 @@ export type ProcessingJobCreateManyInput = {
 export type ProcessingJobUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumProcessingJobTypeFieldUpdateOperationsInput | $Enums.ProcessingJobType
+  scope?: Prisma.EnumProcessingJobScopeFieldUpdateOperationsInput | $Enums.ProcessingJobScope
   status?: Prisma.EnumProcessingJobStatusFieldUpdateOperationsInput | $Enums.ProcessingJobStatus
+  dedupeKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   payload?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   attemptCount?: Prisma.IntFieldUpdateOperationsInput | number
   maxAttempts?: Prisma.IntFieldUpdateOperationsInput | number
@@ -496,9 +532,11 @@ export type ProcessingJobUpdateManyMutationInput = {
 export type ProcessingJobUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumProcessingJobTypeFieldUpdateOperationsInput | $Enums.ProcessingJobType
+  scope?: Prisma.EnumProcessingJobScopeFieldUpdateOperationsInput | $Enums.ProcessingJobScope
   status?: Prisma.EnumProcessingJobStatusFieldUpdateOperationsInput | $Enums.ProcessingJobStatus
   groupId?: Prisma.StringFieldUpdateOperationsInput | string
   matchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dedupeKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   payload?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   attemptCount?: Prisma.IntFieldUpdateOperationsInput | number
   maxAttempts?: Prisma.IntFieldUpdateOperationsInput | number
@@ -524,9 +562,11 @@ export type ProcessingJobOrderByRelationAggregateInput = {
 export type ProcessingJobCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   type?: Prisma.SortOrder
+  scope?: Prisma.SortOrder
   status?: Prisma.SortOrder
   groupId?: Prisma.SortOrder
   matchId?: Prisma.SortOrder
+  dedupeKey?: Prisma.SortOrder
   payload?: Prisma.SortOrder
   attemptCount?: Prisma.SortOrder
   maxAttempts?: Prisma.SortOrder
@@ -547,9 +587,11 @@ export type ProcessingJobAvgOrderByAggregateInput = {
 export type ProcessingJobMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   type?: Prisma.SortOrder
+  scope?: Prisma.SortOrder
   status?: Prisma.SortOrder
   groupId?: Prisma.SortOrder
   matchId?: Prisma.SortOrder
+  dedupeKey?: Prisma.SortOrder
   attemptCount?: Prisma.SortOrder
   maxAttempts?: Prisma.SortOrder
   availableAt?: Prisma.SortOrder
@@ -564,9 +606,11 @@ export type ProcessingJobMaxOrderByAggregateInput = {
 export type ProcessingJobMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   type?: Prisma.SortOrder
+  scope?: Prisma.SortOrder
   status?: Prisma.SortOrder
   groupId?: Prisma.SortOrder
   matchId?: Prisma.SortOrder
+  dedupeKey?: Prisma.SortOrder
   attemptCount?: Prisma.SortOrder
   maxAttempts?: Prisma.SortOrder
   availableAt?: Prisma.SortOrder
@@ -671,6 +715,10 @@ export type EnumProcessingJobTypeFieldUpdateOperationsInput = {
   set?: $Enums.ProcessingJobType
 }
 
+export type EnumProcessingJobScopeFieldUpdateOperationsInput = {
+  set?: $Enums.ProcessingJobScope
+}
+
 export type EnumProcessingJobStatusFieldUpdateOperationsInput = {
   set?: $Enums.ProcessingJobStatus
 }
@@ -678,7 +726,9 @@ export type EnumProcessingJobStatusFieldUpdateOperationsInput = {
 export type ProcessingJobCreateWithoutGroupInput = {
   id?: string
   type: $Enums.ProcessingJobType
+  scope?: $Enums.ProcessingJobScope
   status?: $Enums.ProcessingJobStatus
+  dedupeKey?: string | null
   payload?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   attemptCount?: number
   maxAttempts?: number
@@ -695,8 +745,10 @@ export type ProcessingJobCreateWithoutGroupInput = {
 export type ProcessingJobUncheckedCreateWithoutGroupInput = {
   id?: string
   type: $Enums.ProcessingJobType
+  scope?: $Enums.ProcessingJobScope
   status?: $Enums.ProcessingJobStatus
   matchId?: string | null
+  dedupeKey?: string | null
   payload?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   attemptCount?: number
   maxAttempts?: number
@@ -741,9 +793,11 @@ export type ProcessingJobScalarWhereInput = {
   NOT?: Prisma.ProcessingJobScalarWhereInput | Prisma.ProcessingJobScalarWhereInput[]
   id?: Prisma.StringFilter<"ProcessingJob"> | string
   type?: Prisma.EnumProcessingJobTypeFilter<"ProcessingJob"> | $Enums.ProcessingJobType
+  scope?: Prisma.EnumProcessingJobScopeFilter<"ProcessingJob"> | $Enums.ProcessingJobScope
   status?: Prisma.EnumProcessingJobStatusFilter<"ProcessingJob"> | $Enums.ProcessingJobStatus
   groupId?: Prisma.StringFilter<"ProcessingJob"> | string
   matchId?: Prisma.StringNullableFilter<"ProcessingJob"> | string | null
+  dedupeKey?: Prisma.StringNullableFilter<"ProcessingJob"> | string | null
   payload?: Prisma.JsonFilter<"ProcessingJob">
   attemptCount?: Prisma.IntFilter<"ProcessingJob"> | number
   maxAttempts?: Prisma.IntFilter<"ProcessingJob"> | number
@@ -759,7 +813,9 @@ export type ProcessingJobScalarWhereInput = {
 export type ProcessingJobCreateWithoutMatchInput = {
   id?: string
   type: $Enums.ProcessingJobType
+  scope?: $Enums.ProcessingJobScope
   status?: $Enums.ProcessingJobStatus
+  dedupeKey?: string | null
   payload?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   attemptCount?: number
   maxAttempts?: number
@@ -776,7 +832,9 @@ export type ProcessingJobCreateWithoutMatchInput = {
 export type ProcessingJobUncheckedCreateWithoutMatchInput = {
   id?: string
   type: $Enums.ProcessingJobType
+  scope?: $Enums.ProcessingJobScope
   status?: $Enums.ProcessingJobStatus
+  dedupeKey?: string | null
   payload?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   attemptCount?: number
   maxAttempts?: number
@@ -818,8 +876,10 @@ export type ProcessingJobUpdateManyWithWhereWithoutMatchInput = {
 export type ProcessingJobCreateManyGroupInput = {
   id?: string
   type: $Enums.ProcessingJobType
+  scope?: $Enums.ProcessingJobScope
   status?: $Enums.ProcessingJobStatus
   matchId?: string | null
+  dedupeKey?: string | null
   payload?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   attemptCount?: number
   maxAttempts?: number
@@ -835,7 +895,9 @@ export type ProcessingJobCreateManyGroupInput = {
 export type ProcessingJobUpdateWithoutGroupInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumProcessingJobTypeFieldUpdateOperationsInput | $Enums.ProcessingJobType
+  scope?: Prisma.EnumProcessingJobScopeFieldUpdateOperationsInput | $Enums.ProcessingJobScope
   status?: Prisma.EnumProcessingJobStatusFieldUpdateOperationsInput | $Enums.ProcessingJobStatus
+  dedupeKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   payload?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   attemptCount?: Prisma.IntFieldUpdateOperationsInput | number
   maxAttempts?: Prisma.IntFieldUpdateOperationsInput | number
@@ -852,8 +914,10 @@ export type ProcessingJobUpdateWithoutGroupInput = {
 export type ProcessingJobUncheckedUpdateWithoutGroupInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumProcessingJobTypeFieldUpdateOperationsInput | $Enums.ProcessingJobType
+  scope?: Prisma.EnumProcessingJobScopeFieldUpdateOperationsInput | $Enums.ProcessingJobScope
   status?: Prisma.EnumProcessingJobStatusFieldUpdateOperationsInput | $Enums.ProcessingJobStatus
   matchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dedupeKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   payload?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   attemptCount?: Prisma.IntFieldUpdateOperationsInput | number
   maxAttempts?: Prisma.IntFieldUpdateOperationsInput | number
@@ -869,8 +933,10 @@ export type ProcessingJobUncheckedUpdateWithoutGroupInput = {
 export type ProcessingJobUncheckedUpdateManyWithoutGroupInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumProcessingJobTypeFieldUpdateOperationsInput | $Enums.ProcessingJobType
+  scope?: Prisma.EnumProcessingJobScopeFieldUpdateOperationsInput | $Enums.ProcessingJobScope
   status?: Prisma.EnumProcessingJobStatusFieldUpdateOperationsInput | $Enums.ProcessingJobStatus
   matchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dedupeKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   payload?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   attemptCount?: Prisma.IntFieldUpdateOperationsInput | number
   maxAttempts?: Prisma.IntFieldUpdateOperationsInput | number
@@ -886,7 +952,9 @@ export type ProcessingJobUncheckedUpdateManyWithoutGroupInput = {
 export type ProcessingJobCreateManyMatchInput = {
   id?: string
   type: $Enums.ProcessingJobType
+  scope?: $Enums.ProcessingJobScope
   status?: $Enums.ProcessingJobStatus
+  dedupeKey?: string | null
   payload?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   attemptCount?: number
   maxAttempts?: number
@@ -902,7 +970,9 @@ export type ProcessingJobCreateManyMatchInput = {
 export type ProcessingJobUpdateWithoutMatchInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumProcessingJobTypeFieldUpdateOperationsInput | $Enums.ProcessingJobType
+  scope?: Prisma.EnumProcessingJobScopeFieldUpdateOperationsInput | $Enums.ProcessingJobScope
   status?: Prisma.EnumProcessingJobStatusFieldUpdateOperationsInput | $Enums.ProcessingJobStatus
+  dedupeKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   payload?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   attemptCount?: Prisma.IntFieldUpdateOperationsInput | number
   maxAttempts?: Prisma.IntFieldUpdateOperationsInput | number
@@ -919,7 +989,9 @@ export type ProcessingJobUpdateWithoutMatchInput = {
 export type ProcessingJobUncheckedUpdateWithoutMatchInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumProcessingJobTypeFieldUpdateOperationsInput | $Enums.ProcessingJobType
+  scope?: Prisma.EnumProcessingJobScopeFieldUpdateOperationsInput | $Enums.ProcessingJobScope
   status?: Prisma.EnumProcessingJobStatusFieldUpdateOperationsInput | $Enums.ProcessingJobStatus
+  dedupeKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   payload?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   attemptCount?: Prisma.IntFieldUpdateOperationsInput | number
   maxAttempts?: Prisma.IntFieldUpdateOperationsInput | number
@@ -935,7 +1007,9 @@ export type ProcessingJobUncheckedUpdateWithoutMatchInput = {
 export type ProcessingJobUncheckedUpdateManyWithoutMatchInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumProcessingJobTypeFieldUpdateOperationsInput | $Enums.ProcessingJobType
+  scope?: Prisma.EnumProcessingJobScopeFieldUpdateOperationsInput | $Enums.ProcessingJobScope
   status?: Prisma.EnumProcessingJobStatusFieldUpdateOperationsInput | $Enums.ProcessingJobStatus
+  dedupeKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   payload?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   attemptCount?: Prisma.IntFieldUpdateOperationsInput | number
   maxAttempts?: Prisma.IntFieldUpdateOperationsInput | number
@@ -953,9 +1027,11 @@ export type ProcessingJobUncheckedUpdateManyWithoutMatchInput = {
 export type ProcessingJobSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   type?: boolean
+  scope?: boolean
   status?: boolean
   groupId?: boolean
   matchId?: boolean
+  dedupeKey?: boolean
   payload?: boolean
   attemptCount?: boolean
   maxAttempts?: boolean
@@ -973,9 +1049,11 @@ export type ProcessingJobSelect<ExtArgs extends runtime.Types.Extensions.Interna
 export type ProcessingJobSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   type?: boolean
+  scope?: boolean
   status?: boolean
   groupId?: boolean
   matchId?: boolean
+  dedupeKey?: boolean
   payload?: boolean
   attemptCount?: boolean
   maxAttempts?: boolean
@@ -993,9 +1071,11 @@ export type ProcessingJobSelectCreateManyAndReturn<ExtArgs extends runtime.Types
 export type ProcessingJobSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   type?: boolean
+  scope?: boolean
   status?: boolean
   groupId?: boolean
   matchId?: boolean
+  dedupeKey?: boolean
   payload?: boolean
   attemptCount?: boolean
   maxAttempts?: boolean
@@ -1013,9 +1093,11 @@ export type ProcessingJobSelectUpdateManyAndReturn<ExtArgs extends runtime.Types
 export type ProcessingJobSelectScalar = {
   id?: boolean
   type?: boolean
+  scope?: boolean
   status?: boolean
   groupId?: boolean
   matchId?: boolean
+  dedupeKey?: boolean
   payload?: boolean
   attemptCount?: boolean
   maxAttempts?: boolean
@@ -1028,7 +1110,7 @@ export type ProcessingJobSelectScalar = {
   updatedAt?: boolean
 }
 
-export type ProcessingJobOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "type" | "status" | "groupId" | "matchId" | "payload" | "attemptCount" | "maxAttempts" | "availableAt" | "lockedAt" | "lockedBy" | "lastError" | "processedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["processingJob"]>
+export type ProcessingJobOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "type" | "scope" | "status" | "groupId" | "matchId" | "dedupeKey" | "payload" | "attemptCount" | "maxAttempts" | "availableAt" | "lockedAt" | "lockedBy" | "lastError" | "processedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["processingJob"]>
 export type ProcessingJobInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   group?: boolean | Prisma.GroupDefaultArgs<ExtArgs>
   match?: boolean | Prisma.ProcessingJob$matchArgs<ExtArgs>
@@ -1051,9 +1133,11 @@ export type $ProcessingJobPayload<ExtArgs extends runtime.Types.Extensions.Inter
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     type: $Enums.ProcessingJobType
+    scope: $Enums.ProcessingJobScope
     status: $Enums.ProcessingJobStatus
     groupId: string
     matchId: string | null
+    dedupeKey: string | null
     payload: runtime.JsonValue
     attemptCount: number
     maxAttempts: number
@@ -1491,9 +1575,11 @@ export interface Prisma__ProcessingJobClient<T, Null = never, ExtArgs extends ru
 export interface ProcessingJobFieldRefs {
   readonly id: Prisma.FieldRef<"ProcessingJob", 'String'>
   readonly type: Prisma.FieldRef<"ProcessingJob", 'ProcessingJobType'>
+  readonly scope: Prisma.FieldRef<"ProcessingJob", 'ProcessingJobScope'>
   readonly status: Prisma.FieldRef<"ProcessingJob", 'ProcessingJobStatus'>
   readonly groupId: Prisma.FieldRef<"ProcessingJob", 'String'>
   readonly matchId: Prisma.FieldRef<"ProcessingJob", 'String'>
+  readonly dedupeKey: Prisma.FieldRef<"ProcessingJob", 'String'>
   readonly payload: Prisma.FieldRef<"ProcessingJob", 'Json'>
   readonly attemptCount: Prisma.FieldRef<"ProcessingJob", 'Int'>
   readonly maxAttempts: Prisma.FieldRef<"ProcessingJob", 'Int'>

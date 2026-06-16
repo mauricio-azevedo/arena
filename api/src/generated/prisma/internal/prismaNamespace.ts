@@ -1620,9 +1620,11 @@ export type RankingMovementScalarFieldEnum = (typeof RankingMovementScalarFieldE
 export const ProcessingJobScalarFieldEnum = {
   id: 'id',
   type: 'type',
+  scope: 'scope',
   status: 'status',
   groupId: 'groupId',
   matchId: 'matchId',
+  dedupeKey: 'dedupeKey',
   payload: 'payload',
   attemptCount: 'attemptCount',
   maxAttempts: 'maxAttempts',
@@ -1875,6 +1877,20 @@ export type EnumProcessingJobTypeFieldRefInput<$PrismaModel> = FieldRefInputType
  * Reference to a field of type 'ProcessingJobType[]'
  */
 export type ListEnumProcessingJobTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ProcessingJobType[]'>
+    
+
+
+/**
+ * Reference to a field of type 'ProcessingJobScope'
+ */
+export type EnumProcessingJobScopeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ProcessingJobScope'>
+    
+
+
+/**
+ * Reference to a field of type 'ProcessingJobScope[]'
+ */
+export type ListEnumProcessingJobScopeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ProcessingJobScope[]'>
     
 
 
