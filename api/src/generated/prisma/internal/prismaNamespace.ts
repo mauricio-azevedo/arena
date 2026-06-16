@@ -388,6 +388,7 @@ export const ModelName = {
   Group: 'Group',
   GroupInvite: 'GroupInvite',
   GroupMember: 'GroupMember',
+  GroupMemberStats: 'GroupMemberStats',
   Match: 'Match',
   MatchPlayer: 'MatchPlayer',
   MatchRankingSnapshot: 'MatchRankingSnapshot',
@@ -411,7 +412,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "group" | "groupInvite" | "groupMember" | "match" | "matchPlayer" | "matchRankingSnapshot" | "groupRankingProjection" | "groupHomeSummary" | "rankingMovement" | "processingJob" | "feedItem"
+    modelProps: "user" | "group" | "groupInvite" | "groupMember" | "groupMemberStats" | "match" | "matchPlayer" | "matchRankingSnapshot" | "groupRankingProjection" | "groupHomeSummary" | "rankingMovement" | "processingJob" | "feedItem"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -708,6 +709,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.GroupMemberCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.GroupMemberCountAggregateOutputType> | number
+        }
+      }
+    }
+    GroupMemberStats: {
+      payload: Prisma.$GroupMemberStatsPayload<ExtArgs>
+      fields: Prisma.GroupMemberStatsFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.GroupMemberStatsFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GroupMemberStatsPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.GroupMemberStatsFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GroupMemberStatsPayload>
+        }
+        findFirst: {
+          args: Prisma.GroupMemberStatsFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GroupMemberStatsPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.GroupMemberStatsFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GroupMemberStatsPayload>
+        }
+        findMany: {
+          args: Prisma.GroupMemberStatsFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GroupMemberStatsPayload>[]
+        }
+        create: {
+          args: Prisma.GroupMemberStatsCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GroupMemberStatsPayload>
+        }
+        createMany: {
+          args: Prisma.GroupMemberStatsCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.GroupMemberStatsCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GroupMemberStatsPayload>[]
+        }
+        delete: {
+          args: Prisma.GroupMemberStatsDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GroupMemberStatsPayload>
+        }
+        update: {
+          args: Prisma.GroupMemberStatsUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GroupMemberStatsPayload>
+        }
+        deleteMany: {
+          args: Prisma.GroupMemberStatsDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.GroupMemberStatsUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.GroupMemberStatsUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GroupMemberStatsPayload>[]
+        }
+        upsert: {
+          args: Prisma.GroupMemberStatsUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GroupMemberStatsPayload>
+        }
+        aggregate: {
+          args: Prisma.GroupMemberStatsAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateGroupMemberStats>
+        }
+        groupBy: {
+          args: Prisma.GroupMemberStatsGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.GroupMemberStatsGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.GroupMemberStatsCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.GroupMemberStatsCountAggregateOutputType> | number
         }
       }
     }
@@ -1404,6 +1479,18 @@ export const GroupMemberScalarFieldEnum = {
 export type GroupMemberScalarFieldEnum = (typeof GroupMemberScalarFieldEnum)[keyof typeof GroupMemberScalarFieldEnum]
 
 
+export const GroupMemberStatsScalarFieldEnum = {
+  groupMemberId: 'groupMemberId',
+  groupId: 'groupId',
+  matchesCount: 'matchesCount',
+  winsCount: 'winsCount',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type GroupMemberStatsScalarFieldEnum = (typeof GroupMemberStatsScalarFieldEnum)[keyof typeof GroupMemberStatsScalarFieldEnum]
+
+
 export const MatchScalarFieldEnum = {
   id: 'id',
   groupId: 'groupId',
@@ -1960,6 +2047,7 @@ export type GlobalOmitConfig = {
   group?: Prisma.GroupOmit
   groupInvite?: Prisma.GroupInviteOmit
   groupMember?: Prisma.GroupMemberOmit
+  groupMemberStats?: Prisma.GroupMemberStatsOmit
   match?: Prisma.MatchOmit
   matchPlayer?: Prisma.MatchPlayerOmit
   matchRankingSnapshot?: Prisma.MatchRankingSnapshotOmit

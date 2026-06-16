@@ -38,6 +38,11 @@ export type GroupInvite = Prisma.GroupInviteModel
  */
 export type GroupMember = Prisma.GroupMemberModel
 /**
+ * Model GroupMemberStats
+ * 
+ */
+export type GroupMemberStats = Prisma.GroupMemberStatsModel
+/**
  * Model Match
  * 
  */

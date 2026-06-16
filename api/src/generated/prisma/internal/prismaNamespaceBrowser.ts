@@ -55,6 +55,7 @@ export const ModelName = {
   Group: 'Group',
   GroupInvite: 'GroupInvite',
   GroupMember: 'GroupMember',
+  GroupMemberStats: 'GroupMemberStats',
   Match: 'Match',
   MatchPlayer: 'MatchPlayer',
   MatchRankingSnapshot: 'MatchRankingSnapshot',
@@ -141,6 +142,18 @@ export const GroupMemberScalarFieldEnum = {
 } as const
 
 export type GroupMemberScalarFieldEnum = (typeof GroupMemberScalarFieldEnum)[keyof typeof GroupMemberScalarFieldEnum]
+
+
+export const GroupMemberStatsScalarFieldEnum = {
+  groupMemberId: 'groupMemberId',
+  groupId: 'groupId',
+  matchesCount: 'matchesCount',
+  winsCount: 'winsCount',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type GroupMemberStatsScalarFieldEnum = (typeof GroupMemberStatsScalarFieldEnum)[keyof typeof GroupMemberStatsScalarFieldEnum]
 
 
 export const MatchScalarFieldEnum = {

@@ -313,6 +313,7 @@ export type GroupMemberWhereInput = {
   matchPlayers?: Prisma.MatchPlayerListRelationFilter
   actorFeedItems?: Prisma.FeedItemListRelationFilter
   rankingMovements?: Prisma.RankingMovementListRelationFilter
+  stats?: Prisma.XOR<Prisma.GroupMemberStatsNullableScalarRelationFilter, Prisma.GroupMemberStatsWhereInput> | null
 }
 
 export type GroupMemberOrderByWithRelationInput = {
@@ -335,6 +336,7 @@ export type GroupMemberOrderByWithRelationInput = {
   matchPlayers?: Prisma.MatchPlayerOrderByRelationAggregateInput
   actorFeedItems?: Prisma.FeedItemOrderByRelationAggregateInput
   rankingMovements?: Prisma.RankingMovementOrderByRelationAggregateInput
+  stats?: Prisma.GroupMemberStatsOrderByWithRelationInput
 }
 
 export type GroupMemberWhereUniqueInput = Prisma.AtLeast<{
@@ -362,6 +364,7 @@ export type GroupMemberWhereUniqueInput = Prisma.AtLeast<{
   matchPlayers?: Prisma.MatchPlayerListRelationFilter
   actorFeedItems?: Prisma.FeedItemListRelationFilter
   rankingMovements?: Prisma.RankingMovementListRelationFilter
+  stats?: Prisma.XOR<Prisma.GroupMemberStatsNullableScalarRelationFilter, Prisma.GroupMemberStatsWhereInput> | null
 }, "id" | "groupId_userId" | "id_groupId">
 
 export type GroupMemberOrderByWithAggregationInput = {
@@ -424,6 +427,7 @@ export type GroupMemberCreateInput = {
   matchPlayers?: Prisma.MatchPlayerCreateNestedManyWithoutGroupMemberInput
   actorFeedItems?: Prisma.FeedItemCreateNestedManyWithoutActorGroupMemberInput
   rankingMovements?: Prisma.RankingMovementCreateNestedManyWithoutGroupMemberInput
+  stats?: Prisma.GroupMemberStatsCreateNestedOneWithoutGroupMemberInput
 }
 
 export type GroupMemberUncheckedCreateInput = {
@@ -444,6 +448,7 @@ export type GroupMemberUncheckedCreateInput = {
   matchPlayers?: Prisma.MatchPlayerUncheckedCreateNestedManyWithoutGroupMemberInput
   actorFeedItems?: Prisma.FeedItemUncheckedCreateNestedManyWithoutActorGroupMemberInput
   rankingMovements?: Prisma.RankingMovementUncheckedCreateNestedManyWithoutGroupMemberInput
+  stats?: Prisma.GroupMemberStatsUncheckedCreateNestedOneWithoutGroupMemberInput
 }
 
 export type GroupMemberUpdateInput = {
@@ -464,6 +469,7 @@ export type GroupMemberUpdateInput = {
   matchPlayers?: Prisma.MatchPlayerUpdateManyWithoutGroupMemberNestedInput
   actorFeedItems?: Prisma.FeedItemUpdateManyWithoutActorGroupMemberNestedInput
   rankingMovements?: Prisma.RankingMovementUpdateManyWithoutGroupMemberNestedInput
+  stats?: Prisma.GroupMemberStatsUpdateOneWithoutGroupMemberNestedInput
 }
 
 export type GroupMemberUncheckedUpdateInput = {
@@ -484,6 +490,7 @@ export type GroupMemberUncheckedUpdateInput = {
   matchPlayers?: Prisma.MatchPlayerUncheckedUpdateManyWithoutGroupMemberNestedInput
   actorFeedItems?: Prisma.FeedItemUncheckedUpdateManyWithoutActorGroupMemberNestedInput
   rankingMovements?: Prisma.RankingMovementUncheckedUpdateManyWithoutGroupMemberNestedInput
+  stats?: Prisma.GroupMemberStatsUncheckedUpdateOneWithoutGroupMemberNestedInput
 }
 
 export type GroupMemberCreateManyInput = {
@@ -738,6 +745,20 @@ export type EnumGroupMemberRoleFieldUpdateOperationsInput = {
   set?: $Enums.GroupMemberRole
 }
 
+export type GroupMemberCreateNestedOneWithoutStatsInput = {
+  create?: Prisma.XOR<Prisma.GroupMemberCreateWithoutStatsInput, Prisma.GroupMemberUncheckedCreateWithoutStatsInput>
+  connectOrCreate?: Prisma.GroupMemberCreateOrConnectWithoutStatsInput
+  connect?: Prisma.GroupMemberWhereUniqueInput
+}
+
+export type GroupMemberUpdateOneRequiredWithoutStatsNestedInput = {
+  create?: Prisma.XOR<Prisma.GroupMemberCreateWithoutStatsInput, Prisma.GroupMemberUncheckedCreateWithoutStatsInput>
+  connectOrCreate?: Prisma.GroupMemberCreateOrConnectWithoutStatsInput
+  upsert?: Prisma.GroupMemberUpsertWithoutStatsInput
+  connect?: Prisma.GroupMemberWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.GroupMemberUpdateToOneWithWhereWithoutStatsInput, Prisma.GroupMemberUpdateWithoutStatsInput>, Prisma.GroupMemberUncheckedUpdateWithoutStatsInput>
+}
+
 export type GroupMemberCreateNestedOneWithoutMatchPlayersInput = {
   create?: Prisma.XOR<Prisma.GroupMemberCreateWithoutMatchPlayersInput, Prisma.GroupMemberUncheckedCreateWithoutMatchPlayersInput>
   connectOrCreate?: Prisma.GroupMemberCreateOrConnectWithoutMatchPlayersInput
@@ -799,6 +820,7 @@ export type GroupMemberCreateWithoutUserInput = {
   matchPlayers?: Prisma.MatchPlayerCreateNestedManyWithoutGroupMemberInput
   actorFeedItems?: Prisma.FeedItemCreateNestedManyWithoutActorGroupMemberInput
   rankingMovements?: Prisma.RankingMovementCreateNestedManyWithoutGroupMemberInput
+  stats?: Prisma.GroupMemberStatsCreateNestedOneWithoutGroupMemberInput
 }
 
 export type GroupMemberUncheckedCreateWithoutUserInput = {
@@ -818,6 +840,7 @@ export type GroupMemberUncheckedCreateWithoutUserInput = {
   matchPlayers?: Prisma.MatchPlayerUncheckedCreateNestedManyWithoutGroupMemberInput
   actorFeedItems?: Prisma.FeedItemUncheckedCreateNestedManyWithoutActorGroupMemberInput
   rankingMovements?: Prisma.RankingMovementUncheckedCreateNestedManyWithoutGroupMemberInput
+  stats?: Prisma.GroupMemberStatsUncheckedCreateNestedOneWithoutGroupMemberInput
 }
 
 export type GroupMemberCreateOrConnectWithoutUserInput = {
@@ -883,6 +906,7 @@ export type GroupMemberCreateWithoutGroupInput = {
   matchPlayers?: Prisma.MatchPlayerCreateNestedManyWithoutGroupMemberInput
   actorFeedItems?: Prisma.FeedItemCreateNestedManyWithoutActorGroupMemberInput
   rankingMovements?: Prisma.RankingMovementCreateNestedManyWithoutGroupMemberInput
+  stats?: Prisma.GroupMemberStatsCreateNestedOneWithoutGroupMemberInput
 }
 
 export type GroupMemberUncheckedCreateWithoutGroupInput = {
@@ -902,6 +926,7 @@ export type GroupMemberUncheckedCreateWithoutGroupInput = {
   matchPlayers?: Prisma.MatchPlayerUncheckedCreateNestedManyWithoutGroupMemberInput
   actorFeedItems?: Prisma.FeedItemUncheckedCreateNestedManyWithoutActorGroupMemberInput
   rankingMovements?: Prisma.RankingMovementUncheckedCreateNestedManyWithoutGroupMemberInput
+  stats?: Prisma.GroupMemberStatsUncheckedCreateNestedOneWithoutGroupMemberInput
 }
 
 export type GroupMemberCreateOrConnectWithoutGroupInput = {
@@ -930,6 +955,102 @@ export type GroupMemberUpdateManyWithWhereWithoutGroupInput = {
   data: Prisma.XOR<Prisma.GroupMemberUpdateManyMutationInput, Prisma.GroupMemberUncheckedUpdateManyWithoutGroupInput>
 }
 
+export type GroupMemberCreateWithoutStatsInput = {
+  id?: string
+  rating?: number
+  ratingDeviation?: number | null
+  ratingVolatility?: number | null
+  ratingMu?: number | null
+  ratingSigma?: number | null
+  ratingAlgorithm?: string
+  currentRank?: number | null
+  role?: $Enums.GroupMemberRole
+  leftAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  group: Prisma.GroupCreateNestedOneWithoutMembersInput
+  user: Prisma.UserCreateNestedOneWithoutMembershipsInput
+  matchPlayers?: Prisma.MatchPlayerCreateNestedManyWithoutGroupMemberInput
+  actorFeedItems?: Prisma.FeedItemCreateNestedManyWithoutActorGroupMemberInput
+  rankingMovements?: Prisma.RankingMovementCreateNestedManyWithoutGroupMemberInput
+}
+
+export type GroupMemberUncheckedCreateWithoutStatsInput = {
+  id?: string
+  groupId: string
+  userId: string
+  rating?: number
+  ratingDeviation?: number | null
+  ratingVolatility?: number | null
+  ratingMu?: number | null
+  ratingSigma?: number | null
+  ratingAlgorithm?: string
+  currentRank?: number | null
+  role?: $Enums.GroupMemberRole
+  leftAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  matchPlayers?: Prisma.MatchPlayerUncheckedCreateNestedManyWithoutGroupMemberInput
+  actorFeedItems?: Prisma.FeedItemUncheckedCreateNestedManyWithoutActorGroupMemberInput
+  rankingMovements?: Prisma.RankingMovementUncheckedCreateNestedManyWithoutGroupMemberInput
+}
+
+export type GroupMemberCreateOrConnectWithoutStatsInput = {
+  where: Prisma.GroupMemberWhereUniqueInput
+  create: Prisma.XOR<Prisma.GroupMemberCreateWithoutStatsInput, Prisma.GroupMemberUncheckedCreateWithoutStatsInput>
+}
+
+export type GroupMemberUpsertWithoutStatsInput = {
+  update: Prisma.XOR<Prisma.GroupMemberUpdateWithoutStatsInput, Prisma.GroupMemberUncheckedUpdateWithoutStatsInput>
+  create: Prisma.XOR<Prisma.GroupMemberCreateWithoutStatsInput, Prisma.GroupMemberUncheckedCreateWithoutStatsInput>
+  where?: Prisma.GroupMemberWhereInput
+}
+
+export type GroupMemberUpdateToOneWithWhereWithoutStatsInput = {
+  where?: Prisma.GroupMemberWhereInput
+  data: Prisma.XOR<Prisma.GroupMemberUpdateWithoutStatsInput, Prisma.GroupMemberUncheckedUpdateWithoutStatsInput>
+}
+
+export type GroupMemberUpdateWithoutStatsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  rating?: Prisma.FloatFieldUpdateOperationsInput | number
+  ratingDeviation?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  ratingVolatility?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  ratingMu?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  ratingSigma?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  ratingAlgorithm?: Prisma.StringFieldUpdateOperationsInput | string
+  currentRank?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  role?: Prisma.EnumGroupMemberRoleFieldUpdateOperationsInput | $Enums.GroupMemberRole
+  leftAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  group?: Prisma.GroupUpdateOneRequiredWithoutMembersNestedInput
+  user?: Prisma.UserUpdateOneRequiredWithoutMembershipsNestedInput
+  matchPlayers?: Prisma.MatchPlayerUpdateManyWithoutGroupMemberNestedInput
+  actorFeedItems?: Prisma.FeedItemUpdateManyWithoutActorGroupMemberNestedInput
+  rankingMovements?: Prisma.RankingMovementUpdateManyWithoutGroupMemberNestedInput
+}
+
+export type GroupMemberUncheckedUpdateWithoutStatsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  groupId?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  rating?: Prisma.FloatFieldUpdateOperationsInput | number
+  ratingDeviation?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  ratingVolatility?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  ratingMu?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  ratingSigma?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  ratingAlgorithm?: Prisma.StringFieldUpdateOperationsInput | string
+  currentRank?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  role?: Prisma.EnumGroupMemberRoleFieldUpdateOperationsInput | $Enums.GroupMemberRole
+  leftAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  matchPlayers?: Prisma.MatchPlayerUncheckedUpdateManyWithoutGroupMemberNestedInput
+  actorFeedItems?: Prisma.FeedItemUncheckedUpdateManyWithoutActorGroupMemberNestedInput
+  rankingMovements?: Prisma.RankingMovementUncheckedUpdateManyWithoutGroupMemberNestedInput
+}
+
 export type GroupMemberCreateWithoutMatchPlayersInput = {
   id?: string
   rating?: number
@@ -947,6 +1068,7 @@ export type GroupMemberCreateWithoutMatchPlayersInput = {
   user: Prisma.UserCreateNestedOneWithoutMembershipsInput
   actorFeedItems?: Prisma.FeedItemCreateNestedManyWithoutActorGroupMemberInput
   rankingMovements?: Prisma.RankingMovementCreateNestedManyWithoutGroupMemberInput
+  stats?: Prisma.GroupMemberStatsCreateNestedOneWithoutGroupMemberInput
 }
 
 export type GroupMemberUncheckedCreateWithoutMatchPlayersInput = {
@@ -966,6 +1088,7 @@ export type GroupMemberUncheckedCreateWithoutMatchPlayersInput = {
   updatedAt?: Date | string
   actorFeedItems?: Prisma.FeedItemUncheckedCreateNestedManyWithoutActorGroupMemberInput
   rankingMovements?: Prisma.RankingMovementUncheckedCreateNestedManyWithoutGroupMemberInput
+  stats?: Prisma.GroupMemberStatsUncheckedCreateNestedOneWithoutGroupMemberInput
 }
 
 export type GroupMemberCreateOrConnectWithoutMatchPlayersInput = {
@@ -1001,6 +1124,7 @@ export type GroupMemberUpdateWithoutMatchPlayersInput = {
   user?: Prisma.UserUpdateOneRequiredWithoutMembershipsNestedInput
   actorFeedItems?: Prisma.FeedItemUpdateManyWithoutActorGroupMemberNestedInput
   rankingMovements?: Prisma.RankingMovementUpdateManyWithoutGroupMemberNestedInput
+  stats?: Prisma.GroupMemberStatsUpdateOneWithoutGroupMemberNestedInput
 }
 
 export type GroupMemberUncheckedUpdateWithoutMatchPlayersInput = {
@@ -1020,6 +1144,7 @@ export type GroupMemberUncheckedUpdateWithoutMatchPlayersInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   actorFeedItems?: Prisma.FeedItemUncheckedUpdateManyWithoutActorGroupMemberNestedInput
   rankingMovements?: Prisma.RankingMovementUncheckedUpdateManyWithoutGroupMemberNestedInput
+  stats?: Prisma.GroupMemberStatsUncheckedUpdateOneWithoutGroupMemberNestedInput
 }
 
 export type GroupMemberCreateWithoutRankingMovementsInput = {
@@ -1039,6 +1164,7 @@ export type GroupMemberCreateWithoutRankingMovementsInput = {
   user: Prisma.UserCreateNestedOneWithoutMembershipsInput
   matchPlayers?: Prisma.MatchPlayerCreateNestedManyWithoutGroupMemberInput
   actorFeedItems?: Prisma.FeedItemCreateNestedManyWithoutActorGroupMemberInput
+  stats?: Prisma.GroupMemberStatsCreateNestedOneWithoutGroupMemberInput
 }
 
 export type GroupMemberUncheckedCreateWithoutRankingMovementsInput = {
@@ -1058,6 +1184,7 @@ export type GroupMemberUncheckedCreateWithoutRankingMovementsInput = {
   updatedAt?: Date | string
   matchPlayers?: Prisma.MatchPlayerUncheckedCreateNestedManyWithoutGroupMemberInput
   actorFeedItems?: Prisma.FeedItemUncheckedCreateNestedManyWithoutActorGroupMemberInput
+  stats?: Prisma.GroupMemberStatsUncheckedCreateNestedOneWithoutGroupMemberInput
 }
 
 export type GroupMemberCreateOrConnectWithoutRankingMovementsInput = {
@@ -1093,6 +1220,7 @@ export type GroupMemberUpdateWithoutRankingMovementsInput = {
   user?: Prisma.UserUpdateOneRequiredWithoutMembershipsNestedInput
   matchPlayers?: Prisma.MatchPlayerUpdateManyWithoutGroupMemberNestedInput
   actorFeedItems?: Prisma.FeedItemUpdateManyWithoutActorGroupMemberNestedInput
+  stats?: Prisma.GroupMemberStatsUpdateOneWithoutGroupMemberNestedInput
 }
 
 export type GroupMemberUncheckedUpdateWithoutRankingMovementsInput = {
@@ -1112,6 +1240,7 @@ export type GroupMemberUncheckedUpdateWithoutRankingMovementsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   matchPlayers?: Prisma.MatchPlayerUncheckedUpdateManyWithoutGroupMemberNestedInput
   actorFeedItems?: Prisma.FeedItemUncheckedUpdateManyWithoutActorGroupMemberNestedInput
+  stats?: Prisma.GroupMemberStatsUncheckedUpdateOneWithoutGroupMemberNestedInput
 }
 
 export type GroupMemberCreateWithoutActorFeedItemsInput = {
@@ -1131,6 +1260,7 @@ export type GroupMemberCreateWithoutActorFeedItemsInput = {
   user: Prisma.UserCreateNestedOneWithoutMembershipsInput
   matchPlayers?: Prisma.MatchPlayerCreateNestedManyWithoutGroupMemberInput
   rankingMovements?: Prisma.RankingMovementCreateNestedManyWithoutGroupMemberInput
+  stats?: Prisma.GroupMemberStatsCreateNestedOneWithoutGroupMemberInput
 }
 
 export type GroupMemberUncheckedCreateWithoutActorFeedItemsInput = {
@@ -1150,6 +1280,7 @@ export type GroupMemberUncheckedCreateWithoutActorFeedItemsInput = {
   updatedAt?: Date | string
   matchPlayers?: Prisma.MatchPlayerUncheckedCreateNestedManyWithoutGroupMemberInput
   rankingMovements?: Prisma.RankingMovementUncheckedCreateNestedManyWithoutGroupMemberInput
+  stats?: Prisma.GroupMemberStatsUncheckedCreateNestedOneWithoutGroupMemberInput
 }
 
 export type GroupMemberCreateOrConnectWithoutActorFeedItemsInput = {
@@ -1185,6 +1316,7 @@ export type GroupMemberUpdateWithoutActorFeedItemsInput = {
   user?: Prisma.UserUpdateOneRequiredWithoutMembershipsNestedInput
   matchPlayers?: Prisma.MatchPlayerUpdateManyWithoutGroupMemberNestedInput
   rankingMovements?: Prisma.RankingMovementUpdateManyWithoutGroupMemberNestedInput
+  stats?: Prisma.GroupMemberStatsUpdateOneWithoutGroupMemberNestedInput
 }
 
 export type GroupMemberUncheckedUpdateWithoutActorFeedItemsInput = {
@@ -1204,6 +1336,7 @@ export type GroupMemberUncheckedUpdateWithoutActorFeedItemsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   matchPlayers?: Prisma.MatchPlayerUncheckedUpdateManyWithoutGroupMemberNestedInput
   rankingMovements?: Prisma.RankingMovementUncheckedUpdateManyWithoutGroupMemberNestedInput
+  stats?: Prisma.GroupMemberStatsUncheckedUpdateOneWithoutGroupMemberNestedInput
 }
 
 export type GroupMemberCreateManyUserInput = {
@@ -1239,6 +1372,7 @@ export type GroupMemberUpdateWithoutUserInput = {
   matchPlayers?: Prisma.MatchPlayerUpdateManyWithoutGroupMemberNestedInput
   actorFeedItems?: Prisma.FeedItemUpdateManyWithoutActorGroupMemberNestedInput
   rankingMovements?: Prisma.RankingMovementUpdateManyWithoutGroupMemberNestedInput
+  stats?: Prisma.GroupMemberStatsUpdateOneWithoutGroupMemberNestedInput
 }
 
 export type GroupMemberUncheckedUpdateWithoutUserInput = {
@@ -1258,6 +1392,7 @@ export type GroupMemberUncheckedUpdateWithoutUserInput = {
   matchPlayers?: Prisma.MatchPlayerUncheckedUpdateManyWithoutGroupMemberNestedInput
   actorFeedItems?: Prisma.FeedItemUncheckedUpdateManyWithoutActorGroupMemberNestedInput
   rankingMovements?: Prisma.RankingMovementUncheckedUpdateManyWithoutGroupMemberNestedInput
+  stats?: Prisma.GroupMemberStatsUncheckedUpdateOneWithoutGroupMemberNestedInput
 }
 
 export type GroupMemberUncheckedUpdateManyWithoutUserInput = {
@@ -1309,6 +1444,7 @@ export type GroupMemberUpdateWithoutGroupInput = {
   matchPlayers?: Prisma.MatchPlayerUpdateManyWithoutGroupMemberNestedInput
   actorFeedItems?: Prisma.FeedItemUpdateManyWithoutActorGroupMemberNestedInput
   rankingMovements?: Prisma.RankingMovementUpdateManyWithoutGroupMemberNestedInput
+  stats?: Prisma.GroupMemberStatsUpdateOneWithoutGroupMemberNestedInput
 }
 
 export type GroupMemberUncheckedUpdateWithoutGroupInput = {
@@ -1328,6 +1464,7 @@ export type GroupMemberUncheckedUpdateWithoutGroupInput = {
   matchPlayers?: Prisma.MatchPlayerUncheckedUpdateManyWithoutGroupMemberNestedInput
   actorFeedItems?: Prisma.FeedItemUncheckedUpdateManyWithoutActorGroupMemberNestedInput
   rankingMovements?: Prisma.RankingMovementUncheckedUpdateManyWithoutGroupMemberNestedInput
+  stats?: Prisma.GroupMemberStatsUncheckedUpdateOneWithoutGroupMemberNestedInput
 }
 
 export type GroupMemberUncheckedUpdateManyWithoutGroupInput = {
@@ -1415,6 +1552,7 @@ export type GroupMemberSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   matchPlayers?: boolean | Prisma.GroupMember$matchPlayersArgs<ExtArgs>
   actorFeedItems?: boolean | Prisma.GroupMember$actorFeedItemsArgs<ExtArgs>
   rankingMovements?: boolean | Prisma.GroupMember$rankingMovementsArgs<ExtArgs>
+  stats?: boolean | Prisma.GroupMember$statsArgs<ExtArgs>
   _count?: boolean | Prisma.GroupMemberCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["groupMember"]>
 
@@ -1480,6 +1618,7 @@ export type GroupMemberInclude<ExtArgs extends runtime.Types.Extensions.Internal
   matchPlayers?: boolean | Prisma.GroupMember$matchPlayersArgs<ExtArgs>
   actorFeedItems?: boolean | Prisma.GroupMember$actorFeedItemsArgs<ExtArgs>
   rankingMovements?: boolean | Prisma.GroupMember$rankingMovementsArgs<ExtArgs>
+  stats?: boolean | Prisma.GroupMember$statsArgs<ExtArgs>
   _count?: boolean | Prisma.GroupMemberCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type GroupMemberIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1499,6 +1638,7 @@ export type $GroupMemberPayload<ExtArgs extends runtime.Types.Extensions.Interna
     matchPlayers: Prisma.$MatchPlayerPayload<ExtArgs>[]
     actorFeedItems: Prisma.$FeedItemPayload<ExtArgs>[]
     rankingMovements: Prisma.$RankingMovementPayload<ExtArgs>[]
+    stats: Prisma.$GroupMemberStatsPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1914,6 +2054,7 @@ export interface Prisma__GroupMemberClient<T, Null = never, ExtArgs extends runt
   matchPlayers<T extends Prisma.GroupMember$matchPlayersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.GroupMember$matchPlayersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MatchPlayerPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   actorFeedItems<T extends Prisma.GroupMember$actorFeedItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.GroupMember$actorFeedItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FeedItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   rankingMovements<T extends Prisma.GroupMember$rankingMovementsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.GroupMember$rankingMovementsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RankingMovementPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  stats<T extends Prisma.GroupMember$statsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.GroupMember$statsArgs<ExtArgs>>): Prisma.Prisma__GroupMemberStatsClient<runtime.Types.Result.GetResult<Prisma.$GroupMemberStatsPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2427,6 +2568,25 @@ export type GroupMember$rankingMovementsArgs<ExtArgs extends runtime.Types.Exten
   take?: number
   skip?: number
   distinct?: Prisma.RankingMovementScalarFieldEnum | Prisma.RankingMovementScalarFieldEnum[]
+}
+
+/**
+ * GroupMember.stats
+ */
+export type GroupMember$statsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the GroupMemberStats
+   */
+  select?: Prisma.GroupMemberStatsSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the GroupMemberStats
+   */
+  omit?: Prisma.GroupMemberStatsOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.GroupMemberStatsInclude<ExtArgs> | null
+  where?: Prisma.GroupMemberStatsWhereInput
 }
 
 /**
