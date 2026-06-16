@@ -11,6 +11,7 @@ Pick sources based on the decision type, not based on popularity.
 - Product benchmarks are not implementation guidance.
 - Engineering principles are not framework documentation.
 - Framework documentation is not architecture by itself.
+- Design patterns are vocabulary and decision aids, not implementation mandates.
 - Security references should be treated separately from general engineering advice.
 
 The assistant should research the relevant category, compare findings with Arena's context, and then recommend a decision.
@@ -139,7 +140,51 @@ Caution:
 - Do not apply big-tech patterns blindly.
 - Use these sources to improve judgment, not to justify overengineering.
 
-## 5. Reliability, operations, and deploy
+## 5. Design patterns, architecture patterns, and pattern languages
+
+Purpose: use for recognizing recurring solution shapes, naming trade-offs, and comparing implementation approaches before adding abstractions.
+
+Sources:
+
+- Design Patterns: Elements of Reusable Object-Oriented Software / GoF
+- Patterns.dev
+- Martin Fowler — Patterns of Enterprise Application Architecture
+- Enterprise Integration Patterns
+- Microsoft Cloud Design Patterns
+- Microservices.io patterns
+- Refactoring Guru
+- SourceMaking
+
+Use for questions such as:
+
+- Is this a Strategy, Adapter, Facade, Projection, Gateway, State Machine, or simple function?
+- Is there a known pattern for this async, job, integration, storage, or read-model problem?
+- Does this pattern reduce complexity or add unnecessary indirection?
+- Is this a frontend composition pattern, backend boundary pattern, or distributed-systems pattern?
+- Is a simple implementation insufficient, and why?
+
+Useful Arena examples:
+
+- Strategy: when multiple rating algorithms need to coexist.
+- Adapter/Gateway: when integrating storage, auth providers, image services, payments, or external APIs.
+- Facade/BFF: when a screen needs a stable product-shaped API over several backend details.
+- Projection/Materialized View: when read models are derived from match history or processing jobs.
+- CQRS: when reads and writes have clearly different shapes and constraints.
+- Idempotent Receiver: when jobs or events can run more than once.
+- Outbox: when external events must be consistent with database writes.
+- State Machine: when match, invite, or processing-job lifecycle states become complex.
+- Compound Component: when React components need coordinated composition without leaking state management.
+
+Caution:
+
+- Patterns are vocabulary and decision aids, not implementation mandates.
+- Do not introduce a pattern unless the problem exists.
+- Do not rename simple code to match a pattern.
+- Do not apply textbook OO patterns blindly to TypeScript, React, NestJS, or Prisma.
+- Prefer Arena's existing conventions over pattern purity.
+- If the pattern adds more concepts than it removes, do not use it.
+
+## 6. Reliability, operations, and deploy
 
 Purpose: use for production safety, deploy, rollback, observability, migrations, jobs, idempotency, runtime behavior, and incident response.
 
@@ -169,7 +214,7 @@ Caution:
 - Add observability where it helps debug real failures.
 - Do not create production process complexity without a concrete risk.
 
-## 6. Security and privacy
+## 7. Security and privacy
 
 Purpose: use for auth, permissions, uploads, tokens, private data, public APIs, rate limiting, admin actions, destructive actions, and abuse cases.
 
@@ -197,7 +242,7 @@ Caution:
 - Security-sensitive changes require a more conservative workflow.
 - Prompt engineering or AI review is not a substitute for explicit permission checks and security validation.
 
-## 7. Stack-specific documentation
+## 8. Stack-specific documentation
 
 Purpose: use for current behavior of frameworks, libraries, build tools, deployment providers, and generated code.
 
@@ -228,7 +273,7 @@ Caution:
 - Prefer official docs for tool behavior.
 - Do not rely on memory for framework, Prisma, Render, auth, or deploy details when accuracy matters.
 
-## 8. Code quality and refactoring heuristics
+## 9. Code quality and refactoring heuristics
 
 Purpose: use for implementation-level clarity, simplicity, refactoring, dependency direction, and avoiding accidental complexity.
 
@@ -257,7 +302,7 @@ Caution:
 - KISS should reduce complexity, not ignore real edge cases.
 - YAGNI should avoid speculative work, not prevent necessary design.
 
-## 9. AI workflow and agentic coding
+## 10. AI workflow and agentic coding
 
 Purpose: use for improving how AI assistants research, plan, implement, validate, review, and maintain context.
 
@@ -303,4 +348,5 @@ After research:
 3. Say what does not apply.
 4. Recommend a decision.
 5. Identify open questions.
-6. Do not implement until the decision and scope are approved, unless the task is explicitly implementation-only and low risk.
+6. When considering a pattern, first describe the concrete problem, the forces/trade-offs, and why a simple implementation is insufficient.
+7. Do not implement until the decision and scope are approved, unless the task is explicitly implementation-only and low risk.
