@@ -90,11 +90,12 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  createdGroups    Group[]       @relation("GroupCreator")
-  memberships      GroupMember[]
-  createdInvites   GroupInvite[] @relation("GroupInviteCreator")
-  actorFeedItems   FeedItem[]    @relation("FeedItemActorUser")
-  subjectFeedItems FeedItem[]    @relation("FeedItemSubjectUser")
+  createdGroups           Group[]                 @relation("GroupCreator")
+  memberships             GroupMember[]
+  createdInvites          GroupInvite[]           @relation("GroupInviteCreator")
+  actorFeedItems          FeedItem[]              @relation("FeedItemActorUser")
+  subjectFeedItems        FeedItem[]              @relation("FeedItemSubjectUser")
+  platformTrendingPlayer  PlatformTrendingPlayer?
 
   @@index([email])
 }
@@ -437,6 +438,46 @@ model ProcessingJob {
   @@index([matchId])
   @@index([dedupeKey])
   @@index([lockedBy])
+}
+
+model PlatformTrendingPlayer {
+  userId String @id
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  trendRank Int @unique
+
+  displayName String
+
+  score Float
+
+  recentMatches Int
+  recentWins    Int
+  recentWinRate Float
+
+  allTimeMatches Int
+  allTimeWins    Int
+  allTimeWinRate Float
+
+  highlightGroupId           String?
+  highlightGroupName         String?
+  highlightGroupMemberId     String?
+  highlightGroupMembersCount Int?
+  highlightCurrentRank       Int?
+  highlightRating            Float?
+
+  windowDays      Int
+  windowStartedAt DateTime
+  windowEndedAt   DateTime
+
+  metadata Json @default("{}")
+
+  computedAt DateTime @default(now())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([score])
+  @@index([recentMatches])
+  @@index([computedAt])
 }
 
 model FeedItem {

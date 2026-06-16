@@ -396,6 +396,7 @@ export const ModelName = {
   GroupHomeSummary: 'GroupHomeSummary',
   RankingMovement: 'RankingMovement',
   ProcessingJob: 'ProcessingJob',
+  PlatformTrendingPlayer: 'PlatformTrendingPlayer',
   FeedItem: 'FeedItem'
 } as const
 
@@ -412,7 +413,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "group" | "groupInvite" | "groupMember" | "groupMemberStats" | "match" | "matchPlayer" | "matchRankingSnapshot" | "groupRankingProjection" | "groupHomeSummary" | "rankingMovement" | "processingJob" | "feedItem"
+    modelProps: "user" | "group" | "groupInvite" | "groupMember" | "groupMemberStats" | "match" | "matchPlayer" | "matchRankingSnapshot" | "groupRankingProjection" | "groupHomeSummary" | "rankingMovement" | "processingJob" | "platformTrendingPlayer" | "feedItem"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1304,6 +1305,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    PlatformTrendingPlayer: {
+      payload: Prisma.$PlatformTrendingPlayerPayload<ExtArgs>
+      fields: Prisma.PlatformTrendingPlayerFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.PlatformTrendingPlayerFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlatformTrendingPlayerPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.PlatformTrendingPlayerFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlatformTrendingPlayerPayload>
+        }
+        findFirst: {
+          args: Prisma.PlatformTrendingPlayerFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlatformTrendingPlayerPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.PlatformTrendingPlayerFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlatformTrendingPlayerPayload>
+        }
+        findMany: {
+          args: Prisma.PlatformTrendingPlayerFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlatformTrendingPlayerPayload>[]
+        }
+        create: {
+          args: Prisma.PlatformTrendingPlayerCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlatformTrendingPlayerPayload>
+        }
+        createMany: {
+          args: Prisma.PlatformTrendingPlayerCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.PlatformTrendingPlayerCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlatformTrendingPlayerPayload>[]
+        }
+        delete: {
+          args: Prisma.PlatformTrendingPlayerDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlatformTrendingPlayerPayload>
+        }
+        update: {
+          args: Prisma.PlatformTrendingPlayerUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlatformTrendingPlayerPayload>
+        }
+        deleteMany: {
+          args: Prisma.PlatformTrendingPlayerDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.PlatformTrendingPlayerUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.PlatformTrendingPlayerUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlatformTrendingPlayerPayload>[]
+        }
+        upsert: {
+          args: Prisma.PlatformTrendingPlayerUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlatformTrendingPlayerPayload>
+        }
+        aggregate: {
+          args: Prisma.PlatformTrendingPlayerAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregatePlatformTrendingPlayer>
+        }
+        groupBy: {
+          args: Prisma.PlatformTrendingPlayerGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PlatformTrendingPlayerGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.PlatformTrendingPlayerCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PlatformTrendingPlayerCountAggregateOutputType> | number
+        }
+      }
+    }
     FeedItem: {
       payload: Prisma.$FeedItemPayload<ExtArgs>
       fields: Prisma.FeedItemFieldRefs
@@ -1638,6 +1713,35 @@ export const ProcessingJobScalarFieldEnum = {
 } as const
 
 export type ProcessingJobScalarFieldEnum = (typeof ProcessingJobScalarFieldEnum)[keyof typeof ProcessingJobScalarFieldEnum]
+
+
+export const PlatformTrendingPlayerScalarFieldEnum = {
+  userId: 'userId',
+  trendRank: 'trendRank',
+  displayName: 'displayName',
+  score: 'score',
+  recentMatches: 'recentMatches',
+  recentWins: 'recentWins',
+  recentWinRate: 'recentWinRate',
+  allTimeMatches: 'allTimeMatches',
+  allTimeWins: 'allTimeWins',
+  allTimeWinRate: 'allTimeWinRate',
+  highlightGroupId: 'highlightGroupId',
+  highlightGroupName: 'highlightGroupName',
+  highlightGroupMemberId: 'highlightGroupMemberId',
+  highlightGroupMembersCount: 'highlightGroupMembersCount',
+  highlightCurrentRank: 'highlightCurrentRank',
+  highlightRating: 'highlightRating',
+  windowDays: 'windowDays',
+  windowStartedAt: 'windowStartedAt',
+  windowEndedAt: 'windowEndedAt',
+  metadata: 'metadata',
+  computedAt: 'computedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PlatformTrendingPlayerScalarFieldEnum = (typeof PlatformTrendingPlayerScalarFieldEnum)[keyof typeof PlatformTrendingPlayerScalarFieldEnum]
 
 
 export const FeedItemScalarFieldEnum = {
@@ -2071,6 +2175,7 @@ export type GlobalOmitConfig = {
   groupHomeSummary?: Prisma.GroupHomeSummaryOmit
   rankingMovement?: Prisma.RankingMovementOmit
   processingJob?: Prisma.ProcessingJobOmit
+  platformTrendingPlayer?: Prisma.PlatformTrendingPlayerOmit
   feedItem?: Prisma.FeedItemOmit
 }
 
