@@ -327,11 +327,15 @@ export class ProcessingJobRunnerService {
     const teamA = match.players
       .filter((player) => player.team === MatchTeam.TEAM_A)
       .sort((a, b) => a.position - b.position)
-      .map((player) => this.getMatchFeedPlayer(player.groupMemberId, membersById));
+      .map((player) =>
+        this.getMatchFeedPlayer(player.groupMemberId, membersById),
+      );
     const teamB = match.players
       .filter((player) => player.team === MatchTeam.TEAM_B)
       .sort((a, b) => a.position - b.position)
-      .map((player) => this.getMatchFeedPlayer(player.groupMemberId, membersById));
+      .map((player) =>
+        this.getMatchFeedPlayer(player.groupMemberId, membersById),
+      );
 
     if (teamA.length !== 2 || teamB.length !== 2 || !match.winnerTeam) {
       this.logger.warn(
@@ -396,7 +400,11 @@ export class ProcessingJobRunnerService {
     groupId: string,
   ) {
     const inputs = await this.buildRankingMovementFeedInputs(tx, groupId);
-    const result = await this.feed.syncGroupRankingMovementItems(groupId, inputs, tx);
+    const result = await this.feed.syncGroupRankingMovementItems(
+      groupId,
+      inputs,
+      tx,
+    );
 
     this.logger.log(
       structuredLog('ranking_movement_feed_projection.completed', {
@@ -459,7 +467,10 @@ export class ProcessingJobRunnerService {
 
     return snapshots
       .map((snapshot) =>
-        this.buildRankingMovementFeedInput(snapshot, matchesById.get(snapshot.matchId) ?? null),
+        this.buildRankingMovementFeedInput(
+          snapshot,
+          matchesById.get(snapshot.matchId) ?? null,
+        ),
       )
       .filter((input): input is RankingMovementFeedInput => Boolean(input));
   }
@@ -472,16 +483,22 @@ export class ProcessingJobRunnerService {
       return null;
     }
 
-    const movements = this.parseSnapshotMovements(snapshot.movements).filter((movement) =>
-      this.isRankingMovementFeedEligible(movement),
+    const movements = this.parseSnapshotMovements(snapshot.movements).filter(
+      (movement) => this.isRankingMovementFeedEligible(movement),
     );
 
     if (movements.length === 0) {
       return null;
     }
 
-    const teamA = this.getRankingMovementMatchTeam(match.players, MatchTeam.TEAM_A);
-    const teamB = this.getRankingMovementMatchTeam(match.players, MatchTeam.TEAM_B);
+    const teamA = this.getRankingMovementMatchTeam(
+      match.players,
+      MatchTeam.TEAM_A,
+    );
+    const teamB = this.getRankingMovementMatchTeam(
+      match.players,
+      MatchTeam.TEAM_B,
+    );
 
     if (teamA.length !== 2 || teamB.length !== 2) {
       return null;
@@ -546,7 +563,9 @@ export class ProcessingJobRunnerService {
       }));
   }
 
-  private parseSnapshotMovements(value: unknown): RankingMovementFeedMovement[] {
+  private parseSnapshotMovements(
+    value: unknown,
+  ): RankingMovementFeedMovement[] {
     if (!Array.isArray(value)) {
       return [];
     }
@@ -705,8 +724,13 @@ export class ProcessingJobRunnerService {
     });
   }
 
-  private async markFailedOrRetry(job: ProcessingJob, error: unknown, durationMs: number) {
-    const message = error instanceof Error ? error.message : 'Unknown processing error';
+  private async markFailedOrRetry(
+    job: ProcessingJob,
+    error: unknown,
+    durationMs: number,
+  ) {
+    const message =
+      error instanceof Error ? error.message : 'Unknown processing error';
     const shouldRetry = job.attemptCount < job.maxAttempts;
 
     if (!shouldRetry) {
@@ -724,8 +748,10 @@ export class ProcessingJobRunnerService {
           ...errorLogFields(error),
         }),
       );
-      await this.markMatchFailed(job, message);
-      await this.markProjectionFailed(job, message);
+      if (job.scope === 'GROUP') {
+        await this.markMatchFailed(job, message);
+        await this.markProjectionFailed(job, message);
+      }
       await this.prisma.processingJob.update({
         where: { id: job.id },
         data: {
