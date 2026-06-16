@@ -7,7 +7,7 @@ type GroupMemberStatsProjectionRow = {
   activeMatchesCount: number;
   upsertedCount: number;
   deletedCount: number;
-  projectedMatchesCount: number;
+  projectedParticipationsCount: number;
   projectedWinsCount: number;
 };
 
@@ -94,7 +94,7 @@ export class GroupMemberStatsProjectionService {
         ) AS "activeMatchesCount",
         (SELECT COUNT(*)::int FROM upserted) AS "upsertedCount",
         (SELECT COUNT(*)::int FROM deleted) AS "deletedCount",
-        COALESCE((SELECT SUM("matchesCount")::int FROM upserted), 0) AS "projectedMatchesCount",
+        COALESCE((SELECT SUM("matchesCount")::int FROM upserted), 0) AS "projectedParticipationsCount",
         COALESCE((SELECT SUM("winsCount")::int FROM upserted), 0) AS "projectedWinsCount"
     `;
 
@@ -105,7 +105,7 @@ export class GroupMemberStatsProjectionService {
         activeMatchesCount: summary?.activeMatchesCount ?? 0,
         upsertedCount: summary?.upsertedCount ?? 0,
         deletedCount: summary?.deletedCount ?? 0,
-        projectedMatchesCount: summary?.projectedMatchesCount ?? 0,
+        projectedParticipationsCount: summary?.projectedParticipationsCount ?? 0,
         projectedWinsCount: summary?.projectedWinsCount ?? 0,
         durationMs: Date.now() - startedAt,
       }),
