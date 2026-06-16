@@ -115,6 +115,8 @@ When validation cannot be run, the assistant must say so and provide the exact c
 
 ## Commit and PR rules
 
+Before creating a branch, the assistant must confirm the current tip of the repository's default branch and create the work branch from that exact updated `main` state. Do not use commit search results, stale SHAs, previous PR heads, or inferred branch tips as branch bases.
+
 Prefer:
 
 - one logical change per commit;
