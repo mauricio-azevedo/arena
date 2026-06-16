@@ -138,9 +138,11 @@ export class ProcessingJobRunnerService {
       RETURNING
         "id",
         "type",
+        "scope",
         "status",
         "groupId",
         "matchId",
+        "dedupeKey",
         "payload",
         "attemptCount",
         "maxAttempts",
@@ -160,9 +162,11 @@ export class ProcessingJobRunnerService {
         structuredLog('processing_job.claimed', {
           jobId: job.id,
           jobType: job.type,
+          jobScope: job.scope,
           jobStatus: job.status,
           groupId: job.groupId,
           matchId: job.matchId,
+          dedupeKey: job.dedupeKey,
           attemptCount: job.attemptCount,
           maxAttempts: job.maxAttempts,
           workerId: this.workerId,
@@ -183,6 +187,7 @@ export class ProcessingJobRunnerService {
         structuredLog('processing_job.completed', {
           jobId: job.id,
           jobType: job.type,
+          jobScope: job.scope,
           groupId: job.groupId,
           matchId: job.matchId,
           workerId: this.workerId,
@@ -199,12 +204,26 @@ export class ProcessingJobRunnerService {
       structuredLog('processing_job.started', {
         jobId: job.id,
         jobType: job.type,
+        jobScope: job.scope,
         groupId: job.groupId,
         matchId: job.matchId,
         workerId: this.workerId,
       }),
     );
 
+    switch (job.scope) {
+      case 'GROUP':
+        await this.processGroupJob(job);
+        return;
+      case 'PLATFORM':
+        await this.processPlatformJob(job);
+        return;
+      default:
+        throw new Error(`Unsupported processing job scope: ${job.scope}`);
+    }
+  }
+
+  private async processGroupJob(job: ProcessingJob) {
     await this.markProjectionProcessing(job);
 
     switch (job.type) {
@@ -225,8 +244,12 @@ export class ProcessingJobRunnerService {
         await this.processGroupProjectionJob(job.groupId, null, false);
         break;
       default:
-        throw new Error(`Unsupported processing job type: ${job.type}`);
+        throw new Error(`Unsupported group processing job type: ${job.type}`);
     }
+  }
+
+  private async processPlatformJob(job: ProcessingJob) {
+    throw new Error(`Unsupported platform processing job type: ${job.type}`);
   }
 
   private async processGroupProjectionJob(
@@ -691,6 +714,7 @@ export class ProcessingJobRunnerService {
         structuredLog('processing_job.failed_permanently', {
           jobId: job.id,
           jobType: job.type,
+          jobScope: job.scope,
           groupId: job.groupId,
           matchId: job.matchId,
           attemptCount: job.attemptCount,
@@ -719,6 +743,7 @@ export class ProcessingJobRunnerService {
       structuredLog('processing_job.retry_scheduled', {
         jobId: job.id,
         jobType: job.type,
+        jobScope: job.scope,
         groupId: job.groupId,
         matchId: job.matchId,
         attemptCount: job.attemptCount,
