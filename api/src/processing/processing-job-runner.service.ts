@@ -9,6 +9,7 @@ import type {
   RankingMovementFeedPlayer,
 } from '../feed/types/ranking-movement-feed-input.type';
 import { RatingProjectionService } from '../rating/rating-projection.service';
+import { GroupMemberStatsProjectionService } from '../ranking/group-member-stats-projection.service';
 import { RankingMovementService } from '../ranking/ranking-movement.service';
 import { GroupHomeSummaryService } from '../groups/group-home-summary.service';
 import { MatchTeam } from '../generated/prisma/enums';
@@ -69,6 +70,7 @@ export class ProcessingJobRunnerService {
     private readonly prisma: PrismaService,
     private readonly ratingProjection: RatingProjectionService,
     private readonly rankingMovements: RankingMovementService,
+    private readonly groupMemberStatsProjection: GroupMemberStatsProjectionService,
     private readonly feed: FeedOrchestratorService,
     private readonly groupHomeSummary: GroupHomeSummaryService,
   ) {}
@@ -89,25 +91,18 @@ export class ProcessingJobRunnerService {
 
   private async releaseStaleProcessingJobs() {
     const staleBefore = new Date(Date.now() - this.getLockTimeoutMs());
+    const result = await this.prisma.$executeRaw`
+      UPDATE "ProcessingJob"
+      SET "status" = 'PENDING', "lockedAt" = NULL, "lockedBy" = NULL
+      WHERE "status" = 'PROCESSING'
+        AND "lockedAt" IS NOT NULL
+        AND "lockedAt" < ${staleBefore}
+    `;
 
-    const result = await this.prisma.processingJob.updateMany({
-      where: {
-        status: 'PROCESSING',
-        lockedAt: { lt: staleBefore },
-      },
-      data: {
-        status: 'PENDING',
-        lockedAt: null,
-        lockedBy: null,
-        availableAt: new Date(),
-        lastError: 'Released stale processing lock',
-      },
-    });
-
-    if (result.count > 0) {
+    if (result > 0) {
       this.logger.warn(
-        structuredLog('processing_job.stale_locks_released', {
-          releasedCount: result.count,
+        structuredLog('processing_job.released_stale_locks', {
+          count: result,
           staleBefore: staleBefore.toISOString(),
           workerId: this.workerId,
         }),
@@ -116,49 +111,41 @@ export class ProcessingJobRunnerService {
   }
 
   private async claimNextJob() {
-    const jobs = await this.prisma.$queryRaw<ProcessingJob[]>`
-      UPDATE "ProcessingJob"
-      SET
-        "status" = 'PROCESSING',
-        "lockedAt" = NOW(),
-        "lockedBy" = ${this.workerId},
-        "attemptCount" = "attemptCount" + 1,
-        "updatedAt" = NOW()
-      WHERE "id" = (
-        SELECT "id"
+    return this.prisma.$transaction(async (tx) => {
+      const [job] = await tx.$queryRaw<ProcessingJob[]>`
+        SELECT *
         FROM "ProcessingJob"
         WHERE "status" = 'PENDING'
           AND "availableAt" <= NOW()
-        ORDER BY "availableAt" ASC, "createdAt" ASC
+        ORDER BY "createdAt" ASC
         FOR UPDATE SKIP LOCKED
         LIMIT 1
-      )
-      RETURNING
-        "id",
-        "type",
-        "status",
-        "groupId",
-        "matchId",
-        "payload",
-        "attemptCount",
-        "maxAttempts",
-        "availableAt",
-        "lockedAt",
-        "lockedBy",
-        "lastError",
-        "processedAt",
-        "createdAt",
-        "updatedAt"
-    `;
+      `;
 
-    const job = jobs[0] ?? null;
+      if (!job) {
+        return null;
+      }
 
-    if (job) {
+      return tx.processingJob.update({
+        where: { id: job.id },
+        data: {
+          status: 'PROCESSING',
+          attemptCount: { increment: 1 },
+          lockedAt: new Date(),
+          lockedBy: this.workerId,
+        },
+      });
+    });
+  }
+
+  private async runClaimedJob(job: ProcessingJob) {
+    const startedAt = Date.now();
+
+    try {
       this.logger.log(
-        structuredLog('processing_job.claimed', {
+        structuredLog('processing_job.started', {
           jobId: job.id,
           jobType: job.type,
-          jobStatus: job.status,
           groupId: job.groupId,
           matchId: job.matchId,
           attemptCount: job.attemptCount,
@@ -166,23 +153,17 @@ export class ProcessingJobRunnerService {
           workerId: this.workerId,
         }),
       );
-    }
 
-    return job;
-  }
-
-  private async runClaimedJob(job: ProcessingJob) {
-    const startedAt = Date.now();
-
-    try {
       await this.processJob(job);
       await this.markDone(job.id);
+
       this.logger.log(
         structuredLog('processing_job.completed', {
           jobId: job.id,
           jobType: job.type,
           groupId: job.groupId,
           matchId: job.matchId,
+          attemptCount: job.attemptCount,
           workerId: this.workerId,
           durationMs: Date.now() - startedAt,
         }),
@@ -193,30 +174,12 @@ export class ProcessingJobRunnerService {
   }
 
   private async processJob(job: ProcessingJob) {
-    this.logger.log(
-      structuredLog('processing_job.started', {
-        jobId: job.id,
-        jobType: job.type,
-        groupId: job.groupId,
-        matchId: job.matchId,
-        workerId: this.workerId,
-      }),
-    );
-
-    await this.markProjectionProcessing(job);
-
     switch (job.type) {
       case 'MATCH_CREATED':
       case 'MATCH_UPDATED':
-        if (!job.matchId) {
-          throw new Error('Match processing job requires matchId');
-        }
         await this.processGroupProjectionJob(job.groupId, job.matchId, false);
         break;
       case 'MATCH_DELETED':
-        if (!job.matchId) {
-          throw new Error('Deleted match processing job requires matchId');
-        }
         await this.processGroupProjectionJob(job.groupId, job.matchId, true);
         break;
       case 'GROUP_RANKING_REBUILD':
@@ -236,6 +199,7 @@ export class ProcessingJobRunnerService {
       async (tx) => {
         await this.ratingProjection.syncGroupRatings(tx, groupId);
         await this.rankingMovements.syncGroupRankingState(tx, groupId);
+        await this.groupMemberStatsProjection.syncGroupMemberStats(tx, groupId);
 
         if (changedMatchId && deleteChangedMatchFeed) {
           await this.deleteMatchFeedItems(tx, groupId, changedMatchId);
@@ -260,16 +224,12 @@ export class ProcessingJobRunnerService {
       where: { id: matchId, groupId },
       include: {
         players: {
+          orderBy: [{ team: 'asc' }, { position: 'asc' }],
           include: {
             groupMember: {
-              include: {
-                user: {
-                  select: {
-                    id: true,
-                    firstName: true,
-                    lastName: true,
-                  },
-                },
+              select: {
+                userId: true,
+                user: { select: { firstName: true, lastName: true } },
               },
             },
           },
@@ -278,70 +238,10 @@ export class ProcessingJobRunnerService {
     });
 
     if (!match) {
-      this.logger.warn(
-        structuredLog('feed_projection.skipped', {
-          groupId,
-          matchId,
-          reason: 'MATCH_NOT_FOUND',
-        }),
-      );
       return;
     }
 
-    const membersById = new Map<string, MatchMember>();
-
-    for (const player of match.players) {
-      membersById.set(player.groupMemberId, {
-        id: player.groupMemberId,
-        userId: player.groupMember.userId,
-        displayName: this.getUserDisplayName(player.groupMember.user),
-      });
-    }
-
-    const teamA = match.players
-      .filter((player) => player.team === MatchTeam.TEAM_A)
-      .sort((a, b) => a.position - b.position)
-      .map((player) => this.getMatchFeedPlayer(player.groupMemberId, membersById));
-    const teamB = match.players
-      .filter((player) => player.team === MatchTeam.TEAM_B)
-      .sort((a, b) => a.position - b.position)
-      .map((player) => this.getMatchFeedPlayer(player.groupMemberId, membersById));
-
-    if (teamA.length !== 2 || teamB.length !== 2 || !match.winnerTeam) {
-      this.logger.warn(
-        structuredLog('feed_projection.skipped', {
-          groupId,
-          matchId,
-          reason: 'INVALID_MATCH_SHAPE',
-          teamASize: teamA.length,
-          teamBSize: teamB.length,
-          hasWinnerTeam: Boolean(match.winnerTeam),
-        }),
-      );
-      return;
-    }
-
-    const input = {
-      groupId,
-      matchId,
-      winnerTeam: match.winnerTeam,
-      gamesA: match.gamesA,
-      gamesB: match.gamesB,
-      winners: match.winnerTeam === MatchTeam.TEAM_A ? teamA : teamB,
-      losers: match.winnerTeam === MatchTeam.TEAM_A ? teamB : teamA,
-      occurredAt: match.playedAt,
-    };
-
-    await this.feed.syncMatchBlowoutItem(input, tx);
-    await this.feed.syncMatchCloseItem(input, tx);
-
-    this.logger.log(
-      structuredLog('feed_projection.completed', {
-        groupId,
-        matchId,
-        winnerTeam: match.winnerTeam,
-      }),
-    );
+    await this.feed.syncMatchFeedItems(match, tx);
   }
 
   private async deleteMatchFeedItems(
@@ -349,270 +249,189 @@ export class ProcessingJobRunnerService {
     groupId: string,
     matchId: string,
   ) {
-    const result = await tx.feedItem.deleteMany({
+    await tx.feedItem.deleteMany({
       where: {
         groupId,
         matchId,
       },
     });
-
-    this.logger.log(
-      structuredLog('feed_projection.deleted_match_items', {
-        groupId,
-        matchId,
-        deletedCount: result.count,
-      }),
-    );
   }
 
-  private async syncGroupRankingMovementFeedItems(
-    tx: Prisma.TransactionClient,
-    groupId: string,
-  ) {
-    const inputs = await this.buildRankingMovementFeedInputs(tx, groupId);
-    const result = await this.feed.syncGroupRankingMovementItems(groupId, inputs, tx);
+  private async syncGroupRankingMovementFeedItems(tx: Prisma.TransactionClient, groupId: string) {
+    const candidates = await this.getVisibleRankingMovementFeedInputs(tx, groupId);
 
-    this.logger.log(
-      structuredLog('ranking_movement_feed_projection.completed', {
-        groupId,
-        eligibleMatchCount: result.eligibleMatchCount,
-        upsertedCount: result.upsertedCount,
-        deletedCount: result.deletedCount,
-      }),
-    );
+    for (const candidate of candidates) {
+      await this.feed.upsertRankingMovementFeedItem(candidate, tx);
+    }
   }
 
-  private async buildRankingMovementFeedInputs(
+  private async getVisibleRankingMovementFeedInputs(
     tx: Prisma.TransactionClient,
     groupId: string,
   ): Promise<RankingMovementFeedInput[]> {
-    const snapshots = await tx.$queryRaw<MatchRankingSnapshotRow[]>`
+    const rows = await tx.$queryRaw<MatchRankingSnapshotRow[]>`
       SELECT
-        s."matchId",
-        s."groupId",
-        s."previousLeaders",
-        s."currentLeaders",
-        s."dethronedLeaders",
-        s."movements"
-      FROM "MatchRankingSnapshot" s
-      INNER JOIN "Match" m ON m."id" = s."matchId"
-      WHERE s."groupId" = ${groupId}
+        mrs."matchId",
+        mrs."groupId",
+        mrs."previousLeaders",
+        mrs."currentLeaders",
+        mrs."dethronedLeaders",
+        mrs."movements"
+      FROM "MatchRankingSnapshot" mrs
+      INNER JOIN "Match" m ON m."id" = mrs."matchId" AND m."groupId" = mrs."groupId"
+      WHERE mrs."groupId" = ${groupId}
         AND m."deletedAt" IS NULL
       ORDER BY m."playedAt" ASC, m."createdAt" ASC
     `;
 
-    if (snapshots.length === 0) {
+    const matches = await this.getRankingMovementMatches(
+      tx,
+      groupId,
+      rows.map((row) => row.matchId),
+    );
+    const matchById = new Map(matches.map((match) => [match.id, match]));
+
+    return rows
+      .flatMap((row) => this.toRankingMovementFeedInputs(row, matchById.get(row.matchId)))
+      .filter((input): input is RankingMovementFeedInput => Boolean(input));
+  }
+
+  private async getRankingMovementMatches(
+    tx: Prisma.TransactionClient,
+    groupId: string,
+    matchIds: string[],
+  ) {
+    if (matchIds.length === 0) {
       return [];
     }
 
-    const matches = (await tx.match.findMany({
+    return tx.match.findMany({
       where: {
-        id: {
-          in: snapshots.map((snapshot) => snapshot.matchId),
-        },
+        groupId,
+        id: { in: matchIds },
+        deletedAt: null,
       },
       include: {
         players: {
-          include: {
+          orderBy: [{ team: 'asc' }, { position: 'asc' }],
+          select: {
+            groupMemberId: true,
+            team: true,
+            position: true,
             groupMember: {
-              include: {
-                user: {
-                  select: {
-                    firstName: true,
-                    lastName: true,
-                  },
-                },
+              select: {
+                userId: true,
+                user: { select: { firstName: true, lastName: true } },
               },
             },
           },
         },
       },
-      orderBy: [{ playedAt: 'asc' }, { createdAt: 'asc' }],
-    })) as RankingMovementFeedMatch[];
-    const matchesById = new Map(matches.map((match) => [match.id, match]));
+    }) as Promise<RankingMovementFeedMatch[]>;
+  }
 
-    return snapshots
-      .map((snapshot) => this.buildRankingMovementFeedInput(snapshot, matchesById.get(snapshot.matchId) ?? null))
+  private toRankingMovementFeedInputs(
+    row: MatchRankingSnapshotRow,
+    match?: RankingMovementFeedMatch,
+  ) {
+    if (!match || !this.isRankingMovementSnapshotVisible(row, match)) {
+      return [];
+    }
+
+    const leadershipContext = this.parseLeadershipContext(row);
+    const movements = this.parseMovements(row);
+
+    return movements
+      .map((movement) =>
+        this.toRankingMovementFeedInput(row, match, movement, leadershipContext),
+      )
       .filter((input): input is RankingMovementFeedInput => Boolean(input));
   }
 
-  private buildRankingMovementFeedInput(
-    snapshot: MatchRankingSnapshotRow,
-    match: RankingMovementFeedMatch | null,
+  private toRankingMovementFeedInput(
+    row: MatchRankingSnapshotRow,
+    match: RankingMovementFeedMatch,
+    movement: SnapshotMovement,
+    leadershipContext: SnapshotLeadershipContext,
   ): RankingMovementFeedInput | null {
-    if (!match?.winnerTeam) {
+    const actor = this.getFeedActor(movement.groupMemberId, match);
+
+    if (!actor) {
       return null;
     }
 
-    const movements = this.parseSnapshotMovements(snapshot.movements).filter((movement) =>
-      this.isRankingMovementFeedEligible(movement),
-    );
+    return {
+      groupId: row.groupId,
+      matchId: row.matchId,
+      actorUserId: actor.userId,
+      actorGroupMemberId: movement.groupMemberId,
+      subjectUserId: actor.userId,
+      occurredAt: match.playedAt,
+      movement,
+      leadershipContext,
+      match: {
+        gamesA: match.gamesA,
+        gamesB: match.gamesB,
+      },
+    };
+  }
+
+  private getFeedActor(groupMemberId: string, match: RankingMovementFeedMatch): MatchMember | null {
+    const player = match.players.find((item) => item.groupMemberId === groupMemberId);
+
+    if (!player) {
+      return null;
+    }
+
+    return {
+      id: groupMemberId,
+      userId: player.groupMember.userId,
+      displayName: this.getUserDisplayName(player.groupMember.user),
+    };
+  }
+
+  private isRankingMovementSnapshotVisible(
+    row: MatchRankingSnapshotRow,
+    match: RankingMovementFeedMatch,
+  ) {
+    const movements = this.parseMovements(row);
 
     if (movements.length === 0) {
-      return null;
-    }
-
-    const teamA = this.getRankingMovementMatchTeam(match.players, MatchTeam.TEAM_A);
-    const teamB = this.getRankingMovementMatchTeam(match.players, MatchTeam.TEAM_B);
-
-    if (teamA.length !== 2 || teamB.length !== 2) {
-      return null;
-    }
-
-    const leadershipContext = {
-      previousLeaders: this.parseSnapshotPlayers(snapshot.previousLeaders),
-      currentLeaders: this.parseSnapshotPlayers(snapshot.currentLeaders),
-      dethronedLeaders: this.parseSnapshotPlayers(snapshot.dethronedLeaders),
-    };
-
-    return {
-      groupId: snapshot.groupId,
-      matchId: snapshot.matchId,
-      winnerTeam: match.winnerTeam,
-      gamesA: match.gamesA,
-      gamesB: match.gamesB,
-      winners: match.winnerTeam === MatchTeam.TEAM_A ? teamA : teamB,
-      losers: match.winnerTeam === MatchTeam.TEAM_A ? teamB : teamA,
-      movements,
-      leadershipChange: this.getLeadershipChange(movements, leadershipContext),
-      occurredAt: match.playedAt,
-    };
-  }
-
-  private isRankingMovementFeedEligible(movement: RankingMovementFeedMovement) {
-    return (
-      movement.positions >= RANKING_MOVEMENT_FEED_THRESHOLD ||
-      (movement.direction === 'UP' && movement.currentRank === 1) ||
-      (movement.direction === 'DOWN' && movement.previousRank === 1)
-    );
-  }
-
-  private getLeadershipChange(
-    movements: RankingMovementFeedMovement[],
-    leadershipContext: SnapshotLeadershipContext,
-  ) {
-    const hasLeadershipChange = movements.some(
-      (movement) =>
-        (movement.direction === 'UP' && movement.currentRank === 1) ||
-        (movement.direction === 'DOWN' && movement.previousRank === 1),
-    );
-
-    if (!hasLeadershipChange) {
-      return null;
-    }
-
-    return leadershipContext;
-  }
-
-  private getRankingMovementMatchTeam(
-    players: RankingMovementFeedMatch['players'],
-    team: MatchTeam,
-  ) {
-    return players
-      .filter((player) => player.team === team)
-      .sort((a, b) => a.position - b.position)
-      .map((player) => ({
-        groupMemberId: player.groupMemberId,
-        userId: player.groupMember.userId,
-        displayName: this.getUserDisplayName(player.groupMember.user),
-      }));
-  }
-
-  private parseSnapshotMovements(value: unknown): RankingMovementFeedMovement[] {
-    if (!Array.isArray(value)) {
-      return [];
-    }
-
-    return value.filter((movement): movement is RankingMovementFeedMovement =>
-      this.isSnapshotMovement(movement),
-    );
-  }
-
-  private isSnapshotMovement(value: unknown): value is SnapshotMovement {
-    if (!value || typeof value !== 'object') {
       return false;
     }
 
-    const movement = value as Partial<SnapshotMovement>;
-
-    return (
-      typeof movement.groupMemberId === 'string' &&
-      typeof movement.userId === 'string' &&
-      typeof movement.displayName === 'string' &&
-      (movement.direction === 'UP' || movement.direction === 'DOWN') &&
-      typeof movement.positions === 'number' &&
-      typeof movement.previousRank === 'number' &&
-      typeof movement.currentRank === 'number' &&
-      typeof movement.previousRating === 'number' &&
-      typeof movement.currentRating === 'number' &&
-      Array.isArray(movement.affectedMembers)
+    const largestMovement = movements.reduce(
+      (max, movement) => (movement.positions > max ? movement.positions : max),
+      0,
     );
-  }
 
-  private parseSnapshotPlayers(value: unknown): RankingMovementFeedPlayer[] {
-    if (!Array.isArray(value)) {
-      return [];
+    if (largestMovement >= RANKING_MOVEMENT_FEED_THRESHOLD) {
+      return true;
     }
 
-    return value.filter((player): player is RankingMovementFeedPlayer =>
-      this.isSnapshotPlayer(player),
-    );
+    const leadershipContext = this.parseLeadershipContext(row);
+
+    return leadershipContext.dethronedLeaders.length > 0;
   }
 
-  private isSnapshotPlayer(value: unknown): value is RankingMovementFeedPlayer {
-    if (!value || typeof value !== 'object') {
-      return false;
-    }
-
-    const player = value as Partial<RankingMovementFeedPlayer>;
-
-    return (
-      typeof player.groupMemberId === 'string' &&
-      typeof player.userId === 'string' &&
-      typeof player.displayName === 'string'
-    );
-  }
-
-  private getMatchFeedPlayer(
-    groupMemberId: string,
-    membersById: Map<string, MatchMember>,
-  ) {
-    const member = membersById.get(groupMemberId);
-
-    if (!member) {
-      throw new Error('Invalid match feed player');
-    }
-
+  private parseLeadershipContext(row: MatchRankingSnapshotRow): SnapshotLeadershipContext {
     return {
-      groupMemberId: member.id,
-      userId: member.userId,
-      displayName: member.displayName,
+      previousLeaders: this.parseJsonArray<RankingMovementFeedPlayer>(row.previousLeaders),
+      currentLeaders: this.parseJsonArray<RankingMovementFeedPlayer>(row.currentLeaders),
+      dethronedLeaders: this.parseJsonArray<RankingMovementFeedPlayer>(row.dethronedLeaders),
     };
+  }
+
+  private parseMovements(row: MatchRankingSnapshotRow): SnapshotMovement[] {
+    return this.parseJsonArray<SnapshotMovement>(row.movements);
+  }
+
+  private parseJsonArray<T>(value: unknown): T[] {
+    return Array.isArray(value) ? (value as T[]) : [];
   }
 
   private getUserDisplayName(user: { firstName: string; lastName: string }) {
     return `${user.firstName} ${user.lastName}`.trim();
-  }
-
-  private async markProjectionProcessing(job: ProcessingJob) {
-    await this.prisma.$executeRaw`
-      INSERT INTO "GroupRankingProjection" (
-        "groupId",
-        "status",
-        "processingJobId",
-        "lastError",
-        "createdAt",
-        "updatedAt"
-      )
-      VALUES (${job.groupId}, 'PROCESSING', ${job.id}, NULL, NOW(), NOW())
-      ON CONFLICT ("groupId") DO UPDATE SET
-        "status" = 'PROCESSING',
-        "processingJobId" = ${job.id},
-        "lastError" = NULL,
-        "updatedAt" = NOW()
-    `;
-
-    await this.groupHomeSummary.syncGroupSummary(job.groupId);
   }
 
   private async markProjectionCurrent(

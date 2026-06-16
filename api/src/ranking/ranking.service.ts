@@ -1,6 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 
+const EMPTY_GROUP_MEMBER_STATS = {
+  matchesCount: 0,
+  winsCount: 0,
+};
+
 type RankingMovementDirection = 'UP' | 'DOWN';
 
 type VisibleRankingMovementRow = {
@@ -56,6 +61,12 @@ export class RankingService {
         leftAt: true,
         createdAt: true,
         updatedAt: true,
+        stats: {
+          select: {
+            matchesCount: true,
+            winsCount: true,
+          },
+        },
         user: {
           select: {
             id: true,
@@ -71,6 +82,7 @@ export class RankingService {
 
     return members.map((member) => ({
       ...member,
+      stats: member.stats ?? EMPTY_GROUP_MEMBER_STATS,
       rankingMovement: rankingMovementByMemberId.get(member.id) ?? null,
     }));
   }

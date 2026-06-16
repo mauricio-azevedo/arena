@@ -115,6 +115,7 @@ model Group {
   rankingProjection       GroupRankingProjection?
   matchRankingSnapshots   MatchRankingSnapshot[]
   homeSummary             GroupHomeSummary?
+  memberStats             GroupMemberStats[]
 
   @@index([visibility, createdAt])
   @@index([name])
@@ -173,6 +174,7 @@ model GroupMember {
   matchPlayers          MatchPlayer[]
   actorFeedItems        FeedItem[]          @relation("FeedItemActorGroupMember")
   rankingMovements      RankingMovement[]
+  stats                 GroupMemberStats?
 
   @@unique([groupId, userId])
   @@unique([id, groupId])
@@ -181,6 +183,24 @@ model GroupMember {
   @@index([groupId, rating])
   @@index([groupId, currentRank, rating])
   @@index([groupId, role])
+}
+
+model GroupMemberStats {
+  groupMemberId String @id
+  groupId       String
+
+  matchesCount Int @default(0)
+  winsCount    Int @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  group       Group       @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  groupMember GroupMember @relation(fields: [groupMemberId, groupId], references: [id, groupId], onDelete: Cascade)
+
+  @@unique([groupMemberId, groupId])
+  @@index([groupId])
+  @@index([groupId, matchesCount])
 }
 
 model Match {
