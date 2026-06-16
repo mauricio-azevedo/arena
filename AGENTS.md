@@ -8,6 +8,7 @@ For substantial work, read and follow:
 - `docs/ai/ARENA_CONTEXT.md`
 - `docs/ai/AI_REVIEW_CHECKLIST.md`
 - `docs/ai/PROMPT_PATTERNS.md`
+- `docs/ai/RESEARCH_SOURCES.md`
 
 ## Default behavior
 
