@@ -34,6 +34,11 @@ export type RankingMovement = {
   occurredAt: string;
 };
 
+export type GroupMemberStats = {
+  matchesCount: number;
+  winsCount: number;
+};
+
 export type GroupMember = {
   id: string;
   groupId: string;
@@ -50,6 +55,7 @@ export type GroupMember = {
   updatedAt: string;
   user?: User;
   group?: Group;
+  stats?: GroupMemberStats;
   rankingMovement?: RankingMovement | null;
 };
 
