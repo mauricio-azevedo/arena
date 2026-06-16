@@ -63,6 +63,7 @@ export const ModelName = {
   GroupHomeSummary: 'GroupHomeSummary',
   RankingMovement: 'RankingMovement',
   ProcessingJob: 'ProcessingJob',
+  PlatformTrendingPlayer: 'PlatformTrendingPlayer',
   FeedItem: 'FeedItem'
 } as const
 
@@ -303,6 +304,35 @@ export const ProcessingJobScalarFieldEnum = {
 } as const
 
 export type ProcessingJobScalarFieldEnum = (typeof ProcessingJobScalarFieldEnum)[keyof typeof ProcessingJobScalarFieldEnum]
+
+
+export const PlatformTrendingPlayerScalarFieldEnum = {
+  userId: 'userId',
+  trendRank: 'trendRank',
+  displayName: 'displayName',
+  score: 'score',
+  recentMatches: 'recentMatches',
+  recentWins: 'recentWins',
+  recentWinRate: 'recentWinRate',
+  allTimeMatches: 'allTimeMatches',
+  allTimeWins: 'allTimeWins',
+  allTimeWinRate: 'allTimeWinRate',
+  highlightGroupId: 'highlightGroupId',
+  highlightGroupName: 'highlightGroupName',
+  highlightGroupMemberId: 'highlightGroupMemberId',
+  highlightGroupMembersCount: 'highlightGroupMembersCount',
+  highlightCurrentRank: 'highlightCurrentRank',
+  highlightRating: 'highlightRating',
+  windowDays: 'windowDays',
+  windowStartedAt: 'windowStartedAt',
+  windowEndedAt: 'windowEndedAt',
+  metadata: 'metadata',
+  computedAt: 'computedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PlatformTrendingPlayerScalarFieldEnum = (typeof PlatformTrendingPlayerScalarFieldEnum)[keyof typeof PlatformTrendingPlayerScalarFieldEnum]
 
 
 export const FeedItemScalarFieldEnum = {

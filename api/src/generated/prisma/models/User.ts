@@ -203,6 +203,7 @@ export type UserWhereInput = {
   createdInvites?: Prisma.GroupInviteListRelationFilter
   actorFeedItems?: Prisma.FeedItemListRelationFilter
   subjectFeedItems?: Prisma.FeedItemListRelationFilter
+  platformTrendingPlayer?: Prisma.XOR<Prisma.PlatformTrendingPlayerNullableScalarRelationFilter, Prisma.PlatformTrendingPlayerWhereInput> | null
 }
 
 export type UserOrderByWithRelationInput = {
@@ -218,6 +219,7 @@ export type UserOrderByWithRelationInput = {
   createdInvites?: Prisma.GroupInviteOrderByRelationAggregateInput
   actorFeedItems?: Prisma.FeedItemOrderByRelationAggregateInput
   subjectFeedItems?: Prisma.FeedItemOrderByRelationAggregateInput
+  platformTrendingPlayer?: Prisma.PlatformTrendingPlayerOrderByWithRelationInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -236,6 +238,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   createdInvites?: Prisma.GroupInviteListRelationFilter
   actorFeedItems?: Prisma.FeedItemListRelationFilter
   subjectFeedItems?: Prisma.FeedItemListRelationFilter
+  platformTrendingPlayer?: Prisma.XOR<Prisma.PlatformTrendingPlayerNullableScalarRelationFilter, Prisma.PlatformTrendingPlayerWhereInput> | null
 }, "id" | "email">
 
 export type UserOrderByWithAggregationInput = {
@@ -277,6 +280,7 @@ export type UserCreateInput = {
   createdInvites?: Prisma.GroupInviteCreateNestedManyWithoutCreatedByInput
   actorFeedItems?: Prisma.FeedItemCreateNestedManyWithoutActorUserInput
   subjectFeedItems?: Prisma.FeedItemCreateNestedManyWithoutSubjectUserInput
+  platformTrendingPlayer?: Prisma.PlatformTrendingPlayerCreateNestedOneWithoutUserInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -292,6 +296,7 @@ export type UserUncheckedCreateInput = {
   createdInvites?: Prisma.GroupInviteUncheckedCreateNestedManyWithoutCreatedByInput
   actorFeedItems?: Prisma.FeedItemUncheckedCreateNestedManyWithoutActorUserInput
   subjectFeedItems?: Prisma.FeedItemUncheckedCreateNestedManyWithoutSubjectUserInput
+  platformTrendingPlayer?: Prisma.PlatformTrendingPlayerUncheckedCreateNestedOneWithoutUserInput
 }
 
 export type UserUpdateInput = {
@@ -307,6 +312,7 @@ export type UserUpdateInput = {
   createdInvites?: Prisma.GroupInviteUpdateManyWithoutCreatedByNestedInput
   actorFeedItems?: Prisma.FeedItemUpdateManyWithoutActorUserNestedInput
   subjectFeedItems?: Prisma.FeedItemUpdateManyWithoutSubjectUserNestedInput
+  platformTrendingPlayer?: Prisma.PlatformTrendingPlayerUpdateOneWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -322,6 +328,7 @@ export type UserUncheckedUpdateInput = {
   createdInvites?: Prisma.GroupInviteUncheckedUpdateManyWithoutCreatedByNestedInput
   actorFeedItems?: Prisma.FeedItemUncheckedUpdateManyWithoutActorUserNestedInput
   subjectFeedItems?: Prisma.FeedItemUncheckedUpdateManyWithoutSubjectUserNestedInput
+  platformTrendingPlayer?: Prisma.PlatformTrendingPlayerUncheckedUpdateOneWithoutUserNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -444,6 +451,20 @@ export type UserUpdateOneRequiredWithoutMembershipsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutMembershipsInput, Prisma.UserUpdateWithoutMembershipsInput>, Prisma.UserUncheckedUpdateWithoutMembershipsInput>
 }
 
+export type UserCreateNestedOneWithoutPlatformTrendingPlayerInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutPlatformTrendingPlayerInput, Prisma.UserUncheckedCreateWithoutPlatformTrendingPlayerInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutPlatformTrendingPlayerInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutPlatformTrendingPlayerNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutPlatformTrendingPlayerInput, Prisma.UserUncheckedCreateWithoutPlatformTrendingPlayerInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutPlatformTrendingPlayerInput
+  upsert?: Prisma.UserUpsertWithoutPlatformTrendingPlayerInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutPlatformTrendingPlayerInput, Prisma.UserUpdateWithoutPlatformTrendingPlayerInput>, Prisma.UserUncheckedUpdateWithoutPlatformTrendingPlayerInput>
+}
+
 export type UserCreateNestedOneWithoutActorFeedItemsInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutActorFeedItemsInput, Prisma.UserUncheckedCreateWithoutActorFeedItemsInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutActorFeedItemsInput
@@ -488,6 +509,7 @@ export type UserCreateWithoutCreatedGroupsInput = {
   createdInvites?: Prisma.GroupInviteCreateNestedManyWithoutCreatedByInput
   actorFeedItems?: Prisma.FeedItemCreateNestedManyWithoutActorUserInput
   subjectFeedItems?: Prisma.FeedItemCreateNestedManyWithoutSubjectUserInput
+  platformTrendingPlayer?: Prisma.PlatformTrendingPlayerCreateNestedOneWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutCreatedGroupsInput = {
@@ -502,6 +524,7 @@ export type UserUncheckedCreateWithoutCreatedGroupsInput = {
   createdInvites?: Prisma.GroupInviteUncheckedCreateNestedManyWithoutCreatedByInput
   actorFeedItems?: Prisma.FeedItemUncheckedCreateNestedManyWithoutActorUserInput
   subjectFeedItems?: Prisma.FeedItemUncheckedCreateNestedManyWithoutSubjectUserInput
+  platformTrendingPlayer?: Prisma.PlatformTrendingPlayerUncheckedCreateNestedOneWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutCreatedGroupsInput = {
@@ -532,6 +555,7 @@ export type UserUpdateWithoutCreatedGroupsInput = {
   createdInvites?: Prisma.GroupInviteUpdateManyWithoutCreatedByNestedInput
   actorFeedItems?: Prisma.FeedItemUpdateManyWithoutActorUserNestedInput
   subjectFeedItems?: Prisma.FeedItemUpdateManyWithoutSubjectUserNestedInput
+  platformTrendingPlayer?: Prisma.PlatformTrendingPlayerUpdateOneWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCreatedGroupsInput = {
@@ -546,6 +570,7 @@ export type UserUncheckedUpdateWithoutCreatedGroupsInput = {
   createdInvites?: Prisma.GroupInviteUncheckedUpdateManyWithoutCreatedByNestedInput
   actorFeedItems?: Prisma.FeedItemUncheckedUpdateManyWithoutActorUserNestedInput
   subjectFeedItems?: Prisma.FeedItemUncheckedUpdateManyWithoutSubjectUserNestedInput
+  platformTrendingPlayer?: Prisma.PlatformTrendingPlayerUncheckedUpdateOneWithoutUserNestedInput
 }
 
 export type UserCreateWithoutCreatedInvitesInput = {
@@ -560,6 +585,7 @@ export type UserCreateWithoutCreatedInvitesInput = {
   memberships?: Prisma.GroupMemberCreateNestedManyWithoutUserInput
   actorFeedItems?: Prisma.FeedItemCreateNestedManyWithoutActorUserInput
   subjectFeedItems?: Prisma.FeedItemCreateNestedManyWithoutSubjectUserInput
+  platformTrendingPlayer?: Prisma.PlatformTrendingPlayerCreateNestedOneWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutCreatedInvitesInput = {
@@ -574,6 +600,7 @@ export type UserUncheckedCreateWithoutCreatedInvitesInput = {
   memberships?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutUserInput
   actorFeedItems?: Prisma.FeedItemUncheckedCreateNestedManyWithoutActorUserInput
   subjectFeedItems?: Prisma.FeedItemUncheckedCreateNestedManyWithoutSubjectUserInput
+  platformTrendingPlayer?: Prisma.PlatformTrendingPlayerUncheckedCreateNestedOneWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutCreatedInvitesInput = {
@@ -604,6 +631,7 @@ export type UserUpdateWithoutCreatedInvitesInput = {
   memberships?: Prisma.GroupMemberUpdateManyWithoutUserNestedInput
   actorFeedItems?: Prisma.FeedItemUpdateManyWithoutActorUserNestedInput
   subjectFeedItems?: Prisma.FeedItemUpdateManyWithoutSubjectUserNestedInput
+  platformTrendingPlayer?: Prisma.PlatformTrendingPlayerUpdateOneWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCreatedInvitesInput = {
@@ -618,6 +646,7 @@ export type UserUncheckedUpdateWithoutCreatedInvitesInput = {
   memberships?: Prisma.GroupMemberUncheckedUpdateManyWithoutUserNestedInput
   actorFeedItems?: Prisma.FeedItemUncheckedUpdateManyWithoutActorUserNestedInput
   subjectFeedItems?: Prisma.FeedItemUncheckedUpdateManyWithoutSubjectUserNestedInput
+  platformTrendingPlayer?: Prisma.PlatformTrendingPlayerUncheckedUpdateOneWithoutUserNestedInput
 }
 
 export type UserCreateWithoutMembershipsInput = {
@@ -632,6 +661,7 @@ export type UserCreateWithoutMembershipsInput = {
   createdInvites?: Prisma.GroupInviteCreateNestedManyWithoutCreatedByInput
   actorFeedItems?: Prisma.FeedItemCreateNestedManyWithoutActorUserInput
   subjectFeedItems?: Prisma.FeedItemCreateNestedManyWithoutSubjectUserInput
+  platformTrendingPlayer?: Prisma.PlatformTrendingPlayerCreateNestedOneWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutMembershipsInput = {
@@ -646,6 +676,7 @@ export type UserUncheckedCreateWithoutMembershipsInput = {
   createdInvites?: Prisma.GroupInviteUncheckedCreateNestedManyWithoutCreatedByInput
   actorFeedItems?: Prisma.FeedItemUncheckedCreateNestedManyWithoutActorUserInput
   subjectFeedItems?: Prisma.FeedItemUncheckedCreateNestedManyWithoutSubjectUserInput
+  platformTrendingPlayer?: Prisma.PlatformTrendingPlayerUncheckedCreateNestedOneWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutMembershipsInput = {
@@ -676,6 +707,7 @@ export type UserUpdateWithoutMembershipsInput = {
   createdInvites?: Prisma.GroupInviteUpdateManyWithoutCreatedByNestedInput
   actorFeedItems?: Prisma.FeedItemUpdateManyWithoutActorUserNestedInput
   subjectFeedItems?: Prisma.FeedItemUpdateManyWithoutSubjectUserNestedInput
+  platformTrendingPlayer?: Prisma.PlatformTrendingPlayerUpdateOneWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutMembershipsInput = {
@@ -687,6 +719,83 @@ export type UserUncheckedUpdateWithoutMembershipsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdGroups?: Prisma.GroupUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdInvites?: Prisma.GroupInviteUncheckedUpdateManyWithoutCreatedByNestedInput
+  actorFeedItems?: Prisma.FeedItemUncheckedUpdateManyWithoutActorUserNestedInput
+  subjectFeedItems?: Prisma.FeedItemUncheckedUpdateManyWithoutSubjectUserNestedInput
+  platformTrendingPlayer?: Prisma.PlatformTrendingPlayerUncheckedUpdateOneWithoutUserNestedInput
+}
+
+export type UserCreateWithoutPlatformTrendingPlayerInput = {
+  id?: string
+  firstName: string
+  lastName: string
+  email: string
+  passwordHash: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  createdGroups?: Prisma.GroupCreateNestedManyWithoutCreatedByInput
+  memberships?: Prisma.GroupMemberCreateNestedManyWithoutUserInput
+  createdInvites?: Prisma.GroupInviteCreateNestedManyWithoutCreatedByInput
+  actorFeedItems?: Prisma.FeedItemCreateNestedManyWithoutActorUserInput
+  subjectFeedItems?: Prisma.FeedItemCreateNestedManyWithoutSubjectUserInput
+}
+
+export type UserUncheckedCreateWithoutPlatformTrendingPlayerInput = {
+  id?: string
+  firstName: string
+  lastName: string
+  email: string
+  passwordHash: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  createdGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutCreatedByInput
+  memberships?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutUserInput
+  createdInvites?: Prisma.GroupInviteUncheckedCreateNestedManyWithoutCreatedByInput
+  actorFeedItems?: Prisma.FeedItemUncheckedCreateNestedManyWithoutActorUserInput
+  subjectFeedItems?: Prisma.FeedItemUncheckedCreateNestedManyWithoutSubjectUserInput
+}
+
+export type UserCreateOrConnectWithoutPlatformTrendingPlayerInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutPlatformTrendingPlayerInput, Prisma.UserUncheckedCreateWithoutPlatformTrendingPlayerInput>
+}
+
+export type UserUpsertWithoutPlatformTrendingPlayerInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutPlatformTrendingPlayerInput, Prisma.UserUncheckedUpdateWithoutPlatformTrendingPlayerInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutPlatformTrendingPlayerInput, Prisma.UserUncheckedCreateWithoutPlatformTrendingPlayerInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutPlatformTrendingPlayerInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutPlatformTrendingPlayerInput, Prisma.UserUncheckedUpdateWithoutPlatformTrendingPlayerInput>
+}
+
+export type UserUpdateWithoutPlatformTrendingPlayerInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdGroups?: Prisma.GroupUpdateManyWithoutCreatedByNestedInput
+  memberships?: Prisma.GroupMemberUpdateManyWithoutUserNestedInput
+  createdInvites?: Prisma.GroupInviteUpdateManyWithoutCreatedByNestedInput
+  actorFeedItems?: Prisma.FeedItemUpdateManyWithoutActorUserNestedInput
+  subjectFeedItems?: Prisma.FeedItemUpdateManyWithoutSubjectUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutPlatformTrendingPlayerInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdGroups?: Prisma.GroupUncheckedUpdateManyWithoutCreatedByNestedInput
+  memberships?: Prisma.GroupMemberUncheckedUpdateManyWithoutUserNestedInput
   createdInvites?: Prisma.GroupInviteUncheckedUpdateManyWithoutCreatedByNestedInput
   actorFeedItems?: Prisma.FeedItemUncheckedUpdateManyWithoutActorUserNestedInput
   subjectFeedItems?: Prisma.FeedItemUncheckedUpdateManyWithoutSubjectUserNestedInput
@@ -704,6 +813,7 @@ export type UserCreateWithoutActorFeedItemsInput = {
   memberships?: Prisma.GroupMemberCreateNestedManyWithoutUserInput
   createdInvites?: Prisma.GroupInviteCreateNestedManyWithoutCreatedByInput
   subjectFeedItems?: Prisma.FeedItemCreateNestedManyWithoutSubjectUserInput
+  platformTrendingPlayer?: Prisma.PlatformTrendingPlayerCreateNestedOneWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutActorFeedItemsInput = {
@@ -718,6 +828,7 @@ export type UserUncheckedCreateWithoutActorFeedItemsInput = {
   memberships?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutUserInput
   createdInvites?: Prisma.GroupInviteUncheckedCreateNestedManyWithoutCreatedByInput
   subjectFeedItems?: Prisma.FeedItemUncheckedCreateNestedManyWithoutSubjectUserInput
+  platformTrendingPlayer?: Prisma.PlatformTrendingPlayerUncheckedCreateNestedOneWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutActorFeedItemsInput = {
@@ -737,6 +848,7 @@ export type UserCreateWithoutSubjectFeedItemsInput = {
   memberships?: Prisma.GroupMemberCreateNestedManyWithoutUserInput
   createdInvites?: Prisma.GroupInviteCreateNestedManyWithoutCreatedByInput
   actorFeedItems?: Prisma.FeedItemCreateNestedManyWithoutActorUserInput
+  platformTrendingPlayer?: Prisma.PlatformTrendingPlayerCreateNestedOneWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutSubjectFeedItemsInput = {
@@ -751,6 +863,7 @@ export type UserUncheckedCreateWithoutSubjectFeedItemsInput = {
   memberships?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutUserInput
   createdInvites?: Prisma.GroupInviteUncheckedCreateNestedManyWithoutCreatedByInput
   actorFeedItems?: Prisma.FeedItemUncheckedCreateNestedManyWithoutActorUserInput
+  platformTrendingPlayer?: Prisma.PlatformTrendingPlayerUncheckedCreateNestedOneWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutSubjectFeedItemsInput = {
@@ -781,6 +894,7 @@ export type UserUpdateWithoutActorFeedItemsInput = {
   memberships?: Prisma.GroupMemberUpdateManyWithoutUserNestedInput
   createdInvites?: Prisma.GroupInviteUpdateManyWithoutCreatedByNestedInput
   subjectFeedItems?: Prisma.FeedItemUpdateManyWithoutSubjectUserNestedInput
+  platformTrendingPlayer?: Prisma.PlatformTrendingPlayerUpdateOneWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutActorFeedItemsInput = {
@@ -795,6 +909,7 @@ export type UserUncheckedUpdateWithoutActorFeedItemsInput = {
   memberships?: Prisma.GroupMemberUncheckedUpdateManyWithoutUserNestedInput
   createdInvites?: Prisma.GroupInviteUncheckedUpdateManyWithoutCreatedByNestedInput
   subjectFeedItems?: Prisma.FeedItemUncheckedUpdateManyWithoutSubjectUserNestedInput
+  platformTrendingPlayer?: Prisma.PlatformTrendingPlayerUncheckedUpdateOneWithoutUserNestedInput
 }
 
 export type UserUpsertWithoutSubjectFeedItemsInput = {
@@ -820,6 +935,7 @@ export type UserUpdateWithoutSubjectFeedItemsInput = {
   memberships?: Prisma.GroupMemberUpdateManyWithoutUserNestedInput
   createdInvites?: Prisma.GroupInviteUpdateManyWithoutCreatedByNestedInput
   actorFeedItems?: Prisma.FeedItemUpdateManyWithoutActorUserNestedInput
+  platformTrendingPlayer?: Prisma.PlatformTrendingPlayerUpdateOneWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSubjectFeedItemsInput = {
@@ -834,6 +950,7 @@ export type UserUncheckedUpdateWithoutSubjectFeedItemsInput = {
   memberships?: Prisma.GroupMemberUncheckedUpdateManyWithoutUserNestedInput
   createdInvites?: Prisma.GroupInviteUncheckedUpdateManyWithoutCreatedByNestedInput
   actorFeedItems?: Prisma.FeedItemUncheckedUpdateManyWithoutActorUserNestedInput
+  platformTrendingPlayer?: Prisma.PlatformTrendingPlayerUncheckedUpdateOneWithoutUserNestedInput
 }
 
 
@@ -916,6 +1033,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   createdInvites?: boolean | Prisma.User$createdInvitesArgs<ExtArgs>
   actorFeedItems?: boolean | Prisma.User$actorFeedItemsArgs<ExtArgs>
   subjectFeedItems?: boolean | Prisma.User$subjectFeedItemsArgs<ExtArgs>
+  platformTrendingPlayer?: boolean | Prisma.User$platformTrendingPlayerArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -956,6 +1074,7 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   createdInvites?: boolean | Prisma.User$createdInvitesArgs<ExtArgs>
   actorFeedItems?: boolean | Prisma.User$actorFeedItemsArgs<ExtArgs>
   subjectFeedItems?: boolean | Prisma.User$subjectFeedItemsArgs<ExtArgs>
+  platformTrendingPlayer?: boolean | Prisma.User$platformTrendingPlayerArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -969,6 +1088,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     createdInvites: Prisma.$GroupInvitePayload<ExtArgs>[]
     actorFeedItems: Prisma.$FeedItemPayload<ExtArgs>[]
     subjectFeedItems: Prisma.$FeedItemPayload<ExtArgs>[]
+    platformTrendingPlayer: Prisma.$PlatformTrendingPlayerPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1377,6 +1497,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   createdInvites<T extends Prisma.User$createdInvitesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$createdInvitesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$GroupInvitePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   actorFeedItems<T extends Prisma.User$actorFeedItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$actorFeedItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FeedItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   subjectFeedItems<T extends Prisma.User$subjectFeedItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$subjectFeedItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FeedItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  platformTrendingPlayer<T extends Prisma.User$platformTrendingPlayerArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$platformTrendingPlayerArgs<ExtArgs>>): Prisma.Prisma__PlatformTrendingPlayerClient<runtime.Types.Result.GetResult<Prisma.$PlatformTrendingPlayerPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1923,6 +2044,25 @@ export type User$subjectFeedItemsArgs<ExtArgs extends runtime.Types.Extensions.I
   take?: number
   skip?: number
   distinct?: Prisma.FeedItemScalarFieldEnum | Prisma.FeedItemScalarFieldEnum[]
+}
+
+/**
+ * User.platformTrendingPlayer
+ */
+export type User$platformTrendingPlayerArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PlatformTrendingPlayer
+   */
+  select?: Prisma.PlatformTrendingPlayerSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PlatformTrendingPlayer
+   */
+  omit?: Prisma.PlatformTrendingPlayerOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PlatformTrendingPlayerInclude<ExtArgs> | null
+  where?: Prisma.PlatformTrendingPlayerWhereInput
 }
 
 /**

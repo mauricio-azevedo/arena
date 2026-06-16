@@ -100,6 +100,11 @@ export type RankingMovement = Prisma.RankingMovementModel
  */
 export type ProcessingJob = Prisma.ProcessingJobModel
 /**
+ * Model PlatformTrendingPlayer
+ * 
+ */
+export type PlatformTrendingPlayer = Prisma.PlatformTrendingPlayerModel
+/**
  * Model FeedItem
  * 
  */
