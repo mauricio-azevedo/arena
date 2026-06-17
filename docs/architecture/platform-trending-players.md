@@ -35,7 +35,7 @@ It should not materialize cheap display data such as user display names or group
 
 ## Current checkpoint
 
-The table shape, migration, projection service, platform processing job, and event-driven enqueue path now exist.
+The table shape, migration, projection service, platform processing job, event-driven enqueue path, and scheduled rebuild enqueue path now exist.
 
 The projection service is `PlatformTrendingPlayersProjectionService`.
 
@@ -72,10 +72,24 @@ This ordering matters because the platform highlighted group uses current group 
 
 The writer inserts the platform job with `ON CONFLICT DO NOTHING`. If another live job already exists, the writer returns that existing job.
 
+`PlatformTrendingRebuildSchedulerService` periodically enqueues `PLATFORM_TRENDING_PLAYERS_REBUILD` so the read model can refresh when players enter or leave the time window even if no match is created, edited, deleted, or rebuilt.
+
+The scheduler checks periodically and enqueues at most one platform rebuild per configured minimum interval. The job writer's live `dedupeKey` protection prevents duplicate live platform rebuild jobs.
+
+Default behavior:
+
+- check interval: 1 hour;
+- minimum enqueue interval: 24 hours.
+
+Environment controls:
+
+- `PLATFORM_TRENDING_REBUILD_SCHEDULER_DISABLED=true` disables the scheduler;
+- `PLATFORM_TRENDING_REBUILD_CHECK_INTERVAL_MS` overrides the check interval;
+- `PLATFORM_TRENDING_REBUILD_MIN_ENQUEUE_INTERVAL_MS` overrides the minimum enqueue interval.
+
 This checkpoint does not add:
 
 - an admin/dev trigger;
-- automatic scheduling;
 - an API endpoint;
 - UI.
 
