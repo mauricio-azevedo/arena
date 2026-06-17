@@ -147,9 +147,9 @@ function TrendMetric({
       </div>
       <p className="mt-2 truncate text-3xl font-semibold leading-none tracking-[-0.085em] text-foreground tabular-nums">
         {value}
-        <span className="text-base font-semibold tracking-[-0.06em] text-muted-foreground">
-          /{historicalValue}
-        </span>
+        {/*<span className="text-base font-semibold tracking-[-0.06em] text-muted-foreground">*/}
+        {/*  /{historicalValue}*/}
+        {/*</span>*/}
       </p>
     </div>
   );
