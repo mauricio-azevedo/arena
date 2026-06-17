@@ -10,6 +10,7 @@ import { MembersModule } from './members/members.module';
 import { FeedModule } from './feed/feed.module';
 import { UsersModule } from './users/users.module';
 import { ProcessingModule } from './processing/processing.module';
+import { PlatformTrendingModule } from './platform-trending/platform-trending.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { ProcessingModule } from './processing/processing.module';
     FeedModule,
     UsersModule,
     ProcessingModule,
+    PlatformTrendingModule,
   ],
 })
 export class AppModule {}

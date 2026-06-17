@@ -8,11 +8,11 @@ This table is not a source of truth. It stores the expensive ranking and aggrega
 
 The source of truth remains:
 
-- `Match`
-- `MatchPlayer`
-- `GroupMember`
-- `Group`
-- `User`
+* `Match`
+* `MatchPlayer`
+* `GroupMember`
+* `Group`
+* `User`
 
 ## Read model purpose
 
@@ -22,49 +22,49 @@ Each projection run stores exactly the top 3 eligible platform-trending users fo
 
 The read model should materialize expensive derived values:
 
-- trend rank;
-- trend score;
-- recent match and win counts;
-- recent win rate;
-- all-time match and win counts;
-- all-time win rate;
-- highlighted group and group-member identifiers;
-- projection window metadata.
+* trend rank;
+* trend score;
+* recent match and win counts;
+* recent win rate;
+* all-time match and win counts;
+* all-time win rate;
+* highlighted group and group-member identifiers;
+* projection window metadata.
 
 It should not materialize cheap display data such as user display names or group names. The future read API should resolve those by joining from the stored identifiers.
 
 ## Current checkpoint
 
-The table shape, migration, projection service, platform processing job, event-driven enqueue path, and scheduled rebuild enqueue path now exist.
+The table shape, migration, projection service, platform processing job, event-driven enqueue path, scheduled rebuild enqueue path, and read API now exist.
 
 The projection service is `PlatformTrendingPlayersProjectionService`.
 
 It rebuilds `PlatformTrendingPlayer` from source-of-truth tables in one deterministic transaction:
 
-- delete the previous read model rows;
-- compute eligible players from match history;
-- choose up to 3 ranked players;
-- store metrics and identifiers needed by the read path;
-- log projection metrics.
+* delete the previous read model rows;
+* compute eligible players from match history;
+* choose up to 3 ranked players;
+* store metrics and identifiers needed by the read path;
+* log projection metrics.
 
 The processing job type is `PLATFORM_TRENDING_PLAYERS_REBUILD`.
 
 It is a platform-scoped job:
 
-- `scope` is `PLATFORM`;
-- `groupId` is `NULL`;
-- `matchId` is `NULL`;
-- `dedupeKey` is `platform:trending-players:rebuild`.
+* `scope` is `PLATFORM`;
+* `groupId` is `NULL`;
+* `matchId` is `NULL`;
+* `dedupeKey` is `platform:trending-players:rebuild`.
 
 `ProcessingJobRunnerService` dispatches that job to `PlatformTrendingPlayersProjectionService.syncPlatformTrendingPlayers()`.
 
 The platform rebuild is enqueued after a group projection transaction finishes the source-of-truth-derived group state that platform trending depends on:
 
-- group ratings;
-- ranking movement state;
-- group-member stats;
-- feed projections;
-- group home summary.
+* group ratings;
+* ranking movement state;
+* group-member stats;
+* feed projections;
+* group home summary.
 
 This ordering matters because the platform highlighted group uses current group ranking data.
 
@@ -78,20 +78,33 @@ The scheduler checks periodically and enqueues at most one platform rebuild per 
 
 Default behavior:
 
-- check interval: 1 hour;
-- minimum enqueue interval: 24 hours.
+* check interval: 1 hour;
+* minimum enqueue interval: 24 hours.
 
 Environment controls:
 
-- `PLATFORM_TRENDING_REBUILD_SCHEDULER_DISABLED=true` disables the scheduler;
-- `PLATFORM_TRENDING_REBUILD_CHECK_INTERVAL_MS` overrides the check interval;
-- `PLATFORM_TRENDING_REBUILD_MIN_ENQUEUE_INTERVAL_MS` overrides the minimum enqueue interval.
+* `PLATFORM_TRENDING_REBUILD_SCHEDULER_DISABLED=true` disables the scheduler;
+* `PLATFORM_TRENDING_REBUILD_CHECK_INTERVAL_MS` overrides the check interval;
+* `PLATFORM_TRENDING_REBUILD_MIN_ENQUEUE_INTERVAL_MS` overrides the minimum enqueue interval.
+
+## Read API
+
+`GET /platform/trending-players` reads from `PlatformTrendingPlayer`.
+
+The endpoint does not recompute platform-level trending players at request time. It returns the current materialized platform trending rows ordered by `trendRank`.
+
+The read path resolves cheap display fields through Prisma relations:
+
+* `userId` -> `User.firstName` / `User.lastName`;
+* `highlightGroupId` -> `Group.name`;
+* `highlightGroupMemberId` + `highlightGroupId` -> `GroupMember.currentRank` / `GroupMember.rating`.
+
+The highlighted group-member relation is intentionally composite so the highlighted member must belong to the highlighted group.
 
 This checkpoint does not add:
 
-- an admin/dev trigger;
-- an API endpoint;
-- UI.
+* an admin/dev trigger;
+* UI.
 
 ## Projection rules
 
@@ -103,9 +116,9 @@ The first scoring version is `PLATFORM_TRENDING_PLAYERS_V1`.
 
 The current defaults are:
 
-- 30-day trend window;
-- exactly 3 ranked players when at least 3 players are eligible;
-- minimum 2 recent matches.
+* 30-day trend window;
+* exactly 3 ranked players when at least 3 players are eligible;
+* minimum 2 recent matches.
 
 The highlighted group for a player is the active group where that player has the best current rank among groups in which they played at least one match inside the selected window.
 
@@ -115,15 +128,3 @@ Tie-breaking for highlighted group selection is deterministic:
 2. most recent-window matches in that group;
 3. most recent-window wins in that group;
 4. `groupId` ascending.
-
-## Future read API
-
-The future read API should read from `PlatformTrendingPlayer`, not recompute trending players at request time.
-
-It should resolve cheap display fields by joining from stored identifiers:
-
-- `userId` -> `User.firstName` / `User.lastName`;
-- `highlightGroupId` -> `Group.name`;
-- `highlightGroupMemberId` -> `GroupMember.currentRank` and other current group-member display data if needed.
-
-The next checkpoint should add the read API after this projection contract has deployed successfully.
