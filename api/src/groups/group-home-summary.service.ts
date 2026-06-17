@@ -31,12 +31,13 @@ export class GroupHomeSummaryService {
 
   async syncGroupSummary(groupId: string, tx?: PrismaClientLike) {
     const client = tx ?? this.prisma;
-    const [membersCount, leaders, lastRelevantFeedItem, projection] = await Promise.all([
-      this.countActiveMembers(client, groupId),
-      this.findLeaders(client, groupId),
-      this.findLastRelevantFeedItem(client, groupId),
-      this.findProjection(client, groupId),
-    ]);
+    const [membersCount, leaders, lastRelevantFeedItem, projection] =
+      await Promise.all([
+        this.countActiveMembers(client, groupId),
+        this.findLeaders(client, groupId),
+        this.findLastRelevantFeedItem(client, groupId),
+        this.findProjection(client, groupId),
+      ]);
 
     await this.upsertSummary(client, {
       groupId,
@@ -59,7 +60,10 @@ export class GroupHomeSummaryService {
     });
   }
 
-  private async findLeaders(client: PrismaClientLike, groupId: string): Promise<GroupHomeLeader[]> {
+  private async findLeaders(
+    client: PrismaClientLike,
+    groupId: string,
+  ): Promise<GroupHomeLeader[]> {
     const members = await client.groupMember.findMany({
       where: {
         groupId,
@@ -90,7 +94,10 @@ export class GroupHomeSummaryService {
     }));
   }
 
-  private async findLastRelevantFeedItem(client: PrismaClientLike, groupId: string) {
+  private async findLastRelevantFeedItem(
+    client: PrismaClientLike,
+    groupId: string,
+  ) {
     const items = await client.feedItem.findMany({
       where: {
         groupId,

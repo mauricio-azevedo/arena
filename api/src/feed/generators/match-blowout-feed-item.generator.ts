@@ -17,7 +17,10 @@ export class MatchBlowoutFeedItemGenerator implements FeedItemGenerator<MatchBlo
     const winnerScore = Math.max(input.gamesA, input.gamesB);
     const loserScore = Math.min(input.gamesA, input.gamesB);
 
-    if (winnerScore !== BLOWOUT_WINNER_SCORE || loserScore > BLOWOUT_MAX_LOSER_SCORE) {
+    if (
+      winnerScore !== BLOWOUT_WINNER_SCORE ||
+      loserScore > BLOWOUT_MAX_LOSER_SCORE
+    ) {
       return null;
     }
 

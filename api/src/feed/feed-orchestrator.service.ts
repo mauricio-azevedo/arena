@@ -42,7 +42,10 @@ export class FeedOrchestratorService {
     return this.writer.create(draft, tx);
   }
 
-  async syncMatchBlowoutItem(input: MatchBlowoutFeedInput, tx: PrismaClientLike) {
+  async syncMatchBlowoutItem(
+    input: MatchBlowoutFeedInput,
+    tx: PrismaClientLike,
+  ) {
     const draft = this.matchBlowoutGenerator.generate(input);
 
     if (!draft) {

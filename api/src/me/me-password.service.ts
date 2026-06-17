@@ -52,7 +52,9 @@ export class MePasswordService {
     );
 
     if (isSamePassword) {
-      throw new BadRequestException('New password must be different from current password');
+      throw new BadRequestException(
+        'New password must be different from current password',
+      );
     }
 
     const passwordHash = await bcrypt.hash(input.newPassword, SALT_ROUNDS);
@@ -74,13 +76,18 @@ export class MePasswordService {
     return { success: true };
   }
 
-  private normalizeUpdatePasswordInput(body: UpdatePasswordInput): NormalizedUpdatePasswordInput {
+  private normalizeUpdatePasswordInput(
+    body: UpdatePasswordInput,
+  ): NormalizedUpdatePasswordInput {
     if (!body || typeof body !== 'object' || Array.isArray(body)) {
       throw new BadRequestException('Invalid password update payload');
     }
 
     const unknownFields = Object.keys(body).filter(
-      (field) => !PASSWORD_UPDATE_FIELDS.includes(field as (typeof PASSWORD_UPDATE_FIELDS)[number]),
+      (field) =>
+        !PASSWORD_UPDATE_FIELDS.includes(
+          field as (typeof PASSWORD_UPDATE_FIELDS)[number],
+        ),
     );
 
     if (unknownFields.length > 0) {

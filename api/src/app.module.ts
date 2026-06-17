@@ -12,6 +12,18 @@ import { UsersModule } from './users/users.module';
 import { ProcessingModule } from './processing/processing.module';
 
 @Module({
-  imports: [PrismaModule, GroupsModule, MembersModule, MatchesModule, RankingModule, AuthModule, GroupInvitesModule, MeModule, FeedModule, UsersModule, ProcessingModule],
+  imports: [
+    PrismaModule,
+    GroupsModule,
+    MembersModule,
+    MatchesModule,
+    RankingModule,
+    AuthModule,
+    GroupInvitesModule,
+    MeModule,
+    FeedModule,
+    UsersModule,
+    ProcessingModule,
+  ],
 })
 export class AppModule {}

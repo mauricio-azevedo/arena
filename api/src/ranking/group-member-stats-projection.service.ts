@@ -105,7 +105,8 @@ export class GroupMemberStatsProjectionService {
         activeMatchesCount: summary?.activeMatchesCount ?? 0,
         upsertedCount: summary?.upsertedCount ?? 0,
         deletedCount: summary?.deletedCount ?? 0,
-        projectedParticipationsCount: summary?.projectedParticipationsCount ?? 0,
+        projectedParticipationsCount:
+          summary?.projectedParticipationsCount ?? 0,
         projectedWinsCount: summary?.projectedWinsCount ?? 0,
         durationMs: Date.now() - startedAt,
       }),

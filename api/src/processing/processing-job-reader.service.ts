@@ -1,6 +1,9 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import type { ProcessingJob, ProcessingJobStatus } from './processing-job.types';
+import type {
+  ProcessingJob,
+  ProcessingJobStatus,
+} from './processing-job.types';
 
 type GroupRankingProjection = {
   groupId: string;
@@ -56,12 +59,16 @@ export class ProcessingJobReaderService {
     const jobs = await this.findGroupJobs(groupId);
     const projection = await this.findGroupRankingProjection(groupId);
     const activeStatuses: ProcessingJobStatus[] = ['PENDING', 'PROCESSING'];
-    const activeJobs = jobs.filter((job) => activeStatuses.includes(job.status));
+    const activeJobs = jobs.filter((job) =>
+      activeStatuses.includes(job.status),
+    );
 
     return {
-      isProcessing: projection?.status === 'PROCESSING' || activeJobs.length > 0,
+      isProcessing:
+        projection?.status === 'PROCESSING' || activeJobs.length > 0,
       pendingCount: activeJobs.filter((job) => job.status === 'PENDING').length,
-      processingCount: activeJobs.filter((job) => job.status === 'PROCESSING').length,
+      processingCount: activeJobs.filter((job) => job.status === 'PROCESSING')
+        .length,
       failedCount: jobs.filter((job) => job.status === 'FAILED').length,
       rankingProjection: projection,
       jobs,

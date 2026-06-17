@@ -7,7 +7,9 @@ import type { ProfileSummaryMatch } from '../types/profile-summary-match.type';
 export class ProfileSummaryMatchesService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findRecentMatches(profileUserId: string): Promise<ProfileSummaryMatch[]> {
+  async findRecentMatches(
+    profileUserId: string,
+  ): Promise<ProfileSummaryMatch[]> {
     const matchPlayers = await this.prisma.matchPlayer.findMany({
       where: {
         groupMember: {

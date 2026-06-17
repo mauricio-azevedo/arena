@@ -196,7 +196,9 @@ export class RatingProjectionService {
       gamesB: match.gamesB,
     });
     const updatedPlayers = [...result.teamA.players, ...result.teamB.players];
-    const updatedPlayerById = new Map(updatedPlayers.map((player) => [player.id, player]));
+    const updatedPlayerById = new Map(
+      updatedPlayers.map((player) => [player.id, player]),
+    );
 
     for (const player of updatedPlayers) {
       const existingMember = membersById.get(player.id);
@@ -212,7 +214,11 @@ export class RatingProjectionService {
     }
 
     const afterRanking = this.buildRankingState(membersById);
-    const movements = this.getMatchMovementSnapshots(match, beforeRanking, afterRanking);
+    const movements = this.getMatchMovementSnapshots(
+      match,
+      beforeRanking,
+      afterRanking,
+    );
 
     for (const player of match.players) {
       const before = beforeRanking.get(player.groupMemberId);
@@ -250,14 +256,17 @@ export class RatingProjectionService {
     }
 
     const teamARatingAfter =
-      (result.teamA.players[0].newRating + result.teamA.players[1].newRating) / 2;
+      (result.teamA.players[0].newRating + result.teamA.players[1].newRating) /
+      2;
     const teamBRatingAfter =
-      (result.teamB.players[0].newRating + result.teamB.players[1].newRating) / 2;
+      (result.teamB.players[0].newRating + result.teamB.players[1].newRating) /
+      2;
 
     await tx.match.update({
       where: { id: match.id },
       data: {
-        winnerTeam: match.gamesA > match.gamesB ? MatchTeam.TEAM_A : MatchTeam.TEAM_B,
+        winnerTeam:
+          match.gamesA > match.gamesB ? MatchTeam.TEAM_A : MatchTeam.TEAM_B,
         teamAExpected: result.teamA.expected,
         teamBExpected: result.teamB.expected,
         teamAActual: result.teamA.actual,

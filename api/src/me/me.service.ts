@@ -80,11 +80,17 @@ export class MeService {
 
     const updateData: NormalizedUpdateProfileInput = {};
 
-    if (input.firstName !== undefined && input.firstName !== currentUser.firstName) {
+    if (
+      input.firstName !== undefined &&
+      input.firstName !== currentUser.firstName
+    ) {
       updateData.firstName = input.firstName;
     }
 
-    if (input.lastName !== undefined && input.lastName !== currentUser.lastName) {
+    if (
+      input.lastName !== undefined &&
+      input.lastName !== currentUser.lastName
+    ) {
       updateData.lastName = input.lastName;
     }
 
@@ -124,7 +130,10 @@ export class MeService {
     }
 
     const unknownFields = Object.keys(body).filter(
-      (field) => !PROFILE_UPDATE_FIELDS.includes(field as (typeof PROFILE_UPDATE_FIELDS)[number]),
+      (field) =>
+        !PROFILE_UPDATE_FIELDS.includes(
+          field as (typeof PROFILE_UPDATE_FIELDS)[number],
+        ),
     );
 
     if (unknownFields.length > 0) {
@@ -132,7 +141,10 @@ export class MeService {
     }
 
     const input: NormalizedUpdateProfileInput = {};
-    const hasFirstName = Object.prototype.hasOwnProperty.call(body, 'firstName');
+    const hasFirstName = Object.prototype.hasOwnProperty.call(
+      body,
+      'firstName',
+    );
     const hasLastName = Object.prototype.hasOwnProperty.call(body, 'lastName');
     const hasEmail = Object.prototype.hasOwnProperty.call(body, 'email');
 
@@ -167,7 +179,9 @@ export class MeService {
     }
 
     if (normalized.length > MAX_NAME_LENGTH) {
-      throw new BadRequestException(`${label} must have at most ${MAX_NAME_LENGTH} characters`);
+      throw new BadRequestException(
+        `${label} must have at most ${MAX_NAME_LENGTH} characters`,
+      );
     }
 
     return normalized;
@@ -185,7 +199,9 @@ export class MeService {
     }
 
     if (normalized.length > MAX_EMAIL_LENGTH) {
-      throw new BadRequestException(`Email must have at most ${MAX_EMAIL_LENGTH} characters`);
+      throw new BadRequestException(
+        `Email must have at most ${MAX_EMAIL_LENGTH} characters`,
+      );
     }
 
     if (!EMAIL_REGEX.test(normalized)) {

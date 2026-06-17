@@ -16,7 +16,10 @@ export class FeedController {
 
   @Get('groups/:groupId')
   @UseGuards(JwtAuthGuard)
-  findGroupFeed(@CurrentUser() user: AuthUser, @Param('groupId') groupId: string) {
+  findGroupFeed(
+    @CurrentUser() user: AuthUser,
+    @Param('groupId') groupId: string,
+  ) {
     return this.feedReader.findGroupFeed(user.sub, groupId);
   }
 }

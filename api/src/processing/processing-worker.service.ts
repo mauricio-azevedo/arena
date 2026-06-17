@@ -1,4 +1,9 @@
-import { Injectable, Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  OnModuleDestroy,
+  OnModuleInit,
+} from '@nestjs/common';
 import { ProcessingJobRunnerService } from './processing-job-runner.service';
 
 const DEFAULT_POLL_INTERVAL_MS = 1000;
@@ -13,10 +18,13 @@ export class ProcessingWorkerService implements OnModuleInit, OnModuleDestroy {
   constructor(private readonly runner: ProcessingJobRunnerService) {}
 
   onModuleInit() {
-    const shouldDisableWorker = process.env.PROCESSING_WORKER_DISABLED === 'true';
+    const shouldDisableWorker =
+      process.env.PROCESSING_WORKER_DISABLED === 'true';
 
     if (shouldDisableWorker) {
-      this.logger.warn('Processing worker is disabled by PROCESSING_WORKER_DISABLED=true');
+      this.logger.warn(
+        'Processing worker is disabled by PROCESSING_WORKER_DISABLED=true',
+      );
       return;
     }
 
@@ -43,7 +51,10 @@ export class ProcessingWorkerService implements OnModuleInit, OnModuleDestroy {
     try {
       await this.runner.runNextBatch(this.getBatchSize());
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Unknown processing worker error';
+      const message =
+        error instanceof Error
+          ? error.message
+          : 'Unknown processing worker error';
       this.logger.error(message);
     } finally {
       this.isRunning = false;

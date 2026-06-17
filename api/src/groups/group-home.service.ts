@@ -1,6 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '../generated/prisma/client';
-import type { FeedItemType, GroupMemberRole, GroupRankingProjectionStatus } from '../generated/prisma/enums';
+import type {
+  FeedItemType,
+  GroupMemberRole,
+  GroupRankingProjectionStatus,
+} from '../generated/prisma/enums';
 import { PrismaService } from '../prisma/prisma.service';
 
 type GroupHomeSummaryRow = {
@@ -113,7 +117,8 @@ export class GroupHomeService {
           leaders: this.parseLeaders(summary?.leaders),
           activity: {
             lastRelevant: activity,
-            lastRelevantAt: summary?.lastRelevantAt ?? activity?.occurredAt ?? null,
+            lastRelevantAt:
+              summary?.lastRelevantAt ?? activity?.occurredAt ?? null,
           },
           projection: summary
             ? {
@@ -229,7 +234,9 @@ export class GroupHomeService {
         ? Prisma.sql`AND "visibility" IN ('GROUP_MEMBERS', 'SOCIAL_CIRCLE', 'PUBLIC')`
         : Prisma.sql`AND "visibility" = 'PUBLIC'`;
 
-    const rows = await this.prisma.$queryRaw<Array<LastRelevantActivity & { groupId: string }>>`
+    const rows = await this.prisma.$queryRaw<
+      Array<LastRelevantActivity & { groupId: string }>
+    >`
       SELECT DISTINCT ON ("groupId")
         "groupId",
         "id",
@@ -321,7 +328,10 @@ export class GroupHomeService {
   }
 
   private getMemberSortReason(summary: GroupHomeSummaryRow | null) {
-    if (summary?.projectionStatus === 'PROCESSING' || summary?.projectionStatus === 'FAILED') {
+    if (
+      summary?.projectionStatus === 'PROCESSING' ||
+      summary?.projectionStatus === 'FAILED'
+    ) {
       return summary.projectionStatus;
     }
 
@@ -333,8 +343,16 @@ export class GroupHomeService {
   }
 
   private compareHomeCards(
-    a: { sortReason: string; activity: { lastRelevantAt: Date | null }; group: { updatedAt: Date } },
-    b: { sortReason: string; activity: { lastRelevantAt: Date | null }; group: { updatedAt: Date } },
+    a: {
+      sortReason: string;
+      activity: { lastRelevantAt: Date | null };
+      group: { updatedAt: Date };
+    },
+    b: {
+      sortReason: string;
+      activity: { lastRelevantAt: Date | null };
+      group: { updatedAt: Date };
+    },
   ) {
     const priority = new Map([
       ['FAILED', 5],
@@ -356,10 +374,18 @@ export class GroupHomeService {
   }
 
   private comparePublicCards(
-    a: { group: { membersCount: number; createdAt: Date }; activity: { lastRelevantAt: Date | null } },
-    b: { group: { membersCount: number; createdAt: Date }; activity: { lastRelevantAt: Date | null } },
+    a: {
+      group: { membersCount: number; createdAt: Date };
+      activity: { lastRelevantAt: Date | null };
+    },
+    b: {
+      group: { membersCount: number; createdAt: Date };
+      activity: { lastRelevantAt: Date | null };
+    },
   ) {
-    const activityComparison = this.getTime(b.activity.lastRelevantAt) - this.getTime(a.activity.lastRelevantAt);
+    const activityComparison =
+      this.getTime(b.activity.lastRelevantAt) -
+      this.getTime(a.activity.lastRelevantAt);
 
     if (activityComparison !== 0) {
       return activityComparison;

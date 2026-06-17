@@ -166,8 +166,16 @@ export class RankingMovementService {
       participatingMemberIds,
     });
 
-    await this.invalidateVisibleMovementsChangedByRanking(tx, groupId, afterRanking);
-    await this.invalidateVisibleMovementsForParticipants(tx, groupId, participatingMemberIds);
+    await this.invalidateVisibleMovementsChangedByRanking(
+      tx,
+      groupId,
+      afterRanking,
+    );
+    await this.invalidateVisibleMovementsForParticipants(
+      tx,
+      groupId,
+      participatingMemberIds,
+    );
 
     for (const movement of movements) {
       movement.isVisible = true;
@@ -184,7 +192,8 @@ export class RankingMovementService {
         activeMembersCount: activeMembers.length,
         participatingMembersCount: participatingMemberIds.size,
         movementsDetected: movements.length,
-        visibleMovements: movements.filter((movement) => movement.isVisible).length,
+        visibleMovements: movements.filter((movement) => movement.isVisible)
+          .length,
         durationMs: Date.now() - startedAt,
       }),
     );
@@ -241,7 +250,9 @@ export class RankingMovementService {
       : [];
 
     const memberIds = new Set(activeMembers.map((member) => member.id));
-    let ratingByMemberId = new Map(activeMembers.map((member) => [member.id, 1000]));
+    let ratingByMemberId = new Map(
+      activeMembers.map((member) => [member.id, 1000]),
+    );
     const movements: RankingMovementToPersist[] = [];
     const matchParticipations: MatchParticipation[] = [];
 
@@ -392,7 +403,8 @@ export class RankingMovementService {
         continue;
       }
 
-      const direction: RankingDirection = after.rank < before.rank ? 'UP' : 'DOWN';
+      const direction: RankingDirection =
+        after.rank < before.rank ? 'UP' : 'DOWN';
 
       movements.push({
         id: randomUUID(),
@@ -453,7 +465,10 @@ export class RankingMovementService {
     matchParticipations: MatchParticipation[],
     finalRanking: Map<string, RankingMemberState>,
   ) {
-    const latestVisibleMovementByMemberId = new Map<string, RankingMovementToPersist>();
+    const latestVisibleMovementByMemberId = new Map<
+      string,
+      RankingMovementToPersist
+    >();
     const movementsByMatchId = new Map<string, RankingMovementToPersist[]>();
 
     for (const movement of movements) {
@@ -467,7 +482,8 @@ export class RankingMovementService {
         latestVisibleMovementByMemberId.delete(groupMemberId);
       }
 
-      for (const movement of movementsByMatchId.get(participation.matchId) ?? []) {
+      for (const movement of movementsByMatchId.get(participation.matchId) ??
+        []) {
         const finalMemberRank = finalRanking.get(movement.groupMemberId)?.rank;
 
         if (finalMemberRank === movement.currentRank) {
@@ -477,7 +493,9 @@ export class RankingMovementService {
     }
 
     return new Set(
-      [...latestVisibleMovementByMemberId.values()].map((movement) => movement.id),
+      [...latestVisibleMovementByMemberId.values()].map(
+        (movement) => movement.id,
+      ),
     );
   }
 

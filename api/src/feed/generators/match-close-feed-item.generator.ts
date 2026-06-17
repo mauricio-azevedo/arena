@@ -17,7 +17,10 @@ export class MatchCloseFeedItemGenerator implements FeedItemGenerator<MatchClose
     const winnerScore = Math.max(input.gamesA, input.gamesB);
     const loserScore = Math.min(input.gamesA, input.gamesB);
 
-    if (winnerScore !== CLOSE_MATCH_WINNER_SCORE || loserScore !== CLOSE_MATCH_LOSER_SCORE) {
+    if (
+      winnerScore !== CLOSE_MATCH_WINNER_SCORE ||
+      loserScore !== CLOSE_MATCH_LOSER_SCORE
+    ) {
       return null;
     }
 

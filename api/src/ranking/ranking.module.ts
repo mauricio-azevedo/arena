@@ -8,7 +8,11 @@ import { PrismaModule } from '../prisma/prisma.module';
 @Module({
   imports: [PrismaModule],
   controllers: [RankingController],
-  providers: [RankingService, RankingMovementService, GroupMemberStatsProjectionService],
+  providers: [
+    RankingService,
+    RankingMovementService,
+    GroupMemberStatsProjectionService,
+  ],
   exports: [RankingMovementService, GroupMemberStatsProjectionService],
 })
 export class RankingModule {}

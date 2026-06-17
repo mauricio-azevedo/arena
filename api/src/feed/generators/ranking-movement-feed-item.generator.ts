@@ -19,7 +19,15 @@ const MAX_NAMES_IN_HEADLINE = 2;
 const RANKING_MOVEMENT_IMPORTANCE_SCORE = 80;
 const RANKING_MOVEMENT_FEED_ITEM_TYPE = 'RANKING_MOVEMENT' as FeedItemType;
 
-type MovementVerb = 'sobe' | 'sobem' | 'dispara' | 'disparam' | 'cai' | 'caem' | 'desaba' | 'desabam';
+type MovementVerb =
+  | 'sobe'
+  | 'sobem'
+  | 'dispara'
+  | 'disparam'
+  | 'cai'
+  | 'caem'
+  | 'desaba'
+  | 'desabam';
 
 @Injectable()
 export class RankingMovementFeedItemGenerator implements FeedItemGenerator<RankingMovementFeedInput> {
@@ -83,8 +91,12 @@ export class RankingMovementFeedItemGenerator implements FeedItemGenerator<Ranki
     );
   }
 
-  private compareMovements(a: RankingMovementFeedMovement, b: RankingMovementFeedMovement) {
-    const directionComparison = this.getDirectionWeight(b) - this.getDirectionWeight(a);
+  private compareMovements(
+    a: RankingMovementFeedMovement,
+    b: RankingMovementFeedMovement,
+  ) {
+    const directionComparison =
+      this.getDirectionWeight(b) - this.getDirectionWeight(a);
 
     if (directionComparison !== 0) {
       return directionComparison;
@@ -116,11 +128,18 @@ export class RankingMovementFeedItemGenerator implements FeedItemGenerator<Ranki
       };
     }
 
-    const upMovements = movements.filter((movement) => movement.direction === 'UP');
-    const downMovements = movements.filter((movement) => movement.direction === 'DOWN');
+    const upMovements = movements.filter(
+      (movement) => movement.direction === 'UP',
+    );
+    const downMovements = movements.filter(
+      (movement) => movement.direction === 'DOWN',
+    );
 
     if (upMovements.length > 0 && downMovements.length > 0) {
-      if (this.hasMixedIntensity(upMovements) && this.hasMixedIntensity(downMovements)) {
+      if (
+        this.hasMixedIntensity(upMovements) &&
+        this.hasMixedIntensity(downMovements)
+      ) {
         return {
           text: 'O ranking virou do avesso depois da partida',
           variant: 'RANKING_TURNED_UPSIDE_DOWN',
@@ -153,9 +172,15 @@ export class RankingMovementFeedItemGenerator implements FeedItemGenerator<Ranki
       return null;
     }
 
-    const currentLeadersText = this.formatNames(leadershipChange.currentLeaders);
-    const previousLeadersText = this.formatNames(leadershipChange.previousLeaders);
-    const dethronedLeadersText = this.formatNames(leadershipChange.dethronedLeaders);
+    const currentLeadersText = this.formatNames(
+      leadershipChange.currentLeaders,
+    );
+    const previousLeadersText = this.formatNames(
+      leadershipChange.previousLeaders,
+    );
+    const dethronedLeadersText = this.formatNames(
+      leadershipChange.dethronedLeaders,
+    );
 
     if (leadershipChange.dethronedLeaders.length > 0) {
       return `${dethronedLeadersText} ${this.getConjugatedVerb(
@@ -212,7 +237,10 @@ export class RankingMovementFeedItemGenerator implements FeedItemGenerator<Ranki
       const movement = movements[0];
       const verb = this.getMovementVerb([movement]);
 
-      if (movement.affectedMembers.length > 0 && movement.affectedMembers.length <= MAX_NAMES_IN_HEADLINE) {
+      if (
+        movement.affectedMembers.length > 0 &&
+        movement.affectedMembers.length <= MAX_NAMES_IN_HEADLINE
+      ) {
         return `${movement.displayName} passa ${this.formatNames(movement.affectedMembers)} e ${verb} no ranking`;
       }
 
@@ -223,7 +251,9 @@ export class RankingMovementFeedItemGenerator implements FeedItemGenerator<Ranki
   }
 
   private buildMovementPhrase(movements: RankingMovementFeedMovement[]) {
-    const sortedMovements = [...movements].sort((a, b) => this.compareMovements(a, b));
+    const sortedMovements = [...movements].sort((a, b) =>
+      this.compareMovements(a, b),
+    );
 
     if (sortedMovements.length === 1) {
       const movement = sortedMovements[0];
@@ -235,22 +265,32 @@ export class RankingMovementFeedItemGenerator implements FeedItemGenerator<Ranki
     }
 
     return sortedMovements
-      .map((movement) => `${movement.displayName} ${this.getMovementVerb([movement])}`)
+      .map(
+        (movement) =>
+          `${movement.displayName} ${this.getMovementVerb([movement])}`,
+      )
       .join(' e ');
   }
 
   private hasMixedIntensity(movements: RankingMovementFeedMovement[]) {
-    return new Set(movements.map((movement) => this.getMovementIntensity(movement))).size > 1;
+    return (
+      new Set(movements.map((movement) => this.getMovementIntensity(movement)))
+        .size > 1
+    );
   }
 
   private getMovementIntensity(movement: RankingMovementFeedMovement) {
     return movement.positions >= BIG_MOVEMENT_THRESHOLD ? 'BIG' : 'REGULAR';
   }
 
-  private getMovementVerb(movements: RankingMovementFeedMovement[]): MovementVerb {
+  private getMovementVerb(
+    movements: RankingMovementFeedMovement[],
+  ): MovementVerb {
     const direction = movements[0]?.direction ?? 'UP';
     const isPlural = movements.length > 1;
-    const isBig = movements.some((movement) => movement.positions >= BIG_MOVEMENT_THRESHOLD);
+    const isBig = movements.some(
+      (movement) => movement.positions >= BIG_MOVEMENT_THRESHOLD,
+    );
 
     if (direction === 'UP') {
       if (isBig) {

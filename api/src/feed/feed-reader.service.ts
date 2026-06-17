@@ -1,4 +1,8 @@
-import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { FeedScoreService } from './feed-score.service';
 
@@ -107,7 +111,9 @@ export class FeedReaderService {
     });
 
     if (!membership) {
-      throw new ForbiddenException('You must be a group member to view group activity');
+      throw new ForbiddenException(
+        'You must be a group member to view group activity',
+      );
     }
 
     const items = await this.prisma.feedItem.findMany({
