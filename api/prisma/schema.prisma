@@ -45,6 +45,7 @@ enum ProcessingJobType {
   MATCH_UPDATED
   MATCH_DELETED
   GROUP_RANKING_REBUILD
+  PLATFORM_TRENDING_PLAYERS_REBUILD
 }
 
 enum ProcessingJobStatus {
@@ -412,8 +413,8 @@ model ProcessingJob {
   scope  ProcessingJobScope @default(GROUP)
   status ProcessingJobStatus @default(PENDING)
 
-  groupId String
-  group   Group  @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  groupId String?
+  group   Group?  @relation(fields: [groupId], references: [id], onDelete: Cascade)
 
   matchId String?
   match   Match?  @relation(fields: [matchId, groupId], references: [id, groupId], onDelete: Cascade)

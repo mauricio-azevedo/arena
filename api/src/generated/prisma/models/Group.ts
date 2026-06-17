@@ -609,10 +609,12 @@ export type GroupCreateNestedOneWithoutProcessingJobsInput = {
   connect?: Prisma.GroupWhereUniqueInput
 }
 
-export type GroupUpdateOneRequiredWithoutProcessingJobsNestedInput = {
+export type GroupUpdateOneWithoutProcessingJobsNestedInput = {
   create?: Prisma.XOR<Prisma.GroupCreateWithoutProcessingJobsInput, Prisma.GroupUncheckedCreateWithoutProcessingJobsInput>
   connectOrCreate?: Prisma.GroupCreateOrConnectWithoutProcessingJobsInput
   upsert?: Prisma.GroupUpsertWithoutProcessingJobsInput
+  disconnect?: Prisma.GroupWhereInput | boolean
+  delete?: Prisma.GroupWhereInput | boolean
   connect?: Prisma.GroupWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.GroupUpdateToOneWithWhereWithoutProcessingJobsInput, Prisma.GroupUpdateWithoutProcessingJobsInput>, Prisma.GroupUncheckedUpdateWithoutProcessingJobsInput>
 }

@@ -15,6 +15,7 @@ import { GroupHomeSummaryService } from '../groups/group-home-summary.service';
 import { MatchTeam } from '../generated/prisma/enums';
 import { errorLogFields, structuredLog } from '../observability/structured-log';
 import type { ProcessingJob } from './processing-job.types';
+import { PlatformTrendingPlayersProjectionService } from '../platform-trending/platform-trending-players-projection.service';
 
 const DEFAULT_LOCK_TIMEOUT_MS = 60_000;
 const DEFAULT_TRANSACTION_TIMEOUT_MS = 60_000;
@@ -73,6 +74,7 @@ export class ProcessingJobRunnerService {
     private readonly groupMemberStatsProjection: GroupMemberStatsProjectionService,
     private readonly feed: FeedOrchestratorService,
     private readonly groupHomeSummary: GroupHomeSummaryService,
+    private readonly platformTrendingPlayers: PlatformTrendingPlayersProjectionService,
   ) {}
 
   async runNextBatch(limit = 5) {
@@ -224,7 +226,13 @@ export class ProcessingJobRunnerService {
   }
 
   private async processGroupJob(job: ProcessingJob) {
-    await this.markProjectionProcessing(job);
+    if (!job.groupId) {
+      throw new Error('Group processing job requires groupId');
+    }
+
+    const groupId = job.groupId;
+
+    await this.markProjectionProcessing(job, groupId);
 
     switch (job.type) {
       case 'MATCH_CREATED':
@@ -232,16 +240,16 @@ export class ProcessingJobRunnerService {
         if (!job.matchId) {
           throw new Error('Match processing job requires matchId');
         }
-        await this.processGroupProjectionJob(job.groupId, job.matchId, false);
+        await this.processGroupProjectionJob(groupId, job.matchId, false);
         break;
       case 'MATCH_DELETED':
         if (!job.matchId) {
           throw new Error('Deleted match processing job requires matchId');
         }
-        await this.processGroupProjectionJob(job.groupId, job.matchId, true);
+        await this.processGroupProjectionJob(groupId, job.matchId, true);
         break;
       case 'GROUP_RANKING_REBUILD':
-        await this.processGroupProjectionJob(job.groupId, null, false);
+        await this.processGroupProjectionJob(groupId, null, false);
         break;
       default:
         throw new Error(`Unsupported group processing job type: ${job.type}`);
@@ -249,7 +257,15 @@ export class ProcessingJobRunnerService {
   }
 
   private async processPlatformJob(job: ProcessingJob) {
-    throw new Error(`Unsupported platform processing job type: ${job.type}`);
+    switch (job.type) {
+      case 'PLATFORM_TRENDING_PLAYERS_REBUILD':
+        await this.platformTrendingPlayers.syncPlatformTrendingPlayers();
+        return;
+      default:
+        throw new Error(
+          `Unsupported platform processing job type: ${job.type}`,
+        );
+    }
   }
 
   private async processGroupProjectionJob(
@@ -641,7 +657,7 @@ export class ProcessingJobRunnerService {
     return `${user.firstName} ${user.lastName}`.trim();
   }
 
-  private async markProjectionProcessing(job: ProcessingJob) {
+  private async markProjectionProcessing(job: ProcessingJob, groupId: string) {
     await this.prisma.$executeRaw`
       INSERT INTO "GroupRankingProjection" (
         "groupId",
@@ -651,7 +667,7 @@ export class ProcessingJobRunnerService {
         "createdAt",
         "updatedAt"
       )
-      VALUES (${job.groupId}, 'PROCESSING', ${job.id}, NULL, NOW(), NOW())
+      VALUES (${groupId}, 'PROCESSING', ${job.id}, NULL, NOW(), NOW())
       ON CONFLICT ("groupId") DO UPDATE SET
         "status" = 'PROCESSING',
         "processingJobId" = ${job.id},
@@ -659,7 +675,7 @@ export class ProcessingJobRunnerService {
         "updatedAt" = NOW()
     `;
 
-    await this.groupHomeSummary.syncGroupSummary(job.groupId);
+    await this.groupHomeSummary.syncGroupSummary(groupId);
   }
 
   private async markProjectionCurrent(
@@ -690,7 +706,11 @@ export class ProcessingJobRunnerService {
     `;
   }
 
-  private async markProjectionFailed(job: ProcessingJob, message: string) {
+  private async markProjectionFailed(
+    job: ProcessingJob,
+    groupId: string,
+    message: string,
+  ) {
     await this.prisma.$executeRaw`
       INSERT INTO "GroupRankingProjection" (
         "groupId",
@@ -700,7 +720,7 @@ export class ProcessingJobRunnerService {
         "createdAt",
         "updatedAt"
       )
-      VALUES (${job.groupId}, 'FAILED', ${job.id}, ${message}, NOW(), NOW())
+      VALUES (${groupId}, 'FAILED', ${job.id}, ${message}, NOW(), NOW())
       ON CONFLICT ("groupId") DO UPDATE SET
         "status" = 'FAILED',
         "processingJobId" = ${job.id},
@@ -708,7 +728,7 @@ export class ProcessingJobRunnerService {
         "updatedAt" = NOW()
     `;
 
-    await this.groupHomeSummary.syncGroupSummary(job.groupId);
+    await this.groupHomeSummary.syncGroupSummary(groupId);
   }
 
   private async markDone(jobId: string) {
@@ -748,9 +768,9 @@ export class ProcessingJobRunnerService {
           ...errorLogFields(error),
         }),
       );
-      if (job.scope === 'GROUP') {
+      if (job.scope === 'GROUP' && job.groupId) {
         await this.markMatchFailed(job, message);
-        await this.markProjectionFailed(job, message);
+        await this.markProjectionFailed(job, job.groupId, message);
       }
       await this.prisma.processingJob.update({
         where: { id: job.id },
@@ -794,7 +814,7 @@ export class ProcessingJobRunnerService {
   }
 
   private async markMatchFailed(job: ProcessingJob, message: string) {
-    if (!job.matchId) {
+    if (!job.matchId || !job.groupId) {
       return;
     }
 

@@ -2,7 +2,8 @@ export type ProcessingJobType =
   | 'MATCH_CREATED'
   | 'MATCH_UPDATED'
   | 'MATCH_DELETED'
-  | 'GROUP_RANKING_REBUILD';
+  | 'GROUP_RANKING_REBUILD'
+  | 'PLATFORM_TRENDING_PLAYERS_REBUILD';
 
 export type ProcessingJobScope = 'GROUP' | 'PLATFORM';
 
@@ -13,7 +14,7 @@ export type ProcessingJob = {
   type: ProcessingJobType;
   scope: ProcessingJobScope;
   status: ProcessingJobStatus;
-  groupId: string;
+  groupId: string | null;
   matchId: string | null;
   dedupeKey: string | null;
   payload: Record<string, unknown>;
