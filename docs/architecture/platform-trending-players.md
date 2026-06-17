@@ -101,11 +101,6 @@ The read path resolves cheap display fields through Prisma relations:
 
 The highlighted group-member relation is intentionally composite so the highlighted member must belong to the highlighted group.
 
-This checkpoint does not add:
-
-* an admin/dev trigger;
-* UI.
-
 ## Projection rules
 
 The projection service should be deterministic and idempotent.
