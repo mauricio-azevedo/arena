@@ -23,6 +23,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { deleteGroupMatch } from '@/features/matches/api/matches.api';
+import { getMatchNarrativeTitle } from '@/features/matches/lib/match-narrative-title';
 import { UserNameLink } from '@/features/users/components/user-name-link';
 import { getAccessToken } from '@/lib/auth';
 
@@ -82,6 +83,7 @@ export function MatchCard({
   const teamAWon = match.gamesA > match.gamesB;
   const winningTeam = teamAWon ? teamA : teamB;
   const winningDelta = getAverageDelta(winningTeam);
+  const narrativeTitle = getMatchNarrativeTitle(match);
 
   const showActions = Boolean(groupId && canManage);
 
@@ -155,7 +157,7 @@ export function MatchCard({
           <div className="flex items-start justify-between gap-4">
             <div>
               <p className="text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">
-                Partida
+                {narrativeTitle ?? 'Partida'}
               </p>
               <p className="mt-1 text-xs text-muted-foreground">{formatDate(match.playedAt)}</p>
             </div>
@@ -229,7 +231,9 @@ function MatchTeam({
         {score}
       </div>
 
-      <p className={`truncate text-sm ${isWinner ? 'font-medium text-foreground' : 'text-muted-foreground'}`}>
+      <p
+        className={`truncate text-sm ${isWinner ? 'font-medium text-foreground' : 'text-muted-foreground'}`}
+      >
         <MatchPlayerNames players={players} />
       </p>
     </div>
@@ -246,7 +250,9 @@ function MatchPlayerNames({ players }: { players: MatchPlayer[] }) {
       {players.map((player, index) => (
         <span key={player.id}>
           {index > 0 && ' / '}
-          <UserNameLink userId={player.groupMember?.userId}>{getPlayerDisplayName(player)}</UserNameLink>
+          <UserNameLink userId={player.groupMember?.userId}>
+            {getPlayerDisplayName(player)}
+          </UserNameLink>
         </span>
       ))}
     </>
