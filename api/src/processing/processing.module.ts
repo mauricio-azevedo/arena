@@ -11,6 +11,7 @@ import { ProcessingJobReaderService } from './processing-job-reader.service';
 import { ProcessingJobRunnerService } from './processing-job-runner.service';
 import { ProcessingJobWriterService } from './processing-job-writer.service';
 import { ProcessingWorkerService } from './processing-worker.service';
+import { PlatformTrendingRebuildSchedulerService } from './platform-trending-rebuild-scheduler.service';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { ProcessingWorkerService } from './processing-worker.service';
     ProcessingJobRunnerService,
     ProcessingJobWriterService,
     ProcessingWorkerService,
+    PlatformTrendingRebuildSchedulerService,
   ],
   exports: [ProcessingJobWriterService],
 })
