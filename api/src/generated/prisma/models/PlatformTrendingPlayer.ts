@@ -1030,7 +1030,6 @@ export type PlatformTrendingPlayerUncheckedCreateWithoutHighlightGroupMemberInpu
   allTimeMatches: number
   allTimeWins: number
   allTimeWinRate: number
-  highlightGroupId?: string | null
   windowDays: number
   windowStartedAt: Date | string
   windowEndedAt: Date | string
@@ -1156,7 +1155,6 @@ export type PlatformTrendingPlayerCreateManyHighlightGroupMemberInput = {
   allTimeMatches: number
   allTimeWins: number
   allTimeWinRate: number
-  highlightGroupId?: string | null
   windowDays: number
   windowStartedAt: Date | string
   windowEndedAt: Date | string
@@ -1196,7 +1194,6 @@ export type PlatformTrendingPlayerUncheckedUpdateWithoutHighlightGroupMemberInpu
   allTimeMatches?: Prisma.IntFieldUpdateOperationsInput | number
   allTimeWins?: Prisma.IntFieldUpdateOperationsInput | number
   allTimeWinRate?: Prisma.FloatFieldUpdateOperationsInput | number
-  highlightGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   windowDays?: Prisma.IntFieldUpdateOperationsInput | number
   windowStartedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   windowEndedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1216,7 +1213,6 @@ export type PlatformTrendingPlayerUncheckedUpdateManyWithoutHighlightGroupMember
   allTimeMatches?: Prisma.IntFieldUpdateOperationsInput | number
   allTimeWins?: Prisma.IntFieldUpdateOperationsInput | number
   allTimeWinRate?: Prisma.FloatFieldUpdateOperationsInput | number
-  highlightGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   windowDays?: Prisma.IntFieldUpdateOperationsInput | number
   windowStartedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   windowEndedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string

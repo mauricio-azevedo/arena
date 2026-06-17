@@ -10,17 +10,21 @@ WHERE p."highlightGroupId" IS NOT NULL
 UPDATE "PlatformTrendingPlayer" p
 SET "highlightGroupMemberId" = NULL
 WHERE p."highlightGroupMemberId" IS NOT NULL
-  AND NOT EXISTS (
-    SELECT 1
-    FROM "GroupMember" gm
-    WHERE gm."id" = p."highlightGroupMemberId"
-);
+  AND (
+    p."highlightGroupId" IS NULL
+        OR NOT EXISTS (
+        SELECT 1
+        FROM "GroupMember" gm
+        WHERE gm."id" = p."highlightGroupMemberId"
+          AND gm."groupId" = p."highlightGroupId"
+    )
+    );
 
 CREATE INDEX "PlatformTrendingPlayer_highlightGroupId_idx"
     ON "PlatformTrendingPlayer"("highlightGroupId");
 
-CREATE INDEX "PlatformTrendingPlayer_highlightGroupMemberId_idx"
-    ON "PlatformTrendingPlayer"("highlightGroupMemberId");
+CREATE INDEX "PlatformTrendingPlayer_highlightGroupMemberId_highlightGroupId_idx"
+    ON "PlatformTrendingPlayer"("highlightGroupMemberId", "highlightGroupId");
 
 ALTER TABLE "PlatformTrendingPlayer"
     ADD CONSTRAINT "PlatformTrendingPlayer_highlightGroupId_fkey"
@@ -30,8 +34,8 @@ ALTER TABLE "PlatformTrendingPlayer"
             ON UPDATE CASCADE;
 
 ALTER TABLE "PlatformTrendingPlayer"
-    ADD CONSTRAINT "PlatformTrendingPlayer_highlightGroupMemberId_fkey"
-        FOREIGN KEY ("highlightGroupMemberId")
-            REFERENCES "GroupMember"("id")
+    ADD CONSTRAINT "PlatformTrendingPlayer_highlightGroupMemberId_highlightGroupId_fkey"
+        FOREIGN KEY ("highlightGroupMemberId", "highlightGroupId")
+            REFERENCES "GroupMember"("id", "groupId")
             ON DELETE SET NULL
             ON UPDATE CASCADE;
