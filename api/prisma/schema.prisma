@@ -447,8 +447,6 @@ model PlatformTrendingPlayer {
 
   trendRank Int @unique
 
-  displayName String
-
   score Float
 
   recentMatches Int
@@ -459,12 +457,8 @@ model PlatformTrendingPlayer {
   allTimeWins    Int
   allTimeWinRate Float
 
-  highlightGroupId           String?
-  highlightGroupName         String?
-  highlightGroupMemberId     String?
-  highlightGroupMembersCount Int?
-  highlightCurrentRank       Int?
-  highlightRating            Float?
+  highlightGroupId       String?
+  highlightGroupMemberId String?
 
   windowDays      Int
   windowStartedAt DateTime
