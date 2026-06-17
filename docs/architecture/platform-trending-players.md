@@ -32,7 +32,7 @@ Stored fields include:
 
 ## Current checkpoint
 
-The table shape, migration, and first projection service now exist.
+The table shape, migration, projection service, and first platform processing job now exist.
 
 The projection service is `PlatformTrendingPlayersProjectionService`.
 
@@ -43,10 +43,21 @@ It rebuilds `PlatformTrendingPlayer` from source-of-truth tables in one determin
 - insert the newly ranked rows;
 - log projection metrics.
 
+The processing job type is `PLATFORM_TRENDING_PLAYERS_REBUILD`.
+
+It is a platform-scoped job:
+
+- `scope` is `PLATFORM`;
+- `groupId` is `NULL`;
+- `matchId` is `NULL`;
+- `dedupeKey` is `platform:trending-players:rebuild`.
+
+`ProcessingJobRunnerService` dispatches that job to `PlatformTrendingPlayersProjectionService.syncPlatformTrendingPlayers()`.
+
 This checkpoint does not add:
 
-- a processing job type;
-- a platform enqueue path;
+- an admin/dev trigger;
+- automatic scheduling;
 - an API endpoint;
 - UI.
 
@@ -66,6 +77,6 @@ The initial defaults are:
 
 ## Future projection rules
 
-The first executable platform job must be added together with the real projection handler.
-
 The future read API should read from `PlatformTrendingPlayer`, not recompute trending players at request time.
+
+The next checkpoint should add an explicit admin/dev trigger for `PLATFORM_TRENDING_PLAYERS_REBUILD` before adding UI or public API behavior.
