@@ -6,11 +6,11 @@ import { structuredLog } from '../observability/structured-log';
 const DEFAULT_WINDOW_DAYS = 7;
 const TRENDING_PLAYERS_LIMIT = 3;
 const MIN_RECENT_MATCHES = 2;
-const RECENT_MATCH_SCORE_WEIGHT = 3;
-const RECENT_WIN_SCORE_WEIGHT = 5;
-const RECENT_WIN_RATE_SCORE_WEIGHT = 10;
+const RECENT_MATCH_SCORE_WEIGHT = 1.5;
+const RECENT_WIN_SCORE_WEIGHT = 4;
+const RECENT_WIN_RATE_SCORE_WEIGHT = 25;
 const ALL_TIME_MATCH_SCORE_CAP = 20;
-const ALL_TIME_MATCH_SCORE_WEIGHT = 0.25;
+const ALL_TIME_MATCH_SCORE_WEIGHT = 0.15;
 const PLATFORM_TRENDING_PLAYERS_ALGORITHM_VERSION =
   'PLATFORM_TRENDING_PLAYERS_V1';
 
@@ -220,8 +220,9 @@ export class PlatformTrendingPlayersProjectionService {
           ROW_NUMBER() OVER (
             ORDER BY
               ep."score" DESC,
-              ep."recentMatches" DESC,
+              ep."recentWinRate" DESC,
               ep."recentWins" DESC,
+              ep."recentMatches" DESC,
               ep."userId" ASC
           )::int AS "trendRank",
           ep."score",
@@ -239,8 +240,9 @@ export class PlatformTrendingPlayersProjectionService {
           AND hg."highlightRank" = 1
         ORDER BY
           ep."score" DESC,
-          ep."recentMatches" DESC,
+          ep."recentWinRate" DESC,
           ep."recentWins" DESC,
+          ep."recentMatches" DESC,
           ep."userId" ASC
         LIMIT (SELECT "limit" FROM params)
       ),
