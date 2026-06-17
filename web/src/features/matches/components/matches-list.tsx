@@ -59,7 +59,7 @@ export function MatchesList({
     <section className="space-y-5">
       {matchGroups.map((group) => (
         <div key={group.dateKey} className="space-y-3">
-          <div className="sticky top-2 z-20">
+          <div className="sticky top-0 z-20">
             <p className="inline-flex rounded-full bg-background/40 px-3 py-1.5 text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground backdrop-blur-xs">
               {group.label}
             </p>
