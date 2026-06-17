@@ -61,7 +61,7 @@ export function TrendingPlayersRail() {
         </h2>
       </div>
 
-      <div className="-mx-4 flex snap-x gap-3 overflow-x-auto px-4 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      <div className="px-4 -mx-4 flex gap-3 overflow-x-auto py-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {players.map((player, index) => (
           <TrendingPlayerChip key={player.userId} player={player} isFeatured={index === 0} />
         ))}
