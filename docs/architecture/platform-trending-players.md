@@ -35,7 +35,7 @@ It should not materialize cheap display data such as user display names or group
 
 ## Current checkpoint
 
-The table shape, migration, projection service, and first platform processing job now exist.
+The table shape, migration, projection service, platform processing job, and event-driven enqueue path now exist.
 
 The projection service is `PlatformTrendingPlayersProjectionService`.
 
@@ -57,6 +57,20 @@ It is a platform-scoped job:
 - `dedupeKey` is `platform:trending-players:rebuild`.
 
 `ProcessingJobRunnerService` dispatches that job to `PlatformTrendingPlayersProjectionService.syncPlatformTrendingPlayers()`.
+
+The platform rebuild is enqueued after a group projection transaction finishes the source-of-truth-derived group state that platform trending depends on:
+
+- group ratings;
+- ranking movement state;
+- group-member stats;
+- feed projections;
+- group home summary.
+
+This ordering matters because the platform highlighted group uses current group ranking data.
+
+`ProcessingJob` enforces one live job per `dedupeKey` with a partial unique index for jobs in `PENDING` or `PROCESSING` status.
+
+The writer inserts the platform job with `ON CONFLICT DO NOTHING`. If another live job already exists, the writer returns that existing job.
 
 This checkpoint does not add:
 
@@ -98,4 +112,4 @@ It should resolve cheap display fields by joining from stored identifiers:
 - `highlightGroupId` -> `Group.name`;
 - `highlightGroupMemberId` -> `GroupMember.currentRank` and other current group-member display data if needed.
 
-The next checkpoint should add event-driven enqueueing for `PLATFORM_TRENDING_PLAYERS_REBUILD` after the relevant match-processing writes are committed.
+The next checkpoint should add the read API after this projection contract has deployed successfully.
