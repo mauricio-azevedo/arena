@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { Swords, Trophy, type LucideIcon } from 'lucide-react';
+import { type LucideIcon, Swords, Trophy } from 'lucide-react';
 import { getPlatformTrendingPlayers } from '@/features/platform-trending/api/platform-trending.api';
 import type { PlatformTrendingPlayer } from '@/features/platform-trending/types/platform-trending-player.type';
 import { cn } from '@/lib/utils';
@@ -54,13 +54,11 @@ export function TrendingPlayersRail() {
 
   return (
     <section aria-label="Jogadores em alta" className="space-y-3">
-      <div className="flex items-center justify-between gap-3 px-1">
+      <div className="flex items-center gap-3 px-1">
+        <Trophy className="h-4 w-4" aria-hidden="true" />
         <h2 className="text-base font-semibold tracking-[-0.035em] text-foreground">
           Jogadores em alta
         </h2>
-        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/12 text-primary ring-1 ring-primary/15">
-          <Trophy className="h-4 w-4" aria-hidden="true" />
-        </div>
       </div>
 
       <div className="-mx-4 flex snap-x gap-3 overflow-x-auto px-4 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
