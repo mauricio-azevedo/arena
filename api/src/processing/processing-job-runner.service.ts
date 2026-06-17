@@ -16,6 +16,7 @@ import { MatchTeam } from '../generated/prisma/enums';
 import { errorLogFields, structuredLog } from '../observability/structured-log';
 import type { ProcessingJob } from './processing-job.types';
 import { PlatformTrendingPlayersProjectionService } from '../platform-trending/platform-trending-players-projection.service';
+import { ProcessingJobWriterService } from './processing-job-writer.service';
 
 const DEFAULT_LOCK_TIMEOUT_MS = 60_000;
 const DEFAULT_TRANSACTION_TIMEOUT_MS = 60_000;
@@ -75,6 +76,7 @@ export class ProcessingJobRunnerService {
     private readonly feed: FeedOrchestratorService,
     private readonly groupHomeSummary: GroupHomeSummaryService,
     private readonly platformTrendingPlayers: PlatformTrendingPlayersProjectionService,
+    private readonly processingJobs: ProcessingJobWriterService,
   ) {}
 
   async runNextBatch(limit = 5) {
@@ -288,6 +290,10 @@ export class ProcessingJobRunnerService {
         await this.syncGroupRankingMovementFeedItems(tx, groupId);
         await this.markProjectionCurrent(tx, groupId, changedMatchId);
         await this.groupHomeSummary.syncGroupSummary(groupId, tx);
+        await this.processingJobs.enqueuePlatformTrendingPlayersRebuild(
+          { payload: { reason: 'GROUP_PROJECTION_COMPLETED' } },
+          tx,
+        );
       },
       { timeout: this.getTransactionTimeoutMs() },
     );
