@@ -42,6 +42,8 @@ export function MatchesList({
   emptyTitle = 'Nenhuma partida registrada',
   emptyDescription = 'Quando houver partidas, elas aparecem aqui.',
 }: MatchesListProps) {
+  const matchGroups = groupMatchesByDate(matches);
+
   if (matches.length === 0) {
     return (
       <Card>
@@ -54,9 +56,19 @@ export function MatchesList({
   }
 
   return (
-    <section className="space-y-3">
-      {matches.map((match) => (
-        <MatchCard key={match.id} match={match} groupId={groupId} canManage={canManage} />
+    <section className="space-y-5">
+      {matchGroups.map((group) => (
+        <div key={group.dateKey} className="space-y-3">
+          <p className="px-1 text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">
+            {group.label}
+          </p>
+
+          <div className="space-y-3">
+            {group.matches.map((match) => (
+              <MatchCard key={match.id} match={match} groupId={groupId} canManage={canManage} />
+            ))}
+          </div>
+        </div>
       ))}
     </section>
   );
@@ -115,53 +127,49 @@ export function MatchCard({
 
   return (
     <>
-      <Card className="relative">
-        {showActions && (
-          <div className="absolute right-3 top-3 z-10">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon-sm">
-                  <MoreVertical className="h-4 w-4" />
-                  <span className="sr-only">Abrir opções</span>
-                </Button>
-              </DropdownMenuTrigger>
+      <Card>
+        <CardContent className="space-y-4">
+          <div className="flex items-center justify-between gap-3">
+            <p className="text-xs font-medium uppercase tracking-[0.14em] text-foreground">
+              {narrativeTitle ?? 'Partida'}
+            </p>
+            {showActions && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon" className="shrink-0">
+                    <MoreVertical className="h-4 w-4" />
+                    <span className="sr-only">Abrir opções</span>
+                  </Button>
+                </DropdownMenuTrigger>
 
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem
-                  onSelect={() => {
-                    if (!groupId) return;
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem
+                    onSelect={() => {
+                      if (!groupId) return;
 
-                    router.push(`/groups/${groupId}/matches/${match.id}/edit`);
-                  }}
-                >
-                  <Pencil className="mr-2 h-4 w-4" />
-                  Corrigir lançamento
-                </DropdownMenuItem>
+                      router.push(`/groups/${groupId}/matches/${match.id}/edit`);
+                    }}
+                  >
+                    <Pencil className="mr-2 h-4 w-4" />
+                    Corrigir lançamento
+                  </DropdownMenuItem>
 
-                <DropdownMenuItem
-                  className="text-destructive focus:text-destructive"
-                  onSelect={(event) => {
-                    event.preventDefault();
-                    setIsConfirmOpen(true);
-                  }}
-                >
-                  <Trash2 className="mr-2 h-4 w-4" />
-                  Apagar lançamento
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+                  <DropdownMenuItem
+                    className="text-destructive focus:text-destructive"
+                    onSelect={(event) => {
+                      event.preventDefault();
+                      setIsConfirmOpen(true);
+                    }}
+                  >
+                    <Trash2 className="mr-2 h-4 w-4" />
+                    Apagar lançamento
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
           </div>
-        )}
 
-        <CardContent className="space-y-4 p-4 pr-12">
-          <div className="flex items-start justify-between gap-4">
-            <div>
-              <p className="text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">
-                {narrativeTitle ?? 'Partida'}
-              </p>
-              <p className="mt-1 text-xs text-muted-foreground">{formatDate(match.playedAt)}</p>
-            </div>
-
+          <div className="flex justify-end">
             <div className="rounded-[1.5rem] bg-muted px-3 py-2 text-right">
               <p className="text-2xl font-semibold leading-none tracking-[-0.04em] text-foreground">
                 {match.gamesA}–{match.gamesB}
@@ -279,10 +287,59 @@ function formatDelta(delta: number) {
   return `${delta >= 0 ? '+' : ''}${delta.toFixed(1)}`;
 }
 
-function formatDate(date: string) {
-  return new Date(date).toLocaleDateString('pt-BR', {
+function groupMatchesByDate(matches: Match[]) {
+  const groups = new Map<string, Match[]>();
+
+  for (const match of matches) {
+    const dateKey = getDateKey(match.playedAt);
+    const group = groups.get(dateKey);
+
+    if (group) {
+      group.push(match);
+    } else {
+      groups.set(dateKey, [match]);
+    }
+  }
+
+  return Array.from(groups.entries()).map(([dateKey, groupMatches]) => ({
+    dateKey,
+    label: formatDateGroup(dateKey),
+    matches: groupMatches,
+  }));
+}
+
+function getDateKey(date: string) {
+  const parsedDate = new Date(date);
+  const year = parsedDate.getFullYear();
+  const month = String(parsedDate.getMonth() + 1).padStart(2, '0');
+  const day = String(parsedDate.getDate()).padStart(2, '0');
+
+  return `${year}-${month}-${day}`;
+}
+
+function formatDateGroup(dateKey: string) {
+  const date = new Date(`${dateKey}T00:00:00`);
+  const today = new Date();
+  const todayKey = getDateKey(today.toISOString());
+  const yesterday = new Date(today);
+
+  yesterday.setDate(today.getDate() - 1);
+
+  if (dateKey === todayKey) {
+    return 'Hoje';
+  }
+
+  if (dateKey === getDateKey(yesterday.toISOString())) {
+    return 'Ontem';
+  }
+
+  const isCurrentYear = date.getFullYear() === today.getFullYear();
+
+  return date.toLocaleDateString('pt-BR', {
+    weekday: 'long',
     day: '2-digit',
-    month: 'short',
+    month: 'long',
+    ...(isCurrentYear ? {} : { year: 'numeric' }),
   });
 }
 
