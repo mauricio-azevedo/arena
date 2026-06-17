@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { Swords, Trophy } from 'lucide-react';
+import { Swords, Trophy, type LucideIcon } from 'lucide-react';
 import { getPlatformTrendingPlayers } from '@/features/platform-trending/api/platform-trending.api';
 import type { PlatformTrendingPlayer } from '@/features/platform-trending/types/platform-trending-player.type';
 import { cn } from '@/lib/utils';
@@ -80,7 +80,7 @@ function TrendingPlayerChip({
   isFeatured: boolean;
 }) {
   const href = player.highlightGroup ? `/groups/${player.highlightGroup.id}` : null;
-  const content = <TrendingPlayerChipContent player={player} isFeatured={isFeatured} />;
+  const content = <TrendingPlayerChipContent player={player} />;
 
   if (!href) {
     return (
@@ -97,12 +97,7 @@ function TrendingPlayerChip({
   );
 }
 
-function TrendingPlayerChipContent({
-  player,
-}: {
-  player: PlatformTrendingPlayer;
-  isFeatured: boolean;
-}) {
+function TrendingPlayerChipContent({ player }: { player: PlatformTrendingPlayer }) {
   return (
     <>
       <div className="min-w-0 space-y-1">
@@ -141,7 +136,7 @@ function TrendMetric({
   value,
   historicalValue,
 }: {
-  icon: typeof Trophy;
+  icon: LucideIcon;
   label: string;
   value: string;
   historicalValue: string;
@@ -185,7 +180,7 @@ function getChipClassName(isFeatured: boolean) {
   return cn(
     'block w-[15.5rem] shrink-0 snap-start space-y-4 rounded-[1.75rem] border p-3.5 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40',
     isFeatured
-      ? 'border-primary/20 bg-gradient-to-br from-primary/14 via-card to-card shadow-md'
+      ? 'border-primary/20 bg-gradient-to-br from-primary/15 via-card to-card shadow-md'
       : 'border-border bg-card/80 hover:bg-card',
   );
 }
