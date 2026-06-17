@@ -35,9 +35,6 @@ export type PlatformTrendingPlayerAvgAggregateOutputType = {
   allTimeMatches: number | null
   allTimeWins: number | null
   allTimeWinRate: number | null
-  highlightGroupMembersCount: number | null
-  highlightCurrentRank: number | null
-  highlightRating: number | null
   windowDays: number | null
 }
 
@@ -50,16 +47,12 @@ export type PlatformTrendingPlayerSumAggregateOutputType = {
   allTimeMatches: number | null
   allTimeWins: number | null
   allTimeWinRate: number | null
-  highlightGroupMembersCount: number | null
-  highlightCurrentRank: number | null
-  highlightRating: number | null
   windowDays: number | null
 }
 
 export type PlatformTrendingPlayerMinAggregateOutputType = {
   userId: string | null
   trendRank: number | null
-  displayName: string | null
   score: number | null
   recentMatches: number | null
   recentWins: number | null
@@ -68,11 +61,7 @@ export type PlatformTrendingPlayerMinAggregateOutputType = {
   allTimeWins: number | null
   allTimeWinRate: number | null
   highlightGroupId: string | null
-  highlightGroupName: string | null
   highlightGroupMemberId: string | null
-  highlightGroupMembersCount: number | null
-  highlightCurrentRank: number | null
-  highlightRating: number | null
   windowDays: number | null
   windowStartedAt: Date | null
   windowEndedAt: Date | null
@@ -84,7 +73,6 @@ export type PlatformTrendingPlayerMinAggregateOutputType = {
 export type PlatformTrendingPlayerMaxAggregateOutputType = {
   userId: string | null
   trendRank: number | null
-  displayName: string | null
   score: number | null
   recentMatches: number | null
   recentWins: number | null
@@ -93,11 +81,7 @@ export type PlatformTrendingPlayerMaxAggregateOutputType = {
   allTimeWins: number | null
   allTimeWinRate: number | null
   highlightGroupId: string | null
-  highlightGroupName: string | null
   highlightGroupMemberId: string | null
-  highlightGroupMembersCount: number | null
-  highlightCurrentRank: number | null
-  highlightRating: number | null
   windowDays: number | null
   windowStartedAt: Date | null
   windowEndedAt: Date | null
@@ -109,7 +93,6 @@ export type PlatformTrendingPlayerMaxAggregateOutputType = {
 export type PlatformTrendingPlayerCountAggregateOutputType = {
   userId: number
   trendRank: number
-  displayName: number
   score: number
   recentMatches: number
   recentWins: number
@@ -118,11 +101,7 @@ export type PlatformTrendingPlayerCountAggregateOutputType = {
   allTimeWins: number
   allTimeWinRate: number
   highlightGroupId: number
-  highlightGroupName: number
   highlightGroupMemberId: number
-  highlightGroupMembersCount: number
-  highlightCurrentRank: number
-  highlightRating: number
   windowDays: number
   windowStartedAt: number
   windowEndedAt: number
@@ -143,9 +122,6 @@ export type PlatformTrendingPlayerAvgAggregateInputType = {
   allTimeMatches?: true
   allTimeWins?: true
   allTimeWinRate?: true
-  highlightGroupMembersCount?: true
-  highlightCurrentRank?: true
-  highlightRating?: true
   windowDays?: true
 }
 
@@ -158,16 +134,12 @@ export type PlatformTrendingPlayerSumAggregateInputType = {
   allTimeMatches?: true
   allTimeWins?: true
   allTimeWinRate?: true
-  highlightGroupMembersCount?: true
-  highlightCurrentRank?: true
-  highlightRating?: true
   windowDays?: true
 }
 
 export type PlatformTrendingPlayerMinAggregateInputType = {
   userId?: true
   trendRank?: true
-  displayName?: true
   score?: true
   recentMatches?: true
   recentWins?: true
@@ -176,11 +148,7 @@ export type PlatformTrendingPlayerMinAggregateInputType = {
   allTimeWins?: true
   allTimeWinRate?: true
   highlightGroupId?: true
-  highlightGroupName?: true
   highlightGroupMemberId?: true
-  highlightGroupMembersCount?: true
-  highlightCurrentRank?: true
-  highlightRating?: true
   windowDays?: true
   windowStartedAt?: true
   windowEndedAt?: true
@@ -192,7 +160,6 @@ export type PlatformTrendingPlayerMinAggregateInputType = {
 export type PlatformTrendingPlayerMaxAggregateInputType = {
   userId?: true
   trendRank?: true
-  displayName?: true
   score?: true
   recentMatches?: true
   recentWins?: true
@@ -201,11 +168,7 @@ export type PlatformTrendingPlayerMaxAggregateInputType = {
   allTimeWins?: true
   allTimeWinRate?: true
   highlightGroupId?: true
-  highlightGroupName?: true
   highlightGroupMemberId?: true
-  highlightGroupMembersCount?: true
-  highlightCurrentRank?: true
-  highlightRating?: true
   windowDays?: true
   windowStartedAt?: true
   windowEndedAt?: true
@@ -217,7 +180,6 @@ export type PlatformTrendingPlayerMaxAggregateInputType = {
 export type PlatformTrendingPlayerCountAggregateInputType = {
   userId?: true
   trendRank?: true
-  displayName?: true
   score?: true
   recentMatches?: true
   recentWins?: true
@@ -226,11 +188,7 @@ export type PlatformTrendingPlayerCountAggregateInputType = {
   allTimeWins?: true
   allTimeWinRate?: true
   highlightGroupId?: true
-  highlightGroupName?: true
   highlightGroupMemberId?: true
-  highlightGroupMembersCount?: true
-  highlightCurrentRank?: true
-  highlightRating?: true
   windowDays?: true
   windowStartedAt?: true
   windowEndedAt?: true
@@ -330,7 +288,6 @@ export type PlatformTrendingPlayerGroupByArgs<ExtArgs extends runtime.Types.Exte
 export type PlatformTrendingPlayerGroupByOutputType = {
   userId: string
   trendRank: number
-  displayName: string
   score: number
   recentMatches: number
   recentWins: number
@@ -339,11 +296,7 @@ export type PlatformTrendingPlayerGroupByOutputType = {
   allTimeWins: number
   allTimeWinRate: number
   highlightGroupId: string | null
-  highlightGroupName: string | null
   highlightGroupMemberId: string | null
-  highlightGroupMembersCount: number | null
-  highlightCurrentRank: number | null
-  highlightRating: number | null
   windowDays: number
   windowStartedAt: Date
   windowEndedAt: Date
@@ -379,7 +332,6 @@ export type PlatformTrendingPlayerWhereInput = {
   NOT?: Prisma.PlatformTrendingPlayerWhereInput | Prisma.PlatformTrendingPlayerWhereInput[]
   userId?: Prisma.StringFilter<"PlatformTrendingPlayer"> | string
   trendRank?: Prisma.IntFilter<"PlatformTrendingPlayer"> | number
-  displayName?: Prisma.StringFilter<"PlatformTrendingPlayer"> | string
   score?: Prisma.FloatFilter<"PlatformTrendingPlayer"> | number
   recentMatches?: Prisma.IntFilter<"PlatformTrendingPlayer"> | number
   recentWins?: Prisma.IntFilter<"PlatformTrendingPlayer"> | number
@@ -388,11 +340,7 @@ export type PlatformTrendingPlayerWhereInput = {
   allTimeWins?: Prisma.IntFilter<"PlatformTrendingPlayer"> | number
   allTimeWinRate?: Prisma.FloatFilter<"PlatformTrendingPlayer"> | number
   highlightGroupId?: Prisma.StringNullableFilter<"PlatformTrendingPlayer"> | string | null
-  highlightGroupName?: Prisma.StringNullableFilter<"PlatformTrendingPlayer"> | string | null
   highlightGroupMemberId?: Prisma.StringNullableFilter<"PlatformTrendingPlayer"> | string | null
-  highlightGroupMembersCount?: Prisma.IntNullableFilter<"PlatformTrendingPlayer"> | number | null
-  highlightCurrentRank?: Prisma.IntNullableFilter<"PlatformTrendingPlayer"> | number | null
-  highlightRating?: Prisma.FloatNullableFilter<"PlatformTrendingPlayer"> | number | null
   windowDays?: Prisma.IntFilter<"PlatformTrendingPlayer"> | number
   windowStartedAt?: Prisma.DateTimeFilter<"PlatformTrendingPlayer"> | Date | string
   windowEndedAt?: Prisma.DateTimeFilter<"PlatformTrendingPlayer"> | Date | string
@@ -406,7 +354,6 @@ export type PlatformTrendingPlayerWhereInput = {
 export type PlatformTrendingPlayerOrderByWithRelationInput = {
   userId?: Prisma.SortOrder
   trendRank?: Prisma.SortOrder
-  displayName?: Prisma.SortOrder
   score?: Prisma.SortOrder
   recentMatches?: Prisma.SortOrder
   recentWins?: Prisma.SortOrder
@@ -415,11 +362,7 @@ export type PlatformTrendingPlayerOrderByWithRelationInput = {
   allTimeWins?: Prisma.SortOrder
   allTimeWinRate?: Prisma.SortOrder
   highlightGroupId?: Prisma.SortOrderInput | Prisma.SortOrder
-  highlightGroupName?: Prisma.SortOrderInput | Prisma.SortOrder
   highlightGroupMemberId?: Prisma.SortOrderInput | Prisma.SortOrder
-  highlightGroupMembersCount?: Prisma.SortOrderInput | Prisma.SortOrder
-  highlightCurrentRank?: Prisma.SortOrderInput | Prisma.SortOrder
-  highlightRating?: Prisma.SortOrderInput | Prisma.SortOrder
   windowDays?: Prisma.SortOrder
   windowStartedAt?: Prisma.SortOrder
   windowEndedAt?: Prisma.SortOrder
@@ -436,7 +379,6 @@ export type PlatformTrendingPlayerWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.PlatformTrendingPlayerWhereInput | Prisma.PlatformTrendingPlayerWhereInput[]
   OR?: Prisma.PlatformTrendingPlayerWhereInput[]
   NOT?: Prisma.PlatformTrendingPlayerWhereInput | Prisma.PlatformTrendingPlayerWhereInput[]
-  displayName?: Prisma.StringFilter<"PlatformTrendingPlayer"> | string
   score?: Prisma.FloatFilter<"PlatformTrendingPlayer"> | number
   recentMatches?: Prisma.IntFilter<"PlatformTrendingPlayer"> | number
   recentWins?: Prisma.IntFilter<"PlatformTrendingPlayer"> | number
@@ -445,11 +387,7 @@ export type PlatformTrendingPlayerWhereUniqueInput = Prisma.AtLeast<{
   allTimeWins?: Prisma.IntFilter<"PlatformTrendingPlayer"> | number
   allTimeWinRate?: Prisma.FloatFilter<"PlatformTrendingPlayer"> | number
   highlightGroupId?: Prisma.StringNullableFilter<"PlatformTrendingPlayer"> | string | null
-  highlightGroupName?: Prisma.StringNullableFilter<"PlatformTrendingPlayer"> | string | null
   highlightGroupMemberId?: Prisma.StringNullableFilter<"PlatformTrendingPlayer"> | string | null
-  highlightGroupMembersCount?: Prisma.IntNullableFilter<"PlatformTrendingPlayer"> | number | null
-  highlightCurrentRank?: Prisma.IntNullableFilter<"PlatformTrendingPlayer"> | number | null
-  highlightRating?: Prisma.FloatNullableFilter<"PlatformTrendingPlayer"> | number | null
   windowDays?: Prisma.IntFilter<"PlatformTrendingPlayer"> | number
   windowStartedAt?: Prisma.DateTimeFilter<"PlatformTrendingPlayer"> | Date | string
   windowEndedAt?: Prisma.DateTimeFilter<"PlatformTrendingPlayer"> | Date | string
@@ -463,7 +401,6 @@ export type PlatformTrendingPlayerWhereUniqueInput = Prisma.AtLeast<{
 export type PlatformTrendingPlayerOrderByWithAggregationInput = {
   userId?: Prisma.SortOrder
   trendRank?: Prisma.SortOrder
-  displayName?: Prisma.SortOrder
   score?: Prisma.SortOrder
   recentMatches?: Prisma.SortOrder
   recentWins?: Prisma.SortOrder
@@ -472,11 +409,7 @@ export type PlatformTrendingPlayerOrderByWithAggregationInput = {
   allTimeWins?: Prisma.SortOrder
   allTimeWinRate?: Prisma.SortOrder
   highlightGroupId?: Prisma.SortOrderInput | Prisma.SortOrder
-  highlightGroupName?: Prisma.SortOrderInput | Prisma.SortOrder
   highlightGroupMemberId?: Prisma.SortOrderInput | Prisma.SortOrder
-  highlightGroupMembersCount?: Prisma.SortOrderInput | Prisma.SortOrder
-  highlightCurrentRank?: Prisma.SortOrderInput | Prisma.SortOrder
-  highlightRating?: Prisma.SortOrderInput | Prisma.SortOrder
   windowDays?: Prisma.SortOrder
   windowStartedAt?: Prisma.SortOrder
   windowEndedAt?: Prisma.SortOrder
@@ -497,7 +430,6 @@ export type PlatformTrendingPlayerScalarWhereWithAggregatesInput = {
   NOT?: Prisma.PlatformTrendingPlayerScalarWhereWithAggregatesInput | Prisma.PlatformTrendingPlayerScalarWhereWithAggregatesInput[]
   userId?: Prisma.StringWithAggregatesFilter<"PlatformTrendingPlayer"> | string
   trendRank?: Prisma.IntWithAggregatesFilter<"PlatformTrendingPlayer"> | number
-  displayName?: Prisma.StringWithAggregatesFilter<"PlatformTrendingPlayer"> | string
   score?: Prisma.FloatWithAggregatesFilter<"PlatformTrendingPlayer"> | number
   recentMatches?: Prisma.IntWithAggregatesFilter<"PlatformTrendingPlayer"> | number
   recentWins?: Prisma.IntWithAggregatesFilter<"PlatformTrendingPlayer"> | number
@@ -506,11 +438,7 @@ export type PlatformTrendingPlayerScalarWhereWithAggregatesInput = {
   allTimeWins?: Prisma.IntWithAggregatesFilter<"PlatformTrendingPlayer"> | number
   allTimeWinRate?: Prisma.FloatWithAggregatesFilter<"PlatformTrendingPlayer"> | number
   highlightGroupId?: Prisma.StringNullableWithAggregatesFilter<"PlatformTrendingPlayer"> | string | null
-  highlightGroupName?: Prisma.StringNullableWithAggregatesFilter<"PlatformTrendingPlayer"> | string | null
   highlightGroupMemberId?: Prisma.StringNullableWithAggregatesFilter<"PlatformTrendingPlayer"> | string | null
-  highlightGroupMembersCount?: Prisma.IntNullableWithAggregatesFilter<"PlatformTrendingPlayer"> | number | null
-  highlightCurrentRank?: Prisma.IntNullableWithAggregatesFilter<"PlatformTrendingPlayer"> | number | null
-  highlightRating?: Prisma.FloatNullableWithAggregatesFilter<"PlatformTrendingPlayer"> | number | null
   windowDays?: Prisma.IntWithAggregatesFilter<"PlatformTrendingPlayer"> | number
   windowStartedAt?: Prisma.DateTimeWithAggregatesFilter<"PlatformTrendingPlayer"> | Date | string
   windowEndedAt?: Prisma.DateTimeWithAggregatesFilter<"PlatformTrendingPlayer"> | Date | string
@@ -522,7 +450,6 @@ export type PlatformTrendingPlayerScalarWhereWithAggregatesInput = {
 
 export type PlatformTrendingPlayerCreateInput = {
   trendRank: number
-  displayName: string
   score: number
   recentMatches: number
   recentWins: number
@@ -531,11 +458,7 @@ export type PlatformTrendingPlayerCreateInput = {
   allTimeWins: number
   allTimeWinRate: number
   highlightGroupId?: string | null
-  highlightGroupName?: string | null
   highlightGroupMemberId?: string | null
-  highlightGroupMembersCount?: number | null
-  highlightCurrentRank?: number | null
-  highlightRating?: number | null
   windowDays: number
   windowStartedAt: Date | string
   windowEndedAt: Date | string
@@ -549,7 +472,6 @@ export type PlatformTrendingPlayerCreateInput = {
 export type PlatformTrendingPlayerUncheckedCreateInput = {
   userId: string
   trendRank: number
-  displayName: string
   score: number
   recentMatches: number
   recentWins: number
@@ -558,11 +480,7 @@ export type PlatformTrendingPlayerUncheckedCreateInput = {
   allTimeWins: number
   allTimeWinRate: number
   highlightGroupId?: string | null
-  highlightGroupName?: string | null
   highlightGroupMemberId?: string | null
-  highlightGroupMembersCount?: number | null
-  highlightCurrentRank?: number | null
-  highlightRating?: number | null
   windowDays: number
   windowStartedAt: Date | string
   windowEndedAt: Date | string
@@ -574,7 +492,6 @@ export type PlatformTrendingPlayerUncheckedCreateInput = {
 
 export type PlatformTrendingPlayerUpdateInput = {
   trendRank?: Prisma.IntFieldUpdateOperationsInput | number
-  displayName?: Prisma.StringFieldUpdateOperationsInput | string
   score?: Prisma.FloatFieldUpdateOperationsInput | number
   recentMatches?: Prisma.IntFieldUpdateOperationsInput | number
   recentWins?: Prisma.IntFieldUpdateOperationsInput | number
@@ -583,11 +500,7 @@ export type PlatformTrendingPlayerUpdateInput = {
   allTimeWins?: Prisma.IntFieldUpdateOperationsInput | number
   allTimeWinRate?: Prisma.FloatFieldUpdateOperationsInput | number
   highlightGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  highlightGroupName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   highlightGroupMemberId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  highlightGroupMembersCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  highlightCurrentRank?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  highlightRating?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   windowDays?: Prisma.IntFieldUpdateOperationsInput | number
   windowStartedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   windowEndedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -601,7 +514,6 @@ export type PlatformTrendingPlayerUpdateInput = {
 export type PlatformTrendingPlayerUncheckedUpdateInput = {
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   trendRank?: Prisma.IntFieldUpdateOperationsInput | number
-  displayName?: Prisma.StringFieldUpdateOperationsInput | string
   score?: Prisma.FloatFieldUpdateOperationsInput | number
   recentMatches?: Prisma.IntFieldUpdateOperationsInput | number
   recentWins?: Prisma.IntFieldUpdateOperationsInput | number
@@ -610,11 +522,7 @@ export type PlatformTrendingPlayerUncheckedUpdateInput = {
   allTimeWins?: Prisma.IntFieldUpdateOperationsInput | number
   allTimeWinRate?: Prisma.FloatFieldUpdateOperationsInput | number
   highlightGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  highlightGroupName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   highlightGroupMemberId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  highlightGroupMembersCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  highlightCurrentRank?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  highlightRating?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   windowDays?: Prisma.IntFieldUpdateOperationsInput | number
   windowStartedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   windowEndedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -627,7 +535,6 @@ export type PlatformTrendingPlayerUncheckedUpdateInput = {
 export type PlatformTrendingPlayerCreateManyInput = {
   userId: string
   trendRank: number
-  displayName: string
   score: number
   recentMatches: number
   recentWins: number
@@ -636,11 +543,7 @@ export type PlatformTrendingPlayerCreateManyInput = {
   allTimeWins: number
   allTimeWinRate: number
   highlightGroupId?: string | null
-  highlightGroupName?: string | null
   highlightGroupMemberId?: string | null
-  highlightGroupMembersCount?: number | null
-  highlightCurrentRank?: number | null
-  highlightRating?: number | null
   windowDays: number
   windowStartedAt: Date | string
   windowEndedAt: Date | string
@@ -652,7 +555,6 @@ export type PlatformTrendingPlayerCreateManyInput = {
 
 export type PlatformTrendingPlayerUpdateManyMutationInput = {
   trendRank?: Prisma.IntFieldUpdateOperationsInput | number
-  displayName?: Prisma.StringFieldUpdateOperationsInput | string
   score?: Prisma.FloatFieldUpdateOperationsInput | number
   recentMatches?: Prisma.IntFieldUpdateOperationsInput | number
   recentWins?: Prisma.IntFieldUpdateOperationsInput | number
@@ -661,11 +563,7 @@ export type PlatformTrendingPlayerUpdateManyMutationInput = {
   allTimeWins?: Prisma.IntFieldUpdateOperationsInput | number
   allTimeWinRate?: Prisma.FloatFieldUpdateOperationsInput | number
   highlightGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  highlightGroupName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   highlightGroupMemberId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  highlightGroupMembersCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  highlightCurrentRank?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  highlightRating?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   windowDays?: Prisma.IntFieldUpdateOperationsInput | number
   windowStartedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   windowEndedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -678,7 +576,6 @@ export type PlatformTrendingPlayerUpdateManyMutationInput = {
 export type PlatformTrendingPlayerUncheckedUpdateManyInput = {
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   trendRank?: Prisma.IntFieldUpdateOperationsInput | number
-  displayName?: Prisma.StringFieldUpdateOperationsInput | string
   score?: Prisma.FloatFieldUpdateOperationsInput | number
   recentMatches?: Prisma.IntFieldUpdateOperationsInput | number
   recentWins?: Prisma.IntFieldUpdateOperationsInput | number
@@ -687,11 +584,7 @@ export type PlatformTrendingPlayerUncheckedUpdateManyInput = {
   allTimeWins?: Prisma.IntFieldUpdateOperationsInput | number
   allTimeWinRate?: Prisma.FloatFieldUpdateOperationsInput | number
   highlightGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  highlightGroupName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   highlightGroupMemberId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  highlightGroupMembersCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  highlightCurrentRank?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  highlightRating?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   windowDays?: Prisma.IntFieldUpdateOperationsInput | number
   windowStartedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   windowEndedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -709,7 +602,6 @@ export type PlatformTrendingPlayerNullableScalarRelationFilter = {
 export type PlatformTrendingPlayerCountOrderByAggregateInput = {
   userId?: Prisma.SortOrder
   trendRank?: Prisma.SortOrder
-  displayName?: Prisma.SortOrder
   score?: Prisma.SortOrder
   recentMatches?: Prisma.SortOrder
   recentWins?: Prisma.SortOrder
@@ -718,11 +610,7 @@ export type PlatformTrendingPlayerCountOrderByAggregateInput = {
   allTimeWins?: Prisma.SortOrder
   allTimeWinRate?: Prisma.SortOrder
   highlightGroupId?: Prisma.SortOrder
-  highlightGroupName?: Prisma.SortOrder
   highlightGroupMemberId?: Prisma.SortOrder
-  highlightGroupMembersCount?: Prisma.SortOrder
-  highlightCurrentRank?: Prisma.SortOrder
-  highlightRating?: Prisma.SortOrder
   windowDays?: Prisma.SortOrder
   windowStartedAt?: Prisma.SortOrder
   windowEndedAt?: Prisma.SortOrder
@@ -741,16 +629,12 @@ export type PlatformTrendingPlayerAvgOrderByAggregateInput = {
   allTimeMatches?: Prisma.SortOrder
   allTimeWins?: Prisma.SortOrder
   allTimeWinRate?: Prisma.SortOrder
-  highlightGroupMembersCount?: Prisma.SortOrder
-  highlightCurrentRank?: Prisma.SortOrder
-  highlightRating?: Prisma.SortOrder
   windowDays?: Prisma.SortOrder
 }
 
 export type PlatformTrendingPlayerMaxOrderByAggregateInput = {
   userId?: Prisma.SortOrder
   trendRank?: Prisma.SortOrder
-  displayName?: Prisma.SortOrder
   score?: Prisma.SortOrder
   recentMatches?: Prisma.SortOrder
   recentWins?: Prisma.SortOrder
@@ -759,11 +643,7 @@ export type PlatformTrendingPlayerMaxOrderByAggregateInput = {
   allTimeWins?: Prisma.SortOrder
   allTimeWinRate?: Prisma.SortOrder
   highlightGroupId?: Prisma.SortOrder
-  highlightGroupName?: Prisma.SortOrder
   highlightGroupMemberId?: Prisma.SortOrder
-  highlightGroupMembersCount?: Prisma.SortOrder
-  highlightCurrentRank?: Prisma.SortOrder
-  highlightRating?: Prisma.SortOrder
   windowDays?: Prisma.SortOrder
   windowStartedAt?: Prisma.SortOrder
   windowEndedAt?: Prisma.SortOrder
@@ -775,7 +655,6 @@ export type PlatformTrendingPlayerMaxOrderByAggregateInput = {
 export type PlatformTrendingPlayerMinOrderByAggregateInput = {
   userId?: Prisma.SortOrder
   trendRank?: Prisma.SortOrder
-  displayName?: Prisma.SortOrder
   score?: Prisma.SortOrder
   recentMatches?: Prisma.SortOrder
   recentWins?: Prisma.SortOrder
@@ -784,11 +663,7 @@ export type PlatformTrendingPlayerMinOrderByAggregateInput = {
   allTimeWins?: Prisma.SortOrder
   allTimeWinRate?: Prisma.SortOrder
   highlightGroupId?: Prisma.SortOrder
-  highlightGroupName?: Prisma.SortOrder
   highlightGroupMemberId?: Prisma.SortOrder
-  highlightGroupMembersCount?: Prisma.SortOrder
-  highlightCurrentRank?: Prisma.SortOrder
-  highlightRating?: Prisma.SortOrder
   windowDays?: Prisma.SortOrder
   windowStartedAt?: Prisma.SortOrder
   windowEndedAt?: Prisma.SortOrder
@@ -806,9 +681,6 @@ export type PlatformTrendingPlayerSumOrderByAggregateInput = {
   allTimeMatches?: Prisma.SortOrder
   allTimeWins?: Prisma.SortOrder
   allTimeWinRate?: Prisma.SortOrder
-  highlightGroupMembersCount?: Prisma.SortOrder
-  highlightCurrentRank?: Prisma.SortOrder
-  highlightRating?: Prisma.SortOrder
   windowDays?: Prisma.SortOrder
 }
 
@@ -846,7 +718,6 @@ export type PlatformTrendingPlayerUncheckedUpdateOneWithoutUserNestedInput = {
 
 export type PlatformTrendingPlayerCreateWithoutUserInput = {
   trendRank: number
-  displayName: string
   score: number
   recentMatches: number
   recentWins: number
@@ -855,11 +726,7 @@ export type PlatformTrendingPlayerCreateWithoutUserInput = {
   allTimeWins: number
   allTimeWinRate: number
   highlightGroupId?: string | null
-  highlightGroupName?: string | null
   highlightGroupMemberId?: string | null
-  highlightGroupMembersCount?: number | null
-  highlightCurrentRank?: number | null
-  highlightRating?: number | null
   windowDays: number
   windowStartedAt: Date | string
   windowEndedAt: Date | string
@@ -871,7 +738,6 @@ export type PlatformTrendingPlayerCreateWithoutUserInput = {
 
 export type PlatformTrendingPlayerUncheckedCreateWithoutUserInput = {
   trendRank: number
-  displayName: string
   score: number
   recentMatches: number
   recentWins: number
@@ -880,11 +746,7 @@ export type PlatformTrendingPlayerUncheckedCreateWithoutUserInput = {
   allTimeWins: number
   allTimeWinRate: number
   highlightGroupId?: string | null
-  highlightGroupName?: string | null
   highlightGroupMemberId?: string | null
-  highlightGroupMembersCount?: number | null
-  highlightCurrentRank?: number | null
-  highlightRating?: number | null
   windowDays: number
   windowStartedAt: Date | string
   windowEndedAt: Date | string
@@ -912,7 +774,6 @@ export type PlatformTrendingPlayerUpdateToOneWithWhereWithoutUserInput = {
 
 export type PlatformTrendingPlayerUpdateWithoutUserInput = {
   trendRank?: Prisma.IntFieldUpdateOperationsInput | number
-  displayName?: Prisma.StringFieldUpdateOperationsInput | string
   score?: Prisma.FloatFieldUpdateOperationsInput | number
   recentMatches?: Prisma.IntFieldUpdateOperationsInput | number
   recentWins?: Prisma.IntFieldUpdateOperationsInput | number
@@ -921,11 +782,7 @@ export type PlatformTrendingPlayerUpdateWithoutUserInput = {
   allTimeWins?: Prisma.IntFieldUpdateOperationsInput | number
   allTimeWinRate?: Prisma.FloatFieldUpdateOperationsInput | number
   highlightGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  highlightGroupName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   highlightGroupMemberId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  highlightGroupMembersCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  highlightCurrentRank?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  highlightRating?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   windowDays?: Prisma.IntFieldUpdateOperationsInput | number
   windowStartedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   windowEndedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -937,7 +794,6 @@ export type PlatformTrendingPlayerUpdateWithoutUserInput = {
 
 export type PlatformTrendingPlayerUncheckedUpdateWithoutUserInput = {
   trendRank?: Prisma.IntFieldUpdateOperationsInput | number
-  displayName?: Prisma.StringFieldUpdateOperationsInput | string
   score?: Prisma.FloatFieldUpdateOperationsInput | number
   recentMatches?: Prisma.IntFieldUpdateOperationsInput | number
   recentWins?: Prisma.IntFieldUpdateOperationsInput | number
@@ -946,11 +802,7 @@ export type PlatformTrendingPlayerUncheckedUpdateWithoutUserInput = {
   allTimeWins?: Prisma.IntFieldUpdateOperationsInput | number
   allTimeWinRate?: Prisma.FloatFieldUpdateOperationsInput | number
   highlightGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  highlightGroupName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   highlightGroupMemberId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  highlightGroupMembersCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  highlightCurrentRank?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  highlightRating?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   windowDays?: Prisma.IntFieldUpdateOperationsInput | number
   windowStartedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   windowEndedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -965,7 +817,6 @@ export type PlatformTrendingPlayerUncheckedUpdateWithoutUserInput = {
 export type PlatformTrendingPlayerSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   userId?: boolean
   trendRank?: boolean
-  displayName?: boolean
   score?: boolean
   recentMatches?: boolean
   recentWins?: boolean
@@ -974,11 +825,7 @@ export type PlatformTrendingPlayerSelect<ExtArgs extends runtime.Types.Extension
   allTimeWins?: boolean
   allTimeWinRate?: boolean
   highlightGroupId?: boolean
-  highlightGroupName?: boolean
   highlightGroupMemberId?: boolean
-  highlightGroupMembersCount?: boolean
-  highlightCurrentRank?: boolean
-  highlightRating?: boolean
   windowDays?: boolean
   windowStartedAt?: boolean
   windowEndedAt?: boolean
@@ -992,7 +839,6 @@ export type PlatformTrendingPlayerSelect<ExtArgs extends runtime.Types.Extension
 export type PlatformTrendingPlayerSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   userId?: boolean
   trendRank?: boolean
-  displayName?: boolean
   score?: boolean
   recentMatches?: boolean
   recentWins?: boolean
@@ -1001,11 +847,7 @@ export type PlatformTrendingPlayerSelectCreateManyAndReturn<ExtArgs extends runt
   allTimeWins?: boolean
   allTimeWinRate?: boolean
   highlightGroupId?: boolean
-  highlightGroupName?: boolean
   highlightGroupMemberId?: boolean
-  highlightGroupMembersCount?: boolean
-  highlightCurrentRank?: boolean
-  highlightRating?: boolean
   windowDays?: boolean
   windowStartedAt?: boolean
   windowEndedAt?: boolean
@@ -1019,7 +861,6 @@ export type PlatformTrendingPlayerSelectCreateManyAndReturn<ExtArgs extends runt
 export type PlatformTrendingPlayerSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   userId?: boolean
   trendRank?: boolean
-  displayName?: boolean
   score?: boolean
   recentMatches?: boolean
   recentWins?: boolean
@@ -1028,11 +869,7 @@ export type PlatformTrendingPlayerSelectUpdateManyAndReturn<ExtArgs extends runt
   allTimeWins?: boolean
   allTimeWinRate?: boolean
   highlightGroupId?: boolean
-  highlightGroupName?: boolean
   highlightGroupMemberId?: boolean
-  highlightGroupMembersCount?: boolean
-  highlightCurrentRank?: boolean
-  highlightRating?: boolean
   windowDays?: boolean
   windowStartedAt?: boolean
   windowEndedAt?: boolean
@@ -1046,7 +883,6 @@ export type PlatformTrendingPlayerSelectUpdateManyAndReturn<ExtArgs extends runt
 export type PlatformTrendingPlayerSelectScalar = {
   userId?: boolean
   trendRank?: boolean
-  displayName?: boolean
   score?: boolean
   recentMatches?: boolean
   recentWins?: boolean
@@ -1055,11 +891,7 @@ export type PlatformTrendingPlayerSelectScalar = {
   allTimeWins?: boolean
   allTimeWinRate?: boolean
   highlightGroupId?: boolean
-  highlightGroupName?: boolean
   highlightGroupMemberId?: boolean
-  highlightGroupMembersCount?: boolean
-  highlightCurrentRank?: boolean
-  highlightRating?: boolean
   windowDays?: boolean
   windowStartedAt?: boolean
   windowEndedAt?: boolean
@@ -1069,7 +901,7 @@ export type PlatformTrendingPlayerSelectScalar = {
   updatedAt?: boolean
 }
 
-export type PlatformTrendingPlayerOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"userId" | "trendRank" | "displayName" | "score" | "recentMatches" | "recentWins" | "recentWinRate" | "allTimeMatches" | "allTimeWins" | "allTimeWinRate" | "highlightGroupId" | "highlightGroupName" | "highlightGroupMemberId" | "highlightGroupMembersCount" | "highlightCurrentRank" | "highlightRating" | "windowDays" | "windowStartedAt" | "windowEndedAt" | "metadata" | "computedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["platformTrendingPlayer"]>
+export type PlatformTrendingPlayerOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"userId" | "trendRank" | "score" | "recentMatches" | "recentWins" | "recentWinRate" | "allTimeMatches" | "allTimeWins" | "allTimeWinRate" | "highlightGroupId" | "highlightGroupMemberId" | "windowDays" | "windowStartedAt" | "windowEndedAt" | "metadata" | "computedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["platformTrendingPlayer"]>
 export type PlatformTrendingPlayerInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
@@ -1088,7 +920,6 @@ export type $PlatformTrendingPlayerPayload<ExtArgs extends runtime.Types.Extensi
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     userId: string
     trendRank: number
-    displayName: string
     score: number
     recentMatches: number
     recentWins: number
@@ -1097,11 +928,7 @@ export type $PlatformTrendingPlayerPayload<ExtArgs extends runtime.Types.Extensi
     allTimeWins: number
     allTimeWinRate: number
     highlightGroupId: string | null
-    highlightGroupName: string | null
     highlightGroupMemberId: string | null
-    highlightGroupMembersCount: number | null
-    highlightCurrentRank: number | null
-    highlightRating: number | null
     windowDays: number
     windowStartedAt: Date
     windowEndedAt: Date
@@ -1535,7 +1362,6 @@ export interface Prisma__PlatformTrendingPlayerClient<T, Null = never, ExtArgs e
 export interface PlatformTrendingPlayerFieldRefs {
   readonly userId: Prisma.FieldRef<"PlatformTrendingPlayer", 'String'>
   readonly trendRank: Prisma.FieldRef<"PlatformTrendingPlayer", 'Int'>
-  readonly displayName: Prisma.FieldRef<"PlatformTrendingPlayer", 'String'>
   readonly score: Prisma.FieldRef<"PlatformTrendingPlayer", 'Float'>
   readonly recentMatches: Prisma.FieldRef<"PlatformTrendingPlayer", 'Int'>
   readonly recentWins: Prisma.FieldRef<"PlatformTrendingPlayer", 'Int'>
@@ -1544,11 +1370,7 @@ export interface PlatformTrendingPlayerFieldRefs {
   readonly allTimeWins: Prisma.FieldRef<"PlatformTrendingPlayer", 'Int'>
   readonly allTimeWinRate: Prisma.FieldRef<"PlatformTrendingPlayer", 'Float'>
   readonly highlightGroupId: Prisma.FieldRef<"PlatformTrendingPlayer", 'String'>
-  readonly highlightGroupName: Prisma.FieldRef<"PlatformTrendingPlayer", 'String'>
   readonly highlightGroupMemberId: Prisma.FieldRef<"PlatformTrendingPlayer", 'String'>
-  readonly highlightGroupMembersCount: Prisma.FieldRef<"PlatformTrendingPlayer", 'Int'>
-  readonly highlightCurrentRank: Prisma.FieldRef<"PlatformTrendingPlayer", 'Int'>
-  readonly highlightRating: Prisma.FieldRef<"PlatformTrendingPlayer", 'Float'>
   readonly windowDays: Prisma.FieldRef<"PlatformTrendingPlayer", 'Int'>
   readonly windowStartedAt: Prisma.FieldRef<"PlatformTrendingPlayer", 'DateTime'>
   readonly windowEndedAt: Prisma.FieldRef<"PlatformTrendingPlayer", 'DateTime'>
