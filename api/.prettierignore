@@ -1,0 +1,10 @@
+# Dependencies
+node_modules
+
+# Build outputs
+.next
+dist
+coverage
+
+# Generated Prisma client
+api/src/generated/prisma
