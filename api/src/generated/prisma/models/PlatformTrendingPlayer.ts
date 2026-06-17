@@ -349,6 +349,8 @@ export type PlatformTrendingPlayerWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"PlatformTrendingPlayer"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"PlatformTrendingPlayer"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  highlightGroup?: Prisma.XOR<Prisma.GroupNullableScalarRelationFilter, Prisma.GroupWhereInput> | null
+  highlightGroupMember?: Prisma.XOR<Prisma.GroupMemberNullableScalarRelationFilter, Prisma.GroupMemberWhereInput> | null
 }
 
 export type PlatformTrendingPlayerOrderByWithRelationInput = {
@@ -371,6 +373,8 @@ export type PlatformTrendingPlayerOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
+  highlightGroup?: Prisma.GroupOrderByWithRelationInput
+  highlightGroupMember?: Prisma.GroupMemberOrderByWithRelationInput
 }
 
 export type PlatformTrendingPlayerWhereUniqueInput = Prisma.AtLeast<{
@@ -396,6 +400,8 @@ export type PlatformTrendingPlayerWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"PlatformTrendingPlayer"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"PlatformTrendingPlayer"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  highlightGroup?: Prisma.XOR<Prisma.GroupNullableScalarRelationFilter, Prisma.GroupWhereInput> | null
+  highlightGroupMember?: Prisma.XOR<Prisma.GroupMemberNullableScalarRelationFilter, Prisma.GroupMemberWhereInput> | null
 }, "userId" | "trendRank">
 
 export type PlatformTrendingPlayerOrderByWithAggregationInput = {
@@ -457,8 +463,6 @@ export type PlatformTrendingPlayerCreateInput = {
   allTimeMatches: number
   allTimeWins: number
   allTimeWinRate: number
-  highlightGroupId?: string | null
-  highlightGroupMemberId?: string | null
   windowDays: number
   windowStartedAt: Date | string
   windowEndedAt: Date | string
@@ -467,6 +471,8 @@ export type PlatformTrendingPlayerCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutPlatformTrendingPlayerInput
+  highlightGroup?: Prisma.GroupCreateNestedOneWithoutPlatformTrendingHighlightsInput
+  highlightGroupMember?: Prisma.GroupMemberCreateNestedOneWithoutPlatformTrendingHighlightsInput
 }
 
 export type PlatformTrendingPlayerUncheckedCreateInput = {
@@ -499,8 +505,6 @@ export type PlatformTrendingPlayerUpdateInput = {
   allTimeMatches?: Prisma.IntFieldUpdateOperationsInput | number
   allTimeWins?: Prisma.IntFieldUpdateOperationsInput | number
   allTimeWinRate?: Prisma.FloatFieldUpdateOperationsInput | number
-  highlightGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  highlightGroupMemberId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   windowDays?: Prisma.IntFieldUpdateOperationsInput | number
   windowStartedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   windowEndedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -509,6 +513,8 @@ export type PlatformTrendingPlayerUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutPlatformTrendingPlayerNestedInput
+  highlightGroup?: Prisma.GroupUpdateOneWithoutPlatformTrendingHighlightsNestedInput
+  highlightGroupMember?: Prisma.GroupMemberUpdateOneWithoutPlatformTrendingHighlightsNestedInput
 }
 
 export type PlatformTrendingPlayerUncheckedUpdateInput = {
@@ -562,8 +568,6 @@ export type PlatformTrendingPlayerUpdateManyMutationInput = {
   allTimeMatches?: Prisma.IntFieldUpdateOperationsInput | number
   allTimeWins?: Prisma.IntFieldUpdateOperationsInput | number
   allTimeWinRate?: Prisma.FloatFieldUpdateOperationsInput | number
-  highlightGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  highlightGroupMemberId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   windowDays?: Prisma.IntFieldUpdateOperationsInput | number
   windowStartedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   windowEndedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -597,6 +601,16 @@ export type PlatformTrendingPlayerUncheckedUpdateManyInput = {
 export type PlatformTrendingPlayerNullableScalarRelationFilter = {
   is?: Prisma.PlatformTrendingPlayerWhereInput | null
   isNot?: Prisma.PlatformTrendingPlayerWhereInput | null
+}
+
+export type PlatformTrendingPlayerListRelationFilter = {
+  every?: Prisma.PlatformTrendingPlayerWhereInput
+  some?: Prisma.PlatformTrendingPlayerWhereInput
+  none?: Prisma.PlatformTrendingPlayerWhereInput
+}
+
+export type PlatformTrendingPlayerOrderByRelationAggregateInput = {
+  _count?: Prisma.SortOrder
 }
 
 export type PlatformTrendingPlayerCountOrderByAggregateInput = {
@@ -716,6 +730,90 @@ export type PlatformTrendingPlayerUncheckedUpdateOneWithoutUserNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.PlatformTrendingPlayerUpdateToOneWithWhereWithoutUserInput, Prisma.PlatformTrendingPlayerUpdateWithoutUserInput>, Prisma.PlatformTrendingPlayerUncheckedUpdateWithoutUserInput>
 }
 
+export type PlatformTrendingPlayerCreateNestedManyWithoutHighlightGroupInput = {
+  create?: Prisma.XOR<Prisma.PlatformTrendingPlayerCreateWithoutHighlightGroupInput, Prisma.PlatformTrendingPlayerUncheckedCreateWithoutHighlightGroupInput> | Prisma.PlatformTrendingPlayerCreateWithoutHighlightGroupInput[] | Prisma.PlatformTrendingPlayerUncheckedCreateWithoutHighlightGroupInput[]
+  connectOrCreate?: Prisma.PlatformTrendingPlayerCreateOrConnectWithoutHighlightGroupInput | Prisma.PlatformTrendingPlayerCreateOrConnectWithoutHighlightGroupInput[]
+  createMany?: Prisma.PlatformTrendingPlayerCreateManyHighlightGroupInputEnvelope
+  connect?: Prisma.PlatformTrendingPlayerWhereUniqueInput | Prisma.PlatformTrendingPlayerWhereUniqueInput[]
+}
+
+export type PlatformTrendingPlayerUncheckedCreateNestedManyWithoutHighlightGroupInput = {
+  create?: Prisma.XOR<Prisma.PlatformTrendingPlayerCreateWithoutHighlightGroupInput, Prisma.PlatformTrendingPlayerUncheckedCreateWithoutHighlightGroupInput> | Prisma.PlatformTrendingPlayerCreateWithoutHighlightGroupInput[] | Prisma.PlatformTrendingPlayerUncheckedCreateWithoutHighlightGroupInput[]
+  connectOrCreate?: Prisma.PlatformTrendingPlayerCreateOrConnectWithoutHighlightGroupInput | Prisma.PlatformTrendingPlayerCreateOrConnectWithoutHighlightGroupInput[]
+  createMany?: Prisma.PlatformTrendingPlayerCreateManyHighlightGroupInputEnvelope
+  connect?: Prisma.PlatformTrendingPlayerWhereUniqueInput | Prisma.PlatformTrendingPlayerWhereUniqueInput[]
+}
+
+export type PlatformTrendingPlayerUpdateManyWithoutHighlightGroupNestedInput = {
+  create?: Prisma.XOR<Prisma.PlatformTrendingPlayerCreateWithoutHighlightGroupInput, Prisma.PlatformTrendingPlayerUncheckedCreateWithoutHighlightGroupInput> | Prisma.PlatformTrendingPlayerCreateWithoutHighlightGroupInput[] | Prisma.PlatformTrendingPlayerUncheckedCreateWithoutHighlightGroupInput[]
+  connectOrCreate?: Prisma.PlatformTrendingPlayerCreateOrConnectWithoutHighlightGroupInput | Prisma.PlatformTrendingPlayerCreateOrConnectWithoutHighlightGroupInput[]
+  upsert?: Prisma.PlatformTrendingPlayerUpsertWithWhereUniqueWithoutHighlightGroupInput | Prisma.PlatformTrendingPlayerUpsertWithWhereUniqueWithoutHighlightGroupInput[]
+  createMany?: Prisma.PlatformTrendingPlayerCreateManyHighlightGroupInputEnvelope
+  set?: Prisma.PlatformTrendingPlayerWhereUniqueInput | Prisma.PlatformTrendingPlayerWhereUniqueInput[]
+  disconnect?: Prisma.PlatformTrendingPlayerWhereUniqueInput | Prisma.PlatformTrendingPlayerWhereUniqueInput[]
+  delete?: Prisma.PlatformTrendingPlayerWhereUniqueInput | Prisma.PlatformTrendingPlayerWhereUniqueInput[]
+  connect?: Prisma.PlatformTrendingPlayerWhereUniqueInput | Prisma.PlatformTrendingPlayerWhereUniqueInput[]
+  update?: Prisma.PlatformTrendingPlayerUpdateWithWhereUniqueWithoutHighlightGroupInput | Prisma.PlatformTrendingPlayerUpdateWithWhereUniqueWithoutHighlightGroupInput[]
+  updateMany?: Prisma.PlatformTrendingPlayerUpdateManyWithWhereWithoutHighlightGroupInput | Prisma.PlatformTrendingPlayerUpdateManyWithWhereWithoutHighlightGroupInput[]
+  deleteMany?: Prisma.PlatformTrendingPlayerScalarWhereInput | Prisma.PlatformTrendingPlayerScalarWhereInput[]
+}
+
+export type PlatformTrendingPlayerUncheckedUpdateManyWithoutHighlightGroupNestedInput = {
+  create?: Prisma.XOR<Prisma.PlatformTrendingPlayerCreateWithoutHighlightGroupInput, Prisma.PlatformTrendingPlayerUncheckedCreateWithoutHighlightGroupInput> | Prisma.PlatformTrendingPlayerCreateWithoutHighlightGroupInput[] | Prisma.PlatformTrendingPlayerUncheckedCreateWithoutHighlightGroupInput[]
+  connectOrCreate?: Prisma.PlatformTrendingPlayerCreateOrConnectWithoutHighlightGroupInput | Prisma.PlatformTrendingPlayerCreateOrConnectWithoutHighlightGroupInput[]
+  upsert?: Prisma.PlatformTrendingPlayerUpsertWithWhereUniqueWithoutHighlightGroupInput | Prisma.PlatformTrendingPlayerUpsertWithWhereUniqueWithoutHighlightGroupInput[]
+  createMany?: Prisma.PlatformTrendingPlayerCreateManyHighlightGroupInputEnvelope
+  set?: Prisma.PlatformTrendingPlayerWhereUniqueInput | Prisma.PlatformTrendingPlayerWhereUniqueInput[]
+  disconnect?: Prisma.PlatformTrendingPlayerWhereUniqueInput | Prisma.PlatformTrendingPlayerWhereUniqueInput[]
+  delete?: Prisma.PlatformTrendingPlayerWhereUniqueInput | Prisma.PlatformTrendingPlayerWhereUniqueInput[]
+  connect?: Prisma.PlatformTrendingPlayerWhereUniqueInput | Prisma.PlatformTrendingPlayerWhereUniqueInput[]
+  update?: Prisma.PlatformTrendingPlayerUpdateWithWhereUniqueWithoutHighlightGroupInput | Prisma.PlatformTrendingPlayerUpdateWithWhereUniqueWithoutHighlightGroupInput[]
+  updateMany?: Prisma.PlatformTrendingPlayerUpdateManyWithWhereWithoutHighlightGroupInput | Prisma.PlatformTrendingPlayerUpdateManyWithWhereWithoutHighlightGroupInput[]
+  deleteMany?: Prisma.PlatformTrendingPlayerScalarWhereInput | Prisma.PlatformTrendingPlayerScalarWhereInput[]
+}
+
+export type PlatformTrendingPlayerCreateNestedManyWithoutHighlightGroupMemberInput = {
+  create?: Prisma.XOR<Prisma.PlatformTrendingPlayerCreateWithoutHighlightGroupMemberInput, Prisma.PlatformTrendingPlayerUncheckedCreateWithoutHighlightGroupMemberInput> | Prisma.PlatformTrendingPlayerCreateWithoutHighlightGroupMemberInput[] | Prisma.PlatformTrendingPlayerUncheckedCreateWithoutHighlightGroupMemberInput[]
+  connectOrCreate?: Prisma.PlatformTrendingPlayerCreateOrConnectWithoutHighlightGroupMemberInput | Prisma.PlatformTrendingPlayerCreateOrConnectWithoutHighlightGroupMemberInput[]
+  createMany?: Prisma.PlatformTrendingPlayerCreateManyHighlightGroupMemberInputEnvelope
+  connect?: Prisma.PlatformTrendingPlayerWhereUniqueInput | Prisma.PlatformTrendingPlayerWhereUniqueInput[]
+}
+
+export type PlatformTrendingPlayerUncheckedCreateNestedManyWithoutHighlightGroupMemberInput = {
+  create?: Prisma.XOR<Prisma.PlatformTrendingPlayerCreateWithoutHighlightGroupMemberInput, Prisma.PlatformTrendingPlayerUncheckedCreateWithoutHighlightGroupMemberInput> | Prisma.PlatformTrendingPlayerCreateWithoutHighlightGroupMemberInput[] | Prisma.PlatformTrendingPlayerUncheckedCreateWithoutHighlightGroupMemberInput[]
+  connectOrCreate?: Prisma.PlatformTrendingPlayerCreateOrConnectWithoutHighlightGroupMemberInput | Prisma.PlatformTrendingPlayerCreateOrConnectWithoutHighlightGroupMemberInput[]
+  createMany?: Prisma.PlatformTrendingPlayerCreateManyHighlightGroupMemberInputEnvelope
+  connect?: Prisma.PlatformTrendingPlayerWhereUniqueInput | Prisma.PlatformTrendingPlayerWhereUniqueInput[]
+}
+
+export type PlatformTrendingPlayerUpdateManyWithoutHighlightGroupMemberNestedInput = {
+  create?: Prisma.XOR<Prisma.PlatformTrendingPlayerCreateWithoutHighlightGroupMemberInput, Prisma.PlatformTrendingPlayerUncheckedCreateWithoutHighlightGroupMemberInput> | Prisma.PlatformTrendingPlayerCreateWithoutHighlightGroupMemberInput[] | Prisma.PlatformTrendingPlayerUncheckedCreateWithoutHighlightGroupMemberInput[]
+  connectOrCreate?: Prisma.PlatformTrendingPlayerCreateOrConnectWithoutHighlightGroupMemberInput | Prisma.PlatformTrendingPlayerCreateOrConnectWithoutHighlightGroupMemberInput[]
+  upsert?: Prisma.PlatformTrendingPlayerUpsertWithWhereUniqueWithoutHighlightGroupMemberInput | Prisma.PlatformTrendingPlayerUpsertWithWhereUniqueWithoutHighlightGroupMemberInput[]
+  createMany?: Prisma.PlatformTrendingPlayerCreateManyHighlightGroupMemberInputEnvelope
+  set?: Prisma.PlatformTrendingPlayerWhereUniqueInput | Prisma.PlatformTrendingPlayerWhereUniqueInput[]
+  disconnect?: Prisma.PlatformTrendingPlayerWhereUniqueInput | Prisma.PlatformTrendingPlayerWhereUniqueInput[]
+  delete?: Prisma.PlatformTrendingPlayerWhereUniqueInput | Prisma.PlatformTrendingPlayerWhereUniqueInput[]
+  connect?: Prisma.PlatformTrendingPlayerWhereUniqueInput | Prisma.PlatformTrendingPlayerWhereUniqueInput[]
+  update?: Prisma.PlatformTrendingPlayerUpdateWithWhereUniqueWithoutHighlightGroupMemberInput | Prisma.PlatformTrendingPlayerUpdateWithWhereUniqueWithoutHighlightGroupMemberInput[]
+  updateMany?: Prisma.PlatformTrendingPlayerUpdateManyWithWhereWithoutHighlightGroupMemberInput | Prisma.PlatformTrendingPlayerUpdateManyWithWhereWithoutHighlightGroupMemberInput[]
+  deleteMany?: Prisma.PlatformTrendingPlayerScalarWhereInput | Prisma.PlatformTrendingPlayerScalarWhereInput[]
+}
+
+export type PlatformTrendingPlayerUncheckedUpdateManyWithoutHighlightGroupMemberNestedInput = {
+  create?: Prisma.XOR<Prisma.PlatformTrendingPlayerCreateWithoutHighlightGroupMemberInput, Prisma.PlatformTrendingPlayerUncheckedCreateWithoutHighlightGroupMemberInput> | Prisma.PlatformTrendingPlayerCreateWithoutHighlightGroupMemberInput[] | Prisma.PlatformTrendingPlayerUncheckedCreateWithoutHighlightGroupMemberInput[]
+  connectOrCreate?: Prisma.PlatformTrendingPlayerCreateOrConnectWithoutHighlightGroupMemberInput | Prisma.PlatformTrendingPlayerCreateOrConnectWithoutHighlightGroupMemberInput[]
+  upsert?: Prisma.PlatformTrendingPlayerUpsertWithWhereUniqueWithoutHighlightGroupMemberInput | Prisma.PlatformTrendingPlayerUpsertWithWhereUniqueWithoutHighlightGroupMemberInput[]
+  createMany?: Prisma.PlatformTrendingPlayerCreateManyHighlightGroupMemberInputEnvelope
+  set?: Prisma.PlatformTrendingPlayerWhereUniqueInput | Prisma.PlatformTrendingPlayerWhereUniqueInput[]
+  disconnect?: Prisma.PlatformTrendingPlayerWhereUniqueInput | Prisma.PlatformTrendingPlayerWhereUniqueInput[]
+  delete?: Prisma.PlatformTrendingPlayerWhereUniqueInput | Prisma.PlatformTrendingPlayerWhereUniqueInput[]
+  connect?: Prisma.PlatformTrendingPlayerWhereUniqueInput | Prisma.PlatformTrendingPlayerWhereUniqueInput[]
+  update?: Prisma.PlatformTrendingPlayerUpdateWithWhereUniqueWithoutHighlightGroupMemberInput | Prisma.PlatformTrendingPlayerUpdateWithWhereUniqueWithoutHighlightGroupMemberInput[]
+  updateMany?: Prisma.PlatformTrendingPlayerUpdateManyWithWhereWithoutHighlightGroupMemberInput | Prisma.PlatformTrendingPlayerUpdateManyWithWhereWithoutHighlightGroupMemberInput[]
+  deleteMany?: Prisma.PlatformTrendingPlayerScalarWhereInput | Prisma.PlatformTrendingPlayerScalarWhereInput[]
+}
+
 export type PlatformTrendingPlayerCreateWithoutUserInput = {
   trendRank: number
   score: number
@@ -725,8 +823,6 @@ export type PlatformTrendingPlayerCreateWithoutUserInput = {
   allTimeMatches: number
   allTimeWins: number
   allTimeWinRate: number
-  highlightGroupId?: string | null
-  highlightGroupMemberId?: string | null
   windowDays: number
   windowStartedAt: Date | string
   windowEndedAt: Date | string
@@ -734,6 +830,8 @@ export type PlatformTrendingPlayerCreateWithoutUserInput = {
   computedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
+  highlightGroup?: Prisma.GroupCreateNestedOneWithoutPlatformTrendingHighlightsInput
+  highlightGroupMember?: Prisma.GroupMemberCreateNestedOneWithoutPlatformTrendingHighlightsInput
 }
 
 export type PlatformTrendingPlayerUncheckedCreateWithoutUserInput = {
@@ -781,8 +879,6 @@ export type PlatformTrendingPlayerUpdateWithoutUserInput = {
   allTimeMatches?: Prisma.IntFieldUpdateOperationsInput | number
   allTimeWins?: Prisma.IntFieldUpdateOperationsInput | number
   allTimeWinRate?: Prisma.FloatFieldUpdateOperationsInput | number
-  highlightGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  highlightGroupMemberId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   windowDays?: Prisma.IntFieldUpdateOperationsInput | number
   windowStartedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   windowEndedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -790,6 +886,8 @@ export type PlatformTrendingPlayerUpdateWithoutUserInput = {
   computedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  highlightGroup?: Prisma.GroupUpdateOneWithoutPlatformTrendingHighlightsNestedInput
+  highlightGroupMember?: Prisma.GroupMemberUpdateOneWithoutPlatformTrendingHighlightsNestedInput
 }
 
 export type PlatformTrendingPlayerUncheckedUpdateWithoutUserInput = {
@@ -803,6 +901,322 @@ export type PlatformTrendingPlayerUncheckedUpdateWithoutUserInput = {
   allTimeWinRate?: Prisma.FloatFieldUpdateOperationsInput | number
   highlightGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   highlightGroupMemberId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  windowDays?: Prisma.IntFieldUpdateOperationsInput | number
+  windowStartedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  windowEndedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  metadata?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  computedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type PlatformTrendingPlayerCreateWithoutHighlightGroupInput = {
+  trendRank: number
+  score: number
+  recentMatches: number
+  recentWins: number
+  recentWinRate: number
+  allTimeMatches: number
+  allTimeWins: number
+  allTimeWinRate: number
+  windowDays: number
+  windowStartedAt: Date | string
+  windowEndedAt: Date | string
+  metadata?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  computedAt?: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  user: Prisma.UserCreateNestedOneWithoutPlatformTrendingPlayerInput
+  highlightGroupMember?: Prisma.GroupMemberCreateNestedOneWithoutPlatformTrendingHighlightsInput
+}
+
+export type PlatformTrendingPlayerUncheckedCreateWithoutHighlightGroupInput = {
+  userId: string
+  trendRank: number
+  score: number
+  recentMatches: number
+  recentWins: number
+  recentWinRate: number
+  allTimeMatches: number
+  allTimeWins: number
+  allTimeWinRate: number
+  highlightGroupMemberId?: string | null
+  windowDays: number
+  windowStartedAt: Date | string
+  windowEndedAt: Date | string
+  metadata?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  computedAt?: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type PlatformTrendingPlayerCreateOrConnectWithoutHighlightGroupInput = {
+  where: Prisma.PlatformTrendingPlayerWhereUniqueInput
+  create: Prisma.XOR<Prisma.PlatformTrendingPlayerCreateWithoutHighlightGroupInput, Prisma.PlatformTrendingPlayerUncheckedCreateWithoutHighlightGroupInput>
+}
+
+export type PlatformTrendingPlayerCreateManyHighlightGroupInputEnvelope = {
+  data: Prisma.PlatformTrendingPlayerCreateManyHighlightGroupInput | Prisma.PlatformTrendingPlayerCreateManyHighlightGroupInput[]
+  skipDuplicates?: boolean
+}
+
+export type PlatformTrendingPlayerUpsertWithWhereUniqueWithoutHighlightGroupInput = {
+  where: Prisma.PlatformTrendingPlayerWhereUniqueInput
+  update: Prisma.XOR<Prisma.PlatformTrendingPlayerUpdateWithoutHighlightGroupInput, Prisma.PlatformTrendingPlayerUncheckedUpdateWithoutHighlightGroupInput>
+  create: Prisma.XOR<Prisma.PlatformTrendingPlayerCreateWithoutHighlightGroupInput, Prisma.PlatformTrendingPlayerUncheckedCreateWithoutHighlightGroupInput>
+}
+
+export type PlatformTrendingPlayerUpdateWithWhereUniqueWithoutHighlightGroupInput = {
+  where: Prisma.PlatformTrendingPlayerWhereUniqueInput
+  data: Prisma.XOR<Prisma.PlatformTrendingPlayerUpdateWithoutHighlightGroupInput, Prisma.PlatformTrendingPlayerUncheckedUpdateWithoutHighlightGroupInput>
+}
+
+export type PlatformTrendingPlayerUpdateManyWithWhereWithoutHighlightGroupInput = {
+  where: Prisma.PlatformTrendingPlayerScalarWhereInput
+  data: Prisma.XOR<Prisma.PlatformTrendingPlayerUpdateManyMutationInput, Prisma.PlatformTrendingPlayerUncheckedUpdateManyWithoutHighlightGroupInput>
+}
+
+export type PlatformTrendingPlayerScalarWhereInput = {
+  AND?: Prisma.PlatformTrendingPlayerScalarWhereInput | Prisma.PlatformTrendingPlayerScalarWhereInput[]
+  OR?: Prisma.PlatformTrendingPlayerScalarWhereInput[]
+  NOT?: Prisma.PlatformTrendingPlayerScalarWhereInput | Prisma.PlatformTrendingPlayerScalarWhereInput[]
+  userId?: Prisma.StringFilter<"PlatformTrendingPlayer"> | string
+  trendRank?: Prisma.IntFilter<"PlatformTrendingPlayer"> | number
+  score?: Prisma.FloatFilter<"PlatformTrendingPlayer"> | number
+  recentMatches?: Prisma.IntFilter<"PlatformTrendingPlayer"> | number
+  recentWins?: Prisma.IntFilter<"PlatformTrendingPlayer"> | number
+  recentWinRate?: Prisma.FloatFilter<"PlatformTrendingPlayer"> | number
+  allTimeMatches?: Prisma.IntFilter<"PlatformTrendingPlayer"> | number
+  allTimeWins?: Prisma.IntFilter<"PlatformTrendingPlayer"> | number
+  allTimeWinRate?: Prisma.FloatFilter<"PlatformTrendingPlayer"> | number
+  highlightGroupId?: Prisma.StringNullableFilter<"PlatformTrendingPlayer"> | string | null
+  highlightGroupMemberId?: Prisma.StringNullableFilter<"PlatformTrendingPlayer"> | string | null
+  windowDays?: Prisma.IntFilter<"PlatformTrendingPlayer"> | number
+  windowStartedAt?: Prisma.DateTimeFilter<"PlatformTrendingPlayer"> | Date | string
+  windowEndedAt?: Prisma.DateTimeFilter<"PlatformTrendingPlayer"> | Date | string
+  metadata?: Prisma.JsonFilter<"PlatformTrendingPlayer">
+  computedAt?: Prisma.DateTimeFilter<"PlatformTrendingPlayer"> | Date | string
+  createdAt?: Prisma.DateTimeFilter<"PlatformTrendingPlayer"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"PlatformTrendingPlayer"> | Date | string
+}
+
+export type PlatformTrendingPlayerCreateWithoutHighlightGroupMemberInput = {
+  trendRank: number
+  score: number
+  recentMatches: number
+  recentWins: number
+  recentWinRate: number
+  allTimeMatches: number
+  allTimeWins: number
+  allTimeWinRate: number
+  windowDays: number
+  windowStartedAt: Date | string
+  windowEndedAt: Date | string
+  metadata?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  computedAt?: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  user: Prisma.UserCreateNestedOneWithoutPlatformTrendingPlayerInput
+  highlightGroup?: Prisma.GroupCreateNestedOneWithoutPlatformTrendingHighlightsInput
+}
+
+export type PlatformTrendingPlayerUncheckedCreateWithoutHighlightGroupMemberInput = {
+  userId: string
+  trendRank: number
+  score: number
+  recentMatches: number
+  recentWins: number
+  recentWinRate: number
+  allTimeMatches: number
+  allTimeWins: number
+  allTimeWinRate: number
+  highlightGroupId?: string | null
+  windowDays: number
+  windowStartedAt: Date | string
+  windowEndedAt: Date | string
+  metadata?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  computedAt?: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type PlatformTrendingPlayerCreateOrConnectWithoutHighlightGroupMemberInput = {
+  where: Prisma.PlatformTrendingPlayerWhereUniqueInput
+  create: Prisma.XOR<Prisma.PlatformTrendingPlayerCreateWithoutHighlightGroupMemberInput, Prisma.PlatformTrendingPlayerUncheckedCreateWithoutHighlightGroupMemberInput>
+}
+
+export type PlatformTrendingPlayerCreateManyHighlightGroupMemberInputEnvelope = {
+  data: Prisma.PlatformTrendingPlayerCreateManyHighlightGroupMemberInput | Prisma.PlatformTrendingPlayerCreateManyHighlightGroupMemberInput[]
+  skipDuplicates?: boolean
+}
+
+export type PlatformTrendingPlayerUpsertWithWhereUniqueWithoutHighlightGroupMemberInput = {
+  where: Prisma.PlatformTrendingPlayerWhereUniqueInput
+  update: Prisma.XOR<Prisma.PlatformTrendingPlayerUpdateWithoutHighlightGroupMemberInput, Prisma.PlatformTrendingPlayerUncheckedUpdateWithoutHighlightGroupMemberInput>
+  create: Prisma.XOR<Prisma.PlatformTrendingPlayerCreateWithoutHighlightGroupMemberInput, Prisma.PlatformTrendingPlayerUncheckedCreateWithoutHighlightGroupMemberInput>
+}
+
+export type PlatformTrendingPlayerUpdateWithWhereUniqueWithoutHighlightGroupMemberInput = {
+  where: Prisma.PlatformTrendingPlayerWhereUniqueInput
+  data: Prisma.XOR<Prisma.PlatformTrendingPlayerUpdateWithoutHighlightGroupMemberInput, Prisma.PlatformTrendingPlayerUncheckedUpdateWithoutHighlightGroupMemberInput>
+}
+
+export type PlatformTrendingPlayerUpdateManyWithWhereWithoutHighlightGroupMemberInput = {
+  where: Prisma.PlatformTrendingPlayerScalarWhereInput
+  data: Prisma.XOR<Prisma.PlatformTrendingPlayerUpdateManyMutationInput, Prisma.PlatformTrendingPlayerUncheckedUpdateManyWithoutHighlightGroupMemberInput>
+}
+
+export type PlatformTrendingPlayerCreateManyHighlightGroupInput = {
+  userId: string
+  trendRank: number
+  score: number
+  recentMatches: number
+  recentWins: number
+  recentWinRate: number
+  allTimeMatches: number
+  allTimeWins: number
+  allTimeWinRate: number
+  highlightGroupMemberId?: string | null
+  windowDays: number
+  windowStartedAt: Date | string
+  windowEndedAt: Date | string
+  metadata?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  computedAt?: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type PlatformTrendingPlayerUpdateWithoutHighlightGroupInput = {
+  trendRank?: Prisma.IntFieldUpdateOperationsInput | number
+  score?: Prisma.FloatFieldUpdateOperationsInput | number
+  recentMatches?: Prisma.IntFieldUpdateOperationsInput | number
+  recentWins?: Prisma.IntFieldUpdateOperationsInput | number
+  recentWinRate?: Prisma.FloatFieldUpdateOperationsInput | number
+  allTimeMatches?: Prisma.IntFieldUpdateOperationsInput | number
+  allTimeWins?: Prisma.IntFieldUpdateOperationsInput | number
+  allTimeWinRate?: Prisma.FloatFieldUpdateOperationsInput | number
+  windowDays?: Prisma.IntFieldUpdateOperationsInput | number
+  windowStartedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  windowEndedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  metadata?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  computedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  user?: Prisma.UserUpdateOneRequiredWithoutPlatformTrendingPlayerNestedInput
+  highlightGroupMember?: Prisma.GroupMemberUpdateOneWithoutPlatformTrendingHighlightsNestedInput
+}
+
+export type PlatformTrendingPlayerUncheckedUpdateWithoutHighlightGroupInput = {
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  trendRank?: Prisma.IntFieldUpdateOperationsInput | number
+  score?: Prisma.FloatFieldUpdateOperationsInput | number
+  recentMatches?: Prisma.IntFieldUpdateOperationsInput | number
+  recentWins?: Prisma.IntFieldUpdateOperationsInput | number
+  recentWinRate?: Prisma.FloatFieldUpdateOperationsInput | number
+  allTimeMatches?: Prisma.IntFieldUpdateOperationsInput | number
+  allTimeWins?: Prisma.IntFieldUpdateOperationsInput | number
+  allTimeWinRate?: Prisma.FloatFieldUpdateOperationsInput | number
+  highlightGroupMemberId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  windowDays?: Prisma.IntFieldUpdateOperationsInput | number
+  windowStartedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  windowEndedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  metadata?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  computedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type PlatformTrendingPlayerUncheckedUpdateManyWithoutHighlightGroupInput = {
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  trendRank?: Prisma.IntFieldUpdateOperationsInput | number
+  score?: Prisma.FloatFieldUpdateOperationsInput | number
+  recentMatches?: Prisma.IntFieldUpdateOperationsInput | number
+  recentWins?: Prisma.IntFieldUpdateOperationsInput | number
+  recentWinRate?: Prisma.FloatFieldUpdateOperationsInput | number
+  allTimeMatches?: Prisma.IntFieldUpdateOperationsInput | number
+  allTimeWins?: Prisma.IntFieldUpdateOperationsInput | number
+  allTimeWinRate?: Prisma.FloatFieldUpdateOperationsInput | number
+  highlightGroupMemberId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  windowDays?: Prisma.IntFieldUpdateOperationsInput | number
+  windowStartedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  windowEndedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  metadata?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  computedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type PlatformTrendingPlayerCreateManyHighlightGroupMemberInput = {
+  userId: string
+  trendRank: number
+  score: number
+  recentMatches: number
+  recentWins: number
+  recentWinRate: number
+  allTimeMatches: number
+  allTimeWins: number
+  allTimeWinRate: number
+  highlightGroupId?: string | null
+  windowDays: number
+  windowStartedAt: Date | string
+  windowEndedAt: Date | string
+  metadata?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  computedAt?: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type PlatformTrendingPlayerUpdateWithoutHighlightGroupMemberInput = {
+  trendRank?: Prisma.IntFieldUpdateOperationsInput | number
+  score?: Prisma.FloatFieldUpdateOperationsInput | number
+  recentMatches?: Prisma.IntFieldUpdateOperationsInput | number
+  recentWins?: Prisma.IntFieldUpdateOperationsInput | number
+  recentWinRate?: Prisma.FloatFieldUpdateOperationsInput | number
+  allTimeMatches?: Prisma.IntFieldUpdateOperationsInput | number
+  allTimeWins?: Prisma.IntFieldUpdateOperationsInput | number
+  allTimeWinRate?: Prisma.FloatFieldUpdateOperationsInput | number
+  windowDays?: Prisma.IntFieldUpdateOperationsInput | number
+  windowStartedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  windowEndedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  metadata?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  computedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  user?: Prisma.UserUpdateOneRequiredWithoutPlatformTrendingPlayerNestedInput
+  highlightGroup?: Prisma.GroupUpdateOneWithoutPlatformTrendingHighlightsNestedInput
+}
+
+export type PlatformTrendingPlayerUncheckedUpdateWithoutHighlightGroupMemberInput = {
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  trendRank?: Prisma.IntFieldUpdateOperationsInput | number
+  score?: Prisma.FloatFieldUpdateOperationsInput | number
+  recentMatches?: Prisma.IntFieldUpdateOperationsInput | number
+  recentWins?: Prisma.IntFieldUpdateOperationsInput | number
+  recentWinRate?: Prisma.FloatFieldUpdateOperationsInput | number
+  allTimeMatches?: Prisma.IntFieldUpdateOperationsInput | number
+  allTimeWins?: Prisma.IntFieldUpdateOperationsInput | number
+  allTimeWinRate?: Prisma.FloatFieldUpdateOperationsInput | number
+  highlightGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  windowDays?: Prisma.IntFieldUpdateOperationsInput | number
+  windowStartedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  windowEndedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  metadata?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  computedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type PlatformTrendingPlayerUncheckedUpdateManyWithoutHighlightGroupMemberInput = {
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  trendRank?: Prisma.IntFieldUpdateOperationsInput | number
+  score?: Prisma.FloatFieldUpdateOperationsInput | number
+  recentMatches?: Prisma.IntFieldUpdateOperationsInput | number
+  recentWins?: Prisma.IntFieldUpdateOperationsInput | number
+  recentWinRate?: Prisma.FloatFieldUpdateOperationsInput | number
+  allTimeMatches?: Prisma.IntFieldUpdateOperationsInput | number
+  allTimeWins?: Prisma.IntFieldUpdateOperationsInput | number
+  allTimeWinRate?: Prisma.FloatFieldUpdateOperationsInput | number
+  highlightGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   windowDays?: Prisma.IntFieldUpdateOperationsInput | number
   windowStartedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   windowEndedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -834,6 +1248,8 @@ export type PlatformTrendingPlayerSelect<ExtArgs extends runtime.Types.Extension
   createdAt?: boolean
   updatedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  highlightGroup?: boolean | Prisma.PlatformTrendingPlayer$highlightGroupArgs<ExtArgs>
+  highlightGroupMember?: boolean | Prisma.PlatformTrendingPlayer$highlightGroupMemberArgs<ExtArgs>
 }, ExtArgs["result"]["platformTrendingPlayer"]>
 
 export type PlatformTrendingPlayerSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -856,6 +1272,8 @@ export type PlatformTrendingPlayerSelectCreateManyAndReturn<ExtArgs extends runt
   createdAt?: boolean
   updatedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  highlightGroup?: boolean | Prisma.PlatformTrendingPlayer$highlightGroupArgs<ExtArgs>
+  highlightGroupMember?: boolean | Prisma.PlatformTrendingPlayer$highlightGroupMemberArgs<ExtArgs>
 }, ExtArgs["result"]["platformTrendingPlayer"]>
 
 export type PlatformTrendingPlayerSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -878,6 +1296,8 @@ export type PlatformTrendingPlayerSelectUpdateManyAndReturn<ExtArgs extends runt
   createdAt?: boolean
   updatedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  highlightGroup?: boolean | Prisma.PlatformTrendingPlayer$highlightGroupArgs<ExtArgs>
+  highlightGroupMember?: boolean | Prisma.PlatformTrendingPlayer$highlightGroupMemberArgs<ExtArgs>
 }, ExtArgs["result"]["platformTrendingPlayer"]>
 
 export type PlatformTrendingPlayerSelectScalar = {
@@ -904,18 +1324,26 @@ export type PlatformTrendingPlayerSelectScalar = {
 export type PlatformTrendingPlayerOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"userId" | "trendRank" | "score" | "recentMatches" | "recentWins" | "recentWinRate" | "allTimeMatches" | "allTimeWins" | "allTimeWinRate" | "highlightGroupId" | "highlightGroupMemberId" | "windowDays" | "windowStartedAt" | "windowEndedAt" | "metadata" | "computedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["platformTrendingPlayer"]>
 export type PlatformTrendingPlayerInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  highlightGroup?: boolean | Prisma.PlatformTrendingPlayer$highlightGroupArgs<ExtArgs>
+  highlightGroupMember?: boolean | Prisma.PlatformTrendingPlayer$highlightGroupMemberArgs<ExtArgs>
 }
 export type PlatformTrendingPlayerIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  highlightGroup?: boolean | Prisma.PlatformTrendingPlayer$highlightGroupArgs<ExtArgs>
+  highlightGroupMember?: boolean | Prisma.PlatformTrendingPlayer$highlightGroupMemberArgs<ExtArgs>
 }
 export type PlatformTrendingPlayerIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  highlightGroup?: boolean | Prisma.PlatformTrendingPlayer$highlightGroupArgs<ExtArgs>
+  highlightGroupMember?: boolean | Prisma.PlatformTrendingPlayer$highlightGroupMemberArgs<ExtArgs>
 }
 
 export type $PlatformTrendingPlayerPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "PlatformTrendingPlayer"
   objects: {
     user: Prisma.$UserPayload<ExtArgs>
+    highlightGroup: Prisma.$GroupPayload<ExtArgs> | null
+    highlightGroupMember: Prisma.$GroupMemberPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     userId: string
@@ -1331,6 +1759,8 @@ readonly fields: PlatformTrendingPlayerFieldRefs;
 export interface Prisma__PlatformTrendingPlayerClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  highlightGroup<T extends Prisma.PlatformTrendingPlayer$highlightGroupArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PlatformTrendingPlayer$highlightGroupArgs<ExtArgs>>): Prisma.Prisma__GroupClient<runtime.Types.Result.GetResult<Prisma.$GroupPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  highlightGroupMember<T extends Prisma.PlatformTrendingPlayer$highlightGroupMemberArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PlatformTrendingPlayer$highlightGroupMemberArgs<ExtArgs>>): Prisma.Prisma__GroupMemberClient<runtime.Types.Result.GetResult<Prisma.$GroupMemberPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1776,6 +2206,44 @@ export type PlatformTrendingPlayerDeleteManyArgs<ExtArgs extends runtime.Types.E
    * Limit how many PlatformTrendingPlayers to delete.
    */
   limit?: number
+}
+
+/**
+ * PlatformTrendingPlayer.highlightGroup
+ */
+export type PlatformTrendingPlayer$highlightGroupArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Group
+   */
+  select?: Prisma.GroupSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Group
+   */
+  omit?: Prisma.GroupOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.GroupInclude<ExtArgs> | null
+  where?: Prisma.GroupWhereInput
+}
+
+/**
+ * PlatformTrendingPlayer.highlightGroupMember
+ */
+export type PlatformTrendingPlayer$highlightGroupMemberArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the GroupMember
+   */
+  select?: Prisma.GroupMemberSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the GroupMember
+   */
+  omit?: Prisma.GroupMemberOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.GroupMemberInclude<ExtArgs> | null
+  where?: Prisma.GroupMemberWhereInput
 }
 
 /**

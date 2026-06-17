@@ -123,6 +123,8 @@ model Group {
   matchRankingSnapshots   MatchRankingSnapshot[]
   homeSummary             GroupHomeSummary?
   memberStats             GroupMemberStats[]
+  platformTrendingHighlights PlatformTrendingPlayer[] @relation("PlatformTrendingPlayerHighlightGroup")
+
 
   @@index([visibility, createdAt])
   @@index([name])
@@ -182,6 +184,7 @@ model GroupMember {
   actorFeedItems        FeedItem[]          @relation("FeedItemActorGroupMember")
   rankingMovements      RankingMovement[]
   stats                 GroupMemberStats?
+  platformTrendingHighlights PlatformTrendingPlayer[] @relation("PlatformTrendingPlayerHighlightGroupMember")
 
   @@unique([groupId, userId])
   @@unique([id, groupId])
@@ -457,8 +460,11 @@ model PlatformTrendingPlayer {
   allTimeWins    Int
   allTimeWinRate Float
 
-  highlightGroupId       String?
+  highlightGroupId String?
+  highlightGroup   Group?  @relation("PlatformTrendingPlayerHighlightGroup", fields: [highlightGroupId], references: [id], onDelete: SetNull)
+
   highlightGroupMemberId String?
+  highlightGroupMember   GroupMember? @relation("PlatformTrendingPlayerHighlightGroupMember", fields: [highlightGroupMemberId], references: [id], onDelete: SetNull)
 
   windowDays      Int
   windowStartedAt DateTime
@@ -473,6 +479,8 @@ model PlatformTrendingPlayer {
   @@index([score])
   @@index([recentMatches])
   @@index([computedAt])
+  @@index([highlightGroupId])
+  @@index([highlightGroupMemberId])
 }
 
 model FeedItem {
