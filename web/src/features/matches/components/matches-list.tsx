@@ -95,8 +95,6 @@ export function MatchCard({
   const teamB = getTeamPlayers(match, 'TEAM_B');
 
   const teamAWon = match.gamesA > match.gamesB;
-  const winningTeam = teamAWon ? teamA : teamB;
-  const winningDelta = getAverageDelta(winningTeam);
   const narrativeTitle = getMatchNarrativeTitle(match);
 
   const showActions = Boolean(groupId && canManage);
@@ -171,15 +169,6 @@ export function MatchCard({
             )}
           </div>
 
-          <div className="flex justify-end">
-            <div className="rounded-[1.5rem] bg-muted px-3 py-2 text-right">
-              <p className="text-2xl font-semibold leading-none tracking-[-0.04em] text-foreground">
-                {match.gamesA}–{match.gamesB}
-              </p>
-              <p className="mt-1 text-xs text-muted-foreground">{formatDelta(winningDelta)}</p>
-            </div>
-          </div>
-
           <div className="space-y-2">
             <MatchTeam players={teamA} score={match.gamesA} isWinner={teamAWon} />
             <MatchTeam players={teamB} score={match.gamesB} isWinner={!teamAWon} />
@@ -233,6 +222,12 @@ function MatchTeam({
         isWinner ? 'bg-muted text-foreground' : 'bg-background/65 text-muted-foreground'
       }`}
     >
+      <p
+        className={`min-w-0 flex-1 truncate text-sm ${isWinner ? 'font-medium text-foreground' : 'text-muted-foreground'}`}
+      >
+        <MatchPlayerNames players={players} />
+      </p>
+
       <div
         className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-medium ${
           isWinner ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'
@@ -240,12 +235,6 @@ function MatchTeam({
       >
         {score}
       </div>
-
-      <p
-        className={`truncate text-sm ${isWinner ? 'font-medium text-foreground' : 'text-muted-foreground'}`}
-      >
-        <MatchPlayerNames players={players} />
-      </p>
     </div>
   );
 }
@@ -273,20 +262,6 @@ function getTeamPlayers(match: Match, team: 'TEAM_A' | 'TEAM_B') {
   return match.players
     .filter((player) => player.team === team)
     .sort((a, b) => a.position - b.position);
-}
-
-function getAverageDelta(players: MatchPlayer[]) {
-  if (players.length === 0) {
-    return 0;
-  }
-
-  const total = players.reduce((sum, player) => sum + player.ratingDelta, 0);
-
-  return total / players.length;
-}
-
-function formatDelta(delta: number) {
-  return `${delta >= 0 ? '+' : ''}${delta.toFixed(1)}`;
 }
 
 function groupMatchesByDate(matches: Match[]) {
