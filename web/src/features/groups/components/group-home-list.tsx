@@ -8,6 +8,7 @@ import {
   ChevronRight,
   Loader2,
   Plus,
+  Users,
   UsersRound,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -97,7 +98,11 @@ export function GroupHomeList() {
   const featuredItem = memberItems[0]!;
   const compactItems = memberItems.slice(1);
   return (
-    <section className="space-y-5">
+    <section className="space-y-3">
+      <div className="flex items-center gap-3 px-1">
+        <Users className="h-4 w-4" aria-hidden="true" />
+        <h2 className="text-base font-semibold tracking-[-0.035em] text-foreground">Meus Grupos</h2>
+      </div>
       {memberItems.length > 1 && <HomeTopline items={memberItems} />}
       <FeaturedGroupCard item={featuredItem} />
       {compactItems.length > 0 && (
