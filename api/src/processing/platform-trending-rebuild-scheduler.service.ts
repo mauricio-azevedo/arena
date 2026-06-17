@@ -95,7 +95,7 @@ export class PlatformTrendingRebuildSchedulerService
         });
 
       this.logger.log(
-        structuredLog('platform_trending_rebuild_scheduler.enqueued', {
+        structuredLog('platform_trending_rebuild_scheduler.job_ensured', {
           jobId: job.id,
           jobStatus: job.status,
           minEnqueueIntervalMs,
