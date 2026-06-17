@@ -3,9 +3,16 @@ import type { Prisma } from '../generated/prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { structuredLog } from '../observability/structured-log';
 
-const DEFAULT_WINDOW_DAYS = 30;
+const DEFAULT_WINDOW_DAYS = 7;
 const TRENDING_PLAYERS_LIMIT = 3;
 const MIN_RECENT_MATCHES = 2;
+const RECENT_MATCH_SCORE_WEIGHT = 3;
+const RECENT_WIN_SCORE_WEIGHT = 5;
+const RECENT_WIN_RATE_SCORE_WEIGHT = 10;
+const ALL_TIME_MATCH_SCORE_CAP = 20;
+const ALL_TIME_MATCH_SCORE_WEIGHT = 0.25;
+const PLATFORM_TRENDING_PLAYERS_ALGORITHM_VERSION =
+  'PLATFORM_TRENDING_PLAYERS_V1';
 
 type SyncPlatformTrendingPlayersOptions = {
   windowDays?: number;
@@ -96,7 +103,13 @@ export class PlatformTrendingPlayersProjectionService {
           ${input.minRecentMatches}::int AS "minRecentMatches",
           ${input.windowStartedAt}::timestamp AS "windowStartedAt",
           ${input.windowEndedAt}::timestamp AS "windowEndedAt",
-          ${input.deletedCount}::int AS "deletedCount"
+          ${input.deletedCount}::int AS "deletedCount",
+          ${RECENT_MATCH_SCORE_WEIGHT}::double precision AS "recentMatchScoreWeight",
+          ${RECENT_WIN_SCORE_WEIGHT}::double precision AS "recentWinScoreWeight",
+          ${RECENT_WIN_RATE_SCORE_WEIGHT}::double precision AS "recentWinRateScoreWeight",
+          ${ALL_TIME_MATCH_SCORE_CAP}::int AS "allTimeMatchScoreCap",
+          ${ALL_TIME_MATCH_SCORE_WEIGHT}::double precision AS "allTimeMatchScoreWeight",
+          ${PLATFORM_TRENDING_PLAYERS_ALGORITHM_VERSION}::text AS "algorithmVersion"
       ),
            player_match_stats AS (
              SELECT
@@ -144,14 +157,15 @@ export class PlatformTrendingPlayersProjectionService {
               / pms."allTimeMatches"::double precision
       END AS "allTimeWinRate",
           (
-            pms."recentMatches" * 3
-            + pms."recentWins" * 5
+            pms."recentMatches" * p."recentMatchScoreWeight"
+            + pms."recentWins" * p."recentWinScoreWeight"
             + CASE
                 WHEN pms."recentMatches" = 0 THEN 0
                 ELSE pms."recentWins"::double precision
                   / pms."recentMatches"::double precision
-              END * 10
-            + LEAST(pms."allTimeMatches", 20) * 0.25
+              END * p."recentWinRateScoreWeight"
+            + LEAST(pms."allTimeMatches", p."allTimeMatchScoreCap")
+              * p."allTimeMatchScoreWeight"
           )::double precision AS "score"
         FROM player_match_stats pms
         CROSS JOIN params p
@@ -269,7 +283,7 @@ export class PlatformTrendingPlayersProjectionService {
           JSONB_BUILD_OBJECT(
             'minRecentMatches', (SELECT "minRecentMatches" FROM params),
             'limit', (SELECT "limit" FROM params),
-            'algorithmVersion', 'PLATFORM_TRENDING_PLAYERS_V1'
+            'algorithmVersion', (SELECT "algorithmVersion" FROM params)
           ),
           NOW(),
           NOW(),
