@@ -2,7 +2,7 @@
 
 `PlatformTrendingPlayer` is a platform-level read model for the future "Jogadores em alta" surface.
 
-This table is not a source of truth. It is derived from match history, group membership, and ranking state.
+This table is not a source of truth. It stores the expensive ranking and aggregate metrics needed by the platform trending surface.
 
 ## Source of truth
 
@@ -18,17 +18,20 @@ The source of truth remains:
 
 The read model keeps the future read path cheap. The UI should not compute platform-level trend rankings at request time.
 
-Each row represents one user currently eligible for the platform trending list.
+Each projection run stores exactly the top 3 eligible platform-trending users for the selected window.
 
-Stored fields include:
+The read model should materialize expensive derived values:
 
 - trend rank;
-- display name;
 - trend score;
 - recent match and win counts;
+- recent win rate;
 - all-time match and win counts;
-- a highlighted group context;
+- all-time win rate;
+- highlighted group and group-member identifiers;
 - projection window metadata.
+
+It should not materialize cheap display data such as user display names or group names. The future read API should resolve those by joining from the stored identifiers.
 
 ## Current checkpoint
 
@@ -40,7 +43,8 @@ It rebuilds `PlatformTrendingPlayer` from source-of-truth tables in one determin
 
 - delete the previous read model rows;
 - compute eligible players from match history;
-- insert the newly ranked rows;
+- choose up to 3 ranked players;
+- store metrics and identifiers needed by the read path;
 - log projection metrics.
 
 The processing job type is `PLATFORM_TRENDING_PLAYERS_REBUILD`.
@@ -69,14 +73,29 @@ Running it repeatedly against the same source data should produce the same rows 
 
 The first scoring version is `PLATFORM_TRENDING_PLAYERS_V1`.
 
-The initial defaults are:
+The current defaults are:
 
 - 30-day trend window;
-- 20 ranked players;
+- exactly 3 ranked players when at least 3 players are eligible;
 - minimum 2 recent matches.
 
-## Future projection rules
+The highlighted group for a player is the active group where that player has the best current rank among groups in which they played at least one match inside the selected window.
+
+Tie-breaking for highlighted group selection is deterministic:
+
+1. best `currentRank`;
+2. most recent-window matches in that group;
+3. most recent-window wins in that group;
+4. `groupId` ascending.
+
+## Future read API
 
 The future read API should read from `PlatformTrendingPlayer`, not recompute trending players at request time.
 
-The next checkpoint should add an explicit admin/dev trigger for `PLATFORM_TRENDING_PLAYERS_REBUILD` before adding UI or public API behavior.
+It should resolve cheap display fields by joining from stored identifiers:
+
+- `userId` -> `User.firstName` / `User.lastName`;
+- `highlightGroupId` -> `Group.name`;
+- `highlightGroupMemberId` -> `GroupMember.currentRank` and other current group-member display data if needed.
+
+The next checkpoint should add event-driven enqueueing for `PLATFORM_TRENDING_PLAYERS_REBUILD` after the relevant match-processing writes are committed.
