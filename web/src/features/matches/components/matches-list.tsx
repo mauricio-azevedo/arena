@@ -291,9 +291,26 @@ function MatchExpectedResult({ match, teamAWon }: { match: Match; teamAWon: bool
           Resultado esperado
         </p>
 
-        <p className="text-sm font-semibold tabular-nums text-foreground">
-          {expectedWinnerGames} <span className="text-muted-foreground">–</span>{' '}
-          {expectedLoserGames}
+        <p className="text-sm font-semibold tabular-nums">
+          <span
+            className={
+              expectedWinnerGames >= expectedLoserGames
+                ? 'text-foreground'
+                : 'text-muted-foreground'
+            }
+          >
+            {expectedWinnerGames}
+          </span>{' '}
+          <span className="text-muted-foreground">–</span>{' '}
+          <span
+            className={
+              expectedLoserGames > expectedWinnerGames
+                ? 'text-foreground'
+                : 'text-muted-foreground'
+            }
+          >
+            {expectedLoserGames}
+          </span>
         </p>
       </div>
 
