@@ -9,7 +9,7 @@ import { MatchesList } from '@/features/matches/components/matches-list';
 import { UserNameLink } from '@/features/users/components/user-name-link';
 import { cn } from '@/lib/utils';
 
-export type GroupTab = 'ranking' | 'matches' | 'members';
+export type GroupTab = 'ranking' | 'matches';
 
 type Props = {
   groupId: string;
@@ -36,9 +36,8 @@ export function GroupDetailTabs({
     () => [
       { value: 'ranking' as const, label: 'Ranking', count: ranking.length },
       { value: 'matches' as const, label: 'Partidas', count: matches.length },
-      { value: 'members' as const, label: 'Membros', count: members.length },
     ],
-    [matches.length, members.length, ranking.length],
+    [matches.length, ranking.length],
   );
 
   useEffect(() => {
@@ -53,7 +52,7 @@ export function GroupDetailTabs({
 
   return (
     <div className="space-y-5">
-      <div className="br-liquid-glass br-hairline grid grid-cols-3 rounded-[1.85rem] p-1.5 text-sm font-semibold">
+      <div className="flex gap-2 rounded-full text-sm font-semibold">
         {tabs.map((tab) => {
           const isSelected = selectedTab === tab.value;
 
@@ -63,22 +62,20 @@ export function GroupDetailTabs({
               type="button"
               onClick={() => setTab(tab.value)}
               aria-pressed={isSelected}
-              className={`br-pressable flex min-h-12 flex-col items-center justify-center rounded-[1.45rem] px-2 transition-all sm:px-3 ${
+              className={`br-pressable flex min-h-12 items-center justify-center gap-1.5 rounded-full px-5 transition-all sm:px-3 ${
                 isSelected
-                  ? 'bg-foreground text-background shadow-[0_12px_28px_color-mix(in_oklch,var(--foreground)_18%,transparent)]'
-                  : 'text-muted-foreground hover:bg-white/45 hover:text-foreground dark:hover:bg-white/10'
+                  ? 'bg-accent text-accent-foreground'
+                  : 'bg-card text-muted-foreground hover:bg-white/45 hover:text-foreground dark:hover:bg-white/10'
               }`}
             >
               <span>{tab.label}</span>
-              <span
-                className={
-                  isSelected
-                    ? 'text-[11px] text-background/70'
-                    : 'text-[11px] text-muted-foreground/75'
-                }
-              >
-                {tab.count}
-              </span>
+              {tab.value === 'matches' && (
+                <span
+                  className={isSelected ? 'text-accent-foreground/70' : 'text-muted-foreground/75'}
+                >
+                  {tab.count}
+                </span>
+              )}
             </button>
           );
         })}
@@ -93,12 +90,6 @@ export function GroupDetailTabs({
       {selectedTab === 'matches' && (
         <TabPanel>
           <MatchesTab matches={matches} groupId={groupId} canManage={canManageMatches} />
-        </TabPanel>
-      )}
-
-      {selectedTab === 'members' && (
-        <TabPanel>
-          <MembersTab members={members} currentMembershipId={currentMembershipId} />
         </TabPanel>
       )}
     </div>
@@ -420,7 +411,8 @@ function MembersTab({
 
 function getRankingDetail(member: GroupMember) {
   const stats = member.stats ?? { matchesCount: 0, winsCount: 0 };
-  const winRate = stats.matchesCount > 0 ? Math.round((stats.winsCount / stats.matchesCount) * 100) : 0;
+  const winRate =
+    stats.matchesCount > 0 ? Math.round((stats.winsCount / stats.matchesCount) * 100) : 0;
   const detail = `${formatMatchesCount(stats.matchesCount)} · ${winRate}% vitórias`;
 
   return member.role === 'ADMIN' ? `${detail} · Admin` : detail;

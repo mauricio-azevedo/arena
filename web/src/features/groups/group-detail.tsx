@@ -1,8 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { GroupDetailTabs } from '@/features/groups/components/group-detail-tabs';
 import { GroupActions } from '@/features/groups/components/group-actions';
+import { GroupDetailTabs } from '@/features/groups/components/group-detail-tabs';
 import { GroupSummaryCard } from '@/features/groups/components/group-summary-card';
 import {
   getGroup,
@@ -16,7 +16,7 @@ import type { Group, GroupMember, Match, MyGroup } from '@/types/api';
 import { GroupDetailLoadingState } from '@/features/groups/components/group-detail-loading-state';
 import { Card, CardContent } from '@/components/ui/card';
 
-const groupTabs = ['ranking', 'matches', 'members'] as const;
+const groupTabs = ['ranking', 'matches'] as const;
 type GroupTab = (typeof groupTabs)[number];
 
 type Props = {
@@ -91,13 +91,12 @@ export function GroupDetail({ groupId, tab }: Props) {
     return <GroupDetailErrorState />;
   }
 
-  const isAdmin = data.membership?.role === 'ADMIN';
   const canManageMatches = Boolean(data.membership);
   const currentMembershipId = data.membership?.id ?? null;
 
   return (
-    <div className="space-y-6">
-      <div className="space-y-4">
+    <div className="space-y-8">
+      <div className="space-y-3">
         <GroupSummaryCard
           group={data.group}
           ranking={data.ranking}
@@ -106,7 +105,7 @@ export function GroupDetail({ groupId, tab }: Props) {
           membership={data.membership}
         />
 
-        <GroupActions groupId={data.group.id} isAdmin={isAdmin} canManageMatches={canManageMatches} />
+        <GroupActions groupId={data.group.id} canManageMatches={canManageMatches} />
       </div>
 
       <GroupDetailTabs
