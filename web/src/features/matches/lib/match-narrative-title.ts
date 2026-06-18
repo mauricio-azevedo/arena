@@ -20,8 +20,8 @@ const NARRATIVE_TITLES: Record<MatchExpectation, Record<MatchResult, [string, st
   },
   FAVORITE_WIN: {
     FAVORITE_BIG_WIN: [
-      'Venceu com sobra',
       'Ganhou mais fácil que o esperado',
+      'Venceu com sobra',
       'Transformou vantagem em atropelo',
     ],
     FAVORITE_WIN: ['Confirmou o favoritismo', 'Fez o esperado', 'Resultado dentro do esperado'],

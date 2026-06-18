@@ -183,6 +183,8 @@ export function MatchCard({
             )}
           </div>
 
+          <MatchExpectedResult match={match} teamAWon={teamAWon} />
+
           <MatchRankingSection players={teamAWon ? [...teamA, ...teamB] : [...teamB, ...teamA]} />
         </CardContent>
       </Card>
@@ -248,6 +250,78 @@ function MatchTeam({
       </div>
     </div>
   );
+}
+
+function MatchExpectedResult({ match, teamAWon }: { match: Match; teamAWon: boolean }) {
+  const { teamAExpected, teamBExpected } = match;
+
+  if (teamAExpected === null || teamBExpected === null) {
+    return null;
+  }
+
+  const winnerExpected = teamAWon ? teamAExpected : teamBExpected;
+
+  // A barra representa a chance de vitória (probabilidade de Elo), não fração de games.
+  const winnerPercent = Math.round(winnerExpected * 100);
+  const loserPercent = 100 - winnerPercent;
+
+  // O placar esperado é um resultado válido (vencedor chega a 6, ou 7 no tiebreak).
+  // A margem do favorito cresce com o favoritismo; o vencedor real pode ter sido o azarão.
+  const winnerWasFavorite = winnerExpected >= 0.5;
+  const favoriteProbability = Math.max(winnerExpected, 1 - winnerExpected);
+  const { favoriteGames, underdogGames } = getExpectedScoreline(favoriteProbability);
+
+  const expectedWinnerGames = winnerWasFavorite ? favoriteGames : underdogGames;
+  const expectedLoserGames = winnerWasFavorite ? underdogGames : favoriteGames;
+
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center justify-between gap-3">
+        <p className="text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">
+          Resultado esperado
+        </p>
+
+        <p className="text-sm font-semibold tabular-nums text-foreground">
+          {expectedWinnerGames} <span className="text-muted-foreground">–</span> {expectedLoserGames}
+        </p>
+      </div>
+
+      <div className="flex h-2 overflow-hidden rounded-full bg-muted">
+        <div className="rounded-full bg-emerald-500" style={{ width: `${winnerPercent}%` }} />
+      </div>
+
+      <div className="flex items-center justify-between text-xs tabular-nums">
+        <span className="text-foreground">{winnerPercent}%</span>
+        <span className="text-muted-foreground">{loserPercent}%</span>
+      </div>
+    </div>
+  );
+}
+
+// Placares de vitória válidos do favorito. Jogo até 6 games (7 no tiebreak):
+// 6-0, 6-1, 6-2, 6-3, 6-4, 6-5 e 7-6.
+const VALID_SCORELINES = [
+  { favoriteGames: 7, underdogGames: 6 }, // fração 0,538
+  { favoriteGames: 6, underdogGames: 5 }, // fração 0,545
+  { favoriteGames: 6, underdogGames: 4 }, // fração 0,600
+  { favoriteGames: 6, underdogGames: 3 }, // fração 0,667
+  { favoriteGames: 6, underdogGames: 2 }, // fração 0,750
+  { favoriteGames: 6, underdogGames: 1 }, // fração 0,857
+  { favoriteGames: 6, underdogGames: 0 }, // fração 1,000
+];
+
+// A fração de games é a forma "realizada" da probabilidade no modelo de rating
+// (delta = K * (fração − probabilidade), o mesmo eixo da narrativa). Então o placar
+// esperado é o resultado válido cuja fração de games mais se aproxima da chance de vitória.
+function getExpectedScoreline(favoriteProbability: number) {
+  return VALID_SCORELINES.reduce((closest, scoreline) => {
+    const share = scoreline.favoriteGames / (scoreline.favoriteGames + scoreline.underdogGames);
+    const closestShare = closest.favoriteGames / (closest.favoriteGames + closest.underdogGames);
+
+    return Math.abs(share - favoriteProbability) < Math.abs(closestShare - favoriteProbability)
+      ? scoreline
+      : closest;
+  });
 }
 
 function MatchRankingSection({ players }: { players: MatchPlayer[] }) {
