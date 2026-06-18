@@ -128,7 +128,7 @@ export function MatchCard({
   return (
     <>
       <Card>
-        <CardContent className="space-y-4">
+        <CardContent>
           <div className="flex items-center justify-between gap-3">
             <p className="text-xs font-medium uppercase tracking-[0.14em] text-foreground">
               {narrativeTitle ?? 'Partida'}
@@ -169,7 +169,7 @@ export function MatchCard({
             )}
           </div>
 
-          <div className="space-y-2">
+          <div className="mt-4 space-y-2">
             {teamAWon ? (
               <>
                 <MatchTeam players={teamA} score={match.gamesA} isWinner />
@@ -275,14 +275,15 @@ function MatchExpectedResult({ match, teamAWon }: { match: Match; teamAWon: bool
   const expectedLoserGames = winnerWasFavorite ? loserGames : winnerGames;
 
   return (
-    <div className="space-y-2">
+    <div className="mt-6 space-y-2">
       <div className="flex items-center justify-between gap-3">
         <p className="text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">
           Resultado esperado
         </p>
 
         <p className="text-sm font-semibold tabular-nums text-foreground">
-          {expectedWinnerGames} <span className="text-muted-foreground">–</span> {expectedLoserGames}
+          {expectedWinnerGames} <span className="text-muted-foreground">–</span>{' '}
+          {expectedLoserGames}
         </p>
       </div>
 
@@ -332,7 +333,7 @@ function MatchRankingSection({ players }: { players: MatchPlayer[] }) {
   }
 
   return (
-    <div className="space-y-3">
+    <div className="mt-6 space-y-3">
       <div className="flex items-center gap-3">
         <p className="text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">
           Ranking
