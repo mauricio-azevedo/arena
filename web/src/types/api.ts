@@ -103,6 +103,12 @@ export type MatchPlayer = {
   ratingAfter: number;
   ratingDelta: number;
 
+  rankBefore: number | null;
+  rankAfter: number | null;
+  rankDelta: number | null;
+  movementDirection: 'UP' | 'DOWN' | null;
+  movementPositions: number | null;
+
   ratingDeviationBefore: number | null;
   ratingDeviationAfter: number | null;
   ratingVolatilityBefore: number | null;

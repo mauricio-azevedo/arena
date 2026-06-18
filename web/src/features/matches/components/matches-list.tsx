@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { MoreVertical, Pencil, Trash2 } from 'lucide-react';
+import { ArrowDown, ArrowUp, MoreVertical, Pencil, Trash2 } from 'lucide-react';
 import type { Match, MatchPlayer } from '@/types/api';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -182,6 +182,8 @@ export function MatchCard({
               </>
             )}
           </div>
+
+          <MatchRankingSection players={teamAWon ? [...teamA, ...teamB] : [...teamB, ...teamA]} />
         </CardContent>
       </Card>
 
@@ -245,6 +247,108 @@ function MatchTeam({
         {score}
       </div>
     </div>
+  );
+}
+
+function MatchRankingSection({ players }: { players: MatchPlayer[] }) {
+  const movedPlayers = players.filter(hasRankMovement);
+
+  if (movedPlayers.length === 0) {
+    return null;
+  }
+
+  return (
+    <div className="space-y-3">
+      <div className="flex items-center gap-3">
+        <p className="text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">
+          Ranking
+        </p>
+        <span className="h-px flex-1 bg-border" />
+      </div>
+
+      <div className="space-y-2">
+        {movedPlayers.map((player) => (
+          <MatchRankingRow key={player.id} player={player} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function hasRankMovement(player: MatchPlayer) {
+  if (player.rankAfter === null) {
+    return false;
+  }
+
+  // Estreia no ranking (sem posição anterior) também é uma mudança.
+  if (player.rankBefore === null) {
+    return true;
+  }
+
+  return player.rankBefore !== player.rankAfter;
+}
+
+function MatchRankingRow({ player }: { player: MatchPlayer }) {
+  return (
+    <div className="flex items-center justify-between gap-3">
+      <p className="min-w-0 flex-1 truncate text-sm text-foreground">
+        <UserNameLink userId={player.groupMember?.userId}>
+          {getPlayerDisplayName(player)}
+        </UserNameLink>
+      </p>
+
+      <MatchRankingChange rankBefore={player.rankBefore} rankAfter={player.rankAfter} />
+    </div>
+  );
+}
+
+function MatchRankingChange({
+  rankBefore,
+  rankAfter,
+}: {
+  rankBefore: number | null;
+  rankAfter: number | null;
+}) {
+  if (rankAfter === null) {
+    return null;
+  }
+
+  // Estreia no ranking: ainda não havia posição anterior.
+  if (rankBefore === null) {
+    return (
+      <span className="shrink-0 text-xs font-medium tabular-nums text-muted-foreground">
+        #{rankAfter}
+      </span>
+    );
+  }
+
+  const isUp = rankAfter < rankBefore;
+  const positions = Math.abs(rankBefore - rankAfter);
+  const Icon = isUp ? ArrowUp : ArrowDown;
+  const badgeClassName = isUp
+    ? 'bg-emerald-500/12 text-emerald-700 dark:text-emerald-300'
+    : 'bg-rose-500/12 text-rose-700 dark:text-rose-300';
+  const label = `${isUp ? 'Subiu' : 'Caiu'} ${positions} ${
+    positions === 1 ? 'posição' : 'posições'
+  }`;
+
+  return (
+    <span className="flex shrink-0 items-center gap-2">
+      <span className="flex w-[4.5rem] items-center justify-between text-xs tabular-nums text-muted-foreground">
+        <span>#{rankBefore}</span>
+        <span className="text-muted-foreground/60">→</span>
+        <span className="text-foreground">#{rankAfter}</span>
+      </span>
+
+      <span
+        aria-label={label}
+        title={label}
+        className={`inline-flex items-center gap-0.5 rounded-full px-1.5 py-0.5 text-[11px] font-bold leading-none ${badgeClassName}`}
+      >
+        <Icon className="h-3 w-3" aria-hidden="true" />
+        {positions}
+      </span>
+    </span>
   );
 }
 
