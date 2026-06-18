@@ -294,8 +294,8 @@ function MatchScore({ winnerScore, loserScore }: { winnerScore: number; loserSco
     <div className="my-4 flex items-center gap-4">
       <span className="h-px flex-1 bg-linear-to-l from-foreground/10 to-border" />
 
-      <div className="flex items-center gap-3 rounded-2xl bg-foreground px-5 py-2 text-2xl font-semibold tabular-nums text-background shadow-[0_6px_16px_color-mix(in_oklch,var(--foreground)_18%,transparent)]">
-        <span className="text-background">{winnerScore}</span>
+      <div className="flex items-center gap-2 rounded-2xl px-5 py-2 text-2xl font-semibold tabular-nums bg-secondary border border-border shadow-sm">
+        <span className="text-foreground">{winnerScore}</span>
         <X className="h-4 w-4 text-muted-foreground" strokeWidth={3} aria-hidden="true" />
         <span className="text-muted-foreground">{loserScore}</span>
       </div>
