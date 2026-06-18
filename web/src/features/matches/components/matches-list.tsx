@@ -170,8 +170,17 @@ export function MatchCard({
           </div>
 
           <div className="space-y-2">
-            <MatchTeam players={teamA} score={match.gamesA} isWinner={teamAWon} />
-            <MatchTeam players={teamB} score={match.gamesB} isWinner={!teamAWon} />
+            {teamAWon ? (
+              <>
+                <MatchTeam players={teamA} score={match.gamesA} isWinner />
+                <MatchTeam players={teamB} score={match.gamesB} isWinner={false} />
+              </>
+            ) : (
+              <>
+                <MatchTeam players={teamB} score={match.gamesB} isWinner />
+                <MatchTeam players={teamA} score={match.gamesA} isWinner={false} />
+              </>
+            )}
           </div>
         </CardContent>
       </Card>

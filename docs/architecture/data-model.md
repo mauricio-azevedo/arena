@@ -1,0 +1,165 @@
+# Data Model
+
+Reverse-engineered from `api/prisma/schema.prisma` (verified 2026-06-17). This
+describes entities, relationships, cardinality, and ownership. For column-level
+detail, enums, and indexes see
+[`../engineering/database-reference.md`](../engineering/database-reference.md).
+
+The model has two halves:
+
+- **Source-of-truth entities** — written directly by domain workflows.
+- **Derived read models** — rebuilt by the projection cascade (Section 3 of
+  [`system-architecture.md`](./system-architecture.md)). Never hand-edit these;
+  they are reconstructable from source-of-truth data.
+
+---
+
+## 1. Entity map
+
+```txt
+User ──< GroupMember >── Group
+ │           │             │
+ │           │             ├──< Match >──< MatchPlayer >── GroupMember
+ │           │             ├──< GroupInvite
+ │           │             ├──< FeedItem
+ │           │             ├──< RankingMovement
+ │           │             ├──< ProcessingJob
+ │           │             ├──1 GroupRankingProjection        (derived)
+ │           │             ├──1 GroupHomeSummary              (derived)
+ │           │             ├──< MatchRankingSnapshot          (derived)
+ │           │             └──< GroupMemberStats              (derived, 1 per member)
+ │
+ └──1 PlatformTrendingPlayer (derived, platform-wide leaderboard)
+```
+
+`>──<` = many-to-many through a join entity. `──<` = one-to-many. `──1` = optional
+one-to-one.
+
+---
+
+## 2. Source-of-truth entities
+
+### User
+
+Global account. Identity is global; **competitive state is never on `User`** —
+it lives on `GroupMember`. Fields: `firstName`, `lastName`, `email` (unique),
+`passwordHash`. Display name is derived as `firstName + lastName` at read time
+(persisted display names were intentionally removed — migration
+`20260522120000_remove_persisted_display_names`).
+
+### Group
+
+A competitive community. `visibility` is an enum currently with a single value
+`PUBLIC`. Has one creator (`createdBy`). Deleting a group cascades to nearly all
+group-scoped data.
+
+### GroupMember
+
+The **central join entity** between `User` and `Group`, and the anchor for all
+competitive state:
+
+- `rating` (default `1000`) + future-rating fields
+  (`ratingDeviation/Volatility/Mu/Sigma`), `ratingAlgorithm` (`BEACH_ELO_V1`).
+- `currentRank`, `role` (`ADMIN`/`MEMBER`), `leftAt` (soft membership exit).
+- Unique on `(groupId, userId)` — a user has at most one membership per group.
+- Also unique on `(id, groupId)` so other tables can FK by the composite key
+  (this scopes every child row to a group at the database level).
+
+Rejoining reuses the same row (sets `leftAt = null`); see
+`group-invites.service.ts`.
+
+### Match
+
+A doubles match inside a group. Exactly 4 players, 2 teams, no draws. Fields:
+`gamesA/gamesB`, `winnerTeam`, team-level rating snapshots
+(`teamA/BExpected/Actual`, `teamA/BRatingBefore/After`), `ratingAlgorithm`,
+`playedAt`. Lifecycle/processing fields: `processingStatus`
+(`PENDING/PROCESSING/PROCESSED/FAILED`), `processedAt`, `processingError`,
+`deletedAt` (**soft delete** — reads filter `deletedAt IS NULL`).
+
+### MatchPlayer
+
+One row per participant (4 per match). Stores **historical snapshots** so old
+matches stay explainable after later ratings change:
+
+- rating: `ratingBefore/After/Delta` (+ future-algorithm before/after fields).
+- ranking: `rankBefore/After/Delta`, `movementDirection`, `movementPositions`.
+- `team`, `position`, `playedAt`.
+- Unique on `(matchId, groupMemberId)` and `(matchId, team, position)`.
+
+### GroupInvite
+
+Tokenized join link. `token` (unique), optional `expiresAt`/`revokedAt`,
+`uses`/`maxUses`. Public acceptance flow via `/invites/:token`.
+
+### FeedItem
+
+Persisted product moment (not a raw activity log). Key fields: `type`
+(`GROUP_CREATED`, `MEMBER_JOINED`, `MATCH_CLOSE`, `MATCH_BLOWOUT`, `UPSET_WIN`,
+`RANKING_MOVEMENT`), `scope` (`GROUP`/`USER`), `visibility`
+(`GROUP_MEMBERS`/`SOCIAL_CIRCLE`/`PUBLIC`/`PRIVATE`), `actorUser` /
+`actorGroupMember` / `subjectUser`, optional `group`/`match`, `importanceScore`,
+type-specific `metadata` (JSON), `occurredAt`. Unique on `(type, matchId)` keeps
+match-derived items idempotent. See
+[`../product/feed-events.md`](../product/feed-events.md).
+
+### ProcessingJob
+
+The job-queue table that drives the async pipeline. `type`
+(`MATCH_CREATED/UPDATED/DELETED`, `GROUP_RANKING_REBUILD`,
+`PLATFORM_TRENDING_PLAYERS_REBUILD`), `scope` (`GROUP`/`PLATFORM`), `status`
+(`PENDING/PROCESSING/DONE/FAILED`), optional `group`/`match`, `dedupeKey`,
+`payload` (JSON), retry fields (`attemptCount`, `maxAttempts`, `availableAt`,
+`lockedAt`, `lockedBy`, `lastError`, `processedAt`). See
+[`processing-jobs.md`](./processing-jobs.md).
+
+---
+
+## 3. Derived read models (rebuilt by projections)
+
+| Model | Grain | Rebuilt by | Holds |
+| ----- | ----- | ---------- | ----- |
+| `MatchRankingSnapshot` | 1 per match | rating projection | `previousLeaders`, `currentLeaders`, `dethronedLeaders`, `movements` (JSON), `algorithmVersion` |
+| `RankingMovement` | 1 per (match, member) | ranking-movement service | `direction`, `positions`, prev/current rank+rating, `passedGroupMemberIds`, `isVisible`, `occurredAt`, `invalidatedAt` |
+| `GroupMemberStats` | 1 per member | stats projection | `matchesCount`, `winsCount` |
+| `GroupRankingProjection` | 1 per group | projection status tracker | `status`, `version`, `lastProcessedMatchId/At`, `lastError` |
+| `GroupHomeSummary` | 1 per group | home-summary service | `membersCount`, `leaders` (JSON), `lastRelevantFeedItem`, `projectionStatus` |
+| `PlatformTrendingPlayer` | 1 per user | platform-trending projection | `trendRank` (unique), `score`, recent/all-time match+win counts and rates, highlight group/member, time window, `metadata` |
+
+These are caches for fast reads and stored historical truth. If they look wrong,
+the fix is usually to re-run the relevant projection (enqueue a
+`GROUP_RANKING_REBUILD` / `PLATFORM_TRENDING_PLAYERS_REBUILD` job), not to patch
+rows.
+
+---
+
+## 4. Cardinality & integrity rules
+
+- A `User` has **0..N** memberships; a `Group` has **1..N** members; the pair is
+  unique (`@@unique([groupId, userId])`).
+- A `Match` has **exactly 4** `MatchPlayer` rows across 2 teams; a player cannot
+  appear twice (enforced in `MatchesService.validateMatchBody` + DB uniques).
+- A match **cannot end in a draw**; `winnerTeam` is derived from the score.
+- Group-scoped child rows FK on the composite `(id, groupId)` of their parent, so
+  cross-group references are impossible at the DB level.
+- `onDelete`: group deletion cascades to members, matches, invites, feed items,
+  jobs, and all derived models. `MatchPlayer.groupMember` uses `Restrict` (a
+  member who has played cannot be hard-deleted); feed actor/subject relations use
+  `SetNull`/`Cascade` per field.
+
+---
+
+## 5. Conventions baked into the schema
+
+- **IDs**: `String @id @default(uuid())` everywhere (read models use the parent
+  id as PK, e.g. `GroupHomeSummary.groupId`).
+- **Timestamps**: `createdAt @default(now())`, `updatedAt @updatedAt` on
+  mutable tables.
+- **Money/score-free**: ratings are `Float`, counts are `Int`.
+- **Soft delete** only on `Match` (`deletedAt`); membership exit via `leftAt`.
+- **JSON columns** (`metadata`, `leaders`, `movements`, …) are type-specific and
+  validated in code, not the DB.
+- **Algorithm versioning**: rating-bearing rows carry `ratingAlgorithm` /
+  `algorithmVersion` (`BEACH_ELO_V1`) so future migrations can identify the
+  producer.
+</content>
