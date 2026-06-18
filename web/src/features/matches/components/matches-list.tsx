@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowDown, ArrowUp, MoreVertical, Pencil, Trash2 } from 'lucide-react';
 import type { Match, MatchPlayer } from '@/types/api';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import {
@@ -97,6 +98,11 @@ export function MatchCard({
   const teamAWon = match.gamesA > match.gamesB;
   const narrativeTitle = getMatchNarrativeTitle(match);
 
+  const winnerPlayers = teamAWon ? teamA : teamB;
+  const loserPlayers = teamAWon ? teamB : teamA;
+  const winnerScore = teamAWon ? match.gamesA : match.gamesB;
+  const loserScore = teamAWon ? match.gamesB : match.gamesA;
+
   const showActions = Boolean(groupId && canManage);
 
   async function handleDelete() {
@@ -127,10 +133,10 @@ export function MatchCard({
 
   return (
     <>
-      <Card>
-        <CardContent>
+      <Card className="pt-2 pb-4">
+        <CardContent className="px-4">
           <div className="flex items-center justify-between gap-3">
-            <p className="text-xs font-medium uppercase tracking-[0.14em] text-foreground">
+            <p className="text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">
               {narrativeTitle ?? 'Partida'}
             </p>
             {showActions && (
@@ -169,23 +175,13 @@ export function MatchCard({
             )}
           </div>
 
-          <div className="mt-4 space-y-2">
-            {teamAWon ? (
-              <>
-                <MatchTeam players={teamA} score={match.gamesA} isWinner />
-                <MatchTeam players={teamB} score={match.gamesB} isWinner={false} />
-              </>
-            ) : (
-              <>
-                <MatchTeam players={teamB} score={match.gamesB} isWinner />
-                <MatchTeam players={teamA} score={match.gamesA} isWinner={false} />
-              </>
-            )}
+          <div className="mt-3">
+            <MatchTeam players={winnerPlayers} isWinner />
+            <MatchScore winnerScore={winnerScore} loserScore={loserScore} />
+            <MatchTeam players={loserPlayers} isWinner={false} />
           </div>
 
           <MatchExpectedResult match={match} teamAWon={teamAWon} />
-
-          <MatchRankingSection players={teamAWon ? [...teamA, ...teamB] : [...teamB, ...teamA]} />
         </CardContent>
       </Card>
 
@@ -220,44 +216,91 @@ export function MatchCard({
   );
 }
 
-function MatchTeam({
-  players,
-  score,
-  isWinner,
-}: {
-  players: MatchPlayer[];
-  score: number;
-  isWinner: boolean;
-}) {
+function MatchTeam({ players, isWinner }: { players: MatchPlayer[]; isWinner: boolean }) {
   const teamRating = getTeamRating(players);
 
   return (
-    <div
-      className={`flex min-w-0 items-center gap-3 rounded-[1.5rem] px-3 py-2.5 ${
-        isWinner ? 'bg-muted text-foreground' : 'bg-background/65 text-muted-foreground'
-      }`}
-    >
+    <div className="space-y-3">
+      {teamRating !== null && (
+        <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-muted-foreground">
+          Rating <span className="tabular-nums">{teamRating}</span>
+        </p>
+      )}
+
+      <div className="space-y-3">
+        {players.map((player) => (
+          <MatchPlayerRow key={player.id} player={player} isWinner={isWinner} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function MatchPlayerRow({ player, isWinner }: { player: MatchPlayer; isWinner: boolean }) {
+  const delta = Math.round(player.ratingDelta);
+
+  return (
+    <div className="flex items-center gap-3">
+      <Avatar className={`ring-1 ${isWinner ? 'ring-emerald-500/40' : 'ring-border'}`}>
+        <AvatarFallback
+          className={
+            isWinner
+              ? 'bg-emerald-500/20 text-emerald-700 dark:text-emerald-300'
+              : 'bg-muted text-muted-foreground'
+          }
+        >
+          {getPlayerInitial(player)}
+        </AvatarFallback>
+      </Avatar>
+
       <div className="min-w-0 flex-1">
         <p
-          className={`truncate text-sm ${isWinner ? 'font-medium text-foreground' : 'text-muted-foreground'}`}
+          className={`truncate text-sm font-medium tracking-wide ${
+            isWinner ? 'text-foreground' : 'text-muted-foreground'
+          }`}
         >
-          <MatchPlayerNames players={players} />
+          <UserNameLink userId={player.groupMember?.userId}>
+            {getPlayerDisplayName(player)}
+          </UserNameLink>
         </p>
 
-        {teamRating !== null && (
-          <p className="mt-0.5 font-mono text-[11px] uppercase tracking-[0.12em] text-muted-foreground">
-            Rating <span className="tabular-nums">{teamRating}</span>
-          </p>
-        )}
+        <p
+          className={`mt-1 font-mono text-[11px] uppercase tracking-wide ${
+            isWinner ? 'text-muted-foreground' : 'text-muted-foreground/60'
+          }`}
+        >
+          Rating <span className="tabular-nums">{Math.round(player.ratingBefore)}</span>
+          {delta !== 0 && (
+            <span
+              className={`ml-1 font-semibold tabular-nums ${
+                delta > 0
+                  ? 'text-emerald-600 dark:text-emerald-400'
+                  : 'text-rose-600 dark:text-rose-400'
+              }`}
+            >
+              {delta > 0 ? `+${delta}` : delta}
+            </span>
+          )}
+        </p>
       </div>
 
-      <div
-        className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-medium ${
-          isWinner ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'
-        }`}
-      >
-        {score}
+      <MatchPlayerRank rankBefore={player.rankBefore} rankAfter={player.rankAfter} />
+    </div>
+  );
+}
+
+function MatchScore({ winnerScore, loserScore }: { winnerScore: number; loserScore: number }) {
+  return (
+    <div className="my-4 flex items-center gap-4">
+      <span className="h-px flex-1 bg-linear-to-l from-foreground/10 to-border" />
+
+      <div className="flex items-center gap-3 rounded-2xl bg-background/10 px-5 py-2 text-2xl font-semibold tabular-nums shadow-sm ring-1 ring-border/50 backdrop-blur-xl">
+        <span className="text-foreground">{winnerScore}</span>
+        <span className="text-muted-foreground/50">:</span>
+        <span className="text-muted-foreground">{loserScore}</span>
       </div>
+
+      <span className="h-px flex-1 bg-linear-to-r from-foreground/10 to-transparent" />
     </div>
   );
 }
@@ -285,7 +328,7 @@ function MatchExpectedResult({ match, teamAWon }: { match: Match; teamAWon: bool
   const expectedLoserGames = winnerWasFavorite ? loserGames : winnerGames;
 
   return (
-    <div className="mt-6 space-y-2">
+    <div className="mt-6 space-y-2 border-t border-border pt-6">
       <div className="flex items-center justify-between gap-3">
         <p className="text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">
           Resultado esperado
@@ -304,9 +347,7 @@ function MatchExpectedResult({ match, teamAWon }: { match: Match; teamAWon: bool
           <span className="text-muted-foreground">–</span>{' '}
           <span
             className={
-              expectedLoserGames > expectedWinnerGames
-                ? 'text-foreground'
-                : 'text-muted-foreground'
+              expectedLoserGames > expectedWinnerGames ? 'text-foreground' : 'text-muted-foreground'
             }
           >
             {expectedLoserGames}
@@ -352,59 +393,7 @@ function getExpectedScoreline(favoriteProbability: number) {
   });
 }
 
-function MatchRankingSection({ players }: { players: MatchPlayer[] }) {
-  const movedPlayers = players.filter(hasRankMovement);
-
-  if (movedPlayers.length === 0) {
-    return null;
-  }
-
-  return (
-    <div className="mt-6 space-y-3">
-      <div className="flex items-center gap-3">
-        <p className="text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">
-          Ranking
-        </p>
-        <span className="h-px flex-1 bg-border" />
-      </div>
-
-      <div className="space-y-2">
-        {movedPlayers.map((player) => (
-          <MatchRankingRow key={player.id} player={player} />
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function hasRankMovement(player: MatchPlayer) {
-  if (player.rankAfter === null) {
-    return false;
-  }
-
-  // Estreia no ranking (sem posição anterior) também é uma mudança.
-  if (player.rankBefore === null) {
-    return true;
-  }
-
-  return player.rankBefore !== player.rankAfter;
-}
-
-function MatchRankingRow({ player }: { player: MatchPlayer }) {
-  return (
-    <div className="flex items-center justify-between gap-3">
-      <p className="min-w-0 flex-1 truncate text-sm text-foreground">
-        <UserNameLink userId={player.groupMember?.userId}>
-          {getPlayerDisplayName(player)}
-        </UserNameLink>
-      </p>
-
-      <MatchRankingChange rankBefore={player.rankBefore} rankAfter={player.rankAfter} />
-    </div>
-  );
-}
-
-function MatchRankingChange({
+function MatchPlayerRank({
   rankBefore,
   rankAfter,
 }: {
@@ -415,11 +404,43 @@ function MatchRankingChange({
     return null;
   }
 
-  // Estreia no ranking: ainda não havia posição anterior.
-  if (rankBefore === null) {
+  return (
+    <div className="flex shrink-0 items-center gap-2">
+      {rankBefore !== null && rankBefore !== rankAfter ? (
+        <span className="flex items-baseline gap-1.5 tabular-nums">
+          <span className="text-xs text-muted-foreground">#{rankBefore}</span>
+          <span className="text-xs text-muted-foreground/50">→</span>
+          <span className="text-lg font-semibold text-foreground">#{rankAfter}</span>
+        </span>
+      ) : (
+        <span className="text-lg font-semibold tabular-nums text-foreground">#{rankAfter}</span>
+      )}
+
+      <RankMovementBadge rankBefore={rankBefore} rankAfter={rankAfter} />
+    </div>
+  );
+}
+
+function RankMovementBadge({
+  rankBefore,
+  rankAfter,
+}: {
+  rankBefore: number | null;
+  rankAfter: number | null;
+}) {
+  if (rankAfter === null) {
+    return null;
+  }
+
+  // Sem posição anterior (estreia) ou sem mudança: indicador neutro.
+  if (rankBefore === null || rankBefore === rankAfter) {
     return (
-      <span className="shrink-0 text-xs font-medium tabular-nums text-muted-foreground">
-        #{rankAfter}
+      <span
+        aria-label="Sem mudança no ranking"
+        title="Sem mudança no ranking"
+        className="inline-flex min-w-9 items-center justify-center rounded-full bg-muted px-1.5 py-1 text-[11px] font-bold leading-none text-muted-foreground"
+      >
+        –
       </span>
     );
   }
@@ -435,41 +456,14 @@ function MatchRankingChange({
   }`;
 
   return (
-    <span className="flex shrink-0 items-center gap-2">
-      <span className="flex w-[4.5rem] items-center justify-between text-xs tabular-nums text-muted-foreground">
-        <span>#{rankBefore}</span>
-        <span className="text-muted-foreground/60">→</span>
-        <span className="text-foreground">#{rankAfter}</span>
-      </span>
-
-      <span
-        aria-label={label}
-        title={label}
-        className={`inline-flex items-center gap-0.5 rounded-full px-1.5 py-0.5 text-[11px] font-bold leading-none ${badgeClassName}`}
-      >
-        <Icon className="h-3 w-3" aria-hidden="true" />
-        {positions}
-      </span>
+    <span
+      aria-label={label}
+      title={label}
+      className={`inline-flex min-w-9 items-center justify-center gap-0.5 rounded-full px-1.5 py-1 text-[11px] font-bold leading-none ${badgeClassName}`}
+    >
+      <Icon className="h-3 w-3" aria-hidden="true" />
+      {positions}
     </span>
-  );
-}
-
-function MatchPlayerNames({ players }: { players: MatchPlayer[] }) {
-  if (players.length === 0) {
-    return <>Dupla não encontrada</>;
-  }
-
-  return (
-    <>
-      {players.map((player, index) => (
-        <span key={player.id}>
-          {index > 0 && ' / '}
-          <UserNameLink userId={player.groupMember?.userId}>
-            {getPlayerDisplayName(player)}
-          </UserNameLink>
-        </span>
-      ))}
-    </>
   );
 }
 
@@ -479,8 +473,7 @@ function getTeamPlayers(match: Match, team: 'TEAM_A' | 'TEAM_B') {
     .sort((a, b) => a.position - b.position);
 }
 
-// Rating da dupla na hora da partida: média dos jogadores antes do resultado,
-// o mesmo valor que define o resultado esperado.
+// Rating da dupla na hora da partida: soma dos jogadores antes do resultado.
 function getTeamRating(players: MatchPlayer[]) {
   if (players.length === 0) {
     return null;
@@ -488,7 +481,17 @@ function getTeamRating(players: MatchPlayer[]) {
 
   const total = players.reduce((sum, player) => sum + player.ratingBefore, 0);
 
-  return Math.round(total / players.length);
+  return Math.round(total);
+}
+
+function getPlayerInitial(player: MatchPlayer) {
+  const user = player.groupMember?.user;
+
+  if (!user) {
+    return '?';
+  }
+
+  return (user.firstName.charAt(0) || '?').toUpperCase();
 }
 
 function groupMatchesByDate(matches: Match[]) {
