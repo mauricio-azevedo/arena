@@ -269,10 +269,10 @@ function MatchExpectedResult({ match, teamAWon }: { match: Match; teamAWon: bool
   // A margem do favorito cresce com o favoritismo; o vencedor real pode ter sido o azarão.
   const winnerWasFavorite = winnerExpected >= 0.5;
   const favoriteProbability = Math.max(winnerExpected, 1 - winnerExpected);
-  const { favoriteGames, underdogGames } = getExpectedScoreline(favoriteProbability);
+  const { winnerGames, loserGames } = getExpectedScoreline(favoriteProbability);
 
-  const expectedWinnerGames = winnerWasFavorite ? favoriteGames : underdogGames;
-  const expectedLoserGames = winnerWasFavorite ? underdogGames : favoriteGames;
+  const expectedWinnerGames = winnerWasFavorite ? winnerGames : loserGames;
+  const expectedLoserGames = winnerWasFavorite ? loserGames : winnerGames;
 
   return (
     <div className="space-y-2">
@@ -298,16 +298,16 @@ function MatchExpectedResult({ match, teamAWon }: { match: Match; teamAWon: bool
   );
 }
 
-// Placares de vitória válidos do favorito. Jogo até 6 games (7 no tiebreak):
+// Placares de vitória válidos. Jogo até 6 games (7 no tiebreak):
 // 6-0, 6-1, 6-2, 6-3, 6-4, 6-5 e 7-6.
 const VALID_SCORELINES = [
-  { favoriteGames: 7, underdogGames: 6 }, // fração 0,538
-  { favoriteGames: 6, underdogGames: 5 }, // fração 0,545
-  { favoriteGames: 6, underdogGames: 4 }, // fração 0,600
-  { favoriteGames: 6, underdogGames: 3 }, // fração 0,667
-  { favoriteGames: 6, underdogGames: 2 }, // fração 0,750
-  { favoriteGames: 6, underdogGames: 1 }, // fração 0,857
-  { favoriteGames: 6, underdogGames: 0 }, // fração 1,000
+  { winnerGames: 7, loserGames: 6 }, // fração 0,538
+  { winnerGames: 6, loserGames: 5 }, // fração 0,545
+  { winnerGames: 6, loserGames: 4 }, // fração 0,600
+  { winnerGames: 6, loserGames: 3 }, // fração 0,667
+  { winnerGames: 6, loserGames: 2 }, // fração 0,750
+  { winnerGames: 6, loserGames: 1 }, // fração 0,857
+  { winnerGames: 6, loserGames: 0 }, // fração 1,000
 ];
 
 // A fração de games é a forma "realizada" da probabilidade no modelo de rating
@@ -315,8 +315,8 @@ const VALID_SCORELINES = [
 // esperado é o resultado válido cuja fração de games mais se aproxima da chance de vitória.
 function getExpectedScoreline(favoriteProbability: number) {
   return VALID_SCORELINES.reduce((closest, scoreline) => {
-    const share = scoreline.favoriteGames / (scoreline.favoriteGames + scoreline.underdogGames);
-    const closestShare = closest.favoriteGames / (closest.favoriteGames + closest.underdogGames);
+    const share = scoreline.winnerGames / (scoreline.winnerGames + scoreline.loserGames);
+    const closestShare = closest.winnerGames / (closest.winnerGames + closest.loserGames);
 
     return Math.abs(share - favoriteProbability) < Math.abs(closestShare - favoriteProbability)
       ? scoreline
