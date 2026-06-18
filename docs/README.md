@@ -23,17 +23,24 @@ Design docs describe how the product should feel and behave.
 
 Architecture docs describe how the system is structured and why.
 
+- [`architecture/system-architecture.md`](architecture/system-architecture.md): reverse-engineered, code-accurate runtime architecture (authoritative).
 - [`architecture/overview.md`](architecture/overview.md): high-level system overview.
+- [`architecture/data-model.md`](architecture/data-model.md): entities, relationships, cardinality, derived read models.
 - [`architecture/feed-architecture.md`](architecture/feed-architecture.md): persisted feed event architecture.
-- [`architecture/rating-architecture.md`](architecture/rating-architecture.md): rating snapshots, recalculation, and match creation fast path.
+- [`architecture/rating-architecture.md`](architecture/rating-architecture.md): rating snapshots and recalculation (math correct; execution model now async — see `system-architecture.md`).
+- [`architecture/processing-jobs.md`](architecture/processing-jobs.md): in-database job queue and projection cascade.
+- [`architecture/platform-trending-players.md`](architecture/platform-trending-players.md): platform-wide trending read model.
 
 ### Engineering
 
 Engineering docs describe how to work on the codebase.
 
 - [`code-organization.md`](code-organization.md): file/folder organization rules for frontend and backend.
+- [`engineering/backend-conventions.md`](engineering/backend-conventions.md): observed NestJS/API conventions and route map.
+- [`engineering/frontend-conventions.md`](engineering/frontend-conventions.md): observed Next.js/web conventions.
 - [`engineering/development-setup.md`](engineering/development-setup.md): local setup and development workflow.
 - [`engineering/database.md`](engineering/database.md): database, Prisma, Neon, and migration guidance.
+- [`engineering/database-reference.md`](engineering/database-reference.md): table/enum/index/migration reference mirroring the schema.
 
 ### QA
 

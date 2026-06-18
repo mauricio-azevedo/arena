@@ -1,5 +1,12 @@
 # Rating Architecture
 
+> **Execution model has changed.** The rating *math* and *snapshot* concepts
+> below are still accurate, but match writes no longer compute ratings inline via
+> a synchronous "fast path". They enqueue a `ProcessingJob`; an async worker runs
+> a **full group recalculation** (plus the ranking/stats/feed/trending cascade).
+> See [`system-architecture.md`](./system-architecture.md) §3 and
+> [`processing-jobs.md`](./processing-jobs.md) for the current flow.
+
 Arena ratings are group-scoped skill estimates updated from match results.
 
 The rating system must support two competing needs:
