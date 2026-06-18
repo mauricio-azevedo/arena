@@ -229,17 +229,27 @@ function MatchTeam({
   score: number;
   isWinner: boolean;
 }) {
+  const teamRating = getTeamRating(players);
+
   return (
     <div
       className={`flex min-w-0 items-center gap-3 rounded-[1.5rem] px-3 py-2.5 ${
         isWinner ? 'bg-muted text-foreground' : 'bg-background/65 text-muted-foreground'
       }`}
     >
-      <p
-        className={`min-w-0 flex-1 truncate text-sm ${isWinner ? 'font-medium text-foreground' : 'text-muted-foreground'}`}
-      >
-        <MatchPlayerNames players={players} />
-      </p>
+      <div className="min-w-0 flex-1">
+        <p
+          className={`truncate text-sm ${isWinner ? 'font-medium text-foreground' : 'text-muted-foreground'}`}
+        >
+          <MatchPlayerNames players={players} />
+        </p>
+
+        {teamRating !== null && (
+          <p className="mt-0.5 font-mono text-[11px] uppercase tracking-[0.12em] text-muted-foreground">
+            Rating <span className="tabular-nums">{teamRating}</span>
+          </p>
+        )}
+      </div>
 
       <div
         className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-medium ${
@@ -450,6 +460,18 @@ function getTeamPlayers(match: Match, team: 'TEAM_A' | 'TEAM_B') {
   return match.players
     .filter((player) => player.team === team)
     .sort((a, b) => a.position - b.position);
+}
+
+// Rating da dupla na hora da partida: média dos jogadores antes do resultado,
+// o mesmo valor que define o resultado esperado.
+function getTeamRating(players: MatchPlayer[]) {
+  if (players.length === 0) {
+    return null;
+  }
+
+  const total = players.reduce((sum, player) => sum + player.ratingBefore, 0);
+
+  return Math.round(total / players.length);
 }
 
 function groupMatchesByDate(matches: Match[]) {
