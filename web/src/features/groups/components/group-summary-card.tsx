@@ -61,7 +61,13 @@ export function GroupSummaryCard({
           rating={currentRating}
           lastChange={lastChange}
           movement={
-            movement ? { direction: movement.direction, positions: movement.positions } : null
+            movement
+              ? {
+                  direction: movement.direction,
+                  positions: movement.positions,
+                  occurredAt: movement.occurredAt,
+                }
+              : null
           }
         />
       )}

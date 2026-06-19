@@ -15,7 +15,7 @@ export type StandingCardProps = {
   /** The viewer's most recent rating change (net of its day); null hides the column. */
   lastChange: { delta: number; occurredAt: string } | null;
   /** Latest ranking movement (from the most recent match). */
-  movement?: { direction: 'UP' | 'DOWN'; positions: number } | null;
+  movement?: { direction: 'UP' | 'DOWN'; positions: number; occurredAt: string } | null;
 };
 
 export function StandingCard({
@@ -82,7 +82,11 @@ export function StandingCard({
   );
 }
 
-function RankMovement({ movement }: { movement: { direction: 'UP' | 'DOWN'; positions: number } }) {
+function RankMovement({
+  movement,
+}: {
+  movement: { direction: 'UP' | 'DOWN'; positions: number; occurredAt: string };
+}) {
   const isUp = movement.direction === 'UP';
   const Icon = isUp ? ArrowUp : ArrowDown;
 
@@ -91,7 +95,8 @@ function RankMovement({ movement }: { movement: { direction: 'UP' | 'DOWN'; posi
       className={`mt-2.5 flex items-center gap-1 text-label font-bold ${isUp ? 'text-success' : 'text-danger'}`}
     >
       <Icon className="size-3.5" strokeWidth={2.8} aria-hidden />
-      {movement.positions} {movement.positions === 1 ? 'posição' : 'posições'}
+      {movement.positions}
+      <span>{formatRelativeDay(movement.occurredAt).toLowerCase()}</span>
     </div>
   );
 }

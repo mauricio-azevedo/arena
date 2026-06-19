@@ -84,7 +84,7 @@ export default function StylePage() {
           pointsToClimb={2}
           rating={1017}
           lastChange={{ delta: -22, occurredAt: new Date().toISOString() }}
-          movement={{ direction: 'DOWN', positions: 3 }}
+          movement={{ direction: 'DOWN', positions: 3, occurredAt: new Date().toISOString() }}
         />
       </Block>
 
