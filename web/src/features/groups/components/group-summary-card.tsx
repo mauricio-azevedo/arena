@@ -156,7 +156,7 @@ function GroupIdentityHeader({
 }) {
   return (
     <div className="flex flex-col items-center text-center">
-      <div className="flex size-[74px] items-center justify-center rounded-full bg-[linear-gradient(150deg,#5b9bf7,#3a78d6)] font-display text-stat-lg text-white shadow-[0_8px_20px_rgba(31,73,135,0.45),inset_0_0_0_1px_rgba(255,255,255,0.14)]">
+      <div className="flex size-[74px] items-center justify-center rounded-full bg-[linear-gradient(150deg,var(--accent),var(--accent-dark))] font-display text-stat-lg text-white shadow-[0_8px_20px_rgba(31,73,135,0.45),inset_0_0_0_1px_rgba(255,255,255,0.14)]">
         {getGroupInitials(group.name)}
       </div>
 

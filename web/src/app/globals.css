@@ -232,7 +232,7 @@
     --popover-foreground: var(--foreground);
 
     /* Brand */
-    --brand: oklch(0.66 0.135 256); /* #4f93f5 */
+    --brand: oklch(65% 0.15 257); /* #4f93f5 */
     --brand-foreground: oklch(1 0 0);
     --brand-muted: oklch(0.72 0.12 256); /* #6ea4f7 — text/link tint on dark */
     --success: oklch(0.74 0.18 149); /* #34c759 */
@@ -247,7 +247,7 @@
     --secondary-foreground: var(--foreground);
     --muted: oklch(1 0 0 / 3%);
     --accent: var(--brand);
-    --accent-dark: oklch(0.45 0.13 250);
+    --accent-dark: oklch(58% 0.15 257);
     --accent-foreground: var(--brand-foreground);
     --destructive: oklch(0.704 0.191 22.216);
     --border: oklch(1 0 0 / 6%);
