@@ -40,7 +40,7 @@ export function GroupSummaryCard({
       : null;
 
   const movement = currentMember?.rankingMovement ?? null;
-  const todayDelta = membership ? sumTodayRatingDelta(matches, membership.id) : null;
+  const lastChange = membership ? lastRatingChange(matches, membership.id) : null;
 
   return (
     <div className="space-y-5">
@@ -59,7 +59,7 @@ export function GroupSummaryCard({
           progress={standing.progress}
           pointsToClimb={standing.pointsToClimb}
           rating={currentRating}
-          todayDelta={todayDelta}
+          lastChange={lastChange}
           movement={
             movement ? { direction: movement.direction, positions: movement.positions } : null
           }
@@ -100,24 +100,37 @@ function buildStanding(ranking: GroupMember[], index: number, rating: number): S
   return { rank, progress, pointsToClimb };
 }
 
-function sumTodayRatingDelta(matches: Match[], membershipId: string): number | null {
-  const today = new Date().toDateString();
-  let total = 0;
-  let found = false;
+// The viewer's most recent rating change: net of all their matches on the most
+// recent day they played. Returns null when they have no matches in the set.
+function lastRatingChange(
+  matches: Match[],
+  membershipId: string,
+): { delta: number; occurredAt: string } | null {
+  const byDay = new Map<string, { delta: number; occurredAt: string }>();
 
   for (const match of matches) {
-    if (new Date(match.playedAt).toDateString() !== today) {
-      continue;
-    }
     for (const player of match.players) {
-      if (player.groupMemberId === membershipId) {
-        total += player.ratingDelta;
-        found = true;
+      if (player.groupMemberId !== membershipId) {
+        continue;
       }
+      const dayKey = new Date(match.playedAt).toDateString();
+      const prev = byDay.get(dayKey);
+      const occurredAt =
+        prev && new Date(prev.occurredAt) > new Date(match.playedAt)
+          ? prev.occurredAt
+          : match.playedAt;
+      byDay.set(dayKey, { delta: (prev?.delta ?? 0) + player.ratingDelta, occurredAt });
     }
   }
 
-  return found ? Math.round(total) : null;
+  let latest: { delta: number; occurredAt: string } | null = null;
+  for (const entry of byDay.values()) {
+    if (!latest || new Date(entry.occurredAt) > new Date(latest.occurredAt)) {
+      latest = entry;
+    }
+  }
+
+  return latest ? { delta: Math.round(latest.delta), occurredAt: latest.occurredAt } : null;
 }
 
 function clamp01(value: number) {

@@ -83,7 +83,7 @@ export default function StylePage() {
           progress={0.83}
           pointsToClimb={2}
           rating={1017}
-          todayDelta={-22}
+          lastChange={{ delta: -22, occurredAt: new Date().toISOString() }}
           movement={{ direction: 'DOWN', positions: 3 }}
         />
       </Block>

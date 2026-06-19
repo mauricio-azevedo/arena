@@ -12,8 +12,8 @@ export type StandingCardProps = {
   pointsToClimb: number | null;
   /** Current rating. */
   rating: number;
-  /** Net rating change today; null hides the column. */
-  todayDelta: number | null;
+  /** The viewer's most recent rating change (net of its day); null hides the column. */
+  lastChange: { delta: number; occurredAt: string } | null;
   /** Latest ranking movement (from the most recent match). */
   movement?: { direction: 'UP' | 'DOWN'; positions: number } | null;
 };
@@ -23,7 +23,7 @@ export function StandingCard({
   progress,
   pointsToClimb,
   rating,
-  todayDelta,
+  lastChange,
   movement,
 }: StandingCardProps) {
   const isLeading = pointsToClimb === null;
@@ -69,11 +69,11 @@ export function StandingCard({
           <Eyebrow>Rating atual</Eyebrow>
           <Stat className="mt-1">{Math.round(rating)}</Stat>
         </div>
-        {todayDelta !== null && (
+        {lastChange && (
           <div className="text-right">
-            <Eyebrow>Hoje</Eyebrow>
-            <Stat className={`mt-1 ${todayDelta < 0 ? 'text-danger' : 'text-success'}`}>
-              {formatDelta(todayDelta)}
+            <Eyebrow>{formatRelativeDay(lastChange.occurredAt)}</Eyebrow>
+            <Stat className={`mt-1 ${lastChange.delta < 0 ? 'text-danger' : 'text-success'}`}>
+              {formatDelta(lastChange.delta)}
             </Stat>
           </div>
         )}
@@ -99,4 +99,20 @@ function RankMovement({ movement }: { movement: { direction: 'UP' | 'DOWN'; posi
 function formatDelta(delta: number) {
   // Use a true minus sign for negatives to match the display face's figures.
   return delta < 0 ? `−${Math.abs(delta)}` : `+${delta}`;
+}
+
+// Instagram-style relative day label for the last rating change.
+function formatRelativeDay(occurredAt: string) {
+  const then = new Date(occurredAt);
+  const thenStart = new Date(then.getFullYear(), then.getMonth(), then.getDate());
+  const now = new Date();
+  const nowStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const days = Math.max(0, Math.round((nowStart.getTime() - thenStart.getTime()) / 86_400_000));
+
+  if (days === 0) return 'Hoje';
+  if (days === 1) return 'Ontem';
+  if (days < 7) return `Há ${days} dias`;
+
+  const weeks = Math.floor(days / 7);
+  return weeks === 1 ? 'Há 1 semana' : `Há ${weeks} semanas`;
 }
