@@ -1,6 +1,6 @@
 'use client';
 
-import { Fragment, useState } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowDown, ArrowUp, MoreVertical, Pencil, Trash2 } from 'lucide-react';
 import type { Match, MatchPlayer } from '@/types/api';
@@ -260,12 +260,9 @@ function DuplaRow({
     <div className="flex items-center gap-3">
       <AvatarPair players={players} isWinner={isWinner} />
 
-      <div className="flex min-w-0 flex-1 flex-wrap items-center gap-x-2 gap-y-1">
-        {players.map((player, index) => (
-          <Fragment key={player.id}>
-            {index > 0 && <span className="text-body-strong text-dim-foreground">/</span>}
-            <PlayerName player={player} isWinner={isWinner} />
-          </Fragment>
+      <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+        {players.map((player) => (
+          <PlayerName key={player.id} player={player} isWinner={isWinner} />
         ))}
       </div>
 
@@ -337,9 +334,9 @@ function AvatarPair({ players, isWinner }: { players: MatchPlayer[]; isWinner: b
         <span
           key={player.id}
           className={cn(
-            'flex size-[20px] items-center justify-center rounded-full text-caption font-bold shadow-[inset_0_0_0_1px_rgba(255,255,255,0.08)]',
+            'flex size-[34px] items-center justify-center rounded-full text-caption font-bold shadow-[inset_0_0_0_1px_rgba(255,255,255,0.08)]',
             isWinner ? 'bg-[#26354d] text-brand-muted' : 'bg-[#2b2e33] text-muted-foreground',
-            index > 0 && '-ml-4',
+            index > 0 && '-ml-3',
           )}
         >
           {getPlayerInitial(player)}
