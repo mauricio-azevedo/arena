@@ -15,7 +15,6 @@ type Props = {
   groupId: string;
   activeTab: GroupTab;
   ranking: GroupMember[];
-  members: GroupMember[];
   matches: Match[];
   canManageMatches: boolean;
   currentMembershipId: string | null;
@@ -25,7 +24,6 @@ export function GroupDetailTabs({
   groupId,
   activeTab,
   ranking,
-  members,
   matches,
   canManageMatches,
   currentMembershipId,
@@ -356,56 +354,6 @@ function MatchesTab({
       emptyTitle="Nenhuma partida registrada"
       emptyDescription="Registre a primeira partida para começar a movimentar o ranking."
     />
-  );
-}
-
-function MembersTab({
-  members,
-  currentMembershipId,
-}: {
-  members: GroupMember[];
-  currentMembershipId: string | null;
-}) {
-  if (members.length === 0) {
-    return (
-      <Card>
-        <CardContent className="p-4 text-sm leading-6 text-muted-foreground">
-          Nenhum membro no grupo ainda.
-        </CardContent>
-      </Card>
-    );
-  }
-
-  return (
-    <section className="space-y-3" aria-label="Membros do grupo">
-      {members.map((member) => {
-        const isCurrent = member.id === currentMembershipId;
-
-        return (
-          <Card key={member.id} className={isCurrent ? 'ring-2 ring-primary/30' : undefined}>
-            <CardContent className="flex items-center justify-between gap-4 p-4">
-              <div className="min-w-0">
-                <div className="flex min-w-0 items-center gap-2">
-                  <p className="truncate font-semibold tracking-[-0.015em]">
-                    <UserNameLink userId={member.userId}>
-                      {getMemberDisplayName(member)}
-                    </UserNameLink>
-                  </p>
-                  {isCurrent && <InlineBadge>Você</InlineBadge>}
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  {member.role === 'ADMIN' ? 'Admin do grupo' : 'Membro'}
-                </p>
-              </div>
-
-              <span className="rounded-full bg-white/45 px-3 py-1 text-xs font-semibold text-muted-foreground backdrop-blur-xl dark:bg-white/10">
-                {member.rating.toFixed(0)} rating
-              </span>
-            </CardContent>
-          </Card>
-        );
-      })}
-    </section>
   );
 }
 

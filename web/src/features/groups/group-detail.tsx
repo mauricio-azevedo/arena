@@ -112,7 +112,6 @@ export function GroupDetail({ groupId, tab }: Props) {
         groupId={data.group.id}
         activeTab={activeTab}
         ranking={data.ranking}
-        members={data.members}
         matches={data.matches}
         canManageMatches={canManageMatches}
         currentMembershipId={currentMembershipId}
