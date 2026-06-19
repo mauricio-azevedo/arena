@@ -1,13 +1,13 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
-import { ArrowDown, ArrowUp, Search, UserPlus } from 'lucide-react';
-import type { Group, GroupMember, Match, MyGroup, RankingMovement } from '@/types/api';
-import { cn } from '@/lib/utils';
+import { Search, UserPlus } from 'lucide-react';
+import type { Group, GroupMember, Match, MyGroup } from '@/types/api';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
-import { Separator } from '@/components/ui/separator';
+import { Title } from '@/components/ui/text';
+import { StandingCard } from '@/features/groups/components/standing-card';
 
 export type GroupSummaryCardProps = {
   group: Group;
@@ -17,7 +17,13 @@ export type GroupSummaryCardProps = {
   membership: MyGroup | null;
 };
 
-export function GroupSummaryCard({ group, ranking, members, membership }: GroupSummaryCardProps) {
+export function GroupSummaryCard({
+  group,
+  ranking,
+  members,
+  matches,
+  membership,
+}: GroupSummaryCardProps) {
   const currentRankIndex = membership
     ? ranking.findIndex((member) => member.id === membership.id)
     : -1;
@@ -25,6 +31,7 @@ export function GroupSummaryCard({ group, ranking, members, membership }: GroupS
     ? (ranking[currentRankIndex] ?? members.find((member) => member.id === membership.id) ?? null)
     : null;
   const memberCount = group._count?.members ?? members.length;
+  const matchCount = group._count?.matches ?? matches.length;
   const currentRating = currentMember?.rating ?? membership?.rating ?? null;
 
   const standing =
@@ -32,29 +39,31 @@ export function GroupSummaryCard({ group, ranking, members, membership }: GroupS
       ? buildStanding(ranking, currentRankIndex, currentRating)
       : null;
 
+  const movement = currentMember?.rankingMovement ?? null;
+  const todayDelta = membership ? sumTodayRatingDelta(matches, membership.id) : null;
+
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
+      <GroupIdentityHeader
+        group={group}
+        memberCount={memberCount}
+        matchCount={matchCount}
+        canInvite={membership?.role === 'ADMIN'}
+      />
+
       <GroupSearchField />
 
-      {standing && (
-        <Card>
-          <CardContent className="space-y-4">
-            <StandingSection
-              standing={standing}
-              rating={currentRating as number}
-              movement={currentMember?.rankingMovement}
-            />
-
-            <Separator />
-
-            <MembersFooter
-              members={members}
-              memberCount={memberCount}
-              groupId={group.id}
-              canInvite={membership?.role === 'ADMIN'}
-            />
-          </CardContent>
-        </Card>
+      {standing && currentRating !== null && (
+        <StandingCard
+          rank={standing.rank}
+          progress={standing.progress}
+          pointsToClimb={standing.pointsToClimb}
+          rating={currentRating}
+          todayDelta={todayDelta}
+          movement={
+            movement ? { direction: movement.direction, positions: movement.positions } : null
+          }
+        />
       )}
     </div>
   );
@@ -64,12 +73,11 @@ type Standing = {
   rank: number | null;
   progress: number;
   pointsToClimb: number | null;
-  chasingName: string | null;
 };
 
 function buildStanding(ranking: GroupMember[], index: number, rating: number): Standing {
   if (index < 0) {
-    return { rank: null, progress: 0, pointsToClimb: null, chasingName: null };
+    return { rank: null, progress: 0, pointsToClimb: null };
   }
 
   const rank = index + 1;
@@ -77,33 +85,112 @@ function buildStanding(ranking: GroupMember[], index: number, rating: number): S
   const below = index < ranking.length - 1 ? ranking[index + 1] : null;
 
   if (!above) {
-    return { rank, progress: 1, pointsToClimb: null, chasingName: null };
+    return { rank, progress: 1, pointsToClimb: null };
   }
 
   const pointsToClimb = Math.max(1, Math.ceil(above.rating - rating));
 
-  // The bar maps the viewer's rating within the band between the member
-  // directly above (the target, full bar) and the one directly below (empty
-  // bar). Last place has no member below to anchor the band, so it reads empty.
+  // The ring maps the viewer's rating within the band between the member
+  // directly above (the target, full ring) and the one directly below (empty).
+  // Last place has no member below to anchor the band, so it reads empty.
   const progress = below
     ? clamp01((rating - below.rating) / Math.max(1, above.rating - below.rating))
     : 0;
 
-  return { rank, progress, pointsToClimb, chasingName: getMemberFirstName(above) };
+  return { rank, progress, pointsToClimb };
 }
 
-function getMemberFirstName(member?: GroupMember | null) {
-  const name = member?.user?.firstName?.trim();
-  return name ? name : null;
+function sumTodayRatingDelta(matches: Match[], membershipId: string): number | null {
+  const today = new Date().toDateString();
+  let total = 0;
+  let found = false;
+
+  for (const match of matches) {
+    if (new Date(match.playedAt).toDateString() !== today) {
+      continue;
+    }
+    for (const player of match.players) {
+      if (player.groupMemberId === membershipId) {
+        total += player.ratingDelta;
+        found = true;
+      }
+    }
+  }
+
+  return found ? Math.round(total) : null;
 }
 
 function clamp01(value: number) {
   return Math.min(1, Math.max(0, value));
 }
 
+function GroupIdentityHeader({
+  group,
+  memberCount,
+  matchCount,
+  canInvite,
+}: {
+  group: Group;
+  memberCount: number;
+  matchCount: number;
+  canInvite: boolean;
+}) {
+  return (
+    <div className="flex flex-col items-center text-center">
+      <div className="flex size-[74px] items-center justify-center rounded-full bg-[linear-gradient(150deg,#5b9bf7,#3a78d6)] font-display text-stat-lg text-white shadow-[0_8px_20px_rgba(31,73,135,0.45),inset_0_0_0_1px_rgba(255,255,255,0.14)]">
+        {getGroupInitials(group.name)}
+      </div>
+
+      <Title className="mt-3">{group.name}</Title>
+
+      <div className="mt-1.5 flex items-center gap-2 text-label font-bold text-muted-foreground">
+        <span className="text-foreground">{memberCount}</span>{' '}
+        {memberCount === 1 ? 'membro' : 'membros'}
+        <span className="size-[3px] rounded-full bg-dim-foreground" />
+        <span className="text-foreground">{matchCount}</span>{' '}
+        {matchCount === 1 ? 'partida' : 'partidas'}
+      </div>
+
+      {group.description && <GroupDescription text={group.description} />}
+
+      {canInvite && (
+        <Button asChild variant="secondary" size="sm" className="mt-3.5">
+          <Link href={`/groups/${group.id}/invite`}>
+            <UserPlus />
+            Convidar membros
+          </Link>
+        </Button>
+      )}
+    </div>
+  );
+}
+
+function GroupDescription({ text }: { text: string }) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <div
+      className={
+        open
+          ? 'mt-2 max-w-[320px] text-support text-faint-foreground'
+          : 'mt-2 flex max-w-[320px] items-baseline gap-1 text-support text-faint-foreground'
+      }
+    >
+      <span className={open ? undefined : 'min-w-0 flex-1 truncate'}>{text}</span>
+      <button
+        type="button"
+        onClick={() => setOpen((value) => !value)}
+        className="shrink-0 font-bold whitespace-nowrap text-brand-muted"
+      >
+        {open ? 'ler menos' : 'ler mais'}
+      </button>
+    </div>
+  );
+}
+
 function GroupSearchField() {
   return (
-    <InputGroup className="rounded-full bg-card">
+    <InputGroup>
       <InputGroupAddon>
         <Search />
       </InputGroupAddon>
@@ -116,180 +203,16 @@ function GroupSearchField() {
   );
 }
 
-function StandingSection({
-  standing,
-  rating,
-  movement,
-}: {
-  standing: Standing;
-  rating: number;
-  movement?: RankingMovement | null;
-}) {
-  if (!standing.rank) {
-    return (
-      <div className="space-y-1">
-        <p className="text-2xl font-semibold tracking-tight text-foreground">Sem posição ainda</p>
-        <p className="text-sm text-muted-foreground">
-          <span className="font-semibold tabular-nums text-foreground">{Math.round(rating)}</span>{' '}
-          rating inicial
-        </p>
-      </div>
-    );
+function getGroupInitials(name: string) {
+  const words = name.trim().split(/\s+/).filter(Boolean);
+
+  if (words.length === 0) {
+    return '?';
   }
 
-  const ratingDelta = movement
-    ? Math.round(movement.currentRating - movement.previousRating)
-    : null;
-  const isLeading = standing.pointsToClimb === null;
+  if (words.length === 1) {
+    return words[0].slice(0, 2).toUpperCase();
+  }
 
-  return (
-    <>
-      <div className="flex items-start justify-between gap-3">
-        <div className="space-y-5">
-          <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
-            Minha posição
-          </p>
-          <div className="flex items-baseline gap-2">
-            <span className="text-6xl font-semibold leading-[0.78] tracking-tighter tabular-nums text-foreground">
-              #{standing.rank}
-            </span>
-            {movement && <RankMovementBadge movement={movement} />}
-          </div>
-        </div>
-
-        <div className="space-y-1.5 text-right">
-          <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
-            Rating
-          </p>
-          <p className="flex items-baseline justify-end gap-1 text-lg font-semibold tabular-nums text-foreground">
-            {Math.round(rating)}
-            {ratingDelta !== null && ratingDelta !== 0 && <RatingDelta delta={ratingDelta} />}
-          </p>
-        </div>
-      </div>
-
-      <div className="space-y-2">
-        <div className="h-1.5 overflow-hidden rounded-full bg-foreground/10">
-          <div
-            className="h-full rounded-full bg-accent"
-            style={{ width: `${Math.round(standing.progress * 100)}%` }}
-          />
-        </div>
-
-        {isLeading ? (
-          <p className="text-[13px] font-semibold text-accent">Ninguém na sua frente</p>
-        ) : (
-          <p className="text-[13px] font-medium leading-snug text-muted-foreground">
-            Faltam <span className="tabular-nums text-accent">{standing.pointsToClimb} pts</span>{' '}
-            {standing.chasingName ? (
-              <>
-                pra passar <span className="text-foreground">{standing.chasingName}</span>
-              </>
-            ) : (
-              'pra subir'
-            )}
-          </p>
-        )}
-      </div>
-    </>
-  );
-}
-
-function MembersFooter({
-  members,
-  memberCount,
-  groupId,
-  canInvite,
-}: {
-  members: GroupMember[];
-  memberCount: number;
-  groupId: string;
-  canInvite: boolean;
-}) {
-  return (
-    <div className="flex items-center justify-between gap-3">
-      <div className="flex items-center gap-2.5">
-        <AvatarStack members={members} total={memberCount} />
-        <span className="text-[13px] text-muted-foreground">
-          {memberCount} {memberCount === 1 ? 'membro' : 'membros'}
-        </span>
-      </div>
-
-      {canInvite && (
-        <Button asChild variant="secondary" size="icon" className="rounded-full">
-          <Link href={`/groups/${groupId}/invite`} aria-label="Convidar">
-            <UserPlus className="h-4 w-4" />
-          </Link>
-        </Button>
-      )}
-    </div>
-  );
-}
-
-function AvatarStack({ members, total }: { members: GroupMember[]; total: number }) {
-  const shown = members.slice(0, 3);
-  const remaining = total - shown.length;
-
-  return (
-    <div className="flex items-center">
-      {shown.map((member, index) => (
-        <span
-          key={member.id}
-          className={cn(
-            'flex h-7 w-7 items-center justify-center rounded-full bg-accent text-[11px] font-semibold text-accent-foreground ring-1 ring-accent-dark',
-            index > 0 && '-ml-2',
-          )}
-        >
-          {getMemberInitial(member)}
-        </span>
-      ))}
-
-      {remaining > 0 && (
-        <span className="-ml-2 flex h-7 items-center justify-center rounded-full bg-accent/30 px-1.5 text-[10px] font-semibold text-accent-foreground ring-1 ring-accent-dark">
-          +{remaining}
-        </span>
-      )}
-    </div>
-  );
-}
-
-function getMemberInitial(member: GroupMember) {
-  const first = member.user?.firstName?.trim();
-  return first ? first.charAt(0).toUpperCase() : '?';
-}
-
-function RankMovementBadge({ movement }: { movement: RankingMovement }) {
-  const isUp = movement.direction === 'UP';
-  const Icon = isUp ? ArrowUp : ArrowDown;
-  const verb = isUp ? 'subiu' : 'caiu';
-  const label = `${verb} ${movement.positions} ${movement.positions === 1 ? 'posição' : 'posições'}`;
-  const className = isUp
-    ? 'text-accent bg-accent/15'
-    : 'text-rose-600 bg-rose-500/12 dark:text-rose-400';
-
-  return (
-    <span
-      aria-label={label}
-      title={label}
-      className={`inline-flex shrink-0 items-center gap-0.5 rounded-full px-2 py-0.5 text-[11px] font-semibold leading-none tabular-nums ${className}`}
-    >
-      <Icon className="h-3 w-3" aria-hidden="true" />
-      {movement.positions}
-    </span>
-  );
-}
-
-function RatingDelta({ delta }: { delta: number }) {
-  const isUp = delta > 0;
-  const Icon = isUp ? ArrowUp : ArrowDown;
-  const className = isUp ? 'text-accent' : 'text-rose-600 dark:text-rose-400';
-
-  return (
-    <span
-      className={`inline-flex items-center gap-0.5 text-[12px] font-semibold tabular-nums ${className}`}
-    >
-      <Icon className="h-3 w-3" aria-hidden="true" />
-      {Math.abs(delta)}
-    </span>
-  );
+  return `${words[0][0]}${words[words.length - 1][0]}`.toUpperCase();
 }

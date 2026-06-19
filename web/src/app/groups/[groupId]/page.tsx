@@ -15,10 +15,10 @@ type Props = {
 export default async function GroupDetailPage({ params, searchParams }: Props) {
   const { groupId } = await params;
   const { tab } = await searchParams;
-  const group = await getGroup(groupId).catch(() => notFound());
+  await getGroup(groupId).catch(() => notFound());
 
   return (
-    <AppShell chrome={{ title: group.name, back: { fallbackHref: '/' } }}>
+    <AppShell chrome={{ back: { fallbackHref: '/' } }}>
       <GroupDetail groupId={groupId} tab={tab} />
     </AppShell>
   );

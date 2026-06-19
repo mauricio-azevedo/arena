@@ -42,9 +42,9 @@ export function BottomNav() {
   return (
     <nav
       aria-label="Navegação principal"
-      className="fixed inset-x-0 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-50 flex justify-center"
+      className="fixed inset-x-0 bottom-[max(1.25rem,env(safe-area-inset-bottom))] z-50 flex justify-center"
     >
-      <div className="inline-flex w-fit items-center justify-center rounded-full border-1 border-border bg-muted p-1 text-muted-foreground backdrop-blur">
+      <div className="inline-flex items-center gap-1.5 rounded-pill border border-foreground/8 bg-foreground/6 p-2 shadow-float backdrop-blur-md">
         {items.map((item) => {
           const Icon = item.icon;
           const isActive = activeHref === item.href;
@@ -58,8 +58,7 @@ export function BottomNav() {
               aria-current={isActive ? 'page' : undefined}
               className={getBottomNavLinkClassName(isActive)}
             >
-              <Icon className="h-4 w-4" />
-              <span>{item.label}</span>
+              <Icon className="size-[22px]" strokeWidth={1.9} />
             </Link>
           );
         })}
@@ -86,8 +85,9 @@ function isExactOrDescendantPath(pathname: string, href: Exclude<BottomNavHref, 
 
 function getBottomNavLinkClassName(isActive: boolean) {
   return cn(
-    "relative inline-flex h-14 flex-1 items-center justify-center gap-2 rounded-full border border-transparent px-3 py-1 text-sm font-medium whitespace-nowrap text-foreground/60 transition-all hover:text-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-1 focus-visible:outline-ring dark:text-muted-foreground dark:hover:text-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
-    isActive &&
-      'bg-background text-foreground dark:border-input dark:bg-input/30 dark:text-foreground',
+    'relative flex size-14 items-center justify-center rounded-full border transition-colors focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/40 [&_svg]:pointer-events-none [&_svg]:shrink-0',
+    isActive
+      ? 'border-white/15 bg-brand text-brand-foreground shadow-button'
+      : 'border-transparent text-foreground/50 hover:text-foreground',
   );
 }

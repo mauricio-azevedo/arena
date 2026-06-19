@@ -32,10 +32,10 @@ export function GroupDetailTabs({
   const [selectedTab, setSelectedTab] = useState<GroupTab>(activeTab);
   const tabs = useMemo(
     () => [
-      { value: 'ranking' as const, label: 'Ranking', count: ranking.length },
-      { value: 'matches' as const, label: 'Partidas', count: matches.length },
+      { value: 'ranking' as const, label: 'Ranking' },
+      { value: 'matches' as const, label: 'Partidas' },
     ],
-    [matches.length, ranking.length],
+    [],
   );
 
   useEffect(() => {
@@ -50,7 +50,7 @@ export function GroupDetailTabs({
 
   return (
     <div className="space-y-5">
-      <div className="flex gap-2 rounded-full text-sm font-semibold">
+      <div className="flex gap-7 border-b border-divider">
         {tabs.map((tab) => {
           const isSelected = selectedTab === tab.value;
 
@@ -60,20 +60,14 @@ export function GroupDetailTabs({
               type="button"
               onClick={() => setTab(tab.value)}
               aria-pressed={isSelected}
-              className={`br-pressable flex min-h-12 items-center justify-center gap-1.5 rounded-full px-5 transition-all sm:px-3 ${
+              className={cn(
+                '-mb-px flex h-12 items-center gap-1.5 border-b-2 text-body-strong whitespace-nowrap transition-colors',
                 isSelected
-                  ? 'bg-accent text-accent-foreground'
-                  : 'bg-card text-muted-foreground hover:bg-white/45 hover:text-foreground dark:hover:bg-white/10'
-              }`}
+                  ? 'border-brand text-foreground'
+                  : 'border-transparent text-faint-foreground hover:text-foreground',
+              )}
             >
               <span>{tab.label}</span>
-              {tab.value === 'matches' && (
-                <span
-                  className={isSelected ? 'text-accent-foreground/70' : 'text-muted-foreground/75'}
-                >
-                  {tab.count}
-                </span>
-              )}
             </button>
           );
         })}

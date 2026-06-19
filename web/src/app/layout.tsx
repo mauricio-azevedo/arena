@@ -1,20 +1,24 @@
 import type { Metadata, Viewport } from 'next';
 import type { ReactNode } from 'react';
-import { Geist, Geist_Mono, Inter } from 'next/font/google';
+import { Plus_Jakarta_Sans, Archivo } from 'next/font/google';
 import './globals.css';
 import { cn } from '@/lib/utils';
 import { NavigationProvider } from '@/providers/navigation-provider';
 
-const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
-
-const geistSans = Geist({
-  variable: '--font-geist-sans',
+// Body / UI face — humanist geometric sans, used at heavy weights.
+const plusJakarta = Plus_Jakarta_Sans({
   subsets: ['latin'],
+  weight: ['500', '600', '700', '800'],
+  variable: '--font-plus-jakarta',
+  display: 'swap',
 });
 
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
+// Display face — confident grotesk for big numbers and titles (scoreboard feel).
+const archivo = Archivo({
   subsets: ['latin'],
+  weight: ['600', '700', '800'],
+  variable: '--font-archivo',
+  display: 'swap',
 });
 
 export const metadata: Metadata = {
@@ -55,10 +59,9 @@ export default function RootLayout({
       className={cn(
         'h-full',
         'antialiased',
-        geistSans.variable,
-        geistMono.variable,
         'font-sans',
-        inter.variable,
+        plusJakarta.variable,
+        archivo.variable,
       )}
     >
       <body className="min-h-full flex flex-col dark">

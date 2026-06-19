@@ -13,7 +13,7 @@ export function GroupActions({ groupId, canManageMatches }: Props) {
   }
 
   return (
-    <Button asChild size="lg" className="h-12 w-full rounded-full font-semibold">
+    <Button asChild size="lg" className="w-full">
       <Link href={`/groups/${groupId}/matches/new`}>
         <Plus className="h-4 w-4" />
         Registrar partida

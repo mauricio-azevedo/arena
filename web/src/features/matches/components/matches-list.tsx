@@ -1,11 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { Fragment, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowDown, ArrowUp, MoreVertical, Pencil, Trash2, X } from 'lucide-react';
+import { ArrowDown, ArrowUp, MoreVertical, Pencil, Trash2 } from 'lucide-react';
 import type { Match, MatchPlayer } from '@/types/api';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
+import { Section } from '@/components/ui/text';
+import { cn } from '@/lib/utils';
 import { Card, CardContent } from '@/components/ui/card';
 import {
   AlertDialog,
@@ -60,11 +61,13 @@ export function MatchesList({
     <section className="space-y-5">
       {matchGroups.map((group) => (
         <div key={group.dateKey} className="space-y-3">
-          <div className="sticky top-0 z-20">
-            <p className="inline-flex rounded-full bg-background/40 px-3 py-1.5 text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground backdrop-blur-xs">
+          {isPrimaryDateLabel(group.label) ? (
+            <Section>{group.label}</Section>
+          ) : (
+            <p className="text-label font-bold text-faint-foreground first-letter:uppercase">
               {group.label}
             </p>
-          </div>
+          )}
 
           <div className="space-y-3">
             {group.matches.map((match) => (
@@ -103,6 +106,11 @@ export function MatchCard({
   const winnerScore = teamAWon ? match.gamesA : match.gamesB;
   const loserScore = teamAWon ? match.gamesB : match.gamesA;
 
+  const winnerExpected = teamAWon ? match.teamAExpected : match.teamBExpected;
+  const isUpset = winnerExpected !== null && winnerExpected < 0.5;
+  const swing = getRatingSwing(match);
+  const expectedScore = getExpectedScore(winnerExpected);
+
   const showActions = Boolean(groupId && canManage);
 
   async function handleDelete() {
@@ -133,17 +141,32 @@ export function MatchCard({
 
   return (
     <>
-      <Card className="pt-2 pb-4">
-        <CardContent className="px-4">
-          <div className="flex items-center justify-between gap-3">
-            <p className="text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">
-              {narrativeTitle ?? 'Partida'}
-            </p>
+      <Card className="gap-0 py-0">
+        <CardContent className="px-4 py-4">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex min-w-0 items-center gap-2 text-label font-bold text-foreground">
+              <span
+                aria-hidden
+                className="size-[7px] shrink-0 rounded-full"
+                style={{ background: isUpset ? '#f0a020' : '#3b9dd9' }}
+              />
+              <span className="truncate">{narrativeTitle ?? 'Partida'}</span>
+              {swing !== null && (
+                <span className="shrink-0 text-caption font-bold tabular-nums text-muted-foreground">
+                  ±{swing}
+                </span>
+              )}
+            </div>
+
             {showActions && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" className="shrink-0">
-                    <MoreVertical className="h-4 w-4" />
+                  <Button
+                    variant="ghost"
+                    size="icon-sm"
+                    className="-mr-1 shrink-0 text-faint-foreground"
+                  >
+                    <MoreVertical className="size-5" />
                     <span className="sr-only">Abrir opções</span>
                   </Button>
                 </DropdownMenuTrigger>
@@ -175,13 +198,21 @@ export function MatchCard({
             )}
           </div>
 
+          <div className="my-3.5 h-px bg-divider" />
+
+          <DuplaRow players={winnerPlayers} score={winnerScore} isWinner />
           <div className="mt-3">
-            <MatchTeam players={winnerPlayers} isWinner />
-            <MatchScore winnerScore={winnerScore} loserScore={loserScore} />
-            <MatchTeam players={loserPlayers} isWinner={false} />
+            <DuplaRow players={loserPlayers} score={loserScore} isWinner={false} />
           </div>
 
-          <MatchExpectedResult match={match} teamAWon={teamAWon} />
+          {expectedScore && (
+            <p className="mt-3.5 text-caption font-semibold text-faint-foreground">
+              Placar esperado{' '}
+              <span className="font-bold tabular-nums text-muted-foreground">
+                {expectedScore.winner}–{expectedScore.loser}
+              </span>
+            </p>
+          )}
         </CardContent>
       </Card>
 
@@ -216,155 +247,141 @@ export function MatchCard({
   );
 }
 
-function MatchTeam({ players, isWinner }: { players: MatchPlayer[]; isWinner: boolean }) {
-  const teamRating = getTeamRating(players);
-
-  return (
-    <div className="space-y-3">
-      {teamRating !== null && (
-        <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-muted-foreground">
-          Rating <span className="tabular-nums">{teamRating}</span>
-        </p>
-      )}
-
-      <div className="space-y-3">
-        {players.map((player) => (
-          <MatchPlayerRow key={player.id} player={player} isWinner={isWinner} />
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function MatchPlayerRow({ player, isWinner }: { player: MatchPlayer; isWinner: boolean }) {
-  const delta = Math.round(player.ratingDelta);
-
+function DuplaRow({
+  players,
+  score,
+  isWinner,
+}: {
+  players: MatchPlayer[];
+  score: number;
+  isWinner: boolean;
+}) {
   return (
     <div className="flex items-center gap-3">
-      <Avatar className={`ring-1 ${isWinner ? 'ring-emerald-500/40' : 'ring-border'}`}>
-        <AvatarFallback
-          className={
-            isWinner
-              ? 'bg-emerald-500/20 text-emerald-700 dark:text-emerald-300'
-              : 'bg-muted text-muted-foreground'
-          }
+      <AvatarPair players={players} isWinner={isWinner} />
+
+      <div className="flex min-w-0 flex-1 flex-wrap items-center gap-x-2 gap-y-1">
+        {players.map((player, index) => (
+          <Fragment key={player.id}>
+            {index > 0 && <span className="text-body-strong text-dim-foreground">/</span>}
+            <PlayerName player={player} isWinner={isWinner} />
+          </Fragment>
+        ))}
+      </div>
+
+      <div
+        className={cn(
+          'ml-1 font-display text-stat-lg tabular-nums',
+          isWinner ? 'text-brand' : 'text-faint-foreground',
+        )}
+      >
+        {score}
+      </div>
+    </div>
+  );
+}
+
+function PlayerName({ player, isWinner }: { player: MatchPlayer; isWinner: boolean }) {
+  const moved =
+    player.rankBefore !== null &&
+    player.rankAfter !== null &&
+    player.rankBefore !== player.rankAfter;
+
+  return (
+    <span className="flex items-baseline gap-1.5">
+      <span
+        className={cn(
+          'text-body font-bold',
+          isWinner ? 'text-foreground' : 'text-muted-foreground',
+        )}
+      >
+        <UserNameLink userId={player.groupMember?.userId}>
+          {getPlayerFirstName(player)}
+        </UserNameLink>
+      </span>
+      {player.rankAfter !== null && (
+        <span className="text-label font-bold tabular-nums text-faint-foreground">
+          #{player.rankAfter}
+        </span>
+      )}
+      {moved && (
+        <InlineMovement
+          isUp={(player.rankAfter as number) < (player.rankBefore as number)}
+          positions={Math.abs((player.rankBefore as number) - (player.rankAfter as number))}
+        />
+      )}
+    </span>
+  );
+}
+
+function InlineMovement({ isUp, positions }: { isUp: boolean; positions: number }) {
+  const Icon = isUp ? ArrowUp : ArrowDown;
+
+  return (
+    <span
+      className={cn(
+        'inline-flex items-center gap-0.5 text-label font-bold tabular-nums',
+        isUp ? 'text-success' : 'text-danger',
+      )}
+    >
+      <Icon className="size-2.5" strokeWidth={3.2} aria-hidden />
+      {positions}
+    </span>
+  );
+}
+
+function AvatarPair({ players, isWinner }: { players: MatchPlayer[]; isWinner: boolean }) {
+  return (
+    <div className="flex shrink-0">
+      {players.slice(0, 2).map((player, index) => (
+        <span
+          key={player.id}
+          className={cn(
+            'flex size-[20px] items-center justify-center rounded-full text-caption font-bold shadow-[inset_0_0_0_1px_rgba(255,255,255,0.08)]',
+            isWinner ? 'bg-[#26354d] text-brand-muted' : 'bg-[#2b2e33] text-muted-foreground',
+            index > 0 && '-ml-4',
+          )}
         >
           {getPlayerInitial(player)}
-        </AvatarFallback>
-      </Avatar>
-
-      <div className="min-w-0 flex-1">
-        <p
-          className={`truncate text-sm font-medium tracking-wide ${
-            isWinner ? 'text-foreground' : 'text-muted-foreground'
-          }`}
-        >
-          <UserNameLink userId={player.groupMember?.userId}>
-            {getPlayerDisplayName(player)}
-          </UserNameLink>
-        </p>
-
-        <p
-          className={`mt-1 font-mono text-[11px] uppercase tracking-wide ${
-            isWinner ? 'text-muted-foreground' : 'text-muted-foreground/60'
-          }`}
-        >
-          Rating <span className="tabular-nums">{Math.round(player.ratingBefore)}</span>
-          {delta !== 0 && (
-            <span
-              className={`ml-1 font-semibold tabular-nums ${
-                delta > 0
-                  ? 'text-emerald-600 dark:text-emerald-400'
-                  : 'text-rose-600 dark:text-rose-400'
-              }`}
-            >
-              {delta > 0 ? `+${delta}` : delta}
-            </span>
-          )}
-        </p>
-      </div>
-
-      <MatchPlayerRank rankBefore={player.rankBefore} rankAfter={player.rankAfter} />
+        </span>
+      ))}
     </div>
   );
 }
 
-function MatchScore({ winnerScore, loserScore }: { winnerScore: number; loserScore: number }) {
-  return (
-    <div className="my-4 flex items-center gap-4">
-      <span className="h-px flex-1 bg-linear-to-l from-foreground/10 to-transparent" />
-
-      <div className="flex items-center gap-2 rounded-2xl px-5 py-2 text-2xl font-semibold tabular-nums bg-card border border-border shadow-sm">
-        <span className="text-foreground">{winnerScore}</span>
-        <X className="h-4 w-4 text-muted-foreground" strokeWidth={3} aria-hidden="true" />
-        <span className="text-muted-foreground">{loserScore}</span>
-      </div>
-
-      <span className="h-px flex-1 bg-linear-to-r from-foreground/10 to-transparent" />
-    </div>
-  );
+// "Hoje"/"Ontem" anchor the feed and read as section headers; explicit dates
+// are quieter sublabels.
+function isPrimaryDateLabel(label: string) {
+  return label === 'Hoje' || label === 'Ontem';
 }
 
-function MatchExpectedResult({ match, teamAWon }: { match: Match; teamAWon: boolean }) {
-  const { teamAExpected, teamBExpected } = match;
-
-  if (teamAExpected === null || teamBExpected === null) {
+// How much the match moved ratings — the average points exchanged, shown as ±N.
+function getRatingSwing(match: Match): number | null {
+  if (match.players.length === 0) {
     return null;
   }
 
-  const winnerExpected = teamAWon ? teamAExpected : teamBExpected;
+  const total = match.players.reduce((sum, player) => sum + Math.abs(player.ratingDelta), 0);
+  const average = Math.round(total / match.players.length);
 
-  // A barra representa a chance de vitória (probabilidade de Elo), não fração de games.
-  const winnerPercent = Math.round(winnerExpected * 100);
-  const loserPercent = 100 - winnerPercent;
+  return average > 0 ? average : null;
+}
 
-  // O placar esperado é um resultado válido (vencedor chega a 6, ou 7 no tiebreak).
-  // A margem do favorito cresce com o favoritismo; o vencedor real pode ter sido o azarão.
+// The expected scoreline, oriented so the actual winner is listed first (their
+// games may be the smaller number when they were the underdog).
+function getExpectedScore(winnerExpected: number | null) {
+  if (winnerExpected === null) {
+    return null;
+  }
+
   const winnerWasFavorite = winnerExpected >= 0.5;
   const favoriteProbability = Math.max(winnerExpected, 1 - winnerExpected);
   const { winnerGames, loserGames } = getExpectedScoreline(favoriteProbability);
 
-  const expectedWinnerGames = winnerWasFavorite ? winnerGames : loserGames;
-  const expectedLoserGames = winnerWasFavorite ? loserGames : winnerGames;
-
-  return (
-    <div className="mt-6 space-y-2 border-t border-border pt-6">
-      <div className="flex items-center justify-between gap-3">
-        <p className="text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">
-          Resultado esperado
-        </p>
-
-        <p className="text-sm font-semibold tabular-nums">
-          <span
-            className={
-              expectedWinnerGames >= expectedLoserGames
-                ? 'text-foreground'
-                : 'text-muted-foreground'
-            }
-          >
-            {expectedWinnerGames}
-          </span>{' '}
-          <span className="text-muted-foreground">–</span>{' '}
-          <span
-            className={
-              expectedLoserGames > expectedWinnerGames ? 'text-foreground' : 'text-muted-foreground'
-            }
-          >
-            {expectedLoserGames}
-          </span>
-        </p>
-      </div>
-
-      <div className="flex h-2 overflow-hidden rounded-full bg-muted">
-        <div className="rounded-full bg-emerald-500" style={{ width: `${winnerPercent}%` }} />
-      </div>
-
-      <div className="flex items-center justify-between text-xs tabular-nums">
-        <span className="text-foreground">{winnerPercent}%</span>
-        <span className="text-muted-foreground">{loserPercent}%</span>
-      </div>
-    </div>
-  );
+  return {
+    winner: winnerWasFavorite ? winnerGames : loserGames,
+    loser: winnerWasFavorite ? loserGames : winnerGames,
+  };
 }
 
 // Placares de vitória válidos. Jogo até 6 games (7 no tiebreak):
@@ -393,95 +410,10 @@ function getExpectedScoreline(favoriteProbability: number) {
   });
 }
 
-function MatchPlayerRank({
-  rankBefore,
-  rankAfter,
-}: {
-  rankBefore: number | null;
-  rankAfter: number | null;
-}) {
-  if (rankAfter === null) {
-    return null;
-  }
-
-  return (
-    <div className="flex shrink-0 items-center gap-2">
-      {rankBefore !== null && rankBefore !== rankAfter ? (
-        <span className="flex items-baseline gap-1.5 tabular-nums">
-          <span className="text-xs text-muted-foreground">#{rankBefore}</span>
-          <span className="text-xs text-muted-foreground/50">→</span>
-          <span className="text-lg font-semibold text-foreground">#{rankAfter}</span>
-        </span>
-      ) : (
-        <span className="text-lg font-semibold tabular-nums text-foreground">#{rankAfter}</span>
-      )}
-
-      <RankMovementBadge rankBefore={rankBefore} rankAfter={rankAfter} />
-    </div>
-  );
-}
-
-function RankMovementBadge({
-  rankBefore,
-  rankAfter,
-}: {
-  rankBefore: number | null;
-  rankAfter: number | null;
-}) {
-  if (rankAfter === null) {
-    return null;
-  }
-
-  // Sem posição anterior (estreia) ou sem mudança: indicador neutro.
-  if (rankBefore === null || rankBefore === rankAfter) {
-    return (
-      <span
-        aria-label="Sem mudança no ranking"
-        title="Sem mudança no ranking"
-        className="inline-flex min-w-9 items-center justify-center rounded-full bg-muted px-1.5 py-1 text-[11px] font-bold leading-none text-muted-foreground"
-      >
-        –
-      </span>
-    );
-  }
-
-  const isUp = rankAfter < rankBefore;
-  const positions = Math.abs(rankBefore - rankAfter);
-  const Icon = isUp ? ArrowUp : ArrowDown;
-  const badgeClassName = isUp
-    ? 'bg-emerald-500/12 text-emerald-700 dark:text-emerald-300'
-    : 'bg-rose-500/12 text-rose-700 dark:text-rose-300';
-  const label = `${isUp ? 'Subiu' : 'Caiu'} ${positions} ${
-    positions === 1 ? 'posição' : 'posições'
-  }`;
-
-  return (
-    <span
-      aria-label={label}
-      title={label}
-      className={`inline-flex min-w-9 items-center justify-center gap-0.5 rounded-full px-1.5 py-1 text-[11px] font-bold leading-none ${badgeClassName}`}
-    >
-      <Icon className="h-3 w-3" aria-hidden="true" />
-      {positions}
-    </span>
-  );
-}
-
 function getTeamPlayers(match: Match, team: 'TEAM_A' | 'TEAM_B') {
   return match.players
     .filter((player) => player.team === team)
     .sort((a, b) => a.position - b.position);
-}
-
-// Rating da dupla na hora da partida: soma dos jogadores antes do resultado.
-function getTeamRating(players: MatchPlayer[]) {
-  if (players.length === 0) {
-    return null;
-  }
-
-  const total = players.reduce((sum, player) => sum + player.ratingBefore, 0);
-
-  return Math.round(total);
 }
 
 function getPlayerInitial(player: MatchPlayer) {
@@ -550,12 +482,6 @@ function formatDateGroup(dateKey: string) {
   });
 }
 
-function getPlayerDisplayName(player: MatchPlayer) {
-  const user = player.groupMember?.user;
-
-  if (!user) {
-    return 'Jogador';
-  }
-
-  return `${user.firstName} ${user.lastName}`.trim();
+function getPlayerFirstName(player: MatchPlayer) {
+  return player.groupMember?.user?.firstName?.trim() || 'Jogador';
 }
