@@ -19,7 +19,7 @@ const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
  * Circular progress indicator used for "distance to the next rank". The arc is
  * a brand gradient over a faint track; the center is free for a value + caption.
  */
-export function RatingRing({ progress, size = 100, className, children }: RatingRingProps) {
+export function RatingRing({ progress, size = 116, className, children }: RatingRingProps) {
   const clamped = Math.min(1, Math.max(0, progress));
   const offset = CIRCUMFERENCE * (1 - clamped);
 
