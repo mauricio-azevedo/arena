@@ -15,6 +15,7 @@ import { getAccessToken } from '@/lib/auth';
 import type { Group, GroupMember, Match, MyGroup } from '@/types/api';
 import { GroupDetailLoadingState } from '@/features/groups/components/group-detail-loading-state';
 import { Card, CardContent } from '@/components/ui/card';
+import { Body, Label } from '@/components/ui/text';
 
 const groupTabs = ['ranking', 'matches'] as const;
 type GroupTab = (typeof groupTabs)[number];
@@ -124,10 +125,10 @@ function GroupDetailErrorState() {
   return (
     <Card>
       <CardContent className="space-y-2 p-4">
-        <p className="text-sm font-medium text-foreground">Não foi possível carregar o grupo</p>
-        <p className="text-sm leading-6 text-muted-foreground">
+        <Label className="block text-foreground">Não foi possível carregar o grupo</Label>
+        <Body className="text-muted-foreground">
           Verifique sua conexão e tente abrir o grupo novamente.
-        </p>
+        </Body>
       </CardContent>
     </Card>
   );

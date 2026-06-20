@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { ArrowDown, ArrowUp, Crown } from 'lucide-react';
 import type { GroupMember, Match, RankingMovement } from '@/types/api';
 import { Card, CardContent } from '@/components/ui/card';
+import { Label } from '@/components/ui/text';
 import { MatchesList } from '@/features/matches/components/matches-list';
 import { UserNameLink } from '@/features/users/components/user-name-link';
 import { cn } from '@/lib/utils';
@@ -61,13 +62,13 @@ export function GroupDetailTabs({
               onClick={() => setTab(tab.value)}
               aria-pressed={isSelected}
               className={cn(
-                '-mb-px flex h-12 items-center gap-1.5 border-b-2 text-body-strong whitespace-nowrap transition-colors',
+                '-mb-px flex h-12 items-center gap-1.5 border-b-2 whitespace-nowrap transition-colors',
                 isSelected
                   ? 'border-brand text-foreground'
                   : 'border-transparent text-faint-foreground hover:text-foreground',
               )}
             >
-              <span>{tab.label}</span>
+              <Label>{tab.label}</Label>
             </button>
           );
         })}

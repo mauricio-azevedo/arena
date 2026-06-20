@@ -6,6 +6,11 @@ import { cn } from '@/lib/utils';
 
 const appleGuidelineBtnHeightLg = 'h-12';
 const appleGuidelineBtnHeightMd = 'h-11';
+// Estende a área de toque para no mínimo 44px (guideline Apple) via pseudo-elemento,
+// sem alterar o tamanho visual do botão. Centralizado e invisível; cresce junto se o
+// botão for maior que 44px. Opt-in pela prop `touchTarget`, nunca o padrão.
+const touchTargetClass =
+  "relative after:absolute after:top-1/2 after:left-1/2 after:h-full after:w-full after:min-h-11 after:min-w-11 after:-translate-x-1/2 after:-translate-y-1/2 after:content-['']";
 const buttonVariants = cva(
   "group/button inline-flex shrink-0 items-center justify-center rounded-pill border border-transparent bg-clip-padding text-sm font-semibold whitespace-nowrap transition-all outline-none select-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/30 active:not-aria-[haspopup]:translate-y-px disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
   {
@@ -45,10 +50,12 @@ function Button({
   variant = 'default',
   size = 'default',
   asChild = false,
+  touchTarget = false,
   ...props
 }: React.ComponentProps<'button'> &
   VariantProps<typeof buttonVariants> & {
     asChild?: boolean;
+    touchTarget?: boolean;
   }) {
   const Comp = asChild ? Slot.Root : 'button';
 
@@ -57,7 +64,11 @@ function Button({
       data-slot="button"
       data-variant={variant}
       data-size={size}
-      className={cn(buttonVariants({ variant, size, className }))}
+      className={cn(
+        buttonVariants({ variant, size }),
+        touchTarget && touchTargetClass,
+        className,
+      )}
       {...props}
     />
   );

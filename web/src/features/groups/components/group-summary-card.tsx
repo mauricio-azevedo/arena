@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Search } from 'lucide-react';
 import type { Group, GroupMember, Match, MyGroup } from '@/types/api';
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
-import { Title } from '@/components/ui/text';
+import { Body, Label, Meta, Stat, Title } from '@/components/ui/text';
 import { StandingCard } from '@/features/groups/components/standing-card';
 
 export type GroupSummaryCardProps = {
@@ -147,19 +147,22 @@ function GroupIdentityHeader({
 }) {
   return (
     <div className="flex flex-col items-center text-center">
-      <div className="flex size-[74px] items-center justify-center rounded-full bg-[linear-gradient(150deg,var(--accent),var(--accent-dark))] font-display text-stat-lg text-white shadow-[0_8px_20px_rgba(31,73,135,0.45),inset_0_0_0_1px_var(--border-accent)]">
+      <Stat
+        size="lg"
+        className="flex size-[74px] items-center justify-center rounded-full bg-[linear-gradient(150deg,var(--accent),var(--accent-dark))] text-white shadow-[0_8px_20px_rgba(31,73,135,0.45),inset_0_0_0_1px_var(--border-accent)]"
+      >
         {getGroupInitials(group.name)}
-      </div>
+      </Stat>
 
       <Title className="mt-3">{group.name}</Title>
 
-      <div className="mt-1.5 flex items-center gap-2 text-label font-bold text-muted-foreground">
+      <Meta className="mt-1.5 flex items-center gap-2 text-muted-foreground">
         <span className="text-foreground">{memberCount}</span>{' '}
         {memberCount === 1 ? 'membro' : 'membros'}
         <span className="size-[3px] rounded-full bg-faint-foreground" />
         <span className="text-foreground">{matchCount}</span>{' '}
         {matchCount === 1 ? 'partida' : 'partidas'}
-      </div>
+      </Meta>
 
       {group.description && <GroupDescription text={group.description} />}
     </div>
@@ -170,22 +173,27 @@ function GroupDescription({ text }: { text: string }) {
   const [open, setOpen] = useState(false);
 
   return (
-    <div
+    <Body
+      asChild
       className={
         open
-          ? 'mt-2 max-w-[320px] text-body text-faint-foreground'
-          : 'mt-2 flex max-w-[320px] items-baseline gap-1 text-body text-faint-foreground'
+          ? 'mt-2 max-w-[320px] text-faint-foreground'
+          : 'mt-2 flex max-w-[320px] items-baseline gap-1 text-faint-foreground'
       }
     >
-      <span className={open ? undefined : 'min-w-0 flex-1 truncate'}>{text}</span>
-      <button
-        type="button"
-        onClick={() => setOpen((value) => !value)}
-        className="shrink-0 font-bold whitespace-nowrap text-brand-muted"
-      >
-        {open ? 'ler menos' : 'ler mais'}
-      </button>
-    </div>
+      <div>
+        <span className={open ? undefined : 'min-w-0 flex-1 truncate'}>{text}</span>
+        <Label asChild>
+          <button
+            type="button"
+            onClick={() => setOpen((value) => !value)}
+            className="shrink-0 whitespace-nowrap text-brand-muted"
+          >
+            {open ? 'ler menos' : 'ler mais'}
+          </button>
+        </Label>
+      </div>
+    </Body>
   );
 }
 

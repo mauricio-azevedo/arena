@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { ArrowDown, ArrowUp, MoreVertical, Pencil, Trash2 } from 'lucide-react';
 import type { Match, MatchPlayer } from '@/types/api';
 import { Button } from '@/components/ui/button';
-import { Section } from '@/components/ui/text';
+import { Body, Heading, Label, Meta, Stat } from '@/components/ui/text';
 import { cn } from '@/lib/utils';
 import { Card, CardContent } from '@/components/ui/card';
 import {
@@ -50,8 +50,8 @@ export function MatchesList({
     return (
       <Card>
         <CardContent className="space-y-2 p-4">
-          <p className="text-sm font-medium text-foreground">{emptyTitle}</p>
-          <p className="text-sm leading-6 text-muted-foreground">{emptyDescription}</p>
+          <Label className="block text-foreground">{emptyTitle}</Label>
+          <Body className="text-muted-foreground">{emptyDescription}</Body>
         </CardContent>
       </Card>
     );
@@ -62,11 +62,11 @@ export function MatchesList({
       {matchGroups.map((group) => (
         <div key={group.dateKey} className="space-y-3">
           {isPrimaryDateLabel(group.label) ? (
-            <Section>{group.label}</Section>
+            <Heading>{group.label}</Heading>
           ) : (
-            <p className="text-label font-bold text-faint-foreground first-letter:uppercase">
+            <Meta className="block text-faint-foreground first-letter:uppercase">
               {group.label}
-            </p>
+            </Meta>
           )}
 
           <div className="space-y-3">
@@ -143,7 +143,7 @@ export function MatchCard({
     <>
       <Card className="gap-0 py-0">
         <CardContent className="px-4 py-4">
-          <div className="relative flex h-7 min-w-0 items-center gap-2 text-label font-bold text-foreground">
+          <div className="relative flex h-7 min-w-0 items-center gap-2">
             <span
               aria-hidden
               className={cn(
@@ -151,11 +151,9 @@ export function MatchCard({
                 isUpset ? 'bg-tag-warn' : 'bg-tag-info',
               )}
             />
-            <span className="truncate">{narrativeTitle ?? 'Partida'}</span>
+            <Meta className="truncate text-foreground">{narrativeTitle ?? 'Partida'}</Meta>
             {swing !== null && (
-              <span className="shrink-0 text-label font-bold tabular-nums text-muted-foreground">
-                ±{swing}
-              </span>
+              <Meta className="shrink-0 text-muted-foreground">±{swing}</Meta>
             )}
 
             {showActions && (
@@ -163,7 +161,8 @@ export function MatchCard({
                 <DropdownMenuTrigger asChild>
                   <Button
                     variant="ghost"
-                    size="icon"
+                    size="icon-sm"
+                    touchTarget
                     className="absolute top-1/2 -right-2 -translate-y-1/2 text-faint-foreground"
                   >
                     <MoreVertical className="size-5" />
@@ -206,12 +205,12 @@ export function MatchCard({
           </div>
 
           {expectedScore && (
-            <p className="mt-3.5 text-label font-bold text-faint-foreground">
+            <Meta className="mt-3.5 block text-faint-foreground">
               Placar esperado{' '}
-              <span className="font-bold tabular-nums text-muted-foreground">
+              <span className="text-muted-foreground">
                 {expectedScore.winner}–{expectedScore.loser}
               </span>
-            </p>
+            </Meta>
           )}
         </CardContent>
       </Card>
@@ -226,7 +225,7 @@ export function MatchCard({
             </AlertDialogDescription>
           </AlertDialogHeader>
 
-          {error && <p className="text-sm text-destructive">{error}</p>}
+          {error && <Body className="text-destructive">{error}</Body>}
 
           <AlertDialogFooter>
             <AlertDialogCancel disabled={isDeleting}>Cancelar</AlertDialogCancel>
@@ -266,14 +265,9 @@ function DuplaRow({
         ))}
       </div>
 
-      <div
-        className={cn(
-          'ml-1 font-display text-stat-lg tabular-nums',
-          isWinner ? 'text-brand' : 'text-faint-foreground',
-        )}
-      >
+      <Stat size="lg" className={cn('ml-1', isWinner ? 'text-brand' : 'text-faint-foreground')}>
         {score}
-      </div>
+      </Stat>
     </div>
   );
 }
@@ -286,20 +280,13 @@ function PlayerName({ player, isWinner }: { player: MatchPlayer; isWinner: boole
 
   return (
     <span className="flex items-baseline gap-1.5">
-      <span
-        className={cn(
-          'text-body font-bold',
-          isWinner ? 'text-foreground' : 'text-muted-foreground',
-        )}
-      >
+      <Label className={isWinner ? 'text-foreground' : 'text-muted-foreground'}>
         <UserNameLink userId={player.groupMember?.userId}>
           {getPlayerFirstName(player)}
         </UserNameLink>
-      </span>
+      </Label>
       {player.rankAfter !== null && (
-        <span className="text-label font-bold tabular-nums text-faint-foreground">
-          #{player.rankAfter}
-        </span>
+        <Meta className="text-faint-foreground">#{player.rankAfter}</Meta>
       )}
       {moved && (
         <InlineMovement
@@ -315,15 +302,10 @@ function InlineMovement({ isUp, positions }: { isUp: boolean; positions: number 
   const Icon = isUp ? ArrowUp : ArrowDown;
 
   return (
-    <span
-      className={cn(
-        'inline-flex items-center gap-0.5 text-label font-bold tabular-nums',
-        isUp ? 'text-success' : 'text-danger',
-      )}
-    >
+    <Meta className={cn('inline-flex items-center gap-0.5', isUp ? 'text-success' : 'text-danger')}>
       <Icon className="size-2.5" strokeWidth={3.2} aria-hidden />
       {positions}
-    </span>
+    </Meta>
   );
 }
 
@@ -331,10 +313,10 @@ function AvatarPair({ players, isWinner }: { players: MatchPlayer[]; isWinner: b
   return (
     <div className="flex shrink-0">
       {players.slice(0, 2).map((player, index) => (
-        <span
+        <Meta
           key={player.id}
           className={cn(
-            'flex size-[34px] items-center justify-center rounded-full text-label font-bold shadow-[inset_0_0_0_1px_var(--border)]',
+            'flex size-[34px] items-center justify-center rounded-full shadow-[inset_0_0_0_1px_var(--border)]',
             isWinner ? 'text-brand-muted' : 'text-muted-foreground',
             isWinner
               ? index === 0
@@ -347,7 +329,7 @@ function AvatarPair({ players, isWinner }: { players: MatchPlayer[]; isWinner: b
           )}
         >
           {getPlayerInitial(player)}
-        </span>
+        </Meta>
       ))}
     </div>
   );

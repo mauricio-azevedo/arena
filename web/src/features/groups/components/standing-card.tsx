@@ -1,7 +1,7 @@
 import { ArrowDown, ArrowUp } from 'lucide-react';
 
 import { RatingRing } from '@/components/ui/rating-ring';
-import { Display, Eyebrow, Stat } from '@/components/ui/text';
+import { Display, Meta, Overline, Stat } from '@/components/ui/text';
 
 export type StandingCardProps = {
   /** 1-based rank, or null when the viewer has no ranked position yet. */
@@ -39,24 +39,22 @@ export function StandingCard({
 
       <div className="relative flex items-start justify-between gap-4">
         <div>
-          <Eyebrow>Sua posição</Eyebrow>
+          <Overline>Sua posição</Overline>
           <Display className="mt-2">{rank !== null ? `#${rank}` : '—'}</Display>
           {movement && <RankMovement movement={movement} />}
         </div>
 
         <RatingRing progress={isLeading ? 1 : progress}>
           {isLeading ? (
-            <div className="text-label font-bold uppercase tracking-wider text-brand-muted">
-              No topo
-            </div>
+            <Overline className="text-brand-muted">No topo</Overline>
           ) : (
             <>
-              <div className="font-display text-stat-lg leading-none text-foreground tabular-nums">
+              <Stat size="lg" className="leading-none text-foreground">
                 {pointsToClimb}
-              </div>
-              <div className="mt-1 text-label text-muted-foreground">
-                pts p/ <span className="font-bold text-foreground">#{chasingRank}</span>
-              </div>
+              </Stat>
+              <Meta className="mt-1 block text-muted-foreground">
+                pts p/ <span className="text-foreground">#{chasingRank}</span>
+              </Meta>
             </>
           )}
         </RatingRing>
@@ -66,12 +64,12 @@ export function StandingCard({
 
       <div className="relative flex items-end justify-between">
         <div>
-          <Eyebrow>Rating atual</Eyebrow>
+          <Overline>Rating atual</Overline>
           <Stat className="mt-1">{Math.round(rating)}</Stat>
         </div>
         {lastChange && (
           <div className="text-right">
-            <Eyebrow>{formatRelativeDay(lastChange.occurredAt)}</Eyebrow>
+            <Overline>{formatRelativeDay(lastChange.occurredAt)}</Overline>
             <Stat className={`mt-1 ${lastChange.delta < 0 ? 'text-danger' : 'text-success'}`}>
               {formatDelta(lastChange.delta)}
             </Stat>
@@ -91,13 +89,13 @@ function RankMovement({
   const Icon = isUp ? ArrowUp : ArrowDown;
 
   return (
-    <div
-      className={`mt-2.5 flex items-center gap-1 text-label font-bold ${isUp ? 'text-success' : 'text-danger'}`}
+    <Meta
+      className={`mt-2.5 flex items-center gap-1 ${isUp ? 'text-success' : 'text-danger'}`}
     >
       <Icon className="size-3.5" strokeWidth={2.8} aria-hidden />
       {movement.positions}
       <span>{formatRelativeDay(movement.occurredAt).toLowerCase()}</span>
-    </div>
+    </Meta>
   );
 }
 

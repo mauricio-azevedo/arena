@@ -7,9 +7,15 @@ import { cn } from '@/lib/utils';
  * Arena typographic roles.
  *
  * A single face (Plus Jakarta Sans) carries everything — headings and figures
- * at heavy weights, running text lighter. Numbers use `tabular-nums` so stats
- * stay column-aligned. Each role reads its size, weight and tracking from the
- * type-scale tokens in globals.css — never hard-code them.
+ * at heavy weights, running text lighter. Every text on the platform resolves
+ * to one of these roles; raw `text-*` utilities are reserved for genuine
+ * one-offs.
+ *
+ * The ten roles: Display, Stat (md/lg), Title, Heading, Label, Body, Meta,
+ * Overline — plus the action label, which lives on the Button primitive. Each
+ * role reads its size, weight and tracking from the type-scale tokens in
+ * globals.css — never hard-code them. Numbers use `tabular-nums` so stats stay
+ * column-aligned; colour is always passed in via `className`.
  */
 
 type RoleProps<T extends React.ElementType> = React.ComponentPropsWithoutRef<T> & {
@@ -32,16 +38,16 @@ function Display({ className, asChild, ...props }: RoleProps<'div'>) {
 function Stat({
   className,
   asChild,
-  size = 'default',
+  size = 'md',
   ...props
-}: RoleProps<'div'> & { size?: 'default' | 'lg' }) {
+}: RoleProps<'div'> & { size?: 'md' | 'lg' }) {
   const Comp = asChild ? Slot.Root : 'div';
   return (
     <Comp
       data-slot="stat"
       className={cn(
         'font-display tabular-nums',
-        size === 'lg' ? 'text-stat-lg' : 'text-stat',
+        size === 'lg' ? 'text-stat-lg' : 'text-stat-md',
         className,
       )}
       {...props}
@@ -58,23 +64,41 @@ function Title({ className, asChild, ...props }: RoleProps<'h1'>) {
 }
 
 /** In-page section header — e.g. "Hoje". */
-function Section({ className, asChild, ...props }: RoleProps<'h2'>) {
+function Heading({ className, asChild, ...props }: RoleProps<'h2'>) {
   const Comp = asChild ? Slot.Root : 'h2';
   return (
-    <Comp data-slot="section" className={cn('font-display text-section', className)} {...props} />
+    <Comp data-slot="heading" className={cn('font-display text-heading', className)} {...props} />
   );
 }
 
+/** Emphasized UI text at body size — tab labels, player names, separators. */
+function Label({ className, asChild, ...props }: RoleProps<'span'>) {
+  const Comp = asChild ? Slot.Root : 'span';
+  return <Comp data-slot="label" className={cn('text-label', className)} {...props} />;
+}
+
+/** Running text — descriptions, inputs, primary body copy. */
+function Body({ className, asChild, ...props }: RoleProps<'p'>) {
+  const Comp = asChild ? Slot.Root : 'p';
+  return <Comp data-slot="body" className={cn('text-body', className)} {...props} />;
+}
+
+/** Meta text — counts, dates, card micro text (±swing, initials). */
+function Meta({ className, asChild, ...props }: RoleProps<'span'>) {
+  const Comp = asChild ? Slot.Root : 'span';
+  return <Comp data-slot="meta" className={cn('text-meta tabular-nums', className)} {...props} />;
+}
+
 /** Uppercase overline that sits above a value — e.g. "SUA POSIÇÃO". */
-function Eyebrow({ className, asChild, ...props }: RoleProps<'div'>) {
+function Overline({ className, asChild, ...props }: RoleProps<'div'>) {
   const Comp = asChild ? Slot.Root : 'div';
   return (
     <Comp
-      data-slot="eyebrow"
-      className={cn('text-eyebrow text-muted-foreground uppercase', className)}
+      data-slot="overline"
+      className={cn('text-overline text-muted-foreground uppercase', className)}
       {...props}
     />
   );
 }
 
-export { Display, Stat, Title, Section, Eyebrow };
+export { Display, Stat, Title, Heading, Label, Body, Meta, Overline };

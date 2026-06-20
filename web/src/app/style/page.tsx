@@ -12,7 +12,7 @@ import {
   InputGroupInput,
 } from '@/components/ui/input-group';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Display, Eyebrow, Section, Stat, Title } from '@/components/ui/text';
+import { Display, Overline, Heading, Stat, Title } from '@/components/ui/text';
 import { StandingCard } from '@/features/groups/components/standing-card';
 import { MatchCard } from '@/features/matches/components/matches-list';
 import type { Match, MatchPlayer, MatchTeam } from '@/types/api';
@@ -25,7 +25,7 @@ import type { Match, MatchPlayer, MatchTeam } from '@/types/api';
 export default function StylePage() {
   return (
     <main className="mx-auto min-h-screen w-full max-w-[460px] px-5 py-10">
-      <Eyebrow>Design System</Eyebrow>
+      <Overline>Design System</Overline>
       <Title className="mt-1">Arena</Title>
       <p className="mt-2 text-sm text-muted-foreground">
         Tokens e componentes base. Edite os valores em{' '}
@@ -35,11 +35,11 @@ export default function StylePage() {
       <Block label="Fonte — Plus Jakarta Sans">
         <div className="space-y-4">
           <div>
-            <Eyebrow>Figuras — peso 800</Eyebrow>
+            <Overline>Figuras — peso 800</Overline>
             <div className="text-[34px] font-extrabold tabular-nums">0123456789</div>
           </div>
           <div>
-            <Eyebrow>Corpo — peso 500</Eyebrow>
+            <Overline>Corpo — peso 500</Overline>
             <div className="text-[17px] font-medium">
               Grupos, partidas e ranking de beach tennis.
             </div>
@@ -51,14 +51,14 @@ export default function StylePage() {
         <div className="space-y-4">
           <Row name="display"><Display>#5</Display></Row>
           <Row name="stat-lg"><Stat size="lg">1017</Stat></Row>
-          <Row name="stat"><Stat>−22</Stat></Row>
+          <Row name="stat-md"><Stat>−22</Stat></Row>
           <Row name="title"><Title>Masculino Life</Title></Row>
-          <Row name="section"><Section>Hoje</Section></Row>
+          <Row name="heading"><Heading>Hoje</Heading></Row>
           <Row name="action"><span className="text-action">Registrar partida</span></Row>
-          <Row name="label"><span className="text-body-strong">Kenio</span></Row>
+          <Row name="label"><span className="text-label">Kenio</span></Row>
           <Row name="body"><span className="text-body text-faint-foreground">Grupo de duplas às terças à noite</span></Row>
-          <Row name="meta"><span className="text-label text-muted-foreground">19 membros</span></Row>
-          <Row name="overline"><Eyebrow>Sua posição</Eyebrow></Row>
+          <Row name="meta"><span className="text-meta text-muted-foreground">19 membros</span></Row>
+          <Row name="overline"><Overline>Sua posição</Overline></Row>
         </div>
       </Block>
 
@@ -166,7 +166,7 @@ export default function StylePage() {
         <Card>
           <CardContent className="flex items-center justify-between">
             <div>
-              <Eyebrow>Rating atual</Eyebrow>
+              <Overline>Rating atual</Overline>
               <Stat className="mt-1">1017</Stat>
             </div>
             <Stat className="text-danger">−22</Stat>
@@ -180,7 +180,7 @@ export default function StylePage() {
 function Block({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <section className="mt-10">
-      <div className="mb-4 border-b border-divider pb-2 text-eyebrow uppercase text-faint-foreground">
+      <div className="mb-4 border-b border-divider pb-2 text-overline uppercase text-faint-foreground">
         {label}
       </div>
       {children}
@@ -191,7 +191,7 @@ function Block({ label, children }: { label: string; children: React.ReactNode }
 function Row({ name, children }: { name: string; children: React.ReactNode }) {
   return (
     <div className="flex items-baseline gap-4">
-      <code className="w-20 shrink-0 text-caption text-faint-foreground">{name}</code>
+      <code className="w-20 shrink-0 text-meta text-faint-foreground">{name}</code>
       <div className="min-w-0">{children}</div>
     </div>
   );
@@ -283,7 +283,7 @@ function Swatch({ name, className }: { name: string; className: string }) {
   return (
     <div className="space-y-1.5">
       <div className={`h-12 rounded-xl border border-divider ${className}`} />
-      <code className="block text-caption text-faint-foreground">{name}</code>
+      <code className="block text-meta text-faint-foreground">{name}</code>
     </div>
   );
 }
