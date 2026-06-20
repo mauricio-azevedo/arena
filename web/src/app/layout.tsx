@@ -1,23 +1,16 @@
 import type { Metadata, Viewport } from 'next';
 import type { ReactNode } from 'react';
-import { Plus_Jakarta_Sans, Archivo } from 'next/font/google';
+import { Plus_Jakarta_Sans } from 'next/font/google';
 import './globals.css';
 import { cn } from '@/lib/utils';
 import { NavigationProvider } from '@/providers/navigation-provider';
 
-// Body / UI face — humanist geometric sans, used at heavy weights.
+// The single Arena face — humanist geometric sans, from running text (500) to
+// the hero rank and figures (800). Per the type audit, there is no second face.
 const plusJakarta = Plus_Jakarta_Sans({
   subsets: ['latin'],
   weight: ['500', '600', '700', '800'],
   variable: '--font-plus-jakarta',
-  display: 'swap',
-});
-
-// Display face — confident grotesk for big numbers and titles (scoreboard feel).
-const archivo = Archivo({
-  subsets: ['latin'],
-  weight: ['600', '700', '800'],
-  variable: '--font-archivo',
   display: 'swap',
 });
 
@@ -61,7 +54,6 @@ export default function RootLayout({
         'antialiased',
         'font-sans',
         plusJakarta.variable,
-        archivo.variable,
       )}
     >
       <body className="min-h-full flex flex-col dark">

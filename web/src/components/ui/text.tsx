@@ -6,10 +6,10 @@ import { cn } from '@/lib/utils';
 /**
  * Arena typographic roles.
  *
- * Pairing rule: the display face (Archivo) carries every heading and figure;
- * the body face (Plus Jakarta Sans) carries running text. Numbers use
- * `tabular-nums` so stats stay column-aligned. Each role reads its size, weight
- * and tracking from the type-scale tokens in globals.css — never hard-code them.
+ * A single face (Plus Jakarta Sans) carries everything — headings and figures
+ * at heavy weights, running text lighter. Numbers use `tabular-nums` so stats
+ * stay column-aligned. Each role reads its size, weight and tracking from the
+ * type-scale tokens in globals.css — never hard-code them.
  */
 
 type RoleProps<T extends React.ElementType> = React.ComponentPropsWithoutRef<T> & {
@@ -65,25 +65,13 @@ function Section({ className, asChild, ...props }: RoleProps<'h2'>) {
   );
 }
 
-/**
- * Uppercase micro-label that sits above a value — e.g. "SUA POSIÇÃO".
- * `sm` (11px) for inline labels, `md` (12px) for a screen's primary label.
- */
-function Eyebrow({
-  className,
-  asChild,
-  size = 'sm',
-  ...props
-}: RoleProps<'div'> & { size?: 'sm' | 'md' }) {
+/** Uppercase overline that sits above a value — e.g. "SUA POSIÇÃO". */
+function Eyebrow({ className, asChild, ...props }: RoleProps<'div'>) {
   const Comp = asChild ? Slot.Root : 'div';
   return (
     <Comp
       data-slot="eyebrow"
-      className={cn(
-        'text-muted-foreground uppercase',
-        size === 'md' ? 'text-[12px] font-bold tracking-[1px]' : 'text-eyebrow',
-        className,
-      )}
+      className={cn('text-eyebrow text-muted-foreground uppercase', className)}
       {...props}
     />
   );

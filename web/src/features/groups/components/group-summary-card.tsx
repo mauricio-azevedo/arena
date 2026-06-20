@@ -156,7 +156,7 @@ function GroupIdentityHeader({
 }) {
   return (
     <div className="flex flex-col items-center text-center">
-      <div className="flex size-[74px] items-center justify-center rounded-full bg-[linear-gradient(150deg,var(--accent),var(--accent-dark))] font-display text-stat-lg text-white shadow-[0_8px_20px_rgba(31,73,135,0.45),inset_0_0_0_1px_rgba(255,255,255,0.14)]">
+      <div className="flex size-[74px] items-center justify-center rounded-full bg-[linear-gradient(150deg,var(--accent),var(--accent-dark))] font-display text-stat-lg text-white shadow-[0_8px_20px_rgba(31,73,135,0.45),inset_0_0_0_1px_var(--border-accent)]">
         {getGroupInitials(group.name)}
       </div>
 
@@ -165,7 +165,7 @@ function GroupIdentityHeader({
       <div className="mt-1.5 flex items-center gap-2 text-label font-bold text-muted-foreground">
         <span className="text-foreground">{memberCount}</span>{' '}
         {memberCount === 1 ? 'membro' : 'membros'}
-        <span className="size-[3px] rounded-full bg-dim-foreground" />
+        <span className="size-[3px] rounded-full bg-faint-foreground" />
         <span className="text-foreground">{matchCount}</span>{' '}
         {matchCount === 1 ? 'partida' : 'partidas'}
       </div>
@@ -191,8 +191,8 @@ function GroupDescription({ text }: { text: string }) {
     <div
       className={
         open
-          ? 'mt-2 max-w-[320px] text-support text-faint-foreground'
-          : 'mt-2 flex max-w-[320px] items-baseline gap-1 text-support text-faint-foreground'
+          ? 'mt-2 max-w-[320px] text-body text-faint-foreground'
+          : 'mt-2 flex max-w-[320px] items-baseline gap-1 text-body text-faint-foreground'
       }
     >
       <span className={open ? undefined : 'min-w-0 flex-1 truncate'}>{text}</span>

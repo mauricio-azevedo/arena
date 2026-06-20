@@ -147,12 +147,14 @@ export function MatchCard({
             <div className="flex min-w-0 items-center gap-2 text-label font-bold text-foreground">
               <span
                 aria-hidden
-                className="size-[7px] shrink-0 rounded-full"
-                style={{ background: isUpset ? '#f0a020' : '#3b9dd9' }}
+                className={cn(
+                  'size-[7px] shrink-0 rounded-full',
+                  isUpset ? 'bg-tag-warn' : 'bg-tag-info',
+                )}
               />
               <span className="truncate">{narrativeTitle ?? 'Partida'}</span>
               {swing !== null && (
-                <span className="shrink-0 text-caption font-bold tabular-nums text-muted-foreground">
+                <span className="shrink-0 text-label font-bold tabular-nums text-muted-foreground">
                   ±{swing}
                 </span>
               )}
@@ -206,7 +208,7 @@ export function MatchCard({
           </div>
 
           {expectedScore && (
-            <p className="mt-3.5 text-caption font-semibold text-faint-foreground">
+            <p className="mt-3.5 text-label font-bold text-faint-foreground">
               Placar esperado{' '}
               <span className="font-bold tabular-nums text-muted-foreground">
                 {expectedScore.winner}–{expectedScore.loser}
@@ -334,8 +336,15 @@ function AvatarPair({ players, isWinner }: { players: MatchPlayer[]; isWinner: b
         <span
           key={player.id}
           className={cn(
-            'flex size-[34px] items-center justify-center rounded-full text-caption font-bold shadow-[inset_0_0_0_1px_rgba(255,255,255,0.08)]',
-            isWinner ? 'bg-[#26354d] text-brand-muted' : 'bg-[#2b2e33] text-muted-foreground',
+            'flex size-[34px] items-center justify-center rounded-full text-label font-bold shadow-[inset_0_0_0_1px_var(--border)]',
+            isWinner ? 'text-brand-muted' : 'text-muted-foreground',
+            isWinner
+              ? index === 0
+                ? 'bg-avatar-1'
+                : 'bg-avatar-2'
+              : index === 0
+                ? 'bg-avatar-3'
+                : 'bg-avatar-4',
             index > 0 && '-ml-3',
           )}
         >

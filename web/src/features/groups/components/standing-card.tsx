@@ -30,7 +30,7 @@ export function StandingCard({
   const chasingRank = rank !== null && rank > 1 ? rank - 1 : null;
 
   return (
-    <div className="relative overflow-hidden rounded-hero border border-divider bg-card p-5 shadow-card">
+    <div className="relative overflow-hidden rounded-hero bg-card p-5 shadow-card">
       {/* depth wash, bottom-left */}
       <div
         aria-hidden
@@ -39,14 +39,14 @@ export function StandingCard({
 
       <div className="relative flex items-start justify-between gap-4">
         <div>
-          <Eyebrow size="md">Sua posição</Eyebrow>
+          <Eyebrow>Sua posição</Eyebrow>
           <Display className="mt-2">{rank !== null ? `#${rank}` : '—'}</Display>
           {movement && <RankMovement movement={movement} />}
         </div>
 
         <RatingRing progress={isLeading ? 1 : progress}>
           {isLeading ? (
-            <div className="text-caption font-bold uppercase tracking-wider text-brand-muted">
+            <div className="text-label font-bold uppercase tracking-wider text-brand-muted">
               No topo
             </div>
           ) : (
@@ -54,7 +54,7 @@ export function StandingCard({
               <div className="font-display text-stat-lg leading-none text-foreground tabular-nums">
                 {pointsToClimb}
               </div>
-              <div className="mt-1 text-micro text-muted-foreground">
+              <div className="mt-1 text-label text-muted-foreground">
                 pts p/ <span className="font-bold text-foreground">#{chasingRank}</span>
               </div>
             </>

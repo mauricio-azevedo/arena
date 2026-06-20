@@ -32,14 +32,14 @@ export default function StylePage() {
         <code className="rounded bg-surface px-1 py-0.5 text-faint-foreground">globals.css</code>.
       </p>
 
-      <Block label="Fontes">
+      <Block label="Fonte — Plus Jakarta Sans">
         <div className="space-y-4">
           <div>
-            <Eyebrow>Display — Archivo</Eyebrow>
-            <div className="font-display text-[34px] font-extrabold tabular-nums">0123456789</div>
+            <Eyebrow>Figuras — peso 800</Eyebrow>
+            <div className="text-[34px] font-extrabold tabular-nums">0123456789</div>
           </div>
           <div>
-            <Eyebrow>Corpo — Plus Jakarta Sans</Eyebrow>
+            <Eyebrow>Corpo — peso 500</Eyebrow>
             <div className="text-[17px] font-medium">
               Grupos, partidas e ranking de beach tennis.
             </div>
@@ -54,26 +54,51 @@ export default function StylePage() {
           <Row name="stat"><Stat>−22</Stat></Row>
           <Row name="title"><Title>Masculino Life</Title></Row>
           <Row name="section"><Section>Hoje</Section></Row>
-          <Row name="body"><span className="text-body">Grupos e partidas de beach tennis</span></Row>
-          <Row name="body-strong"><span className="text-body-strong">Kenio</span></Row>
-          <Row name="label"><span className="text-label text-muted-foreground">19 membros</span></Row>
-          <Row name="support"><span className="text-support text-faint-foreground">Grupo de amigos do sábado de manhã</span></Row>
-          <Row name="eyebrow"><Eyebrow>Sua posição</Eyebrow></Row>
+          <Row name="action"><span className="text-action">Registrar partida</span></Row>
+          <Row name="label"><span className="text-body-strong">Kenio</span></Row>
+          <Row name="body"><span className="text-body text-faint-foreground">Grupo de duplas às terças à noite</span></Row>
+          <Row name="meta"><span className="text-label text-muted-foreground">19 membros</span></Row>
+          <Row name="overline"><Eyebrow>Sua posição</Eyebrow></Row>
         </div>
       </Block>
 
-      <Block label="Cores">
+      <Block label="Cores — texto">
         <div className="grid grid-cols-3 gap-3">
-          <Swatch name="background" className="bg-background" />
-          <Swatch name="surface" className="bg-surface" />
-          <Swatch name="divider" className="bg-divider" />
           <Swatch name="foreground" className="bg-foreground" />
           <Swatch name="muted-fg" className="bg-muted-foreground" />
           <Swatch name="faint" className="bg-faint-foreground" />
-          <Swatch name="brand" className="bg-brand" />
+        </div>
+      </Block>
+
+      <Block label="Cores — superfícies e linhas">
+        <div className="grid grid-cols-3 gap-3">
+          <Swatch name="background" className="bg-background" />
+          <Swatch name="surface" className="bg-surface" />
+          <Swatch name="border" className="bg-border" />
+          <Swatch name="border-accent" className="bg-border-accent" />
+        </div>
+      </Block>
+
+      <Block label="Cores — accent e status">
+        <div className="grid grid-cols-3 gap-3">
+          <Swatch name="accent" className="bg-brand" />
+          <Swatch name="accent-dark" className="bg-accent-dark" />
           <Swatch name="brand-muted" className="bg-brand-muted" />
           <Swatch name="success" className="bg-success" />
           <Swatch name="danger" className="bg-danger" />
+        </div>
+      </Block>
+
+      <Block label="Cores — tags, avatares e anel">
+        <div className="grid grid-cols-3 gap-3">
+          <Swatch name="tag-warn" className="bg-tag-warn" />
+          <Swatch name="tag-info" className="bg-tag-info" />
+          <Swatch name="avatar-1" className="bg-avatar-1" />
+          <Swatch name="avatar-2" className="bg-avatar-2" />
+          <Swatch name="avatar-3" className="bg-avatar-3" />
+          <Swatch name="avatar-4" className="bg-avatar-4" />
+          <Swatch name="ring-from" className="bg-ring-from" />
+          <Swatch name="ring-to" className="bg-ring-to" />
         </div>
       </Block>
 

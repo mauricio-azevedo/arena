@@ -12,10 +12,13 @@
    wire a CSS variable to the utility name that consumes it.
    ========================================================================= */
 @theme inline {
-    /* — Typography families — */
+    /* — Typography family — single face per the type audit: Plus Jakarta Sans
+       carries everything, from running text to the hero rank, at heavy weights.
+       `font-display`/`font-heading` are kept as aliases so existing call-sites
+       (figures, dialog titles) need no churn. — */
     --font-sans: var(--font-plus-jakarta), ui-sans-serif, system-ui, sans-serif;
-    --font-display: var(--font-plus-jakarta), var(--font-archivo), sans-serif;
-    --font-heading: var(--font-display); /* `font-heading` → display face */
+    --font-display: var(--font-sans);
+    --font-heading: var(--font-sans);
 
     /* — Type scale — role-based sizes with baked-in line-height/tracking/weight.
        Usage: `text-display`, `text-stat`, `text-section`, etc. Pair the big
@@ -26,28 +29,33 @@
     --text-display--font-weight: 800;
 
     --text-stat-lg: 1.625rem; /* 26px — scores, ring value */
-    --text-stat-lg--line-height: 1;
+    --text-stat-lg--line-height: 1.3;
     --text-stat-lg--font-weight: 800;
 
     --text-stat: 1.375rem; /* 22px — rating value */
-    --text-stat--line-height: 1.1;
+    --text-stat--line-height: 1.3;
     --text-stat--font-weight: 800;
 
     --text-title: 1.3125rem; /* 21px — screen / group title */
-    --text-title--line-height: 1.15;
-    --text-title--letter-spacing: -0.02em;
+    --text-title--line-height: 1.3;
+    --text-title--letter-spacing: -0.02em; /* ≈ −0.4px at 21px */
     --text-title--font-weight: 800;
 
     --text-section: 1.1875rem; /* 19px — section headers */
-    --text-section--line-height: 1.2;
-    --text-section--letter-spacing: -0.015em;
+    --text-section--line-height: 1.3;
+    --text-section--letter-spacing: -0.016em; /* ≈ −0.3px at 19px */
     --text-section--font-weight: 800;
 
-    --text-body: 0.9375rem; /* 15px — names, primary body */
-    --text-body--line-height: 1.4;
+    --text-action: 1rem; /* 16px — primary action label */
+    --text-action--line-height: 1.3;
+    --text-action--font-weight: 700;
 
-    --text-body-strong: 0.9375rem; /* 15px — emphasised body: tab labels, player names, score separator */
-    --text-body-strong--line-height: 1.4;
+    --text-body: 0.9375rem; /* 15px — descriptions, inputs, primary body */
+    --text-body--line-height: 1.5;
+    --text-body--font-weight: 500;
+
+    --text-body-strong: 0.9375rem; /* 15px — labels: tab labels, player names, score separator */
+    --text-body-strong--line-height: 1.3;
     --text-body-strong--font-weight: 700;
 
     --text-label: 0.8125rem; /* 13px — meta, counts */
@@ -58,10 +66,10 @@
     --text-support--line-height: 1.55;
     --text-support--font-weight: 500;
 
-    --text-eyebrow: 0.6875rem; /* 11px — UPPERCASE inline labels (Eyebrow size=sm) */
-    --text-eyebrow--line-height: 1;
-    --text-eyebrow--letter-spacing: 0.055em; /* ≈0.6px at 11px */
-    --text-eyebrow--font-weight: 600;
+    --text-eyebrow: 0.75rem; /* 12px — UPPERCASE overline (eyebrow) */
+    --text-eyebrow--line-height: 1.3;
+    --text-eyebrow--letter-spacing: 0.083em; /* ≈1px at 12px */
+    --text-eyebrow--font-weight: 700;
 
     --text-caption: 0.75rem; /* 12px — card micro text (±, avatar initials, expected score) */
     --text-caption--line-height: 1.3;
@@ -79,6 +87,7 @@
     --color-surface: var(--surface);
     --color-surface-hover: var(--surface-hover);
     --color-divider: var(--divider);
+    --color-border-accent: var(--border-accent);
 
     --color-card: var(--card);
     --color-card-foreground: var(--card-foreground);
@@ -93,6 +102,16 @@
     --color-success-foreground: var(--success-foreground);
     --color-danger: var(--danger);
     --color-danger-foreground: var(--danger-foreground);
+
+    /* — Declared hues — match-story tags, avatar fills, rating-ring gradient — */
+    --color-tag-warn: var(--tag-warn);
+    --color-tag-info: var(--tag-info);
+    --color-avatar-1: var(--avatar-1);
+    --color-avatar-2: var(--avatar-2);
+    --color-avatar-3: var(--avatar-3);
+    --color-avatar-4: var(--avatar-4);
+    --color-ring-from: var(--ring-from);
+    --color-ring-to: var(--ring-to);
 
     /* — shadcn semantic roles (kept for component compatibility) — */
     --color-primary: var(--primary);
@@ -135,10 +154,15 @@
     --radius-pill: 9999px; /* fully rounded controls */
 
     /* — Elevation — tuned for dark surfaces. `shadow-control`, `shadow-card`, etc. — */
-    --shadow-control: 0 2px 8px rgba(0, 0, 0, 0.18);
-    --shadow-card: 0 6px 18px rgba(0, 0, 0, 0.22);
-    --shadow-button: 0 4px 12px rgba(31, 73, 135, 0.4);
-    --shadow-float: 0 18px 40px -16px rgba(0, 0, 0, 0.6);
+    /* Every raised surface carries its hairline as an inset shadow (never a
+       `border`), so it overlays without reflow and layers with the drop shadow —
+       per the audit. Neutral fills use --border; accent fills use --border-accent.
+       `shadow-hairline` is the flat case (hairline only, no elevation). */
+    --shadow-hairline: inset 0 0 0 1px var(--border);
+    --shadow-control: 0 2px 8px rgba(0, 0, 0, 0.18), inset 0 0 0 1px var(--border);
+    --shadow-card: 0 6px 18px rgba(0, 0, 0, 0.22), inset 0 0 0 1px var(--border);
+    --shadow-button: 0 4px 12px rgba(31, 73, 135, 0.4), inset 0 0 0 1px var(--border-accent);
+    --shadow-float: 0 18px 40px -16px rgba(0, 0, 0, 0.6), inset 0 0 0 1px var(--border);
 }
 
 /* ============================================================================
@@ -159,10 +183,23 @@
     --faint-foreground: color-mix(in oklch, var(--foreground) 40%, transparent); /* tertiary text */
     --dim-foreground: color-mix(in oklch, var(--foreground) 20%, transparent); /* decoration — dots, separators */
 
-    /* Translucent surfaces read as faint gray over white */
-    --surface: oklch(0 0 0 / 3%);
-    --surface-hover: oklch(0 0 0 / 5%);
-    --divider: oklch(0 0 0 / 8%);
+    /* Surfaces & hairlines all derive from --foreground via color-mix — one ink,
+       stepped by alpha. --surface doubles as the divider/rule/track token. */
+    --surface: color-mix(in oklch, var(--foreground) 4%, transparent);
+    --surface-hover: color-mix(in oklch, var(--foreground) 6%, transparent);
+    --divider: var(--surface);
+    --border: color-mix(in oklch, var(--foreground) 8%, transparent); /* inset hairline */
+    --border-accent: color-mix(in oklch, var(--foreground) 16%, transparent); /* edge on accent fills */
+
+    /* Declared hues — shared across themes (cascade into .dark) */
+    --tag-warn: #f0a020;
+    --tag-info: #3b9dd9;
+    --avatar-1: #2c4364;
+    --avatar-2: #26354d;
+    --avatar-3: #34373d;
+    --avatar-4: #2b2e33;
+    --ring-from: #5fc9ff;
+    --ring-to: #3a78d6;
 
     --card: var(--surface);
     --card-foreground: var(--foreground);
@@ -188,7 +225,6 @@
     --accent-dark: oklch(0.5 0.15 252);
     --accent-foreground: var(--brand-foreground);
     --destructive: oklch(0.577 0.245 27.325);
-    --border: oklch(0 0 0 / 10%);
     --input: oklch(0 0 0 / 8%);
     --ring: var(--brand);
 
@@ -221,10 +257,14 @@
     --faint-foreground: color-mix(in oklch, var(--foreground) 40%, transparent); /* tertiary text */
     --dim-foreground: color-mix(in oklch, var(--foreground) 20%, transparent); /* decoration — dots, separators */
 
-    /* Frosted-glass surfaces: white at low alpha over the dark base */
-    --surface: oklch(1 0 0 / 4%);
-    --surface-hover: oklch(1 0 0 / 6%);
-    --divider: oklch(1 0 0 / 5%);
+    /* Frosted-glass surfaces & hairlines derive from --foreground (re-declared
+       here so color-mix resolves against the dark ink). --surface doubles as the
+       divider/rule/track token; hairlines are 2% (default) / 16% (on accent). */
+    --surface: color-mix(in oklch, var(--foreground) 4%, transparent);
+    --surface-hover: color-mix(in oklch, var(--foreground) 6%, transparent);
+    --divider: var(--surface);
+    --border: color-mix(in oklch, var(--foreground) 2%, transparent);
+    --border-accent: color-mix(in oklch, var(--foreground) 16%, transparent);
 
     --card: var(--surface);
     --card-foreground: var(--foreground);
@@ -250,7 +290,6 @@
     --accent-dark: oklch(58% 0.15 257);
     --accent-foreground: var(--brand-foreground);
     --destructive: oklch(0.704 0.191 22.216);
-    --border: oklch(1 0 0 / 6%);
     --input: oklch(1 0 0 / 15%);
     --ring: var(--brand);
 

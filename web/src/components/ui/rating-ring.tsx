@@ -28,8 +28,8 @@ export function RatingRing({ progress, size = 100, className, children }: Rating
       <svg width={size} height={size} viewBox="0 0 100 100" className="-rotate-90">
         <defs>
           <linearGradient id="ratingRingGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#5fc9ff" />
-            <stop offset="100%" stopColor="#3a78d6" />
+            <stop offset="0%" stopColor="var(--ring-from)" />
+            <stop offset="100%" stopColor="var(--ring-to)" />
           </linearGradient>
         </defs>
         <circle
@@ -37,9 +37,8 @@ export function RatingRing({ progress, size = 100, className, children }: Rating
           cy="50"
           r={RADIUS}
           fill="none"
-          stroke="currentColor"
+          stroke="var(--surface)"
           strokeWidth="8"
-          className="text-foreground/10"
         />
         <circle
           cx="50"

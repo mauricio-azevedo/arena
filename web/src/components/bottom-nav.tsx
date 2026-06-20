@@ -44,7 +44,7 @@ export function BottomNav() {
       aria-label="Navegação principal"
       className="fixed inset-x-0 bottom-[max(1.25rem,env(safe-area-inset-bottom))] z-50 flex justify-center"
     >
-      <div className="inline-flex items-center gap-1.5 rounded-pill border border-foreground/8 bg-foreground/6 p-2 shadow-float backdrop-blur-md">
+      <div className="inline-flex items-center gap-1.5 rounded-pill bg-card p-2 shadow-float backdrop-blur-md">
         {items.map((item) => {
           const Icon = item.icon;
           const isActive = activeHref === item.href;
@@ -85,9 +85,9 @@ function isExactOrDescendantPath(pathname: string, href: Exclude<BottomNavHref, 
 
 function getBottomNavLinkClassName(isActive: boolean) {
   return cn(
-    'relative flex size-14 items-center justify-center rounded-full border transition-colors focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/40 [&_svg]:pointer-events-none [&_svg]:shrink-0',
+    'relative flex size-14 items-center justify-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/40 [&_svg]:pointer-events-none [&_svg]:shrink-0',
     isActive
-      ? 'border-white/15 bg-brand text-brand-foreground shadow-button'
-      : 'border-transparent text-foreground/50 hover:text-foreground',
+      ? 'bg-brand text-brand-foreground shadow-button'
+      : 'text-foreground/50 hover:text-foreground',
   );
 }
