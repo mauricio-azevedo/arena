@@ -143,30 +143,28 @@ export function MatchCard({
     <>
       <Card className="gap-0 py-0">
         <CardContent className="px-4 py-4">
-          <div className="flex items-center justify-between gap-2">
-            <div className="flex min-w-0 items-center gap-2 text-label font-bold text-foreground">
-              <span
-                aria-hidden
-                className={cn(
-                  'size-[7px] shrink-0 rounded-full',
-                  isUpset ? 'bg-tag-warn' : 'bg-tag-info',
-                )}
-              />
-              <span className="truncate">{narrativeTitle ?? 'Partida'}</span>
-              {swing !== null && (
-                <span className="shrink-0 text-label font-bold tabular-nums text-muted-foreground">
-                  ±{swing}
-                </span>
+          <div className="relative flex h-7 min-w-0 items-center gap-2 text-label font-bold text-foreground">
+            <span
+              aria-hidden
+              className={cn(
+                'size-[7px] shrink-0 rounded-full',
+                isUpset ? 'bg-tag-warn' : 'bg-tag-info',
               )}
-            </div>
+            />
+            <span className="truncate">{narrativeTitle ?? 'Partida'}</span>
+            {swing !== null && (
+              <span className="shrink-0 text-label font-bold tabular-nums text-muted-foreground">
+                ±{swing}
+              </span>
+            )}
 
             {showActions && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
                     variant="ghost"
-                    size="icon-sm"
-                    className="-mr-1 shrink-0 text-faint-foreground"
+                    size="icon"
+                    className="absolute top-1/2 -right-2 -translate-y-1/2 text-faint-foreground"
                   >
                     <MoreVertical className="size-5" />
                     <span className="sr-only">Abrir opções</span>
@@ -181,19 +179,19 @@ export function MatchCard({
                       router.push(`/groups/${groupId}/matches/${match.id}/edit`);
                     }}
                   >
-                    <Pencil className="mr-2 h-4 w-4" />
-                    Corrigir lançamento
+                    <Pencil className="h-4 w-4" />
+                    Corrigir
                   </DropdownMenuItem>
 
                   <DropdownMenuItem
-                    className="text-destructive focus:text-destructive"
+                    variant="destructive"
                     onSelect={(event) => {
                       event.preventDefault();
                       setIsConfirmOpen(true);
                     }}
                   >
-                    <Trash2 className="mr-2 h-4 w-4" />
-                    Apagar lançamento
+                    <Trash2 className="h-4 w-4" />
+                    Apagar
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>

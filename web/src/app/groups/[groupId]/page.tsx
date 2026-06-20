@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation';
 import { AppShell } from '@/components/app-shell';
 import { getGroup } from '@/features/groups/api/groups.api';
 import { GroupDetail } from '@/features/groups/group-detail';
+import { GroupOptionsMenu } from '@/features/groups/components/group-options-menu';
 
 type Props = {
   params: Promise<{
@@ -18,7 +19,9 @@ export default async function GroupDetailPage({ params, searchParams }: Props) {
   await getGroup(groupId).catch(() => notFound());
 
   return (
-    <AppShell chrome={{ back: { fallbackHref: '/' } }}>
+    <AppShell
+      chrome={{ back: { fallbackHref: '/' }, trailing: <GroupOptionsMenu groupId={groupId} /> }}
+    >
       <GroupDetail groupId={groupId} tab={tab} />
     </AppShell>
   );

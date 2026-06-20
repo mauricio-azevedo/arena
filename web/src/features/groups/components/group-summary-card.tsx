@@ -1,10 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import Link from 'next/link';
-import { Search, UserPlus } from 'lucide-react';
+import { Search } from 'lucide-react';
 import type { Group, GroupMember, Match, MyGroup } from '@/types/api';
-import { Button } from '@/components/ui/button';
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
 import { Title } from '@/components/ui/text';
 import { StandingCard } from '@/features/groups/components/standing-card';
@@ -44,12 +42,7 @@ export function GroupSummaryCard({
 
   return (
     <div className="space-y-5">
-      <GroupIdentityHeader
-        group={group}
-        memberCount={memberCount}
-        matchCount={matchCount}
-        canInvite={membership?.role === 'ADMIN'}
-      />
+      <GroupIdentityHeader group={group} memberCount={memberCount} matchCount={matchCount} />
 
       <GroupSearchField />
 
@@ -147,12 +140,10 @@ function GroupIdentityHeader({
   group,
   memberCount,
   matchCount,
-  canInvite,
 }: {
   group: Group;
   memberCount: number;
   matchCount: number;
-  canInvite: boolean;
 }) {
   return (
     <div className="flex flex-col items-center text-center">
@@ -171,15 +162,6 @@ function GroupIdentityHeader({
       </div>
 
       {group.description && <GroupDescription text={group.description} />}
-
-      {canInvite && (
-        <Button asChild variant="secondary" size="sm" className="mt-3.5">
-          <Link href={`/groups/${group.id}/invite`}>
-            <UserPlus />
-            Convidar membros
-          </Link>
-        </Button>
-      )}
     </div>
   );
 }
