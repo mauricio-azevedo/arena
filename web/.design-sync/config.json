@@ -1,0 +1,136 @@
+{
+  "pkg": "web",
+  "globalName": "Arena",
+  "shape": "package",
+  "projectId": "c85c2bd6-fb7b-4189-87d6-a2386008730b",
+  "buildCmd": "npx --yes @tailwindcss/cli@^4 -i .design-sync/tailwind-input.css -o .design-sync/.cache/arena.css",
+  "srcDir": "src/components/ui",
+  "tsconfig": "tsconfig.json",
+  "cssEntry": ".design-sync/.cache/arena.css",
+  "extraEntries": [
+    "./.design-sync/runtime/arena-root.tsx"
+  ],
+  "provider": {
+    "component": "ArenaRoot"
+  },
+  "readmeHeader": ".design-sync/conventions.md",
+  "componentSrcMap": {
+    "AlertDialog": "src/components/ui/alert-dialog.tsx",
+    "Avatar": "src/components/ui/avatar.tsx",
+    "AvatarGroup": "src/components/ui/avatar.tsx",
+    "Badge": "src/components/ui/badge.tsx",
+    "Button": "src/components/ui/button.tsx",
+    "Card": "src/components/ui/card.tsx",
+    "Combobox": "src/components/ui/combobox.tsx",
+    "Command": "src/components/ui/command.tsx",
+    "Dialog": "src/components/ui/dialog.tsx",
+    "Display": "src/components/ui/text.tsx",
+    "DropdownMenu": "src/components/ui/dropdown-menu.tsx",
+    "Eyebrow": "src/components/ui/text.tsx",
+    "Input": "src/components/ui/input.tsx",
+    "InputGroup": "src/components/ui/input-group.tsx",
+    "Label": "src/components/ui/label.tsx",
+    "Popover": "src/components/ui/popover.tsx",
+    "RatingRing": "src/components/ui/rating-ring.tsx",
+    "Section": "src/components/ui/text.tsx",
+    "Select": "src/components/ui/select.tsx",
+    "Separator": "src/components/ui/separator.tsx",
+    "Stat": "src/components/ui/text.tsx",
+    "Tabs": "src/components/ui/tabs.tsx",
+    "Textarea": "src/components/ui/textarea.tsx",
+    "Title": "src/components/ui/text.tsx",
+    "Toggle": "src/components/ui/toggle.tsx",
+    "ToggleGroup": "src/components/ui/toggle-group.tsx",
+    "TypographyBlockquote": "src/components/ui/typography.tsx",
+    "TypographyH1": "src/components/ui/typography.tsx",
+    "TypographyH2": "src/components/ui/typography.tsx",
+    "TypographyH3": "src/components/ui/typography.tsx",
+    "TypographyH4": "src/components/ui/typography.tsx",
+    "TypographyInlineCode": "src/components/ui/typography.tsx",
+    "TypographyLarge": "src/components/ui/typography.tsx",
+    "TypographyLead": "src/components/ui/typography.tsx",
+    "TypographyList": "src/components/ui/typography.tsx",
+    "TypographyMuted": "src/components/ui/typography.tsx",
+    "TypographyP": "src/components/ui/typography.tsx",
+    "TypographySmall": "src/components/ui/typography.tsx"
+  },
+  "docsMap": {
+    "AlertDialog": ".design-sync/groups/AlertDialog.md",
+    "Avatar": ".design-sync/groups/Avatar.md",
+    "AvatarGroup": ".design-sync/groups/AvatarGroup.md",
+    "Badge": ".design-sync/groups/Badge.md",
+    "Button": ".design-sync/groups/Button.md",
+    "Card": ".design-sync/groups/Card.md",
+    "Combobox": ".design-sync/groups/Combobox.md",
+    "Command": ".design-sync/groups/Command.md",
+    "Dialog": ".design-sync/groups/Dialog.md",
+    "Display": ".design-sync/groups/Display.md",
+    "DropdownMenu": ".design-sync/groups/DropdownMenu.md",
+    "Eyebrow": ".design-sync/groups/Eyebrow.md",
+    "Input": ".design-sync/groups/Input.md",
+    "InputGroup": ".design-sync/groups/InputGroup.md",
+    "Label": ".design-sync/groups/Label.md",
+    "Popover": ".design-sync/groups/Popover.md",
+    "RatingRing": ".design-sync/groups/RatingRing.md",
+    "Section": ".design-sync/groups/Section.md",
+    "Select": ".design-sync/groups/Select.md",
+    "Separator": ".design-sync/groups/Separator.md",
+    "Stat": ".design-sync/groups/Stat.md",
+    "Tabs": ".design-sync/groups/Tabs.md",
+    "Textarea": ".design-sync/groups/Textarea.md",
+    "Title": ".design-sync/groups/Title.md",
+    "Toggle": ".design-sync/groups/Toggle.md",
+    "ToggleGroup": ".design-sync/groups/ToggleGroup.md",
+    "TypographyBlockquote": ".design-sync/groups/TypographyBlockquote.md",
+    "TypographyH1": ".design-sync/groups/TypographyH1.md",
+    "TypographyH2": ".design-sync/groups/TypographyH2.md",
+    "TypographyH3": ".design-sync/groups/TypographyH3.md",
+    "TypographyH4": ".design-sync/groups/TypographyH4.md",
+    "TypographyInlineCode": ".design-sync/groups/TypographyInlineCode.md",
+    "TypographyLarge": ".design-sync/groups/TypographyLarge.md",
+    "TypographyLead": ".design-sync/groups/TypographyLead.md",
+    "TypographyList": ".design-sync/groups/TypographyList.md",
+    "TypographyMuted": ".design-sync/groups/TypographyMuted.md",
+    "TypographyP": ".design-sync/groups/TypographyP.md",
+    "TypographySmall": ".design-sync/groups/TypographySmall.md"
+  },
+  "overrides": {
+    "Card": {
+      "cardMode": "column"
+    },
+    "InputGroup": {
+      "cardMode": "column"
+    },
+    "Tabs": {
+      "cardMode": "column"
+    },
+    "Select": {
+      "cardMode": "single",
+      "primaryStory": "Open"
+    },
+    "Popover": {
+      "cardMode": "single",
+      "primaryStory": "Open"
+    },
+    "DropdownMenu": {
+      "cardMode": "single",
+      "primaryStory": "Open"
+    },
+    "Dialog": {
+      "cardMode": "single",
+      "primaryStory": "Open"
+    },
+    "AlertDialog": {
+      "cardMode": "single",
+      "primaryStory": "Open"
+    },
+    "Combobox": {
+      "cardMode": "single",
+      "primaryStory": "Open"
+    },
+    "Command": {
+      "cardMode": "single",
+      "primaryStory": "Palette"
+    }
+  }
+}
