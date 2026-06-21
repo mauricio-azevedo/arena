@@ -9,7 +9,7 @@ companion to the *prescriptive* [`../code-organization.md`](../code-organization
 ## 1. Module & file layout
 
 - One NestJS module per domain area (`groups`, `matches`, `feed`, `ranking`,
-  `processing`, `platform-trending`, `me`, `members`, `users`, `auth`,
+  `processing`, `home-highlights`, `me`, `members`, `users`, `auth`,
   `group-invites`). `PrismaModule` and `AuthModule` are shared infrastructure and
   imported where needed; `PrismaModule` is effectively global DB access.
 - Large modules split services by responsibility and use subfolders, e.g.
@@ -121,7 +121,7 @@ create(@Param('groupId') groupId: string, @CurrentUser() user: AuthUser,
 | `GET /me/profile/summary`, `GET /me/profile/matches` | required | me |
 | `PATCH /me/profile`, `PATCH /me/password` | required | me |
 | `GET /users/:userId/profile/summary`, `…/profile/matches`, `…/groups` | viewer-scoped | users |
-| `GET /platform/trending-players` | public | platform-trending |
+| `GET /home/weekly-highlights` | optional | home-highlights |
 
 Routes are use-case oriented (`GET /me/profile/summary`), never UI-shaped. No
 global `/api` prefix.

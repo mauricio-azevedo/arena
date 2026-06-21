@@ -29,7 +29,7 @@ Architecture docs describe how the system is structured and why.
 - [`architecture/feed-architecture.md`](architecture/feed-architecture.md): persisted feed event architecture.
 - [`architecture/rating-architecture.md`](architecture/rating-architecture.md): rating snapshots and recalculation (math correct; execution model now async — see `system-architecture.md`).
 - [`architecture/processing-jobs.md`](architecture/processing-jobs.md): in-database job queue and projection cascade.
-- [`architecture/platform-trending-players.md`](architecture/platform-trending-players.md): platform-wide trending read model.
+- [`architecture/weekly-highlights.md`](architecture/weekly-highlights.md): home "Essa semana" highlights read model + projection.
 
 ### Engineering
 

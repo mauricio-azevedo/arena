@@ -4,14 +4,13 @@ import { FeedModule } from '../feed/feed.module';
 import { RankingModule } from '../ranking/ranking.module';
 import { AuthModule } from '../auth/auth.module';
 import { GroupsModule } from '../groups/groups.module';
-import { PlatformTrendingModule } from '../platform-trending/platform-trending.module';
+import { HomeHighlightsModule } from '../home-highlights/home-highlights.module';
 import { RatingProjectionService } from '../rating/rating-projection.service';
 import { ProcessingController } from './processing.controller';
 import { ProcessingJobReaderService } from './processing-job-reader.service';
 import { ProcessingJobRunnerService } from './processing-job-runner.service';
 import { ProcessingJobWriterService } from './processing-job-writer.service';
 import { ProcessingWorkerService } from './processing-worker.service';
-import { PlatformTrendingRebuildSchedulerService } from './platform-trending-rebuild-scheduler.service';
 
 @Module({
   imports: [
@@ -20,7 +19,7 @@ import { PlatformTrendingRebuildSchedulerService } from './platform-trending-reb
     RankingModule,
     AuthModule,
     GroupsModule,
-    PlatformTrendingModule,
+    HomeHighlightsModule,
   ],
   controllers: [ProcessingController],
   providers: [
@@ -29,7 +28,6 @@ import { PlatformTrendingRebuildSchedulerService } from './platform-trending-reb
     ProcessingJobRunnerService,
     ProcessingJobWriterService,
     ProcessingWorkerService,
-    PlatformTrendingRebuildSchedulerService,
   ],
   exports: [ProcessingJobWriterService],
 })

@@ -10,13 +10,12 @@ import type {
 } from '../feed/types/ranking-movement-feed-input.type';
 import { RatingProjectionService } from '../rating/rating-projection.service';
 import { GroupMemberStatsProjectionService } from '../ranking/group-member-stats-projection.service';
+import { WeeklyHighlightsProjectionService } from '../home-highlights/weekly-highlights-projection.service';
 import { RankingMovementService } from '../ranking/ranking-movement.service';
 import { GroupHomeSummaryService } from '../groups/group-home-summary.service';
 import { MatchTeam } from '../generated/prisma/enums';
 import { errorLogFields, structuredLog } from '../observability/structured-log';
 import type { ProcessingJob } from './processing-job.types';
-import { PlatformTrendingPlayersProjectionService } from '../platform-trending/platform-trending-players-projection.service';
-import { ProcessingJobWriterService } from './processing-job-writer.service';
 
 const DEFAULT_LOCK_TIMEOUT_MS = 60_000;
 const DEFAULT_TRANSACTION_TIMEOUT_MS = 60_000;
@@ -73,10 +72,9 @@ export class ProcessingJobRunnerService {
     private readonly ratingProjection: RatingProjectionService,
     private readonly rankingMovements: RankingMovementService,
     private readonly groupMemberStatsProjection: GroupMemberStatsProjectionService,
+    private readonly weeklyHighlights: WeeklyHighlightsProjectionService,
     private readonly feed: FeedOrchestratorService,
     private readonly groupHomeSummary: GroupHomeSummaryService,
-    private readonly platformTrendingPlayers: PlatformTrendingPlayersProjectionService,
-    private readonly processingJobs: ProcessingJobWriterService,
   ) {}
 
   async runNextBatch(limit = 5) {
@@ -219,9 +217,6 @@ export class ProcessingJobRunnerService {
       case 'GROUP':
         await this.processGroupJob(job);
         return;
-      case 'PLATFORM':
-        await this.processPlatformJob(job);
-        return;
       default:
         throw new Error(`Unsupported processing job scope: ${job.scope}`);
     }
@@ -258,18 +253,6 @@ export class ProcessingJobRunnerService {
     }
   }
 
-  private async processPlatformJob(job: ProcessingJob) {
-    switch (job.type) {
-      case 'PLATFORM_TRENDING_PLAYERS_REBUILD':
-        await this.platformTrendingPlayers.syncPlatformTrendingPlayers();
-        return;
-      default:
-        throw new Error(
-          `Unsupported platform processing job type: ${job.type}`,
-        );
-    }
-  }
-
   private async processGroupProjectionJob(
     groupId: string,
     changedMatchId: string | null,
@@ -280,6 +263,7 @@ export class ProcessingJobRunnerService {
         await this.ratingProjection.syncGroupRatings(tx, groupId);
         await this.rankingMovements.syncGroupRankingState(tx, groupId);
         await this.groupMemberStatsProjection.syncGroupMemberStats(tx, groupId);
+        await this.weeklyHighlights.syncGroupHighlights(tx, groupId);
 
         if (changedMatchId && deleteChangedMatchFeed) {
           await this.deleteMatchFeedItems(tx, groupId, changedMatchId);
@@ -290,10 +274,6 @@ export class ProcessingJobRunnerService {
         await this.syncGroupRankingMovementFeedItems(tx, groupId);
         await this.markProjectionCurrent(tx, groupId, changedMatchId);
         await this.groupHomeSummary.syncGroupSummary(groupId, tx);
-        await this.processingJobs.enqueuePlatformTrendingPlayersRebuild(
-          { payload: { reason: 'GROUP_PROJECTION_COMPLETED' } },
-          tx,
-        );
       },
       { timeout: this.getTransactionTimeoutMs() },
     );

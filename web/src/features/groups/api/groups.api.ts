@@ -21,6 +21,13 @@ export function getGroupHome(token?: string): Promise<GroupHomeCard[]> {
   });
 }
 
+export function getAllGroups(token?: string): Promise<GroupHomeCard[]> {
+  return apiRequest<GroupHomeCard[]>('/groups/home/all', {
+    token,
+    cache: 'no-store',
+  });
+}
+
 export function getMyGroups(token: string): Promise<MyGroup[]> {
   return apiRequest<MyGroup[]>('/me/groups', {
     token,

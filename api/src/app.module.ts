@@ -10,7 +10,7 @@ import { MembersModule } from './members/members.module';
 import { FeedModule } from './feed/feed.module';
 import { UsersModule } from './users/users.module';
 import { ProcessingModule } from './processing/processing.module';
-import { PlatformTrendingModule } from './platform-trending/platform-trending.module';
+import { HomeHighlightsModule } from './home-highlights/home-highlights.module';
 
 @Module({
   imports: [
@@ -25,7 +25,7 @@ import { PlatformTrendingModule } from './platform-trending/platform-trending.mo
     FeedModule,
     UsersModule,
     ProcessingModule,
-    PlatformTrendingModule,
+    HomeHighlightsModule,
   ],
 })
 export class AppModule {}

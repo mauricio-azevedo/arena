@@ -27,9 +27,8 @@ User ──< GroupMember >── Group
  │           │             ├──1 GroupRankingProjection        (derived)
  │           │             ├──1 GroupHomeSummary              (derived)
  │           │             ├──< MatchRankingSnapshot          (derived)
- │           │             └──< GroupMemberStats              (derived, 1 per member)
- │
- └──1 PlatformTrendingPlayer (derived, platform-wide leaderboard)
+ │           │             ├──< GroupMemberStats              (derived, 1 per member)
+ │           │             └──< GroupHighlight                (derived, 1 per member+type)
 ```
 
 `>──<` = many-to-many through a join entity. `──<` = one-to-many. `──1` = optional
@@ -106,8 +105,8 @@ match-derived items idempotent. See
 ### ProcessingJob
 
 The job-queue table that drives the async pipeline. `type`
-(`MATCH_CREATED/UPDATED/DELETED`, `GROUP_RANKING_REBUILD`,
-`PLATFORM_TRENDING_PLAYERS_REBUILD`), `scope` (`GROUP`/`PLATFORM`), `status`
+(`MATCH_CREATED/UPDATED/DELETED`, `GROUP_RANKING_REBUILD`;
+`PLATFORM_TRENDING_PLAYERS_REBUILD` deprecated), `scope` (`GROUP`; `PLATFORM` deprecated), `status`
 (`PENDING/PROCESSING/DONE/FAILED`), optional `group`/`match`, `dedupeKey`,
 `payload` (JSON), retry fields (`attemptCount`, `maxAttempts`, `availableAt`,
 `lockedAt`, `lockedBy`, `lastError`, `processedAt`). See
@@ -124,11 +123,11 @@ The job-queue table that drives the async pipeline. `type`
 | `GroupMemberStats` | 1 per member | stats projection | `matchesCount`, `winsCount` |
 | `GroupRankingProjection` | 1 per group | projection status tracker | `status`, `version`, `lastProcessedMatchId/At`, `lastError` |
 | `GroupHomeSummary` | 1 per group | home-summary service | `membersCount`, `leaders` (JSON), `lastRelevantFeedItem`, `projectionStatus` |
-| `PlatformTrendingPlayer` | 1 per user | platform-trending projection | `trendRank` (unique), `score`, recent/all-time match+win counts and rates, highlight group/member, time window, `metadata` |
+| `GroupHighlight` | 1 per (member, type) | weekly-highlights projection | `type` (six achievements), `value`, `score`, `anchorAt` (7-day window key), `algorithmVersion` — powers the home "Essa semana" rail |
 
 These are caches for fast reads and stored historical truth. If they look wrong,
 the fix is usually to re-run the relevant projection (enqueue a
-`GROUP_RANKING_REBUILD` / `PLATFORM_TRENDING_PLAYERS_REBUILD` job), not to patch
+`GROUP_RANKING_REBUILD` job), not to patch
 rows.
 
 ---
