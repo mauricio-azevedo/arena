@@ -98,13 +98,25 @@ function Meta({ className, asChild, ...props }: RoleProps<'span'>) {
   return <Comp data-slot="meta" className={cn('text-meta tabular-nums', className)} {...props} />;
 }
 
-/** Uppercase overline that sits above a value — e.g. "SUA POSIÇÃO". */
-function Overline({ className, asChild, ...props }: RoleProps<'div'>) {
+/**
+ * Uppercase overline that sits above a value — e.g. "SUA POSIÇÃO". `size="xs"`
+ * (10px) for inline micro-chips such as the "Você" tag.
+ */
+function Overline({
+  className,
+  asChild,
+  size = 'default',
+  ...props
+}: RoleProps<'div'> & { size?: 'default' | 'xs' }) {
   const Comp = asChild ? Slot.Root : 'div';
   return (
     <Comp
       data-slot="overline"
-      className={cn('text-overline text-muted-foreground uppercase', className)}
+      className={cn(
+        size === 'xs' ? 'text-overline-xs' : 'text-overline',
+        'text-muted-foreground uppercase',
+        className,
+      )}
       {...props}
     />
   );

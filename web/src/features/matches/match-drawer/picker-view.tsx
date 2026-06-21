@@ -71,7 +71,11 @@ export function PickerView({
 
       <div className="shrink-0 px-[18px] pb-3 pt-1">
         <div className="flex h-[46px] items-center gap-2.5 rounded-pill bg-surface px-4 shadow-hairline">
-          <Search className="size-[18px] shrink-0 text-faint-foreground" strokeWidth={2.2} aria-hidden />
+          <Search
+            className="size-[18px] shrink-0 text-faint-foreground"
+            strokeWidth={2.2}
+            aria-hidden
+          />
           <input
             value={search}
             onChange={(event) => setSearch(event.target.value)}
@@ -112,11 +116,13 @@ export function PickerView({
                   </Meta>
 
                   <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-                    <div className="flex min-w-0 items-center gap-2">
+                    <div className="flex min-w-0 items-end gap-2">
                       <Label className="truncate text-foreground">{entry.fullName}</Label>
                       {entry.isYou && (
-                        <span className="shrink-0 rounded-md bg-brand/20 px-1.5 py-0.5 text-brand">
-                          <Overline className="text-brand">Você</Overline>
+                        <span className="shrink-0 rounded-md bg-brand/20 px-1.5 py-px text-brand">
+                          <Overline size="xs" className="text-brand">
+                            Você
+                          </Overline>
                         </span>
                       )}
                     </div>
@@ -131,9 +137,7 @@ export function PickerView({
                       <Check className="size-3.5" strokeWidth={3} aria-hidden />
                     </span>
                   )}
-                  {taken && (
-                    <Meta className="shrink-0 text-faint-foreground">Na partida</Meta>
-                  )}
+                  {taken && <Meta className="shrink-0 text-faint-foreground">Na partida</Meta>}
                 </button>
               );
             })}

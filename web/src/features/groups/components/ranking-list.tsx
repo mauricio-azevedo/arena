@@ -91,21 +91,23 @@ function RankingRow({
       </Meta>
 
       <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-        <div className="flex min-w-0 items-center gap-2">
+        <div className="flex min-w-0 items-end gap-2">
           <Label className="min-w-0 truncate text-foreground">
             <UserNameLink userId={member.userId}>{fullName}</UserNameLink>
           </Label>
 
           {isCurrent && (
-            <span className="shrink-0 rounded-md bg-brand/20 px-1.5 py-0.5 text-brand">
-              <Overline className="text-brand">Você</Overline>
+            <span className="shrink-0 rounded-md bg-brand/20 px-1.5 py-px text-brand">
+              <Overline size="xs" className="text-brand">
+                Você
+              </Overline>
             </span>
           )}
 
           <Movement movement={member.rankingMovement} />
         </div>
 
-        <Meta className="text-muted-foreground">{getStatsLine(member)}</Meta>
+        <StatsLine member={member} />
       </div>
 
       <Stat size="sm" className="shrink-0 text-foreground">
@@ -129,10 +131,32 @@ function Movement({ movement }: { movement?: RankingMovement | null }) {
   return (
     <Meta
       aria-label={label}
-      className={cn('inline-flex shrink-0 items-center gap-0.5', isUp ? 'text-success' : 'text-danger')}
+      className={cn(
+        'inline-flex shrink-0 items-center gap-0.5',
+        isUp ? 'text-success' : 'text-danger',
+      )}
     >
       <Icon className="size-2.5" strokeWidth={3.2} aria-hidden />
       {movement.positions}
+    </Meta>
+  );
+}
+
+// Two muted tones for hierarchy: the figures sit at `muted`, the words at the
+// dimmer `faint` so the numbers read first.
+function StatsLine({ member }: { member: GroupMember }) {
+  const stats = member.stats ?? { matchesCount: 0, winsCount: 0 };
+
+  if (stats.matchesCount === 0) {
+    return <Meta className="text-faint-foreground">Sem partidas</Meta>;
+  }
+
+  const winPct = Math.round((stats.winsCount / stats.matchesCount) * 100);
+
+  return (
+    <Meta className="text-faint-foreground">
+      <span className="text-muted-foreground">{stats.matchesCount}</span> jogos ·{' '}
+      <span className="text-muted-foreground">{winPct}%</span> vit.
     </Meta>
   );
 }
@@ -143,16 +167,4 @@ function getMemberDisplayName(member: GroupMember) {
   }
 
   return `${member.user.firstName} ${member.user.lastName}`.trim() || 'Jogador';
-}
-
-function getStatsLine(member: GroupMember) {
-  const stats = member.stats ?? { matchesCount: 0, winsCount: 0 };
-
-  if (stats.matchesCount === 0) {
-    return 'Sem partidas';
-  }
-
-  const winPct = Math.round((stats.winsCount / stats.matchesCount) * 100);
-
-  return `${stats.matchesCount} jogos · ${winPct}% vit.`;
 }
