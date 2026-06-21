@@ -25,6 +25,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { deleteGroupMatch } from '@/features/matches/api/matches.api';
+import { useMatchDrawer } from '@/features/matches/match-drawer/match-drawer-context';
 import { getMatchNarrativeTitle } from '@/features/matches/lib/match-narrative-title';
 import { UserNameLink } from '@/features/users/components/user-name-link';
 import { getAccessToken } from '@/lib/auth';
@@ -90,6 +91,7 @@ export function MatchCard({
   canManage: boolean;
 }) {
   const router = useRouter();
+  const { openEdit } = useMatchDrawer();
 
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -175,7 +177,7 @@ export function MatchCard({
                     onSelect={() => {
                       if (!groupId) return;
 
-                      router.push(`/groups/${groupId}/matches/${match.id}/edit`);
+                      openEdit(match);
                     }}
                   >
                     <Pencil className="h-4 w-4" />

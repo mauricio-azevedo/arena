@@ -10,19 +10,20 @@ type Props = {
   }>;
   searchParams: Promise<{
     tab?: string;
+    compose?: string;
   }>;
 };
 
 export default async function GroupDetailPage({ params, searchParams }: Props) {
   const { groupId } = await params;
-  const { tab } = await searchParams;
+  const { tab, compose } = await searchParams;
   await getGroup(groupId).catch(() => notFound());
 
   return (
     <AppShell
       chrome={{ back: { fallbackHref: '/' }, trailing: <GroupOptionsMenu groupId={groupId} /> }}
     >
-      <GroupDetail groupId={groupId} tab={tab} />
+      <GroupDetail groupId={groupId} tab={tab} autoOpenCompose={compose === 'match'} />
     </AppShell>
   );
 }

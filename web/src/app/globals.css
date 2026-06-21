@@ -30,6 +30,11 @@
     --text-display--letter-spacing: -0.05em;
     --text-display--font-weight: 800;
 
+    --text-stat-xl: 2.125rem; /* 34px — the games figure in the score stepper */
+    --text-stat-xl--line-height: 1.3;
+    --text-stat-xl--letter-spacing: -0.02em;
+    --text-stat-xl--font-weight: 800;
+
     --text-stat-lg: 1.625rem; /* 26px — scores, monogram, ring value */
     --text-stat-lg--line-height: 1.3;
     --text-stat-lg--font-weight: 800;
@@ -141,6 +146,7 @@
     --radius-4xl: calc(var(--radius) * 2.6);
     --radius-card: 1.75rem; /* 28px — standard card */
     --radius-hero: 2rem; /* 32px — hero / standing card */
+    --radius-sheet: 2.375rem; /* 38px — bottom-sheet / drawer top corners */
     --radius-pill: 9999px; /* fully rounded controls */
 
     /* — Elevation — tuned for dark surfaces. `shadow-control`, `shadow-card`, etc. — */
