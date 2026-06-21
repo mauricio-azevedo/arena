@@ -17,6 +17,7 @@ import { GroupDetailLoadingState } from '@/features/groups/components/group-deta
 import { Card, CardContent } from '@/components/ui/card';
 import { Body, Label } from '@/components/ui/text';
 import { MatchDrawerProvider } from '@/features/matches/match-drawer/match-drawer-context';
+import { MemberProfileDrawerProvider } from '@/features/members/member-profile-drawer-context';
 
 const groupTabs = ['ranking', 'matches'] as const;
 type GroupTab = (typeof groupTabs)[number];
@@ -108,28 +109,30 @@ export function GroupDetail({ groupId, tab, autoOpenCompose = false }: Props) {
       onSaved={() => setRefreshKey((key) => key + 1)}
       autoOpenCreate={autoOpenCompose && canManageMatches}
     >
-      <div className="space-y-8">
-        <div className="space-y-3">
-          <GroupSummaryCard
-            group={data.group}
+      <MemberProfileDrawerProvider groupId={data.group.id} ranking={data.ranking}>
+        <div className="space-y-8">
+          <div className="space-y-3">
+            <GroupSummaryCard
+              group={data.group}
+              ranking={data.ranking}
+              members={data.members}
+              matches={data.matches}
+              membership={data.membership}
+            />
+
+            <GroupActions groupId={data.group.id} canManageMatches={canManageMatches} />
+          </div>
+
+          <GroupDetailTabs
+            groupId={data.group.id}
+            activeTab={activeTab}
             ranking={data.ranking}
-            members={data.members}
             matches={data.matches}
-            membership={data.membership}
+            canManageMatches={canManageMatches}
+            currentMembershipId={currentMembershipId}
           />
-
-          <GroupActions groupId={data.group.id} canManageMatches={canManageMatches} />
         </div>
-
-        <GroupDetailTabs
-          groupId={data.group.id}
-          activeTab={activeTab}
-          ranking={data.ranking}
-          matches={data.matches}
-          canManageMatches={canManageMatches}
-          currentMembershipId={currentMembershipId}
-        />
-      </div>
+      </MemberProfileDrawerProvider>
     </MatchDrawerProvider>
   );
 }

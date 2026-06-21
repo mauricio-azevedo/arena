@@ -58,6 +58,7 @@ export class RankingService {
         ratingAlgorithm: true,
         role: true,
         userId: true,
+        displayName: true,
         leftAt: true,
         createdAt: true,
         updatedAt: true,

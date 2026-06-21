@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import type { Prisma } from '../generated/prisma/client';
 import { MatchTeam } from '../generated/prisma/enums';
+import { resolveMemberDisplayName } from '../common/member-display-name';
 import { structuredLog } from '../observability/structured-log';
 import { calculateBeachRating } from './calculate-beach-rating';
 
@@ -10,7 +11,7 @@ const RATING_ALGORITHM = 'BEACH_ELO_V1';
 type RatingState = {
   id: string;
   name: string;
-  userId: string;
+  userId: string | null;
   displayName: string;
   rating: number;
 };
@@ -39,7 +40,7 @@ type MatchForProjection = {
 
 type MatchMovementSnapshot = {
   groupMemberId: string;
-  userId: string;
+  userId: string | null;
   displayName: string;
   direction: 'UP' | 'DOWN';
   positions: number;
@@ -49,7 +50,7 @@ type MatchMovementSnapshot = {
   currentRating: number;
   affectedMembers: Array<{
     groupMemberId: string;
-    userId: string;
+    userId: string | null;
     displayName: string;
     rank: number | null;
   }>;
@@ -67,6 +68,7 @@ export class RatingProjectionService {
       select: {
         id: true,
         userId: true,
+        displayName: true,
         user: {
           select: {
             firstName: true,
@@ -78,7 +80,7 @@ export class RatingProjectionService {
 
     const membersById = new Map<string, RatingState>(
       members.map((member) => {
-        const displayName = this.getUserDisplayName(member.user);
+        const displayName = resolveMemberDisplayName(member);
 
         return [
           member.id,
@@ -471,9 +473,5 @@ export class RatingProjectionService {
         "algorithmVersion" = EXCLUDED."algorithmVersion",
         "updatedAt" = NOW()
     `;
-  }
-
-  private getUserDisplayName(user: { firstName: string; lastName: string }) {
-    return `${user.firstName} ${user.lastName}`.trim();
   }
 }

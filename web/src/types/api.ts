@@ -42,7 +42,9 @@ export type GroupMemberStats = {
 export type GroupMember = {
   id: string;
   groupId: string;
-  userId: string;
+  // Null for stub players (jogadores sem conta); displayName carries their name.
+  userId: string | null;
+  displayName: string | null;
   rating: number;
   ratingDeviation: number | null;
   ratingVolatility: number | null;

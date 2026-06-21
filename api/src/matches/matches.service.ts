@@ -5,6 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { MatchTeam } from '../generated/prisma/enums';
+import { resolveMemberDisplayName } from '../common/member-display-name';
 import { PrismaService } from '../prisma/prisma.service';
 import type { Prisma } from '../generated/prisma/client';
 import { ProcessingJobWriterService } from '../processing/processing-job-writer.service';
@@ -21,7 +22,7 @@ type MatchBody = {
 
 type MatchMember = {
   id: string;
-  userId: string;
+  userId: string | null;
   displayName: string;
 };
 
@@ -362,6 +363,7 @@ export class MatchesService {
       select: {
         id: true,
         userId: true,
+        displayName: true,
         user: {
           select: {
             firstName: true,
@@ -383,7 +385,7 @@ export class MatchesService {
         {
           id: member.id,
           userId: member.userId,
-          displayName: this.getUserDisplayName(member.user),
+          displayName: resolveMemberDisplayName(member),
         },
       ]),
     );
@@ -528,9 +530,5 @@ export class MatchesService {
     }
 
     return membership;
-  }
-
-  private getUserDisplayName(user: { firstName: string; lastName: string }) {
-    return `${user.firstName} ${user.lastName}`.trim();
   }
 }

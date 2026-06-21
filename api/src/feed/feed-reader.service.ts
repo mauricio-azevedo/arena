@@ -44,7 +44,11 @@ export class FeedReaderService {
       : [];
 
     const connectedUserIds = [
-      ...new Set(connectedMemberships.map((membership) => membership.userId)),
+      ...new Set(
+        connectedMemberships
+          .map((membership) => membership.userId)
+          .filter((id): id is string => id !== null),
+      ),
     ];
 
     const items = await this.prisma.feedItem.findMany({

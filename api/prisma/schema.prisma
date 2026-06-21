@@ -164,8 +164,13 @@ model GroupMember {
   groupId String
   group   Group  @relation(fields: [groupId], references: [id], onDelete: Cascade)
 
-  userId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  // Null for stub players (jogadores sem conta): created inline so someone can be
+  // scored today without owning an account. displayName then holds their name.
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Set only for stubs; null when userId is present (name comes from the User).
+  displayName String?
 
   rating           Float  @default(1000)
   ratingDeviation  Float?

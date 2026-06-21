@@ -1,10 +1,7 @@
 import type { MatchTeam } from '../../generated/prisma/enums';
+import type { FeedPlayer } from './feed-player.type';
 
-export type MatchBlowoutFeedPlayer = {
-  groupMemberId: string;
-  userId: string;
-  displayName: string;
-};
+export type MatchBlowoutFeedPlayer = FeedPlayer;
 
 export type MatchBlowoutFeedInput = {
   groupId: string;

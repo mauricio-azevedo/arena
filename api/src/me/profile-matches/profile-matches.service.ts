@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { MatchTeam } from '../../generated/prisma/enums';
+import { resolveMemberDisplayName } from '../../common/member-display-name';
 import { PrismaService } from '../../prisma/prisma.service';
 import type { ProfileMatchListItem } from '../types/profile-match-list-item.type';
 
@@ -49,6 +50,7 @@ export class ProfileMatchesService {
                 groupMember: {
                   select: {
                     userId: true,
+                    displayName: true,
                     user: {
                       select: {
                         firstName: true,
@@ -71,14 +73,14 @@ export class ProfileMatchesService {
         .filter((player) => player.team === MatchTeam.TEAM_A)
         .map((player) => ({
           userId: player.groupMember.userId,
-          displayName: this.getUserDisplayName(player.groupMember.user),
+          displayName: resolveMemberDisplayName(player.groupMember),
         }));
 
       const teamB = match.players
         .filter((player) => player.team === MatchTeam.TEAM_B)
         .map((player) => ({
           userId: player.groupMember.userId,
-          displayName: this.getUserDisplayName(player.groupMember.user),
+          displayName: resolveMemberDisplayName(player.groupMember),
         }));
 
       return {
@@ -100,9 +102,5 @@ export class ProfileMatchesService {
         ratingDelta: matchPlayer.ratingDelta,
       };
     });
-  }
-
-  private getUserDisplayName(user: { firstName: string; lastName: string }) {
-    return `${user.firstName} ${user.lastName}`.trim();
   }
 }

@@ -60,7 +60,12 @@ competitive state:
 - `rating` (default `1000`) + future-rating fields
   (`ratingDeviation/Volatility/Mu/Sigma`), `ratingAlgorithm` (`BEACH_ELO_V1`).
 - `currentRank`, `role` (`ADMIN`/`MEMBER`), `leftAt` (soft membership exit).
-- Unique on `(groupId, userId)` — a user has at most one membership per group.
+- `userId` is **nullable**: a member can be a **stub player** (jogador sem conta) —
+  created inline so someone can be scored today without owning an account. Stubs
+  carry their name in `displayName`; real members leave it null and resolve their
+  name from the linked `User`. See `docs/product/stub-players.md`.
+- Unique on `(groupId, userId)` — a user has at most one membership per group;
+  Postgres treats NULLs as distinct, so a group can hold many stubs.
 - Also unique on `(id, groupId)` so other tables can FK by the composite key
   (this scopes every child row to a group at the database level).
 

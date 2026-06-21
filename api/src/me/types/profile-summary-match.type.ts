@@ -2,7 +2,8 @@ import type { MatchTeam } from '../../generated/prisma/enums';
 import type { ProfileSummaryMatchResult } from './profile-summary-match-result.type';
 
 export type ProfileMatchPlayer = {
-  userId: string;
+  // Null for stub players (jogadores sem conta) — no linkable profile.
+  userId: string | null;
   displayName: string;
 };
 

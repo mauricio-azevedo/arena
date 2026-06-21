@@ -1,5 +1,6 @@
 import type { GroupMember, Match } from '@/types/api';
 import { avatarBgClass, nameInitial } from '@/lib/avatar';
+import { resolveMemberName } from '@/lib/member-name';
 
 // Re-exported so existing drawer call-sites keep importing from here.
 export { avatarBgClass };
@@ -20,9 +21,7 @@ function initialOf(name: string) {
 }
 
 export function resolveFromMember(member: GroupMember): ResolvedPlayer {
-  const firstName = member.user?.firstName?.trim() || 'Jogador';
-  const lastName = member.user?.lastName?.trim() || '';
-  const fullName = `${firstName} ${lastName}`.trim();
+  const { firstName, fullName } = resolveMemberName(member);
 
   return {
     id: member.id,
@@ -48,9 +47,7 @@ export function buildPlayerLookup(members: GroupMember[], match?: Match) {
         continue;
       }
 
-      const firstName = player.groupMember?.user?.firstName?.trim() || 'Jogador';
-      const lastName = player.groupMember?.user?.lastName?.trim() || '';
-      const fullName = `${firstName} ${lastName}`.trim();
+      const { firstName, fullName } = resolveMemberName(player.groupMember);
 
       lookup.set(player.groupMemberId, {
         id: player.groupMemberId,

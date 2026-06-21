@@ -7,6 +7,7 @@ import type { Match, MatchPlayer } from '@/types/api';
 import { Button } from '@/components/ui/button';
 import { Body, Heading, Label, Meta, Stat } from '@/components/ui/text';
 import { cn } from '@/lib/utils';
+import { resolveMemberName } from '@/lib/member-name';
 import { Card, CardContent } from '@/components/ui/card';
 import {
   AlertDialog,
@@ -27,7 +28,7 @@ import {
 import { deleteGroupMatch } from '@/features/matches/api/matches.api';
 import { useMatchDrawer } from '@/features/matches/match-drawer/match-drawer-context';
 import { getMatchNarrativeTitle } from '@/features/matches/lib/match-narrative-title';
-import { UserNameLink } from '@/features/users/components/user-name-link';
+import { MemberName } from '@/features/members/components/member-name';
 import { getAccessToken } from '@/lib/auth';
 
 type MatchesListProps = {
@@ -283,9 +284,9 @@ function PlayerName({ player, isWinner }: { player: MatchPlayer; isWinner: boole
   return (
     <span className="flex items-baseline gap-1.5">
       <Label className={isWinner ? 'text-foreground' : 'text-muted-foreground'}>
-        <UserNameLink userId={player.groupMember?.userId}>
+        <MemberName memberId={player.groupMemberId}>
           {getPlayerFirstName(player)}
-        </UserNameLink>
+        </MemberName>
       </Label>
       {player.rankAfter !== null && (
         <Meta className="text-faint-foreground">#{player.rankAfter}</Meta>
@@ -405,13 +406,7 @@ function getTeamPlayers(match: Match, team: 'TEAM_A' | 'TEAM_B') {
 }
 
 function getPlayerInitial(player: MatchPlayer) {
-  const user = player.groupMember?.user;
-
-  if (!user) {
-    return '?';
-  }
-
-  return (user.firstName.charAt(0) || '?').toUpperCase();
+  return (getPlayerFirstName(player).charAt(0) || '?').toUpperCase();
 }
 
 function groupMatchesByDate(matches: Match[]) {
@@ -471,5 +466,5 @@ function formatDateGroup(dateKey: string) {
 }
 
 function getPlayerFirstName(player: MatchPlayer) {
-  return player.groupMember?.user?.firstName?.trim() || 'Jogador';
+  return resolveMemberName(player.groupMember).firstName;
 }

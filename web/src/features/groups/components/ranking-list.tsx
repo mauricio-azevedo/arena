@@ -2,8 +2,9 @@ import { ArrowDown, ArrowUp } from 'lucide-react';
 import type { GroupMember, RankingMovement } from '@/types/api';
 import { Card, CardContent } from '@/components/ui/card';
 import { Body, Heading, Label, Meta, Overline, Stat } from '@/components/ui/text';
-import { UserNameLink } from '@/features/users/components/user-name-link';
+import { MemberName } from '@/features/members/components/member-name';
 import { avatarBgClass, nameInitial } from '@/lib/avatar';
+import { resolveMemberName } from '@/lib/member-name';
 import { cn } from '@/lib/utils';
 
 type Props = {
@@ -93,7 +94,7 @@ function RankingRow({
       <div className="flex min-w-0 flex-1 flex-col gap-0.5">
         <div className="flex min-w-0 items-end gap-2">
           <Label className="min-w-0 truncate text-foreground">
-            <UserNameLink userId={member.userId}>{fullName}</UserNameLink>
+            <MemberName memberId={member.id}>{fullName}</MemberName>
           </Label>
 
           {isCurrent && (
@@ -162,9 +163,5 @@ function StatsLine({ member }: { member: GroupMember }) {
 }
 
 function getMemberDisplayName(member: GroupMember) {
-  if (!member.user) {
-    return 'Jogador';
-  }
-
-  return `${member.user.firstName} ${member.user.lastName}`.trim() || 'Jogador';
+  return resolveMemberName(member).fullName;
 }
