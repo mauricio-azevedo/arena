@@ -5,6 +5,7 @@ import { RankingModule } from '../ranking/ranking.module';
 import { AuthModule } from '../auth/auth.module';
 import { GroupsModule } from '../groups/groups.module';
 import { PlatformTrendingModule } from '../platform-trending/platform-trending.module';
+import { HomeHighlightsModule } from '../home-highlights/home-highlights.module';
 import { RatingProjectionService } from '../rating/rating-projection.service';
 import { ProcessingController } from './processing.controller';
 import { ProcessingJobReaderService } from './processing-job-reader.service';
@@ -21,6 +22,7 @@ import { PlatformTrendingRebuildSchedulerService } from './platform-trending-reb
     AuthModule,
     GroupsModule,
     PlatformTrendingModule,
+    HomeHighlightsModule,
   ],
   controllers: [ProcessingController],
   providers: [

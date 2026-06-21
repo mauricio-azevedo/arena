@@ -97,6 +97,7 @@ model User {
   actorFeedItems          FeedItem[]              @relation("FeedItemActorUser")
   subjectFeedItems        FeedItem[]              @relation("FeedItemSubjectUser")
   platformTrendingPlayer  PlatformTrendingPlayer?
+  groupHighlights         GroupHighlight[]
 
   @@index([email])
 }
@@ -124,6 +125,7 @@ model Group {
   homeSummary             GroupHomeSummary?
   memberStats             GroupMemberStats[]
   platformTrendingHighlights PlatformTrendingPlayer[] @relation("PlatformTrendingPlayerHighlightGroup")
+  groupHighlights         GroupHighlight[]
 
 
   @@index([visibility, createdAt])
@@ -185,6 +187,7 @@ model GroupMember {
   rankingMovements      RankingMovement[]
   stats                 GroupMemberStats?
   platformTrendingHighlights PlatformTrendingPlayer[] @relation("PlatformTrendingPlayerHighlightGroupMember")
+  groupHighlights         GroupHighlight[]
 
   @@unique([groupId, userId])
   @@unique([id, groupId])
@@ -211,6 +214,45 @@ model GroupMemberStats {
   @@unique([groupMemberId, groupId])
   @@index([groupId])
   @@index([groupId, matchesCount])
+}
+
+enum HighlightType {
+  WIN_STREAK_CURRENT
+  WIN_STREAK_RECORD
+  CLIMB
+  LEADERSHIP
+  MILESTONE_MATCHES
+  MILESTONE_WINS
+}
+
+// Derived read model (rebuilt by the weekly-highlights projection in the GROUP cascade,
+// never hand-edited). One row per (groupMember, type); the 7-day window is applied at read time.
+model GroupHighlight {
+  id String @id @default(uuid())
+
+  groupId String
+  group   Group  @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  groupMemberId String
+  groupMember   GroupMember @relation(fields: [groupMemberId, groupId], references: [id, groupId], onDelete: Cascade)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  type     HighlightType
+  value    Int
+  score    Float
+  anchorAt DateTime
+
+  algorithmVersion String @default("WEEKLY_HIGHLIGHTS_V1")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([groupMemberId, type])
+  @@index([groupId, anchorAt])
+  @@index([score])
+  @@index([userId, anchorAt])
 }
 
 model Match {
