@@ -35,6 +35,12 @@ export class GroupsController {
     return this.groupHome.findHomeGroups(user?.sub);
   }
 
+  @Get('home/all')
+  @UseGuards(OptionalJwtAuthGuard)
+  findAllGroups(@CurrentUser() user?: AuthUser) {
+    return this.groupHome.findAllGroups(user?.sub);
+  }
+
   @Get()
   findAll() {
     return this.groupsService.findAll();

@@ -92,15 +92,17 @@ export class GroupHomeService {
     }
 
     const groupIds = memberships.map((membership) => membership.groupId);
-    const [summaries, activities] = await Promise.all([
+    const [summaries, activities, matchStats] = await Promise.all([
       this.findSummaries(groupIds),
       this.findLastRelevantActivities(groupIds, 'member'),
+      this.findMatchStats(groupIds),
     ]);
 
     return memberships
       .map((membership) => {
         const summary = summaries.get(membership.groupId) ?? null;
         const activity = activities.get(membership.groupId) ?? null;
+        const stats = matchStats.get(membership.groupId) ?? null;
 
         return {
           relationship: 'MEMBER' as const,
@@ -108,6 +110,8 @@ export class GroupHomeService {
           group: {
             ...membership.group,
             membersCount: summary?.membersCount ?? 0,
+            matchesCount: stats?.matchesCount ?? 0,
+            lastMatchAt: stats?.lastMatchAt ?? null,
           },
           currentUser: {
             membershipId: membership.id,
@@ -130,6 +134,105 @@ export class GroupHomeService {
         };
       })
       .sort((a, b) => this.compareHomeCards(a, b));
+  }
+
+  async findAllGroups(userId?: string) {
+    const groups = await this.prisma.group.findMany({
+      where: {
+        visibility: 'PUBLIC',
+      },
+      orderBy: [{ createdAt: 'desc' }],
+      take: 100,
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        visibility: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+
+    const groupIds = groups.map((group) => group.id);
+
+    const memberships = userId
+      ? await this.prisma.groupMember.findMany({
+          where: {
+            userId,
+            leftAt: null,
+            groupId: { in: groupIds },
+          },
+          select: {
+            id: true,
+            groupId: true,
+            role: true,
+            rating: true,
+            currentRank: true,
+            rankingMovements: {
+              where: {
+                isVisible: true,
+                invalidatedAt: null,
+              },
+              orderBy: [{ occurredAt: 'desc' }],
+              take: 1,
+              select: {
+                direction: true,
+                positions: true,
+                previousRank: true,
+                currentRank: true,
+                previousRating: true,
+                currentRating: true,
+                matchId: true,
+                occurredAt: true,
+              },
+            },
+          },
+        })
+      : [];
+    const membershipByGroup = new Map(
+      memberships.map((membership) => [membership.groupId, membership]),
+    );
+
+    const [summaries, activities, matchStats] = await Promise.all([
+      this.findSummaries(groupIds),
+      this.findLastRelevantActivities(groupIds, 'public'),
+      this.findMatchStats(groupIds),
+    ]);
+
+    return groups
+      .map((group) => {
+        const summary = summaries.get(group.id) ?? null;
+        const activity = activities.get(group.id) ?? null;
+        const stats = matchStats.get(group.id) ?? null;
+        const membership = membershipByGroup.get(group.id) ?? null;
+
+        return {
+          relationship: membership
+            ? ('MEMBER' as const)
+            : ('PUBLIC_SUGGESTION' as const),
+          sortReason: 'PUBLIC_SUGGESTION' as const,
+          group: {
+            ...group,
+            membersCount: summary?.membersCount ?? 0,
+            matchesCount: stats?.matchesCount ?? 0,
+            lastMatchAt: stats?.lastMatchAt ?? null,
+          },
+          currentUser: membership
+            ? {
+                membershipId: membership.id,
+                role: membership.role as GroupMemberRole,
+                standing: this.buildStanding(membership),
+              }
+            : null,
+          leaders: this.parseLeaders(summary?.leaders),
+          activity: {
+            lastRelevant: activity,
+            lastRelevantAt: activity?.occurredAt ?? null,
+          },
+          projection: null,
+        };
+      })
+      .sort((a, b) => this.comparePublicCards(a, b));
   }
 
   private async findPublicSuggestions(userId: string | null) {
@@ -171,15 +274,17 @@ export class GroupHomeService {
     });
 
     const groupIds = groups.map((group) => group.id);
-    const [summaries, activities] = await Promise.all([
+    const [summaries, activities, matchStats] = await Promise.all([
       this.findSummaries(groupIds),
       this.findLastRelevantActivities(groupIds, 'public'),
+      this.findMatchStats(groupIds),
     ]);
 
     return groups
       .map((group) => {
         const summary = summaries.get(group.id) ?? null;
         const activity = activities.get(group.id) ?? null;
+        const stats = matchStats.get(group.id) ?? null;
 
         return {
           relationship: 'PUBLIC_SUGGESTION' as const,
@@ -187,6 +292,8 @@ export class GroupHomeService {
           group: {
             ...group,
             membersCount: summary?.membersCount ?? 0,
+            matchesCount: stats?.matchesCount ?? 0,
+            lastMatchAt: stats?.lastMatchAt ?? null,
           },
           currentUser: null,
           leaders: this.parseLeaders(summary?.leaders),
@@ -219,6 +326,32 @@ export class GroupHomeService {
     `;
 
     return new Map(rows.map((row) => [row.groupId, row]));
+  }
+
+  private async findMatchStats(groupIds: string[]) {
+    if (groupIds.length === 0) {
+      return new Map<string, { matchesCount: number; lastMatchAt: Date | null }>();
+    }
+
+    const rows = await this.prisma.$queryRaw<
+      Array<{ groupId: string; matchesCount: number; lastMatchAt: Date | null }>
+    >`
+      SELECT
+        "groupId",
+        COUNT(*)::int AS "matchesCount",
+        MAX("playedAt") AS "lastMatchAt"
+      FROM "Match"
+      WHERE "groupId" IN (${Prisma.join(groupIds)})
+        AND "deletedAt" IS NULL
+      GROUP BY "groupId"
+    `;
+
+    return new Map(
+      rows.map((row) => [
+        row.groupId,
+        { matchesCount: row.matchesCount, lastMatchAt: row.lastMatchAt },
+      ]),
+    );
   }
 
   private async findLastRelevantActivities(
