@@ -22,32 +22,37 @@ export function HomeHeader({
   loading: boolean;
 }) {
   return (
-    <header className="flex items-center justify-between gap-3">
-      <div className="min-w-0">
-        <Meta className="block text-muted-foreground">{isLoggedIn ? greeting() : 'Olá,'}</Meta>
-        {loading ? (
-          <div className="mt-1.5 h-6 w-32 animate-pulse rounded-full bg-muted" />
+    // Sticky com o tratamento do AppTopBar (full-bleed + blur + safe-area). O par
+    // -mt/pt cancela o pt do scroll do AppShell (1.5rem+safe) pro blur cobrir até o
+    // topo sem dobrar o espaçamento inicial.
+    <header className="sticky top-0 z-30 -mx-4 -mt-[calc(1.5rem+env(safe-area-inset-top))] bg-background/80 px-4 pt-[calc(1.5rem+env(safe-area-inset-top))] pb-3 backdrop-blur-md">
+      <div className="flex items-center justify-between gap-3">
+        <div className="min-w-0">
+          <Meta className="block text-muted-foreground">{isLoggedIn ? greeting() : 'Olá,'}</Meta>
+          {loading ? (
+            <div className="mt-1.5 h-6 w-32 animate-pulse rounded-full bg-muted" />
+          ) : (
+            <Title className="mt-0.5 truncate">
+              {isLoggedIn ? (firstName ?? 'Você') : 'Bem-vindo'}
+            </Title>
+          )}
+        </div>
+
+        {isLoggedIn ? (
+          // Placeholder: notificações ainda não existem; botão inerte.
+          <button
+            type="button"
+            aria-label="Notificações"
+            className="flex size-11 shrink-0 items-center justify-center rounded-full bg-surface text-foreground shadow-hairline transition-transform active:scale-95"
+          >
+            <Bell className="size-5" strokeWidth={2} aria-hidden />
+          </button>
         ) : (
-          <Title className="mt-0.5 truncate">
-            {isLoggedIn ? (firstName ?? 'Você') : 'Bem-vindo'}
-          </Title>
+          <Button asChild size="lg">
+            <Link href="/login">Entrar</Link>
+          </Button>
         )}
       </div>
-
-      {isLoggedIn ? (
-        // Placeholder: notificações ainda não existem; botão inerte.
-        <button
-          type="button"
-          aria-label="Notificações"
-          className="flex size-11 shrink-0 items-center justify-center rounded-full bg-surface text-foreground shadow-hairline transition-transform active:scale-95"
-        >
-          <Bell className="size-5" strokeWidth={2} aria-hidden />
-        </button>
-      ) : (
-        <Button asChild size="lg">
-          <Link href="/login">Entrar</Link>
-        </Button>
-      )}
     </header>
   );
 }

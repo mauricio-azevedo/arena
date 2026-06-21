@@ -56,11 +56,11 @@ export function HomeScreen() {
   }, []);
 
   return (
+    // Header é filho direto deste container (que abrange a tela toda) pra o sticky
+    // grudar durante todo o scroll, não só enquanto o bloco do topo está visível.
     <div className="space-y-6">
-      <div className="space-y-4">
-        <HomeHeader firstName={firstName} isLoggedIn={isLoggedIn} loading={status === 'loading'} />
-        <HomeSearchPlaceholder />
-      </div>
+      <HomeHeader firstName={firstName} isLoggedIn={isLoggedIn} loading={status === 'loading'} />
+      <HomeSearchPlaceholder />
       <WeeklyHighlightsRail />
       <GroupsSection status={status} cards={cards} isLoggedIn={isLoggedIn} />
     </div>
