@@ -49,7 +49,7 @@ export function HomeHeader() {
   return (
     // Mesma casca do AppTopBar (fixed + blur + safe-area + linha h-11) pra a posição
     // e a altura baterem com o header da tela de grupo.
-    <header className="fixed inset-x-0 top-0 z-50 px-4 pb-3 pt-[max(0.75rem,env(safe-area-inset-top))]">
+    <header className="fixed inset-x-0 top-0 z-50 px-4 pb-3 pt-[max(1.25rem,env(safe-area-inset-top))]">
       <div className="pointer-events-none absolute inset-0 bg-background/40 backdrop-blur-xs" />
 
       <div className="relative mx-auto flex h-11 w-full max-w-md items-center justify-between gap-3 leading-tight">
