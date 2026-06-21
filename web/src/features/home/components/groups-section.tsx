@@ -38,8 +38,11 @@ export function GroupsSection({
   const [allGroups, setAllGroups] = useState<GroupHomeCard[] | null>(null);
   const [allStatus, setAllStatus] = useState<'idle' | 'loading' | 'error'>('idle');
 
+  // Busca os grupos uma vez quando "Todos" é aberto. allStatus fica FORA das deps:
+  // se estivesse, o setAllStatus('loading') aqui re-rodaria o effect e o cleanup
+  // zeraria isCurrent do fetch em voo, travando no skeleton.
   useEffect(() => {
-    if (filter !== 'Todos' || allGroups || allStatus === 'loading') {
+    if (filter !== 'Todos' || allGroups !== null) {
       return;
     }
 
@@ -59,7 +62,7 @@ export function GroupsSection({
     return () => {
       isCurrent = false;
     };
-  }, [filter, allGroups, allStatus]);
+  }, [filter, allGroups]);
 
   const memberCards = cards.filter((card) => card.relationship === 'MEMBER');
   const isTodos = filter === 'Todos';

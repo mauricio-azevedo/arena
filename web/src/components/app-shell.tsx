@@ -21,6 +21,8 @@ export type AppShellChrome = {
   topBar?: boolean;
   bottomNav?: boolean;
   trackNavigation?: boolean;
+  // Header fixo customizado que substitui a top bar de título (mesma posição/altura).
+  header?: ReactNode;
 };
 
 type AppShellProps = {
@@ -116,17 +118,22 @@ export function AppShell({ children, chrome }: AppShellProps) {
   }, [routeAccess, router]);
 
   const shouldHoldContent = routeAccess.requiresCheck && accessState !== 'allowed';
-  const showTopBar = chrome?.topBar ?? routePolicy.chrome.topBar;
+  const customHeader = chrome?.header;
+  const showTopBar = !customHeader && (chrome?.topBar ?? routePolicy.chrome.topBar);
   const showBottomNav = chrome?.bottomNav ?? routePolicy.chrome.bottomNav;
   const shouldTrackNavigation =
     !shouldHoldContent &&
     (chrome?.trackNavigation ?? routePolicy.chrome.trackNavigation) &&
     chrome?.back?.behavior !== 'fallback';
-  const contentTopPadding = showTopBar
-    ? 'pt-[calc(4.75rem+env(safe-area-inset-top))]'
-    : 'pt-[calc(1.5rem+env(safe-area-inset-top))]';
+  const contentTopPadding =
+    showTopBar || customHeader
+      ? 'pt-[calc(4.75rem+env(safe-area-inset-top))]'
+      : 'pt-[calc(1.5rem+env(safe-area-inset-top))]';
+  // Folga acima do dock flutuante: ele fica a max(1.25rem,safe) do fundo + 4.5rem de
+  // altura; o max() espelha o piso do dock pra a folga ser constante (2rem) em qualquer
+  // device — antes usava +safe e no browser (safe=0) o último card colava no dock.
   const contentBottomPadding = showBottomNav
-    ? 'pb-[calc(6rem+env(safe-area-inset-bottom))]'
+    ? 'pb-[calc(6.5rem+max(1.25rem,env(safe-area-inset-bottom)))]'
     : 'pb-[calc(1.5rem+env(safe-area-inset-bottom))]';
 
   return (
@@ -144,6 +151,7 @@ export function AppShell({ children, chrome }: AppShellProps) {
       </div>
 
       {showTopBar && <AppTopBar title={chrome?.title} back={chrome?.back} trailing={chrome?.trailing} />}
+      {customHeader}
       {showBottomNav && <BottomNav />}
       <Suspense fallback={null}>
         <NavigationTracker enabled={shouldTrackNavigation} />
