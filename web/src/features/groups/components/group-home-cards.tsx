@@ -86,7 +86,7 @@ export function FeaturedGroupCard({ item }: { item: GroupHomeCard }) {
           </div>
         </Link>
         <Button asChild size="lg" className="h-12 w-full rounded-full font-semibold">
-          <Link href={`/groups/${item.group.id}/matches/new`}>
+          <Link href={`/groups/${item.group.id}?compose=match`}>
             <Plus className="h-4 w-4" /> Registrar partida
           </Link>
         </Button>

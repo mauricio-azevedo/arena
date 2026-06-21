@@ -1,23 +1,25 @@
-import Link from 'next/link';
+'use client';
+
 import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useMatchDrawer } from '@/features/matches/match-drawer/match-drawer-context';
 
 type Props = {
   groupId: string;
   canManageMatches: boolean;
 };
 
-export function GroupActions({ groupId, canManageMatches }: Props) {
+export function GroupActions({ canManageMatches }: Props) {
+  const { openCreate } = useMatchDrawer();
+
   if (!canManageMatches) {
     return null;
   }
 
   return (
-    <Button asChild size="lg" className="w-full">
-      <Link href={`/groups/${groupId}/matches/new`}>
-        <Plus className="h-4 w-4" />
-        Registrar partida
-      </Link>
+    <Button size="lg" className="w-full" onClick={openCreate}>
+      <Plus className="h-4 w-4" />
+      Registrar partida
     </Button>
   );
 }

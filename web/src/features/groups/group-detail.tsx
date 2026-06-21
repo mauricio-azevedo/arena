@@ -16,6 +16,7 @@ import type { Group, GroupMember, Match, MyGroup } from '@/types/api';
 import { GroupDetailLoadingState } from '@/features/groups/components/group-detail-loading-state';
 import { Card, CardContent } from '@/components/ui/card';
 import { Body, Label } from '@/components/ui/text';
+import { MatchDrawerProvider } from '@/features/matches/match-drawer/match-drawer-context';
 
 const groupTabs = ['ranking', 'matches'] as const;
 type GroupTab = (typeof groupTabs)[number];
@@ -23,6 +24,7 @@ type GroupTab = (typeof groupTabs)[number];
 type Props = {
   groupId: string;
   tab?: string;
+  autoOpenCompose?: boolean;
 };
 
 type GroupDetailData = {
@@ -33,10 +35,11 @@ type GroupDetailData = {
   membership: MyGroup | null;
 };
 
-export function GroupDetail({ groupId, tab }: Props) {
+export function GroupDetail({ groupId, tab, autoOpenCompose = false }: Props) {
   const activeTab: GroupTab = groupTabs.includes(tab as GroupTab) ? (tab as GroupTab) : 'ranking';
   const [data, setData] = useState<GroupDetailData | null>(null);
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
+  const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
     let isCurrent = true;
@@ -82,7 +85,7 @@ export function GroupDetail({ groupId, tab }: Props) {
     return () => {
       isCurrent = false;
     };
-  }, [groupId]);
+  }, [groupId, refreshKey]);
 
   if (status === 'loading') {
     return <GroupDetailLoadingState />;
@@ -96,28 +99,38 @@ export function GroupDetail({ groupId, tab }: Props) {
   const currentMembershipId = data.membership?.id ?? null;
 
   return (
-    <div className="space-y-8">
-      <div className="space-y-3">
-        <GroupSummaryCard
-          group={data.group}
+    <MatchDrawerProvider
+      groupId={data.group.id}
+      groupName={data.group.name}
+      members={data.members}
+      ranking={data.ranking}
+      currentMembershipId={currentMembershipId}
+      onSaved={() => setRefreshKey((key) => key + 1)}
+      autoOpenCreate={autoOpenCompose && canManageMatches}
+    >
+      <div className="space-y-8">
+        <div className="space-y-3">
+          <GroupSummaryCard
+            group={data.group}
+            ranking={data.ranking}
+            members={data.members}
+            matches={data.matches}
+            membership={data.membership}
+          />
+
+          <GroupActions groupId={data.group.id} canManageMatches={canManageMatches} />
+        </div>
+
+        <GroupDetailTabs
+          groupId={data.group.id}
+          activeTab={activeTab}
           ranking={data.ranking}
-          members={data.members}
           matches={data.matches}
-          membership={data.membership}
+          canManageMatches={canManageMatches}
+          currentMembershipId={currentMembershipId}
         />
-
-        <GroupActions groupId={data.group.id} canManageMatches={canManageMatches} />
       </div>
-
-      <GroupDetailTabs
-        groupId={data.group.id}
-        activeTab={activeTab}
-        ranking={data.ranking}
-        matches={data.matches}
-        canManageMatches={canManageMatches}
-        currentMembershipId={currentMembershipId}
-      />
-    </div>
+    </MatchDrawerProvider>
   );
 }
 

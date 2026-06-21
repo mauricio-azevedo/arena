@@ -11,7 +11,7 @@ import { cn } from '@/lib/utils';
  * to one of these roles; raw `text-*` utilities are reserved for genuine
  * one-offs.
  *
- * The ten roles: Display, Stat (md/lg), Title, Heading, Label, Body, Meta,
+ * The ten roles: Display, Stat (md/lg/xl), Title, Heading, Label, Body, Meta,
  * Overline — plus the action label, which lives on the Button primitive. Each
  * role reads its size, weight and tracking from the type-scale tokens in
  * globals.css — never hard-code them. Numbers use `tabular-nums` so stats stay
@@ -34,20 +34,23 @@ function Display({ className, asChild, ...props }: RoleProps<'div'>) {
   );
 }
 
-/** Secondary figures — scores, ratings, ring values. `size="lg"` for 26px. */
+/**
+ * Secondary figures — scores, ratings, ring values. `size="lg"` for 26px,
+ * `size="xl"` for the 34px games figure in the score stepper.
+ */
 function Stat({
   className,
   asChild,
   size = 'md',
   ...props
-}: RoleProps<'div'> & { size?: 'md' | 'lg' }) {
+}: RoleProps<'div'> & { size?: 'md' | 'lg' | 'xl' }) {
   const Comp = asChild ? Slot.Root : 'div';
   return (
     <Comp
       data-slot="stat"
       className={cn(
         'font-display tabular-nums',
-        size === 'lg' ? 'text-stat-lg' : 'text-stat-md',
+        size === 'xl' ? 'text-stat-xl' : size === 'lg' ? 'text-stat-lg' : 'text-stat-md',
         className,
       )}
       {...props}
