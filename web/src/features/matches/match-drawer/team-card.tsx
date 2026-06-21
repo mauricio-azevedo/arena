@@ -47,18 +47,22 @@ export function TeamCard({
   return (
     <div
       className={cn(
-        'rounded-card p-4 shadow-card',
-        isWinner ? 'bg-brand/10 ring-1 ring-brand' : 'bg-surface',
+        'rounded-card p-4 shadow-card ring-2 ring-transparent',
+        isWinner ? 'bg-brand/10 ring-brand' : 'bg-surface',
       )}
     >
       <div className="flex items-center justify-between">
         <Overline className="text-faint-foreground">{label}</Overline>
-        {isWinner && (
-          <span className="inline-flex items-center gap-1 rounded-lg bg-brand/20 px-2 py-1 text-brand">
-            <Check className="size-3" strokeWidth={3} aria-hidden />
-            <Overline className="text-brand">Venceu</Overline>
-          </span>
-        )}
+        <span
+          aria-hidden={!isWinner}
+          className={cn(
+            'inline-flex items-center gap-1 rounded-lg bg-brand/20 px-2 py-1 text-brand',
+            !isWinner && 'invisible',
+          )}
+        >
+          <Check className="size-3" strokeWidth={3} aria-hidden />
+          <Overline className="text-brand">Venceu</Overline>
+        </span>
       </div>
 
       <div>

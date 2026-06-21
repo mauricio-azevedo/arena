@@ -13,8 +13,10 @@ const twMerge = extendTailwindMerge({
         {
           text: [
             'display',
+            'stat-xl',
             'stat-lg',
             'stat-md',
+            'stat-sm',
             'title',
             'heading',
             'action',
@@ -22,6 +24,7 @@ const twMerge = extendTailwindMerge({
             'body',
             'meta',
             'overline',
+            'overline-xs',
           ],
         },
       ],
