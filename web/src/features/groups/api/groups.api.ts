@@ -60,3 +60,17 @@ export function getGroupMembers(groupId: string): Promise<GroupMember[]> {
     cache: 'no-store',
   });
 }
+
+// Creates a stub player (jogador sem conta) — just a name. Any active member can
+// do it; the new player joins the group and is ready to be scored immediately.
+export function createGuestMember(
+  token: string,
+  groupId: string,
+  name: string,
+): Promise<GroupMember> {
+  return apiRequest<GroupMember>(`/groups/${groupId}/members/guest`, {
+    method: 'POST',
+    token,
+    body: { name },
+  });
+}

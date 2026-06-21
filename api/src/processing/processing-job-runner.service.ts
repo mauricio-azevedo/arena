@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { randomUUID } from 'crypto';
 import type { Prisma } from '../generated/prisma/client';
+import { resolveMemberDisplayName } from '../common/member-display-name';
 import { PrismaService } from '../prisma/prisma.service';
 import { FeedOrchestratorService } from '../feed/feed-orchestrator.service';
 import type {
@@ -23,7 +24,7 @@ const RANKING_MOVEMENT_FEED_THRESHOLD = 2;
 
 type MatchMember = {
   id: string;
-  userId: string;
+  userId: string | null;
   displayName: string;
 };
 
@@ -48,8 +49,9 @@ type RankingMovementFeedMatch = {
     team: MatchTeam;
     position: number;
     groupMember: {
-      userId: string;
-      user: { firstName: string; lastName: string };
+      userId: string | null;
+      displayName: string | null;
+      user: { firstName: string; lastName: string } | null;
     };
   }>;
 };
@@ -322,7 +324,7 @@ export class ProcessingJobRunnerService {
       membersById.set(player.groupMemberId, {
         id: player.groupMemberId,
         userId: player.groupMember.userId,
-        displayName: this.getUserDisplayName(player.groupMember.user),
+        displayName: resolveMemberDisplayName(player.groupMember),
       });
     }
 
@@ -561,7 +563,7 @@ export class ProcessingJobRunnerService {
       .map((player) => ({
         groupMemberId: player.groupMemberId,
         userId: player.groupMember.userId,
-        displayName: this.getUserDisplayName(player.groupMember.user),
+        displayName: resolveMemberDisplayName(player.groupMember),
       }));
   }
 
@@ -586,7 +588,8 @@ export class ProcessingJobRunnerService {
 
     return (
       typeof movement.groupMemberId === 'string' &&
-      typeof movement.userId === 'string' &&
+      // userId is null for stub players (jogadores sem conta).
+      (typeof movement.userId === 'string' || movement.userId === null) &&
       typeof movement.displayName === 'string' &&
       (movement.direction === 'UP' || movement.direction === 'DOWN') &&
       typeof movement.positions === 'number' &&
@@ -617,7 +620,8 @@ export class ProcessingJobRunnerService {
 
     return (
       typeof player.groupMemberId === 'string' &&
-      typeof player.userId === 'string' &&
+      // userId is null for stub players (jogadores sem conta).
+      (typeof player.userId === 'string' || player.userId === null) &&
       typeof player.displayName === 'string'
     );
   }
@@ -637,10 +641,6 @@ export class ProcessingJobRunnerService {
       userId: member.userId,
       displayName: member.displayName,
     };
-  }
-
-  private getUserDisplayName(user: { firstName: string; lastName: string }) {
-    return `${user.firstName} ${user.lastName}`.trim();
   }
 
   private async markProjectionProcessing(job: ProcessingJob, groupId: string) {

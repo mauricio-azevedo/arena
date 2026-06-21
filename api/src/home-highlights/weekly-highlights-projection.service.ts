@@ -102,7 +102,9 @@ export class WeeklyHighlightsProjectionService {
     const cutoff = new Date(now.getTime() - WINDOW_DAYS * 24 * 60 * 60 * 1000);
 
     const members = (await tx.groupMember.findMany({
-      where: { groupId, leftAt: null },
+      // Stub players (null userId) have no personal home feed, so they never earn
+      // weekly highlights — and GroupHighlight.userId is non-null.
+      where: { groupId, leftAt: null, userId: { not: null } },
       select: { id: true, userId: true },
     })) as MemberRow[];
     const activeMemberIds = new Set(members.map((member) => member.id));

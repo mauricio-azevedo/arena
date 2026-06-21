@@ -83,6 +83,55 @@ export class MembersService {
     return this.findOne(membership.id);
   }
 
+  // Creates a stub player (jogador sem conta): just a name, no User account. Any
+  // active member can do it — it's low-risk and high-frequency, the arena path.
+  async createGuest(
+    groupId: string,
+    requesterUserId: string,
+    body: { name: string },
+  ) {
+    const name = body.name?.trim();
+
+    if (!name) {
+      throw new BadRequestException('Name is required');
+    }
+
+    if (name.length > 60) {
+      throw new BadRequestException('Name is too long');
+    }
+
+    const group = await this.prisma.group.findUnique({
+      where: { id: groupId },
+    });
+
+    if (!group) {
+      throw new NotFoundException('Group not found');
+    }
+
+    const requesterMembership = await this.prisma.groupMember.findUnique({
+      where: {
+        groupId_userId: {
+          groupId,
+          userId: requesterUserId,
+        },
+      },
+    });
+
+    if (!requesterMembership || requesterMembership.leftAt) {
+      throw new ForbiddenException('Only active group members can add players');
+    }
+
+    const membership = await this.prisma.groupMember.create({
+      data: {
+        groupId,
+        userId: null,
+        displayName: name,
+      },
+    });
+
+    return this.findOne(membership.id);
+  }
+
   async findAll(groupId: string) {
     const group = await this.prisma.group.findUnique({
       where: { id: groupId },

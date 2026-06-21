@@ -3,10 +3,11 @@
 import { useMemo, useState } from 'react';
 import type { GroupMember, Match } from '@/types/api';
 import { Drawer, DrawerContent } from '@/components/ui/drawer';
-import { Body, Label, Meta } from '@/components/ui/text';
+import { Meta } from '@/components/ui/text';
 import { Info } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { createGroupMatch, updateGroupMatch } from '@/features/matches/api/matches.api';
+import { createGuestMember } from '@/features/groups/api/groups.api';
 import { getAccessToken } from '@/lib/auth';
 import { ComposeView } from './compose-view';
 import { PickerView, type PickerEntry } from './picker-view';
@@ -99,8 +100,16 @@ function MatchComposer({
   const [activeSlot, setActiveSlot] = useState<SlotKey | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // Stub players created inline this session, merged into the roster optimistically
+  // so they're pickable immediately without waiting for a refetch.
+  const [createdMembers, setCreatedMembers] = useState<GroupMember[]>([]);
 
-  const lookup = useMemo(() => buildPlayerLookup(members, match), [members, match]);
+  const roster = useMemo(
+    () => [...members, ...createdMembers],
+    [members, createdMembers],
+  );
+
+  const lookup = useMemo(() => buildPlayerLookup(roster, match), [roster, match]);
 
   const rankById = useMemo(() => {
     const map = new Map<string, number>();
@@ -110,7 +119,7 @@ function MatchComposer({
 
   const pool = useMemo<PickerEntry[]>(
     () =>
-      members
+      roster
         .filter((member) => member.leftAt === null)
         .map((member) => {
           const resolved = resolveFromMember(member);
@@ -126,10 +135,8 @@ function MatchComposer({
           };
         })
         .sort((a, b) => b.rating - a.rating),
-    [members, rankById, currentMembershipId],
+    [roster, rankById, currentMembershipId],
   );
-
-  const blocked = mode === 'create' && pool.length < 4;
 
   function openPicker(slot: SlotKey) {
     setActiveSlot(slot);
@@ -139,6 +146,25 @@ function MatchComposer({
   function handleSelect(memberId: string) {
     if (activeSlot) {
       form.assign(activeSlot, memberId);
+    }
+
+    setActiveSlot(null);
+    setView('compose');
+  }
+
+  async function handleCreatePlayer(name: string) {
+    const token = getAccessToken();
+
+    if (!token) {
+      throw new Error('Missing access token');
+    }
+
+    const created = await createGuestMember(token, groupId, name);
+
+    setCreatedMembers((prev) => [...prev, created]);
+
+    if (activeSlot) {
+      form.assign(activeSlot, created.id);
     }
 
     setActiveSlot(null);
@@ -194,6 +220,7 @@ function MatchComposer({
         currentId={currentId}
         takenIds={form.selectedIds.filter((id) => id !== currentId)}
         onSelect={handleSelect}
+        onCreate={handleCreatePlayer}
         onBack={() => setView('compose')}
       />
     );
@@ -210,75 +237,64 @@ function MatchComposer({
       onCancel={onClose}
       onSave={handleSave}
     >
-      {blocked ? (
-        <div className="mt-2 rounded-card bg-surface p-4 shadow-hairline">
-          <Label className="block text-foreground">Poucos jogadores no grupo</Label>
-          <Body className="mt-1 text-muted-foreground">
-            É preciso ter pelo menos 4 membros ativos para registrar uma partida.
-          </Body>
-        </div>
-      ) : (
-        <>
-          <TeamCard
-            label="Dupla A"
-            slotKeys={['a1', 'a2']}
-            slots={form.slots}
-            score={form.scoreA}
-            isWinner={form.winner === 'A'}
-            hasWinner={form.validScore}
-            currentMembershipId={currentMembershipId}
-            resolve={(id) => lookup.get(id)}
-            rankOf={(id) => rankById.get(id)}
-            onAddSlot={openPicker}
-            onRemoveSlot={form.clear}
-            onStep={form.stepA}
-            minGames={form.minGames}
-            maxGames={form.maxGames}
-          />
+      <TeamCard
+        label="Dupla A"
+        slotKeys={['a1', 'a2']}
+        slots={form.slots}
+        score={form.scoreA}
+        isWinner={form.winner === 'A'}
+        hasWinner={form.validScore}
+        currentMembershipId={currentMembershipId}
+        resolve={(id) => lookup.get(id)}
+        rankOf={(id) => rankById.get(id)}
+        onAddSlot={openPicker}
+        onRemoveSlot={form.clear}
+        onStep={form.stepA}
+        minGames={form.minGames}
+        maxGames={form.maxGames}
+      />
 
-          <div className="my-3.5 flex items-center gap-3 px-0.5">
-            <div className="h-px flex-1 bg-divider" />
-            <Meta className="font-extrabold tracking-[0.15em] text-faint-foreground">VS</Meta>
-            <div className="h-px flex-1 bg-divider" />
-          </div>
+      <div className="my-3.5 flex items-center gap-3 px-0.5">
+        <div className="h-px flex-1 bg-divider" />
+        <Meta className="font-extrabold tracking-[0.15em] text-faint-foreground">VS</Meta>
+        <div className="h-px flex-1 bg-divider" />
+      </div>
 
-          <TeamCard
-            label="Dupla B"
-            slotKeys={['b1', 'b2']}
-            slots={form.slots}
-            score={form.scoreB}
-            isWinner={form.winner === 'B'}
-            hasWinner={form.validScore}
-            currentMembershipId={currentMembershipId}
-            resolve={(id) => lookup.get(id)}
-            rankOf={(id) => rankById.get(id)}
-            onAddSlot={openPicker}
-            onRemoveSlot={form.clear}
-            onStep={form.stepB}
-            minGames={form.minGames}
-            maxGames={form.maxGames}
-          />
+      <TeamCard
+        label="Dupla B"
+        slotKeys={['b1', 'b2']}
+        slots={form.slots}
+        score={form.scoreB}
+        isWinner={form.winner === 'B'}
+        hasWinner={form.validScore}
+        currentMembershipId={currentMembershipId}
+        resolve={(id) => lookup.get(id)}
+        rankOf={(id) => rankById.get(id)}
+        onAddSlot={openPicker}
+        onRemoveSlot={form.clear}
+        onStep={form.stepB}
+        minGames={form.minGames}
+        maxGames={form.maxGames}
+      />
 
-          <div className="mt-4 flex items-start gap-1.5 px-1">
-            <Info
-              className={cn(
-                'mt-px size-[15px] shrink-0',
-                form.helperWarn ? 'text-tag-warn' : 'text-faint-foreground',
-              )}
-              strokeWidth={2.2}
-              aria-hidden
-            />
-            <Meta
-              className={cn(
-                'leading-[1.45] font-semibold',
-                form.helperWarn ? 'text-tag-warn' : 'text-faint-foreground',
-              )}
-            >
-              {form.helperText}
-            </Meta>
-          </div>
-        </>
-      )}
+      <div className="mt-4 flex items-start gap-1.5 px-1">
+        <Info
+          className={cn(
+            'mt-px size-[15px] shrink-0',
+            form.helperWarn ? 'text-tag-warn' : 'text-faint-foreground',
+          )}
+          strokeWidth={2.2}
+          aria-hidden
+        />
+        <Meta
+          className={cn(
+            'leading-[1.45] font-semibold',
+            form.helperWarn ? 'text-tag-warn' : 'text-faint-foreground',
+          )}
+        >
+          {form.helperText}
+        </Meta>
+      </div>
     </ComposeView>
   );
 }

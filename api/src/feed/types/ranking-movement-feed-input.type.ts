@@ -1,12 +1,9 @@
 import type { MatchTeam } from '../../generated/prisma/enums';
+import type { FeedPlayer } from './feed-player.type';
 
 export type RankingMovementFeedDirection = 'UP' | 'DOWN';
 
-export type RankingMovementFeedPlayer = {
-  groupMemberId: string;
-  userId: string;
-  displayName: string;
-};
+export type RankingMovementFeedPlayer = FeedPlayer;
 
 export type RankingMovementFeedAffectedMember = RankingMovementFeedPlayer & {
   rank: number | null;

@@ -112,6 +112,7 @@ create(@Param('groupId') groupId: string, @CurrentUser() user: AuthUser,
 | `GET /groups/:groupId/invites/:token`, `POST …/:token/accept` | varies | group-invites |
 | `GET /invites/:token`, `POST /invites/:token/accept` | public/required | public-invites |
 | `POST /groups/:groupId/members`, `GET …/members` | varies | members |
+| `POST /groups/:groupId/members/guest` | required (any active member) | members |
 | `POST /groups/:groupId/matches` | required | matches |
 | `GET …/matches`, `GET …/matches/:id` | varies | matches |
 | `PATCH …/matches/:id`, `DELETE …/matches/:id` | required | matches |

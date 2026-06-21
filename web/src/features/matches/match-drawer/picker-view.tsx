@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Check, ChevronLeft, Search } from 'lucide-react';
+import { Check, ChevronLeft, Loader2, Plus, Search } from 'lucide-react';
 import { Label, Meta, Overline } from '@/components/ui/text';
 import { DrawerTitle } from '@/components/ui/drawer';
 import { cn } from '@/lib/utils';
@@ -23,8 +23,11 @@ type PickerViewProps = {
   currentId: string | null;
   takenIds: string[];
   onSelect: (memberId: string) => void;
+  onCreate: (name: string) => Promise<void>;
   onBack: () => void;
 };
+
+const MAX_NAME_LENGTH = 60;
 
 export function PickerView({
   sublabel,
@@ -32,9 +35,14 @@ export function PickerView({
   currentId,
   takenIds,
   onSelect,
+  onCreate,
   onBack,
 }: PickerViewProps) {
   const [search, setSearch] = useState('');
+  const [creating, setCreating] = useState(false);
+  const [createError, setCreateError] = useState<string | null>(null);
+
+  const trimmedName = search.trim().slice(0, MAX_NAME_LENGTH);
 
   const filtered = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -45,6 +53,24 @@ export function PickerView({
 
     return pool.filter((entry) => entry.fullName.toLowerCase().includes(query));
   }, [pool, search]);
+
+  const canCreate = trimmedName.length > 0 && !creating;
+
+  async function handleCreate() {
+    if (!canCreate) {
+      return;
+    }
+
+    setCreating(true);
+    setCreateError(null);
+
+    try {
+      await onCreate(trimmedName);
+    } catch {
+      setCreateError('Não foi possível criar o jogador. Tente novamente.');
+      setCreating(false);
+    }
+  }
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
@@ -78,7 +104,10 @@ export function PickerView({
           />
           <input
             value={search}
-            onChange={(event) => setSearch(event.target.value)}
+            onChange={(event) => {
+              setSearch(event.target.value);
+              setCreateError(null);
+            }}
             placeholder="Buscar membro do grupo"
             className="min-w-0 flex-1 bg-transparent text-body font-semibold text-foreground outline-none placeholder:text-faint-foreground"
           />
@@ -143,9 +172,45 @@ export function PickerView({
             })}
           </div>
         ) : (
-          <Meta className="mt-7 block text-center text-faint-foreground">
-            Nenhum jogador encontrado.
-          </Meta>
+          !trimmedName && (
+            <Meta className="mt-7 block text-center text-faint-foreground">
+              Nenhum jogador encontrado.
+            </Meta>
+          )
+        )}
+
+        {trimmedName && (
+          <button
+            type="button"
+            disabled={!canCreate}
+            onClick={handleCreate}
+            className={cn(
+              'mt-3 flex w-full items-center gap-3 rounded-3xl bg-surface px-4 py-3 text-left shadow-hairline transition-opacity active:opacity-60',
+              !canCreate && 'opacity-60',
+            )}
+          >
+            <span
+              className="flex size-[42px] shrink-0 items-center justify-center rounded-full bg-brand/15 text-brand"
+              aria-hidden
+            >
+              {creating ? (
+                <Loader2 className="size-[18px] animate-spin" strokeWidth={2.4} />
+              ) : (
+                <Plus className="size-[20px]" strokeWidth={2.4} />
+              )}
+            </span>
+
+            <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+              <Label className="truncate text-foreground">
+                {creating ? 'Criando…' : `Criar “${trimmedName}”`}
+              </Label>
+              <Meta className="text-muted-foreground">Novo jogador neste grupo</Meta>
+            </div>
+          </button>
+        )}
+
+        {createError && (
+          <Meta className="mt-3 block px-1 text-center text-tag-warn">{createError}</Meta>
         )}
       </div>
     </div>

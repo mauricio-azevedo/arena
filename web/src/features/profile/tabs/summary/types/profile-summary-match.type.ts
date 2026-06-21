@@ -1,7 +1,8 @@
 import type { ProfileMatchResult } from '../../../enums/profile-match-result.enum';
 
 export type ProfileMatchPlayer = {
-  userId: string;
+  // Null for stub players (jogadores sem conta) — no linkable profile.
+  userId: string | null;
   displayName: string;
 };
 

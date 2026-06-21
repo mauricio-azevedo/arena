@@ -1,12 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import type { Prisma } from '../generated/prisma/client';
+import { resolveMemberDisplayName } from '../common/member-display-name';
 import { PrismaService } from '../prisma/prisma.service';
 
 type PrismaClientLike = Prisma.TransactionClient | PrismaService;
 
 type GroupHomeLeader = {
   groupMemberId: string;
-  userId: string;
+  userId: string | null;
   displayName: string;
   rating: number;
   rank: number;
@@ -74,6 +75,7 @@ export class GroupHomeSummaryService {
       select: {
         id: true,
         userId: true,
+        displayName: true,
         rating: true,
         currentRank: true,
         user: {
@@ -88,7 +90,7 @@ export class GroupHomeSummaryService {
     return members.map((member) => ({
       groupMemberId: member.id,
       userId: member.userId,
-      displayName: `${member.user.firstName} ${member.user.lastName}`.trim(),
+      displayName: resolveMemberDisplayName(member),
       rating: member.rating,
       rank: member.currentRank ?? 1,
     }));

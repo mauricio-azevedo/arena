@@ -19,7 +19,7 @@ type GroupHomeSummaryRow = {
 
 type GroupHomeLeader = {
   groupMemberId: string;
-  userId: string;
+  userId: string | null;
   displayName: string;
   rating: number;
   rank: number;
@@ -452,7 +452,8 @@ export class GroupHomeService {
       const candidate = leader as Partial<GroupHomeLeader>;
       return (
         typeof candidate.groupMemberId === 'string' &&
-        typeof candidate.userId === 'string' &&
+        // userId is null for stub players (jogadores sem conta).
+        (typeof candidate.userId === 'string' || candidate.userId === null) &&
         typeof candidate.displayName === 'string' &&
         typeof candidate.rating === 'number' &&
         typeof candidate.rank === 'number'

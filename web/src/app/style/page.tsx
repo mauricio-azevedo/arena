@@ -238,6 +238,7 @@ function demoPlayer(
       id,
       groupId: 'demo',
       userId: id,
+      displayName: null,
       rating: 1000,
       ratingDeviation: null,
       ratingVolatility: null,

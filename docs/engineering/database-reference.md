@@ -77,14 +77,16 @@ Indexes: `[groupId]`, `[createdById]`, `[token]`.
 | --- | --- | --- |
 | `id` | uuid PK | |
 | `groupId` | FK→Group | `onDelete: Cascade` |
-| `userId` | FK→User | `onDelete: Cascade` |
+| `userId` | FK→User? | nullable — null for stub players (jogadores sem conta); `onDelete: Cascade` |
+| `displayName` | String? | name for stub players; null when `userId` is set (name comes from User) |
 | `rating` | Float | default `1000` |
 | `ratingDeviation/Volatility/Mu/Sigma` | Float? | reserved for future algorithms |
 | `ratingAlgorithm` | String | default `BEACH_ELO_V1` |
 | `currentRank` | Int? | |
 | `role` | `GroupMemberRole` | default `MEMBER` |
 | `leftAt` | DateTime? | soft membership exit |
-Uniques: `[groupId, userId]`, `[id, groupId]` (composite used by child FKs).
+Uniques: `[groupId, userId]` (NULL `userId` is distinct in Postgres, so a group can
+hold many stub players), `[id, groupId]` (composite used by child FKs).
 Indexes: `[groupId]`, `[userId]`, `[groupId, rating]`, `[groupId, currentRank, rating]`, `[groupId, role]`.
 
 ### GroupMemberStats *(derived)*
