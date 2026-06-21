@@ -45,6 +45,7 @@ enum ProcessingJobType {
   MATCH_UPDATED
   MATCH_DELETED
   GROUP_RANKING_REBUILD
+  // Deprecated: platform-trending was retired. Kept to avoid a fragile enum-value removal.
   PLATFORM_TRENDING_PLAYERS_REBUILD
 }
 
@@ -57,6 +58,7 @@ enum ProcessingJobStatus {
 
 enum ProcessingJobScope {
   GROUP
+  // Deprecated: platform-trending was retired. Kept to avoid a fragile enum-value removal.
   PLATFORM
 }
 
@@ -96,7 +98,6 @@ model User {
   createdInvites          GroupInvite[]           @relation("GroupInviteCreator")
   actorFeedItems          FeedItem[]              @relation("FeedItemActorUser")
   subjectFeedItems        FeedItem[]              @relation("FeedItemSubjectUser")
-  platformTrendingPlayer  PlatformTrendingPlayer?
   groupHighlights         GroupHighlight[]
 
   @@index([email])
@@ -124,7 +125,6 @@ model Group {
   matchRankingSnapshots   MatchRankingSnapshot[]
   homeSummary             GroupHomeSummary?
   memberStats             GroupMemberStats[]
-  platformTrendingHighlights PlatformTrendingPlayer[] @relation("PlatformTrendingPlayerHighlightGroup")
   groupHighlights         GroupHighlight[]
 
 
@@ -186,7 +186,6 @@ model GroupMember {
   actorFeedItems        FeedItem[]          @relation("FeedItemActorGroupMember")
   rankingMovements      RankingMovement[]
   stats                 GroupMemberStats?
-  platformTrendingHighlights PlatformTrendingPlayer[] @relation("PlatformTrendingPlayerHighlightGroupMember")
   groupHighlights         GroupHighlight[]
 
   @@unique([groupId, userId])
@@ -484,45 +483,6 @@ model ProcessingJob {
   @@index([matchId])
   @@index([dedupeKey])
   @@index([lockedBy])
-}
-
-model PlatformTrendingPlayer {
-  userId String @id
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  trendRank Int @unique
-
-  score Float
-
-  recentMatches Int
-  recentWins    Int
-  recentWinRate Float
-
-  allTimeMatches Int
-  allTimeWins    Int
-  allTimeWinRate Float
-
-  highlightGroupId String?
-  highlightGroup   Group? @relation("PlatformTrendingPlayerHighlightGroup", fields: [highlightGroupId], references: [id], onDelete: SetNull)
-
-  highlightGroupMemberId String?
-  highlightGroupMember   GroupMember? @relation("PlatformTrendingPlayerHighlightGroupMember", fields: [highlightGroupMemberId, highlightGroupId], references: [id, groupId], onDelete: SetNull)
-
-  windowDays      Int
-  windowStartedAt DateTime
-  windowEndedAt   DateTime
-
-  metadata Json @default("{}")
-
-  computedAt DateTime @default(now())
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-
-  @@index([score])
-  @@index([recentMatches])
-  @@index([computedAt])
-  @@index([highlightGroupId])
-  @@index([highlightGroupMemberId, highlightGroupId])
 }
 
 model FeedItem {

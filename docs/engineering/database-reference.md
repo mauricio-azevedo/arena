@@ -26,12 +26,13 @@ For operational guidance (Neon, migrations, resets) see
 | `MatchProcessingStatus` | `PENDING`, `PROCESSING`, `PROCESSED`, `FAILED` |
 | `GroupRankingProjectionStatus` | `CURRENT`, `PROCESSING`, `FAILED` |
 | `RankingMovementDirection` | `UP`, `DOWN` |
-| `ProcessingJobType` | `MATCH_CREATED`, `MATCH_UPDATED`, `MATCH_DELETED`, `GROUP_RANKING_REBUILD`, `PLATFORM_TRENDING_PLAYERS_REBUILD` |
+| `ProcessingJobType` | `MATCH_CREATED`, `MATCH_UPDATED`, `MATCH_DELETED`, `GROUP_RANKING_REBUILD`, `PLATFORM_TRENDING_PLAYERS_REBUILD` *(deprecated)* |
 | `ProcessingJobStatus` | `PENDING`, `PROCESSING`, `DONE`, `FAILED` |
-| `ProcessingJobScope` | `GROUP`, `PLATFORM` |
+| `ProcessingJobScope` | `GROUP`, `PLATFORM` *(deprecated)* |
 | `FeedItemType` | `GROUP_CREATED`, `MEMBER_JOINED`, `MATCH_CLOSE`, `MATCH_BLOWOUT`, `UPSET_WIN`, `RANKING_MOVEMENT` |
 | `FeedItemScope` | `GROUP`, `USER` |
 | `FeedItemVisibility` | `GROUP_MEMBERS`, `SOCIAL_CIRCLE`, `PUBLIC`, `PRIVATE` |
+| `HighlightType` | `WIN_STREAK_CURRENT`, `WIN_STREAK_RECORD`, `CLIMB`, `LEADERSHIP`, `MILESTONE_MATCHES`, `MILESTONE_WINS` |
 
 ---
 
@@ -45,7 +46,7 @@ For operational guidance (Neon, migrations, resets) see
 | `email` | String | `@unique` |
 | `passwordHash` | String | bcrypt |
 | `createdAt`, `updatedAt` | DateTime | |
-Indexes: `@@index([email])`. Relations: createdGroups, memberships, createdInvites, actor/subject feed items, platformTrendingPlayer (1:1?).
+Indexes: `@@index([email])`. Relations: createdGroups, memberships, createdInvites, actor/subject feed items, groupHighlights.
 
 ### Group
 | Column | Type | Notes |
@@ -153,8 +154,8 @@ PK uuid. `groupId`, `groupMemberId` (FK `(id, groupId)`), `matchId` (FK `(id, gr
 | `lockedAt`, `lockedBy`, `lastError`, `processedAt` | | claim/lock bookkeeping |
 Indexes: `[status, availableAt]`, `[scope, status, availableAt]`, `[groupId, status, createdAt]`, `[matchId]`, `[dedupeKey]`, `[lockedBy]`.
 
-### PlatformTrendingPlayer *(derived)*
-PK `userId` (FK→User, cascade). `trendRank` (`@unique`), `score`, `recentMatches/Wins/WinRate`, `allTimeMatches/Wins/WinRate`, optional `highlightGroup` / `highlightGroupMember` (`SetNull`), `windowDays/StartedAt/EndedAt`, `metadata` (JSON), `computedAt`. Indexes `[score]`, `[recentMatches]`, `[computedAt]`, `[highlightGroupId]`, `[highlightGroupMemberId, highlightGroupId]`.
+### GroupHighlight *(derived)*
+PK `id`. FKs: `group` (cascade), `groupMember` `(groupMemberId, groupId)` (cascade), `user` (cascade). `type` (`HighlightType`), `value` (Int), `score` (Float, cross-type ordering), `anchorAt` (DateTime, 7-day read-window key), `algorithmVersion`. Unique `[groupMemberId, type]`. Indexes `[groupId, anchorAt]`, `[score]`, `[userId, anchorAt]`. Rebuilt by the weekly-highlights projection; powers `GET /home/weekly-highlights`.
 
 ### FeedItem
 | Column | Type | Notes |
@@ -201,6 +202,8 @@ present). Chronological highlights — each row tells you when a capability land
 | `20260616223500_add_platform_trending_players` | `PlatformTrendingPlayer` |
 | `20260616232500` / `20260617011500` / `20260617150000` | platform-trending job + read-model trims + highlight relations |
 | `20260617024500_add_processing_job_live_dedupe_index` | pending-job dedupe index |
+| `20260621033753_add_group_highlights` | `GroupHighlight` + `HighlightType` enum |
+| `20260621043745_retire_platform_trending` | drop `PlatformTrendingPlayer` (PLATFORM enum values deprecated in place) |
 
 When changing the schema: edit `schema.prisma` → `npx prisma migrate dev` →
 `npx prisma generate` → confirm the backend compiles → update this doc,

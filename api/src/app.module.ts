@@ -10,7 +10,6 @@ import { MembersModule } from './members/members.module';
 import { FeedModule } from './feed/feed.module';
 import { UsersModule } from './users/users.module';
 import { ProcessingModule } from './processing/processing.module';
-import { PlatformTrendingModule } from './platform-trending/platform-trending.module';
 import { HomeHighlightsModule } from './home-highlights/home-highlights.module';
 
 @Module({
@@ -26,7 +25,6 @@ import { HomeHighlightsModule } from './home-highlights/home-highlights.module';
     FeedModule,
     UsersModule,
     ProcessingModule,
-    PlatformTrendingModule,
     HomeHighlightsModule,
   ],
 })

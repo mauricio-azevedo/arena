@@ -24,7 +24,6 @@ type MatchSpec = [number, number, number, number, 'A' | 'B'];
 
 async function wipe() {
   await prisma.groupHighlight.deleteMany();
-  await prisma.platformTrendingPlayer.deleteMany();
   await prisma.groupHomeSummary.deleteMany();
   await prisma.rankingMovement.deleteMany();
   await prisma.matchRankingSnapshot.deleteMany();

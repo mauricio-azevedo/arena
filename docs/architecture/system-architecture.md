@@ -46,7 +46,7 @@ self-contained NestJS module (controller + services + types).
 PrismaModule  AuthModule
 GroupsModule  MembersModule  MatchesModule  GroupInvitesModule
 RankingModule RatingModule(implicit via services) MeModule UsersModule
-FeedModule    ProcessingModule  PlatformTrendingModule
+FeedModule    ProcessingModule  HomeHighlightsModule
 ```
 
 ### 2.2 Layering and the CQRS-ish split
@@ -62,8 +62,8 @@ split by responsibility rather than kept as one god-service. The recurring roles
 | `*-writer.service.ts`   | Persistence only, takes a typed draft                       | `feed-writer.service.ts` |
 | `*-orchestrator.service.ts` | Coordinates generator(s) + writer                       | `feed-orchestrator.service.ts` |
 | `*-generator.ts`        | Pure-ish transform: domain input → draft (one per feed type)| `feed/generators/*.generator.ts` |
-| `*-projection.service.ts`   | Recompute derived/read-model state                      | `rating-projection.service.ts`, `group-member-stats-projection.service.ts`, `platform-trending-players-projection.service.ts` |
-| `*-read.service.ts`     | Read a precomputed read model                               | `platform-trending-players-read.service.ts` |
+| `*-projection.service.ts`   | Recompute derived/read-model state                      | `rating-projection.service.ts`, `group-member-stats-projection.service.ts`, `weekly-highlights-projection.service.ts` |
+| `*-read.service.ts`     | Read a precomputed read model                               | `weekly-highlights-read.service.ts` |
 
 ### 2.3 Bootstrap (`api/src/main.ts`)
 
@@ -156,12 +156,12 @@ For a match-related GROUP job the runner recomputes derived state in order:
 4. feed.syncMatchFeedItems                    → match-derived FeedItems
 5. feed.syncGroupRankingMovementFeedItems     → RANKING_MOVEMENT FeedItems
 6. group-home-summary.syncGroupSummary        → GroupHomeSummary read model
-7. enqueue PLATFORM_TRENDING_PLAYERS_REBUILD  → cascades to a PLATFORM job
+7. weekly-highlights-projection.sync...       → GroupHighlight read model ("Essa semana")
 ```
 
-A PLATFORM job (`platform-trending-players-projection.service.ts`) rebuilds the
-`PlatformTrendingPlayer` read model. `PlatformTrendingRebuildSchedulerService`
-also enqueues periodic rebuilds.
+The cascade is entirely GROUP-scoped. The retired `PlatformTrendingPlayer` read model,
+its PLATFORM job, and the rebuild scheduler were removed — the home "Essa semana" rail
+reads `GroupHighlight` (see [`weekly-highlights.md`](./weekly-highlights.md)).
 
 ### 3.4 Consequence: rating is full-recalc, eventually consistent
 
@@ -181,7 +181,7 @@ See `docs/architecture/adr/`:
 
 Deeper subsystem docs: [`processing-jobs.md`](./processing-jobs.md),
 [`feed-architecture.md`](./feed-architecture.md),
-[`platform-trending-players.md`](./platform-trending-players.md).
+[`weekly-highlights.md`](./weekly-highlights.md).
 
 ---
 
