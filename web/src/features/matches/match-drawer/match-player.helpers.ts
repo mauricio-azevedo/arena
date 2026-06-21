@@ -1,4 +1,8 @@
 import type { GroupMember, Match } from '@/types/api';
+import { avatarBgClass, nameInitial } from '@/lib/avatar';
+
+// Re-exported so existing drawer call-sites keep importing from here.
+export { avatarBgClass };
 
 // A player as the drawer needs to render it — resolved either from the live
 // group roster or, when editing, from the match's own snapshot (so a member who
@@ -11,23 +15,8 @@ export type ResolvedPlayer = {
   avatarSeed: string;
 };
 
-// Literal class strings (not interpolated) so Tailwind keeps them in the build.
-const AVATAR_BG_CLASSES = ['bg-avatar-1', 'bg-avatar-2', 'bg-avatar-3', 'bg-avatar-4'] as const;
-
-// Stable per-member colour so a player keeps the same avatar fill across the
-// picker and both team cards.
-export function avatarBgClass(seed: string): string {
-  let hash = 0;
-
-  for (let index = 0; index < seed.length; index += 1) {
-    hash = (hash * 31 + seed.charCodeAt(index)) >>> 0;
-  }
-
-  return AVATAR_BG_CLASSES[hash % AVATAR_BG_CLASSES.length];
-}
-
 function initialOf(name: string) {
-  return (name.trim().charAt(0) || '?').toUpperCase();
+  return nameInitial(name);
 }
 
 export function resolveFromMember(member: GroupMember): ResolvedPlayer {
