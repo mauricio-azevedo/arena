@@ -3,7 +3,7 @@ import { GroupDetailLoadingState } from '@/features/groups/components/group-deta
 
 export default function GroupDetailLoading() {
   return (
-    <AppShell chrome={{ title: 'Grupo', back: { fallbackHref: '/' } }}>
+    <AppShell chrome={{ back: { fallbackHref: '/' } }}>
       <GroupDetailLoadingState />
     </AppShell>
   );
