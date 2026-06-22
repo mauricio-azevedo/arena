@@ -144,6 +144,13 @@ model GroupInvite {
   createdById String
   createdBy   User   @relation("GroupInviteCreator", fields: [createdById], references: [id])
 
+  // When set, this invite is a CLAIM for a specific stub player (jogador sem conta):
+  // accepting it attaches the accepter's account to that GroupMember instead of
+  // creating a new membership. Single-use (maxUses = 1).
+  targetGroupMemberId String?
+  targetGroupMember   GroupMember? @relation("GroupInviteTarget", fields: [targetGroupMemberId, groupId], references: [id, groupId], onDelete: Cascade)
+  claimedByUserId     String?
+
   expiresAt DateTime?
   revokedAt DateTime?
 
@@ -156,6 +163,7 @@ model GroupInvite {
   @@index([groupId])
   @@index([createdById])
   @@index([token])
+  @@index([targetGroupMemberId])
 }
 
 model GroupMember {
@@ -192,6 +200,7 @@ model GroupMember {
   rankingMovements      RankingMovement[]
   stats                 GroupMemberStats?
   groupHighlights         GroupHighlight[]
+  claimInvites          GroupInvite[]       @relation("GroupInviteTarget")
 
   @@unique([groupId, userId])
   @@unique([id, groupId])

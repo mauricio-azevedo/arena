@@ -109,7 +109,12 @@ export function GroupDetail({ groupId, tab, autoOpenCompose = false }: Props) {
       onSaved={() => setRefreshKey((key) => key + 1)}
       autoOpenCreate={autoOpenCompose && canManageMatches}
     >
-      <MemberProfileDrawerProvider groupId={data.group.id} ranking={data.ranking}>
+      <MemberProfileDrawerProvider
+        groupId={data.group.id}
+        ranking={data.ranking}
+        isAdmin={data.membership?.role === 'ADMIN'}
+        onChanged={() => setRefreshKey((key) => key + 1)}
+      >
         <div className="space-y-8">
           <div className="space-y-3">
             <GroupSummaryCard

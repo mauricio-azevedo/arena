@@ -70,7 +70,9 @@ Children cascade on group delete (members, matches, invites, feed items, jobs, a
 | `expiresAt`, `revokedAt` | DateTime? | |
 | `uses` | Int | default 0 |
 | `maxUses` | Int? | |
-Indexes: `[groupId]`, `[createdById]`, `[token]`.
+| `targetGroupMemberId` | FK→GroupMember? `(id, groupId)` | set → invite is a CLAIM for that stub; `onDelete: Cascade` |
+| `claimedByUserId` | String? | user who claimed (when a CLAIM is accepted) |
+Indexes: `[groupId]`, `[createdById]`, `[token]`, `[targetGroupMemberId]`.
 
 ### GroupMember
 | Column | Type | Notes |

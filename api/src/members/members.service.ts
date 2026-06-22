@@ -5,6 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { GroupMemberRole } from '../generated/prisma/enums';
+import { resolveMemberDisplayName } from '../common/member-display-name';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
@@ -130,6 +131,63 @@ export class MembersService {
     });
 
     return this.findOne(membership.id);
+  }
+
+  // Reverts a claim (admin only): detaches the account and turns the membership back
+  // into a stub, freezing the current name into displayName so the row stays labeled.
+  // History stays on the same groupMemberId. Case A of claiming is clean to undo.
+  async unlinkAccount(
+    groupId: string,
+    memberId: string,
+    requesterUserId: string,
+  ) {
+    const group = await this.prisma.group.findUnique({
+      where: { id: groupId },
+    });
+
+    if (!group) {
+      throw new NotFoundException('Group not found');
+    }
+
+    const requesterMembership = await this.prisma.groupMember.findUnique({
+      where: { groupId_userId: { groupId, userId: requesterUserId } },
+    });
+
+    if (!requesterMembership || requesterMembership.leftAt) {
+      throw new ForbiddenException('Only active group members can do this');
+    }
+
+    if (requesterMembership.role !== GroupMemberRole.ADMIN) {
+      throw new ForbiddenException('Only group admins can unlink accounts');
+    }
+
+    const member = await this.prisma.groupMember.findUnique({
+      where: { id: memberId },
+      include: this.memberInclude(),
+    });
+
+    if (!member || member.groupId !== groupId) {
+      throw new NotFoundException('Member not found in this group');
+    }
+
+    if (member.userId === null) {
+      throw new BadRequestException('Este jogador não tem conta vinculada.');
+    }
+
+    // Block self-unlink: an admin detaching their own account could strand the
+    // group with no admin. (Unlinking another admin always leaves the requester.)
+    if (member.userId === requesterUserId) {
+      throw new BadRequestException(
+        'Você não pode desvincular a própria conta.',
+      );
+    }
+
+    await this.prisma.groupMember.update({
+      where: { id: member.id },
+      data: { userId: null, displayName: resolveMemberDisplayName(member) },
+    });
+
+    return this.findOne(member.id);
   }
 
   async findAll(groupId: string) {

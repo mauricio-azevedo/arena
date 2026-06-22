@@ -1,11 +1,14 @@
 import {
   BadRequestException,
+  ConflictException,
   ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
 import { randomBytes } from 'crypto';
+import type { Prisma } from '../generated/prisma/client';
 import { GroupMemberRole } from '../generated/prisma/enums';
+import { resolveMemberDisplayName } from '../common/member-display-name';
 import { PrismaService } from '../prisma/prisma.service';
 import { FeedOrchestratorService } from '../feed/feed-orchestrator.service';
 import { GroupHomeSummaryService } from '../groups/group-home-summary.service';
@@ -94,6 +97,57 @@ export class GroupInvitesService {
     };
   }
 
+  // Generates a single-use CLAIM link for a stub player (jogador sem conta): whoever
+  // opens it and signs in attaches their account to that GroupMember. Any active
+  // member can create it — same low-risk bar as creating the stub.
+  async createClaimLink(
+    groupId: string,
+    memberId: string,
+    requesterUserId: string,
+  ) {
+    const group = await this.prisma.group.findUnique({
+      where: { id: groupId },
+    });
+
+    if (!group) {
+      throw new NotFoundException('Group not found');
+    }
+
+    const requesterMembership = await this.prisma.groupMember.findUnique({
+      where: { groupId_userId: { groupId, userId: requesterUserId } },
+    });
+
+    if (!requesterMembership || requesterMembership.leftAt) {
+      throw new ForbiddenException('Only active group members can do this');
+    }
+
+    const member = await this.prisma.groupMember.findUnique({
+      where: { id: memberId },
+    });
+
+    if (!member || member.groupId !== groupId || member.leftAt) {
+      throw new NotFoundException('Member not found in this group');
+    }
+
+    if (member.userId !== null) {
+      throw new BadRequestException('Este jogador já tem uma conta vinculada.');
+    }
+
+    const token = randomBytes(24).toString('hex');
+
+    const invite = await this.prisma.groupInvite.create({
+      data: {
+        groupId,
+        createdById: requesterUserId,
+        token,
+        targetGroupMemberId: memberId,
+        maxUses: 1,
+      },
+    });
+
+    return { ...invite, path: `/claim/${invite.token}` };
+  }
+
   async findByToken(token: string) {
     const invite = await this.prisma.groupInvite.findUnique({
       where: { token },
@@ -116,6 +170,14 @@ export class GroupInvitesService {
             email: true,
           },
         },
+        targetGroupMember: {
+          select: {
+            id: true,
+            userId: true,
+            displayName: true,
+            user: { select: { firstName: true, lastName: true } },
+          },
+        },
       },
     });
 
@@ -135,7 +197,17 @@ export class GroupInvitesService {
       throw new BadRequestException('Invite has reached the usage limit');
     }
 
-    return invite;
+    if (invite.targetGroupMember && invite.targetGroupMember.userId !== null) {
+      throw new BadRequestException('Este perfil já foi assumido.');
+    }
+
+    return {
+      ...invite,
+      kind: invite.targetGroupMemberId ? ('CLAIM' as const) : ('JOIN' as const),
+      targetDisplayName: invite.targetGroupMember
+        ? resolveMemberDisplayName(invite.targetGroupMember)
+        : null,
+    };
   }
 
   async accept(groupId: string, token: string, body: { userId: string }) {
@@ -172,6 +244,10 @@ export class GroupInvitesService {
 
     if (invite.maxUses !== null && invite.uses >= invite.maxUses) {
       throw new BadRequestException('Invite has reached the usage limit');
+    }
+
+    if (invite.targetGroupMemberId) {
+      return this.acceptClaim(groupId, invite, user);
     }
 
     return this.prisma.$transaction(async (tx) => {
@@ -215,7 +291,7 @@ export class GroupInvitesService {
         await this.feedOrchestrator.createMemberJoinedItem(
           {
             groupId,
-            displayName: this.getUserDisplayName(user),
+            displayName: resolveMemberDisplayName({ user }),
             actorUserId: user.id,
             actorGroupMemberId: membership.id,
             occurredAt: new Date(),
@@ -226,20 +302,85 @@ export class GroupInvitesService {
 
       await this.groupHomeSummary.syncGroupSummary(groupId, tx);
 
-      return tx.groupMember.findUnique({
-        where: { id: membership.id },
-        include: {
-          group: true,
-          user: {
-            select: {
-              id: true,
-              firstName: true,
-              lastName: true,
-              email: true,
-            },
-          },
+      return this.findMembershipResponse(tx, membership.id);
+    });
+  }
+
+  private findMembershipResponse(tx: Prisma.TransactionClient, id: string) {
+    return tx.groupMember.findUnique({
+      where: { id },
+      include: {
+        group: true,
+        user: {
+          select: { id: true, firstName: true, lastName: true, email: true },
         },
+      },
+    });
+  }
+
+  // Claim path: attach the accepter's account to the stub. Case A (accepter not yet
+  // a member) is a clean userId set with the history kept on the same groupMemberId;
+  // Case B (already a member) is blocked here — merging duplicates is future work.
+  private async acceptClaim(
+    groupId: string,
+    invite: { id: string; targetGroupMemberId: string | null },
+    user: { id: string; firstName: string; lastName: string },
+  ) {
+    return this.prisma.$transaction(async (tx) => {
+      const stub = await tx.groupMember.findUnique({
+        where: { id: invite.targetGroupMemberId as string },
       });
+
+      if (!stub || stub.groupId !== groupId || stub.leftAt) {
+        throw new NotFoundException('Perfil não encontrado');
+      }
+
+      if (stub.userId !== null) {
+        throw new BadRequestException('Este perfil já foi assumido.');
+      }
+
+      const existingMembership = await tx.groupMember.findUnique({
+        where: { groupId_userId: { groupId, userId: user.id } },
+      });
+
+      if (existingMembership) {
+        throw new ConflictException(
+          existingMembership.leftAt
+            ? 'Você já teve um perfil neste grupo. Fale com um administrador.'
+            : 'Você já está neste grupo. Fale com um administrador para unir os perfis.',
+        );
+      }
+
+      // Atomic single-use guard: only the first claimer matches userId: null, so
+      // two concurrent accepts of the same link can't both take over the stub.
+      const claimed = await tx.groupMember.updateMany({
+        where: { id: stub.id, userId: null },
+        data: { userId: user.id, displayName: null },
+      });
+
+      if (claimed.count === 0) {
+        throw new BadRequestException('Este perfil já foi assumido.');
+      }
+
+      await tx.groupInvite.update({
+        where: { id: invite.id },
+        data: { uses: { increment: 1 }, claimedByUserId: user.id },
+      });
+
+      await this.feedOrchestrator.createMemberJoinedItem(
+        {
+          groupId,
+          displayName: resolveMemberDisplayName({ user }),
+          actorUserId: user.id,
+          actorGroupMemberId: stub.id,
+          occurredAt: new Date(),
+        },
+        tx,
+      );
+
+      await this.groupHomeSummary.syncGroupSummary(groupId, tx);
+
+      return this.findMembershipResponse(tx, stub.id);
     });
   }
 
@@ -256,9 +397,5 @@ export class GroupInvitesService {
     }
 
     return this.accept(invite.groupId, token, body);
-  }
-
-  private getUserDisplayName(user: { firstName: string; lastName: string }) {
-    return `${user.firstName} ${user.lastName}`.trim();
   }
 }
