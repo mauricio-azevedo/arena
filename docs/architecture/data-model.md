@@ -94,7 +94,11 @@ matches stay explainable after later ratings change:
 ### GroupInvite
 
 Tokenized join link. `token` (unique), optional `expiresAt`/`revokedAt`,
-`uses`/`maxUses`. Public acceptance flow via `/invites/:token`.
+`uses`/`maxUses`. Public acceptance flow via `/invites/:token`. When
+`targetGroupMemberId` is set, the invite is a **CLAIM** for that stub player
+(jogador sem conta): accepting attaches the accepter's account to that membership
+(single-use, `maxUses = 1`) instead of creating a new one — see
+`docs/product/stub-players.md`.
 
 ### FeedItem
 

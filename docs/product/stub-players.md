@@ -60,8 +60,29 @@ flow, not to everyone else day to day.
 - A stub has no personal home feed, so it never earns personal/weekly highlights.
 - A stub's name is not a profile link anywhere it appears.
 
+## Claiming a stub (the upgrade path)
+
+When the person wants their own account, they **take over** the stub and keep all its
+history — same matches, same rating, same ranking position.
+
+- **Trigger:** any member opens the stub's profile and generates a **single-use
+  link/QR** ("Convidar para assumir este perfil"), then hands it to the person. The
+  social trust already exists — you give the link to the right player.
+- **Taking over:** the person opens the link, logs in or creates an account, and taps
+  "Assumir este perfil". From then on they *are* that player; their real name replaces
+  the stub name everywhere automatically.
+- **Why it's clean:** because matches reference the membership (not the account),
+  taking over is just attaching an account to the same membership — **zero history
+  migration, no rating recompute**.
+- **Trust:** the link alone is enough (the group vouches by sharing it). The event
+  shows up in the feed, and an admin can **revert** it ("Desvincular conta") — the
+  member goes back to being a stub, history intact.
+- **Already a member?** If the person taking over is *already* in the group, we
+  **block** with a clear message ("fale com um administrador para unir os perfis").
+  Merging two real memberships is a different, deliberate operation.
+
 ## Not in this release
 
-- Claiming a stub: "Convidar para assumir este perfil" → link/QR → the person signs up
-  and the stub's full history is preserved under their new account.
-- Admin governance of stubs: merge duplicates, relink, promote, remove.
+- **Merging duplicates** (the blocked case above): reconciling two memberships of the
+  same person into one — reassigning matches and rebuilding ratings.
+- Heavier admin governance: promote in bulk, bespoke merges.

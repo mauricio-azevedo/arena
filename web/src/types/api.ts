@@ -85,6 +85,10 @@ export type GroupInvite = {
   path: string;
   group?: Group;
   createdBy?: User;
+  // Set when the invite is a CLAIM for a specific stub player.
+  targetGroupMemberId?: string | null;
+  kind?: 'JOIN' | 'CLAIM';
+  targetDisplayName?: string | null;
 };
 
 export type AuthResponse = {

@@ -44,4 +44,14 @@ export class MembersController {
   ) {
     return this.memberProfileReader.getMemberProfile(groupId, memberId);
   }
+
+  @Post(':memberId/unlink')
+  @UseGuards(JwtAuthGuard)
+  unlink(
+    @Param('groupId') groupId: string,
+    @Param('memberId') memberId: string,
+    @CurrentUser() user: AuthUser,
+  ) {
+    return this.membersService.unlinkAccount(groupId, memberId, user.sub);
+  }
 }

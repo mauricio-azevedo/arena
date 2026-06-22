@@ -7,9 +7,10 @@ import { Drawer, DrawerContent, DrawerTitle } from '@/components/ui/drawer';
 import { Label, Meta } from '@/components/ui/text';
 import { avatarBgClass, nameInitial } from '@/lib/avatar';
 import { cn } from '@/lib/utils';
-import { getCurrentUserIdFromAccessToken } from '@/lib/auth';
+import { getAccessToken, getCurrentUserIdFromAccessToken } from '@/lib/auth';
 import { ProfileMatchesList } from '@/features/profile/tabs/matches/sections/profile-matches-list';
-import { getMemberProfile } from './api/members.api';
+import { getMemberProfile, unlinkMember } from './api/members.api';
+import { StubClaimShare } from './components/stub-claim-share';
 import type { MemberProfile } from './types/member-profile.type';
 
 type MemberProfileDrawerProps = {
@@ -19,7 +20,11 @@ type MemberProfileDrawerProps = {
   target: { memberId: string; key: number } | null;
   // Position from the live ranking (index-based); falls back to the stored rank.
   rank?: number;
+  isAdmin: boolean;
   onClose: () => void;
+  // Called after an action that changes the roster (e.g. admin unlink) so the
+  // group can refetch.
+  onChanged: () => void;
 };
 
 export function MemberProfileDrawer({
@@ -27,7 +32,9 @@ export function MemberProfileDrawer({
   groupId,
   target,
   rank,
+  isAdmin,
   onClose,
+  onChanged,
 }: MemberProfileDrawerProps) {
   return (
     <Drawer
@@ -45,6 +52,9 @@ export function MemberProfileDrawer({
             groupId={groupId}
             memberId={target.memberId}
             rank={rank}
+            isAdmin={isAdmin}
+            onClose={onClose}
+            onChanged={onChanged}
           />
         )}
       </DrawerContent>
@@ -56,9 +66,19 @@ type ContentProps = {
   groupId: string;
   memberId: string;
   rank?: number;
+  isAdmin: boolean;
+  onClose: () => void;
+  onChanged: () => void;
 };
 
-function MemberProfileContent({ groupId, memberId, rank }: ContentProps) {
+function MemberProfileContent({
+  groupId,
+  memberId,
+  rank,
+  isAdmin,
+  onClose,
+  onChanged,
+}: ContentProps) {
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
   const [profile, setProfile] = useState<MemberProfile | null>(null);
 
@@ -109,6 +129,10 @@ function MemberProfileContent({ groupId, memberId, rank }: ContentProps) {
 
   const displayRank = rank ?? profile.currentRank ?? undefined;
   const profileHref = resolveProfileHref(profile.userId);
+  const canUnlink =
+    isAdmin &&
+    profile.userId !== null &&
+    profile.userId !== getCurrentUserIdFromAccessToken();
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
@@ -147,6 +171,19 @@ function MemberProfileContent({ groupId, memberId, rank }: ContentProps) {
             <Label className="text-brand">Ver perfil completo</Label>
           </Link>
         )}
+
+        {profile.userId === null ? (
+          <StubClaimShare groupId={groupId} memberId={profile.groupMemberId} />
+        ) : canUnlink ? (
+          <AdminUnlinkButton
+            groupId={groupId}
+            memberId={profile.groupMemberId}
+            onUnlinked={() => {
+              onChanged();
+              onClose();
+            }}
+          />
+        ) : null}
       </div>
 
       <div className="mt-5 min-h-0 flex-1 overflow-y-auto px-4 pb-8 [scrollbar-width:none]">
@@ -163,6 +200,81 @@ function FallbackShell({ children }: { children: ReactNode }) {
     <div className="flex min-h-0 flex-1 flex-col">
       <DrawerTitle className="sr-only">Perfil do jogador</DrawerTitle>
       <div className="px-5 pt-3">{children}</div>
+    </div>
+  );
+}
+
+// Admin-only: reverts a claim, turning the member back into a stub.
+function AdminUnlinkButton({
+  groupId,
+  memberId,
+  onUnlinked,
+}: {
+  groupId: string;
+  memberId: string;
+  onUnlinked: () => void;
+}) {
+  const [confirming, setConfirming] = useState(false);
+  const [working, setWorking] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function unlink() {
+    const token = getAccessToken();
+    if (!token) return;
+
+    setWorking(true);
+    setError(null);
+
+    try {
+      await unlinkMember(token, groupId, memberId);
+      onUnlinked();
+    } catch (caught) {
+      setError(
+        caught instanceof Error
+          ? caught.message
+          : 'Não foi possível desvincular. Tente novamente.',
+      );
+      setWorking(false);
+    }
+  }
+
+  if (!confirming) {
+    return (
+      <button
+        type="button"
+        onClick={() => setConfirming(true)}
+        className="mt-3 flex h-11 w-full items-center justify-center rounded-pill bg-surface text-tag-warn shadow-hairline transition-opacity active:opacity-60"
+      >
+        <Label className="text-tag-warn">Desvincular conta</Label>
+      </button>
+    );
+  }
+
+  return (
+    <div className="mt-3 rounded-3xl bg-surface px-4 py-3 shadow-hairline">
+      <Meta className="block text-center text-muted-foreground">
+        Desvincular a conta? O jogador volta a ser um perfil sem conta (o histórico é
+        mantido).
+      </Meta>
+      <div className="mt-3 grid grid-cols-2 gap-2">
+        <button
+          type="button"
+          onClick={() => setConfirming(false)}
+          disabled={working}
+          className="flex h-10 items-center justify-center rounded-pill bg-background text-foreground shadow-hairline transition-opacity active:opacity-60"
+        >
+          <Label>Cancelar</Label>
+        </button>
+        <button
+          type="button"
+          onClick={unlink}
+          disabled={working}
+          className="flex h-10 items-center justify-center rounded-pill bg-tag-warn text-background transition-opacity active:opacity-60 disabled:opacity-60"
+        >
+          <Label className="text-background">{working ? 'Desvinculando…' : 'Desvincular'}</Label>
+        </button>
+      </div>
+      {error && <Meta className="mt-2 block text-center text-tag-warn">{error}</Meta>}
     </div>
   );
 }

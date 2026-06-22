@@ -109,10 +109,13 @@ create(@Param('groupId') groupId: string, @CurrentUser() user: AuthUser,
 | `GET /groups/home` | optional | groups |
 | `GET /groups`, `GET /groups/:groupId` | public | groups |
 | `POST /groups/:groupId/invites` | required (admin) | group-invites |
+| `POST /groups/:groupId/invites/claim` | required (any active member) | group-invites |
 | `GET /groups/:groupId/invites/:token`, `POST …/:token/accept` | varies | group-invites |
 | `GET /invites/:token`, `POST /invites/:token/accept` | public/required | public-invites |
 | `POST /groups/:groupId/members`, `GET …/members` | varies | members |
 | `POST /groups/:groupId/members/guest` | required (any active member) | members |
+| `GET /groups/:groupId/members/:memberId/profile` | public | members |
+| `POST /groups/:groupId/members/:memberId/unlink` | required (admin) | members |
 | `POST /groups/:groupId/matches` | required | matches |
 | `GET …/matches`, `GET …/matches/:id` | varies | matches |
 | `PATCH …/matches/:id`, `DELETE …/matches/:id` | required | matches |

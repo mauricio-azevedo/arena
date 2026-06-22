@@ -21,8 +21,9 @@ export function acceptInvite(
 ): Promise<{
   id: string;
   groupId: string;
-  userId: string;
-  displayName: string;
+  userId: string | null;
+  // Null when a stub is claimed (the name then comes from the linked account).
+  displayName: string | null;
   rating: number;
   role: 'ADMIN' | 'MEMBER';
   group: Group;
