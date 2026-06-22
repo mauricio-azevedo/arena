@@ -74,15 +74,24 @@ history — same matches, same rating, same ranking position.
 - **Why it's clean:** because matches reference the membership (not the account),
   taking over is just attaching an account to the same membership — **zero history
   migration, no rating recompute**.
-- **Trust:** the link alone is enough (the group vouches by sharing it). The event
-  shows up in the feed, and an admin can **revert** it ("Desvincular conta") — the
-  member goes back to being a stub, history intact.
-- **Already a member?** If the person taking over is *already* in the group, we
-  **block** with a clear message ("fale com um administrador para unir os perfis").
-  Merging two real memberships is a different, deliberate operation.
+- **Trust:** the link alone is enough (the group vouches by sharing it). Reverting a
+  claim (detaching the account so the member goes back to being a stub) exists as a
+  backend capability but is not currently surfaced in the UI.
+- **Already a member? (merge)** If the person taking over is *already* in the group,
+  we **merge** the stub into the membership they already have: the stub's matches are
+  re-pointed onto that membership, the stub is removed, and ratings/ranks/stats are
+  rebuilt (async `GROUP_RANKING_REBUILD`) so the combined history is consistent.
+  - **The one block:** merging is refused if the stub and that membership ever shared
+    a match in the group (as partners *or* opponents). Re-pointing would put the same
+    person twice in one match — impossible (`@@unique([matchId, groupMemberId])`).
+    The accept fails with a clear message and nothing changes.
+  - **What's preserved / what isn't:** all match history, ratings and ranking are
+    recomputed from the combined set. Match *highlight* feed cards created before the
+    merge keep the name as it was recorded (e.g. the old stub name) — they aren't
+    re-rendered; this is accepted as historical for a rare operation.
 
 ## Not in this release
 
-- **Merging duplicates** (the blocked case above): reconciling two memberships of the
-  same person into one — reassigning matches and rebuilding ratings.
+- **Reconciling two memberships that already shared a match** (the blocked merge
+  above): would require splitting/curating match history — deliberately out of scope.
 - Heavier admin governance: promote in bulk, bespoke merges.

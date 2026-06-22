@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { createGroupInvite } from '@/features/invites/api/invites.api';
 import { getAccessToken } from '@/lib/auth';
+import { useCopyToClipboard } from '@/hooks/use-copy-to-clipboard';
 
 type Props = {
   groupId: string;
@@ -14,8 +15,8 @@ type Props = {
 export function GroupInviteClient({ groupId }: Props) {
   const [invite, setInvite] = useState<GroupInvite | null>(null);
   const [error, setError] = useState('');
-  const [copied, setCopied] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
+  const { copied, copy } = useCopyToClipboard();
 
   async function handleCreateInvite() {
     const token = getAccessToken();
@@ -26,7 +27,6 @@ export function GroupInviteClient({ groupId }: Props) {
     }
 
     setError('');
-    setCopied(false);
     setIsCreating(true);
 
     try {
@@ -37,15 +37,6 @@ export function GroupInviteClient({ groupId }: Props) {
     } finally {
       setIsCreating(false);
     }
-  }
-
-  async function handleCopy() {
-    if (!invite) return;
-
-    const inviteUrl = `${window.location.origin}${invite.path}`;
-
-    await window.navigator.clipboard.writeText(inviteUrl);
-    setCopied(true);
   }
 
   const inviteUrl = invite ? `${window.location.origin}${invite.path}` : '';
@@ -74,7 +65,7 @@ export function GroupInviteClient({ groupId }: Props) {
           <CardContent className="space-y-4 p-4">
             <div className="rounded-lg border bg-muted/30 p-3 text-sm break-all">{inviteUrl}</div>
 
-            <Button onClick={handleCopy} variant="outline" className="w-full">
+            <Button onClick={() => copy(inviteUrl)} variant="outline" className="w-full">
               {copied ? 'Link copiado' : 'Copiar link'}
             </Button>
 

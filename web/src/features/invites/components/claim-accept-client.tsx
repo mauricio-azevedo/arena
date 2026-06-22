@@ -15,8 +15,8 @@ type Props = {
 };
 
 // Claim flow: the person takes over a stub player and turns it into their account.
-// Case B (already a member of the group) is blocked with a clear message — merging
-// duplicate profiles is future work.
+// Case B (already a member) merges the stub into their existing membership — the
+// backend blocks only if the two ever shared a match, surfaced as an error here.
 export function ClaimAcceptClient({ invite }: Props) {
   const router = useRouter();
 
@@ -74,6 +74,11 @@ export function ClaimAcceptClient({ invite }: Props) {
   const group = invite.group;
   const name = invite.targetDisplayName ?? 'este jogador';
   const claimHref = `/claim/${invite.token}`;
+  // Already a member → the stub is merged into your account; otherwise it's a
+  // clean take-over.
+  const acceptLabel = alreadyMember
+    ? { idle: 'Juntar com minha conta', busy: 'Juntando…' }
+    : { idle: 'Assumir este perfil', busy: 'Assumindo…' };
 
   return (
     <div className="space-y-4">
@@ -108,14 +113,18 @@ export function ClaimAcceptClient({ invite }: Props) {
             <Button disabled className="w-full">
               Verificando…
             </Button>
-          ) : alreadyMember ? (
-            <p className="text-sm leading-6 text-muted-foreground">
-              Você já está neste grupo. Fale com um administrador para unir os perfis.
-            </p>
           ) : (
-            <Button onClick={handleAccept} disabled={isAccepting} className="w-full">
-              {isAccepting ? 'Assumindo…' : 'Assumir este perfil'}
-            </Button>
+            <div className="space-y-3">
+              {alreadyMember && (
+                <p className="text-sm leading-6 text-muted-foreground">
+                  Você já joga neste grupo. Ao continuar, o histórico de {name} é
+                  juntado na sua conta.
+                </p>
+              )}
+              <Button onClick={handleAccept} disabled={isAccepting} className="w-full">
+                {isAccepting ? acceptLabel.busy : acceptLabel.idle}
+              </Button>
+            </div>
           )}
 
           {error && <p className="text-sm text-destructive">{error}</p>}

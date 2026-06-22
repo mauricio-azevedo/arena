@@ -1,9 +1,8 @@
 import { useMemo, useState } from 'react';
-import { Check, ChevronLeft, Loader2, Plus, Search } from 'lucide-react';
+import { Check, Loader2, Plus, Search } from 'lucide-react';
 import { Label, Meta, Overline } from '@/components/ui/text';
-import { DrawerTitle } from '@/components/ui/drawer';
+import { DrawerBackHeader } from '@/components/ui/drawer';
 import { cn } from '@/lib/utils';
-import { TOUCH_TARGET_48 } from '@/lib/touch-target';
 import { avatarBgClass } from './match-player.helpers';
 
 export type PickerEntry = {
@@ -74,26 +73,7 @@ export function PickerView({
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      <div className="flex h-[52px] shrink-0 items-center justify-between px-3">
-        <button
-          type="button"
-          onClick={onBack}
-          className={cn(
-            'flex min-w-16 items-center gap-0.5 text-brand transition-opacity active:opacity-60',
-            TOUCH_TARGET_48,
-          )}
-        >
-          <ChevronLeft className="size-[22px]" strokeWidth={2.4} aria-hidden />
-          <Label className="text-brand">Voltar</Label>
-        </button>
-
-        <div className="text-center">
-          <DrawerTitle>Escolher jogador</DrawerTitle>
-          <Meta className="text-faint-foreground">{sublabel}</Meta>
-        </div>
-
-        <div className="w-16" />
-      </div>
+      <DrawerBackHeader onBack={onBack} title="Escolher jogador" subtitle={sublabel} />
 
       <div className="shrink-0 px-[18px] pb-3 pt-1">
         <div className="flex h-[46px] items-center gap-2.5 rounded-pill bg-surface px-4 shadow-hairline">
