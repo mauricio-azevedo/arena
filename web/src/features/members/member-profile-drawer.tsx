@@ -265,18 +265,21 @@ function MemberProfileContent({
           <div className="mt-4 flex items-start gap-2.5 rounded-2xl bg-tag-warn/[0.08] px-3.5 py-3 ring-1 ring-inset ring-tag-warn/20">
             <Info className="mt-px size-4 shrink-0 text-tag-warn" aria-hidden />
             <Meta className="text-left font-medium text-tag-warn/90">
-              Jogador sem conta. Convide-o para assumir este perfil e levar todo o histórico para o
-              app.
+              {isViewerAdmin
+                ? 'Jogador sem conta. Convide-o para assumir este perfil e levar todo o histórico para o app.'
+                : 'Jogador sem conta. Se este perfil é você, solicite para assumi-lo.'}
             </Meta>
           </div>
-          <button
-            type="button"
-            onClick={openClaim}
-            className="mt-3 flex h-12 items-center justify-center gap-2 rounded-pill bg-brand text-brand-foreground shadow-button transition-opacity active:opacity-90"
-          >
-            <UserPlus className="size-4.5 text-brand-foreground" aria-hidden />
-            <Label className="text-brand-foreground">Convidar para assumir o perfil</Label>
-          </button>
+          {isViewerAdmin && (
+            <button
+              type="button"
+              onClick={openClaim}
+              className="mt-3 flex h-12 items-center justify-center gap-2 rounded-pill bg-brand text-brand-foreground shadow-button transition-opacity active:opacity-90"
+            >
+              <UserPlus className="size-4.5 text-brand-foreground" aria-hidden />
+              <Label className="text-brand-foreground">Convidar para assumir o perfil</Label>
+            </button>
+          )}
 
           {isViewerAdmin && (
             <button

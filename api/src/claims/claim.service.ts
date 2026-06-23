@@ -74,6 +74,8 @@ export class ClaimService {
       throw new BadRequestException('Este perfil já foi assumido.');
     }
 
+    await this.cancelStalePendingRequests(tx, stub.id);
+
     if (options.inviteId) {
       await tx.groupInvite.update({
         where: { id: options.inviteId },
@@ -127,6 +129,10 @@ export class ClaimService {
         admins: await this.listGroupAdmins(tx, groupId),
       };
     }
+
+    // The stub is being claimed — cancel any open request for it BEFORE the delete
+    // (its FK is SetNull, so after the delete the where clause wouldn't match).
+    await this.cancelStalePendingRequests(tx, stub.id);
 
     // Move the stub's match history onto the existing membership. This MUST happen
     // before the stub is deleted — MatchPlayer's FK is onDelete: Restrict, so any row
@@ -185,6 +191,19 @@ export class ClaimService {
       outcome: 'CLAIMED' as const,
       membership: await this.findMembershipResponse(tx, membership.id),
     };
+  }
+
+  // Once a stub is claimed, an open request to claim it can never succeed — cancel it
+  // so its notification and the admin review screen reflect that it's resolved instead
+  // of still offering "Aprovar". (The partial-unique index means at most one is pending.)
+  private cancelStalePendingRequests(
+    tx: Prisma.TransactionClient,
+    stubId: string,
+  ) {
+    return tx.claimRequest.updateMany({
+      where: { stubGroupMemberId: stubId, status: 'PENDING' },
+      data: { status: 'CANCELLED', resolvedAt: new Date() },
+    });
   }
 
   findMembershipResponse(tx: Prisma.TransactionClient, id: string) {

@@ -7,6 +7,7 @@ import {
 import { randomBytes } from 'crypto';
 import { GroupMemberRole, MatchTeam } from '../generated/prisma/enums';
 import { resolveMemberDisplayName } from '../common/member-display-name';
+import { requireGroupAdmin } from '../common/require-group-admin';
 import { PrismaService } from '../prisma/prisma.service';
 import { FeedOrchestratorService } from '../feed/feed-orchestrator.service';
 import { GroupHomeSummaryService } from '../groups/group-home-summary.service';
@@ -102,8 +103,8 @@ export class GroupInvitesService {
   }
 
   // Generates a single-use CLAIM link for a stub player (jogador sem conta): whoever
-  // opens it and signs in attaches their account to that GroupMember. Any active
-  // member can create it — same low-risk bar as creating the stub.
+  // opens it and signs in attaches their account to that GroupMember. Admin-only —
+  // handing out a claim link is vouching that the holder is that player.
   async createClaimLink(
     groupId: string,
     memberId: string,
@@ -117,13 +118,7 @@ export class GroupInvitesService {
       throw new NotFoundException('Group not found');
     }
 
-    const requesterMembership = await this.prisma.groupMember.findUnique({
-      where: { groupId_userId: { groupId, userId: requesterUserId } },
-    });
-
-    if (!requesterMembership || requesterMembership.leftAt) {
-      throw new ForbiddenException('Only active group members can do this');
-    }
+    await requireGroupAdmin(this.prisma, groupId, requesterUserId);
 
     const member = await this.prisma.groupMember.findUnique({
       where: { id: memberId },

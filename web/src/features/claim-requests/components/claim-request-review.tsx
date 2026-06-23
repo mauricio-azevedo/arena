@@ -118,7 +118,24 @@ export function ClaimRequestReview({ requestId }: { requestId: string }) {
     );
   }
 
-  if (outcome === 'DECLINED' || outcome === 'CANCELLED') {
+  if (outcome === 'CANCELLED') {
+    return (
+      <Resolution
+        tone="muted"
+        title="Solicitação não é mais necessária"
+        body={
+          <>
+            O perfil <strong className="font-bold text-foreground">{detail.stub.name}</strong> já
+            foi assumido por outra pessoa. Não há mais nada para aprovar aqui.
+          </>
+        }
+        onDone={() => router.push('/notifications')}
+        doneLabel="Voltar"
+      />
+    );
+  }
+
+  if (outcome === 'DECLINED') {
     return (
       <Resolution
         tone="muted"
