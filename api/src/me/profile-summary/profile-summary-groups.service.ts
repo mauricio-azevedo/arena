@@ -15,41 +15,73 @@ export class ProfileSummaryGroupsService {
       include: {
         group: true,
         matchPlayers: {
-          orderBy: {
-            playedAt: 'desc',
+          where: {
+            match: { deletedAt: null },
           },
+          orderBy: [{ playedAt: 'desc' }, { createdAt: 'desc' }],
           take: 1,
           select: {
             playedAt: true,
+            rankDelta: true,
+            match: {
+              select: {
+                processingStatus: true,
+              },
+            },
           },
         },
       },
     });
 
-    return memberships
-      .map((membership) => ({
-        id: membership.group.id,
-        name: membership.group.name,
-        description: membership.group.description,
-        rating: membership.rating,
-        role: membership.role,
-        lastPlayedAt: membership.matchPlayers[0]?.playedAt ?? null,
-      }))
-      .sort((a, b) => {
-        if (!a.lastPlayedAt && !b.lastPlayedAt) {
-          return 0;
-        }
+    const membersCountByGroup = await this.countActiveMembers(
+      memberships.map((membership) => membership.groupId),
+    );
 
-        if (!a.lastPlayedAt) {
-          return 1;
-        }
+    return (
+      memberships
+        .map((membership) => {
+          const lastMatch = membership.matchPlayers[0];
 
-        if (!b.lastPlayedAt) {
-          return -1;
-        }
+          return {
+            id: membership.group.id,
+            name: membership.group.name,
+            description: membership.group.description,
+            rating: membership.rating,
+            role: membership.role,
+            lastPlayedAt: lastMatch?.playedAt ?? null,
+            currentRank: membership.currentRank,
+            membersCount: membersCountByGroup.get(membership.groupId) ?? 0,
+            // Only trust the delta once the latest match has been projected.
+            rankDelta:
+              lastMatch?.match.processingStatus === 'PROCESSED'
+                ? (lastMatch.rankDelta ?? null)
+                : null,
+          };
+        })
+        // Most recently played first; never-played groups (null) sort last.
+        .sort(
+          (a, b) =>
+            (b.lastPlayedAt?.getTime() ?? 0) - (a.lastPlayedAt?.getTime() ?? 0),
+        )
+    );
+  }
 
-        return b.lastPlayedAt.getTime() - a.lastPlayedAt.getTime();
-      })
-      .slice(0, 2);
+  private async countActiveMembers(
+    groupIds: string[],
+  ): Promise<Map<string, number>> {
+    if (groupIds.length === 0) {
+      return new Map();
+    }
+
+    const counts = await this.prisma.groupMember.groupBy({
+      by: ['groupId'],
+      where: {
+        groupId: { in: groupIds },
+        leftAt: null,
+      },
+      _count: { _all: true },
+    });
+
+    return new Map(counts.map((row) => [row.groupId, row._count._all]));
   }
 }

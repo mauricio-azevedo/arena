@@ -141,6 +141,7 @@ model Group {
   matchRankingSnapshots   MatchRankingSnapshot[]
   homeSummary             GroupHomeSummary?
   memberStats             GroupMemberStats[]
+  memberPartnerStats      GroupMemberPartnerStats[]
   groupHighlights         GroupHighlight[]
   notifications           Notification[]
 
@@ -215,6 +216,8 @@ model GroupMember {
   actorFeedItems        FeedItem[]          @relation("FeedItemActorGroupMember")
   rankingMovements      RankingMovement[]
   stats                 GroupMemberStats?
+  partnerStats          GroupMemberPartnerStats[] @relation("PartnerStatsOwner")
+  partneredStats        GroupMemberPartnerStats[] @relation("PartnerStatsPartner")
   groupHighlights         GroupHighlight[]
 
   @@unique([groupId, userId])
@@ -244,6 +247,32 @@ model GroupMemberStats {
   @@unique([groupMemberId, groupId])
   @@index([groupId])
   @@index([groupId, matchesCount])
+}
+
+// Derived read model (rebuilt by GroupMemberPartnerStatsProjectionService, never
+// hand-edited): one directional row per (player, teammate) pairing within a group,
+// so each player reads `WHERE groupMemberId = :me`. Powers the profile screen's
+// "melhor dupla" / "suas duplas" without scanning every match at read time.
+model GroupMemberPartnerStats {
+  id      String @id @default(uuid())
+  groupId String
+
+  groupMemberId   String
+  partnerMemberId String
+
+  matchesTogether Int @default(0)
+  winsTogether    Int @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  group         Group       @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  groupMember   GroupMember @relation("PartnerStatsOwner", fields: [groupMemberId, groupId], references: [id, groupId], onDelete: Cascade)
+  partnerMember GroupMember @relation("PartnerStatsPartner", fields: [partnerMemberId, groupId], references: [id, groupId], onDelete: Cascade)
+
+  @@unique([groupMemberId, partnerMemberId])
+  @@index([groupId])
+  @@index([groupMemberId, winsTogether])
 }
 
 enum HighlightType {
