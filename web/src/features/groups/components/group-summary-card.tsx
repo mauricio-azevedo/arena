@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Search } from 'lucide-react';
-import type { Group, GroupMember, Match, MyGroup } from '@/types/api';
+import type { Group, GroupMember, GroupMemberRole, Match, MyGroup } from '@/types/api';
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
 import { Body, Label, Meta, Stat, Title } from '@/components/ui/text';
 import { StandingCard } from '@/features/groups/components/standing-card';
@@ -46,9 +46,10 @@ export function GroupSummaryCard({
       <GroupIdentityHeader
         group={group}
         members={members}
+        ranking={ranking}
         memberCount={memberCount}
         matchCount={matchCount}
-        isAdmin={membership?.role === 'ADMIN'}
+        viewerRole={membership?.role ?? null}
       />
 
       <GroupSearchField />
@@ -146,15 +147,17 @@ function clamp01(value: number) {
 function GroupIdentityHeader({
   group,
   members,
+  ranking,
   memberCount,
   matchCount,
-  isAdmin,
+  viewerRole,
 }: {
   group: Group;
   members: GroupMember[];
+  ranking: GroupMember[];
   memberCount: number;
   matchCount: number;
-  isAdmin: boolean;
+  viewerRole: GroupMemberRole | null;
 }) {
   const [membersOpen, setMembersOpen] = useState(false);
 
@@ -189,8 +192,10 @@ function GroupIdentityHeader({
         open={membersOpen}
         onOpenChange={setMembersOpen}
         groupId={group.id}
-        isAdmin={isAdmin}
+        groupName={group.name}
+        viewerRole={viewerRole}
         members={members}
+        ranking={ranking}
       />
     </div>
   );

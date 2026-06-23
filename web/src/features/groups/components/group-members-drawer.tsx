@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { UserPlus } from 'lucide-react';
 import {
   Drawer,
@@ -13,49 +13,62 @@ import { Label, Meta } from '@/components/ui/text';
 import { cn } from '@/lib/utils';
 import { avatarBgClass, nameInitial } from '@/lib/avatar';
 import { resolveMemberName } from '@/lib/member-name';
+import { memberRoleTag } from '@/lib/member-role';
 import { TOUCH_TARGET_48 } from '@/lib/touch-target';
 import { StubClaimEmailPanel } from '@/features/members/components/stub-claim-email-panel';
-import { useMemberProfileDrawer } from '@/features/members/member-profile-drawer-context';
-import type { GroupMember } from '@/types/api';
+import { MemberProfileContent } from '@/features/members/member-profile-drawer';
+import type { GroupMember, GroupMemberRole } from '@/types/api';
 
 type GroupMembersDrawerProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   groupId: string;
-  isAdmin: boolean;
+  groupName: string;
+  viewerRole: GroupMemberRole | null;
   members: GroupMember[];
+  // Live ranking — for the position line in a member's profile.
+  ranking: GroupMember[];
 };
-
-// Role label shown per member: admins, plain members, and stubs (jogadores sem conta,
-// surfaced to users as "convidado").
-function roleTag(member: GroupMember): { label: string; className: string } {
-  if (member.userId === null) {
-    return { label: 'Convidado', className: 'bg-tag-warn/15 text-tag-warn' };
-  }
-  if (member.role === 'ADMIN') {
-    return { label: 'Admin', className: 'bg-brand/15 text-brand' };
-  }
-  return { label: 'Membro', className: 'bg-background text-muted-foreground' };
-}
 
 export function GroupMembersDrawer({
   open,
   onOpenChange,
   groupId,
-  isAdmin,
+  groupName,
+  viewerRole,
   members,
+  ranking,
 }: GroupMembersDrawerProps) {
-  const { openMemberProfile } = useMemberProfileDrawer();
-  // The "Convidar" shortcut opens the same email panel as the player profile drawer,
-  // for whichever stub the admin tapped. Kept mounted so it animates out cleanly.
+  const isAdmin = viewerRole === 'ADMIN';
+
+  // Members listed A–Z by display name.
+  const sortedMembers = useMemo(
+    () =>
+      [...members].sort((a, b) =>
+        resolveMemberName(a).fullName.localeCompare(resolveMemberName(b).fullName, 'pt-BR'),
+      ),
+    [members],
+  );
+
+  // Both the profile and the "Convidar" panel open as nested sheets over this list, so
+  // closing them returns here. Kept mounted (target persists) so they animate out cleanly.
+  const seq = useRef(0);
+  const [profileOpen, setProfileOpen] = useState(false);
+  const [profileTarget, setProfileTarget] = useState<{ memberId: string; key: number } | null>(
+    null,
+  );
   const [inviteOpen, setInviteOpen] = useState(false);
   const [inviteTarget, setInviteTarget] = useState<{ memberId: string; name: string } | null>(null);
 
-  // Tapping a row hands off to that member's profile drawer; close the list first so the
-  // two sheets don't stack.
   function openProfile(memberId: string) {
-    onOpenChange(false);
-    openMemberProfile(memberId);
+    seq.current += 1;
+    setProfileTarget({ memberId, key: seq.current });
+    setProfileOpen(true);
+  }
+
+  function rankOf(memberId: string): number | undefined {
+    const index = ranking.findIndex((member) => member.id === memberId);
+    return index >= 0 ? index + 1 : undefined;
   }
 
   return (
@@ -68,10 +81,10 @@ export function GroupMembersDrawer({
 
         <div className="min-h-0 flex-1 overflow-y-auto px-[18px] pb-[30px] pt-1 [scrollbar-width:none]">
           <div className="overflow-hidden rounded-3xl bg-surface shadow-hairline">
-            {members.map((member) => {
+            {sortedMembers.map((member) => {
               const { fullName } = resolveMemberName(member);
               const isStub = member.userId === null;
-              const tag = roleTag(member);
+              const tag = memberRoleTag(member);
 
               return (
                 <div
@@ -140,6 +153,23 @@ export function GroupMembersDrawer({
             })}
           </div>
         </div>
+
+        {/* Opens over the list — closing returns here, not to the page. */}
+        <DrawerNested open={profileOpen} onOpenChange={setProfileOpen}>
+          <DrawerContent aria-describedby={undefined} size="fit">
+            {profileTarget && (
+              <MemberProfileContent
+                key={profileTarget.key}
+                groupId={groupId}
+                groupName={groupName}
+                totalMembers={ranking.length}
+                viewerRole={viewerRole}
+                memberId={profileTarget.memberId}
+                rank={rankOf(profileTarget.memberId)}
+              />
+            )}
+          </DrawerContent>
+        </DrawerNested>
 
         <DrawerNested open={inviteOpen} onOpenChange={setInviteOpen}>
           <DrawerContent aria-describedby={undefined} size="fit">

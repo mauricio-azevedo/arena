@@ -9,6 +9,7 @@ import { Label, Meta } from '@/components/ui/text';
 import { avatarBgClass, nameInitial } from '@/lib/avatar';
 import { cn } from '@/lib/utils';
 import { getCurrentUserIdFromAccessToken } from '@/lib/auth';
+import { memberRoleTag } from '@/lib/member-role';
 import type { GroupMemberRole } from '@/types/api';
 import { getMemberProfile } from './api/members.api';
 import { StubClaimEmailPanel } from './components/stub-claim-email-panel';
@@ -72,7 +73,9 @@ type ContentProps = {
   rank?: number;
 };
 
-function MemberProfileContent({
+// Exported so it can be hosted in a nested drawer (e.g. opened over the members list)
+// as well as by the page-level MemberProfileDrawer.
+export function MemberProfileContent({
   groupId,
   groupName,
   totalMembers,
@@ -159,8 +162,13 @@ function MemberProfileContent({
             {profile.displayName}
           </DrawerTitle>
           {isStub && (
-            <span className="shrink-0 rounded-lg bg-tag-warn/15 px-2 py-1 text-[10px] font-extrabold uppercase tracking-wide text-tag-warn">
-              Sem conta
+            <span
+              className={cn(
+                'shrink-0 rounded-lg px-2 py-1 text-[10px] font-extrabold uppercase tracking-wide',
+                memberRoleTag(profile).className,
+              )}
+            >
+              {memberRoleTag(profile).label}
             </span>
           )}
         </div>
