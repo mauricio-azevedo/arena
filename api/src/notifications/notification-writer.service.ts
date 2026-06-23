@@ -25,6 +25,24 @@ export class NotificationWriterService {
     });
   }
 
+  // Fan-out: one insert for many recipients (e.g. notifying every group admin), instead
+  // of a create() per recipient inside a transaction.
+  createMany(
+    inputs: CreateNotificationInput[],
+    tx: PrismaClientLike = this.prisma,
+  ) {
+    return tx.notification.createMany({
+      data: inputs.map((input) => ({
+        type: input.type,
+        recipientUserId: input.recipientUserId,
+        groupId: input.groupId ?? null,
+        actorUserId: input.actorUserId ?? null,
+        targetGroupMemberId: input.targetGroupMemberId ?? null,
+        data: input.data,
+      })),
+    });
+  }
+
   async markAllRead(userId: string): Promise<number> {
     const result = await this.prisma.notification.updateMany({
       where: { recipientUserId: userId, readAt: null },

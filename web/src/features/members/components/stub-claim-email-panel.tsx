@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { Check, Loader2, Mail } from 'lucide-react';
 import { DrawerBackHeader } from '@/components/ui/drawer';
+import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
 import { Body, Label, Meta } from '@/components/ui/text';
 import { getAccessToken } from '@/lib/auth';
 import type { ClaimEmailState } from '@/types/api';
@@ -137,13 +138,11 @@ export function StubClaimEmailPanel({ groupId, memberId, stubName, onBack }: Pro
               </div>
             )}
 
-            <div className="mt-5 flex h-[46px] items-center gap-2.5 rounded-pill bg-surface px-4 shadow-hairline">
-              <Mail
-                className="size-[18px] shrink-0 text-faint-foreground"
-                strokeWidth={2.2}
-                aria-hidden
-              />
-              <input
+            <InputGroup className="mt-5">
+              <InputGroupAddon>
+                <Mail className="text-faint-foreground" aria-hidden />
+              </InputGroupAddon>
+              <InputGroupInput
                 value={email}
                 onChange={(event) => {
                   setEmail(event.target.value);
@@ -153,9 +152,9 @@ export function StubClaimEmailPanel({ groupId, memberId, stubName, onBack }: Pro
                 inputMode="email"
                 autoCapitalize="none"
                 placeholder="email@exemplo.com"
-                className="min-w-0 flex-1 bg-transparent text-body font-semibold text-foreground outline-none placeholder:text-faint-foreground"
+                aria-label={`Email de ${stubName}`}
               />
-            </div>
+            </InputGroup>
 
             {error && <Meta className="mt-2 block px-1 text-center text-tag-warn">{error}</Meta>}
 

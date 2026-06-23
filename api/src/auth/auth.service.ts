@@ -97,23 +97,25 @@ export class AuthService {
       },
     });
 
-    for (const stub of stubs) {
-      await this.prisma.$transaction([
-        this.prisma.notification.create({
-          data: {
-            type: 'CLAIM_OFFER',
-            recipientUserId: userId,
-            groupId: stub.group.id,
-            targetGroupMemberId: stub.id,
-            data: claimOfferNotificationData(stub.id, stub.group.name),
-          },
-        }),
-        this.prisma.groupMember.update({
-          where: { id: stub.id },
-          data: { claimEmailNotifiedAt: new Date() },
-        }),
-      ]);
+    if (stubs.length === 0) {
+      return;
     }
+
+    await this.prisma.$transaction([
+      this.prisma.notification.createMany({
+        data: stubs.map((stub) => ({
+          type: 'CLAIM_OFFER' as const,
+          recipientUserId: userId,
+          groupId: stub.group.id,
+          targetGroupMemberId: stub.id,
+          data: claimOfferNotificationData(stub.id, stub.group.name),
+        })),
+      }),
+      this.prisma.groupMember.updateMany({
+        where: { id: { in: stubs.map((stub) => stub.id) } },
+        data: { claimEmailNotifiedAt: new Date() },
+      }),
+    ]);
   }
 
   async login(body: { email: string; password: string }) {

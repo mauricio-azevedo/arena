@@ -66,12 +66,18 @@ export class ClaimOffersService {
       throw new BadRequestException('Esse perfil já tem uma conta.');
     }
 
-    // The account this email points at (if any). If it's a member who shared a match with
-    // the stub, the claim could never succeed — block now (set-time conflict).
-    const user = await this.prisma.user.findUnique({
-      where: { email },
-      select: { id: true },
-    });
+    // The account this email points at (if any) and the "one email per stub" clash are
+    // independent reads — run them together.
+    const [user, clash] = await Promise.all([
+      this.prisma.user.findUnique({ where: { email }, select: { id: true } }),
+      this.prisma.groupMember.findFirst({
+        where: { groupId, claimEmail: email, id: { not: stub.id } },
+        select: { id: true },
+      }),
+    ]);
+
+    // If the email belongs to a member who shared a match with the stub, the claim could
+    // never succeed — block now (set-time conflict), ahead of the clash check.
     if (user) {
       const membership = await this.prisma.groupMember.findUnique({
         where: { groupId_userId: { groupId, userId: user.id } },
@@ -92,31 +98,53 @@ export class ClaimOffersService {
       }
     }
 
-    // One anchored email per stub per group.
-    const clash = await this.prisma.groupMember.findFirst({
-      where: { groupId, claimEmail: email, id: { not: stub.id } },
-      select: { id: true },
-    });
     if (clash) {
       throw new BadRequestException(
         'Esse email já está vinculado a outro perfil neste grupo.',
       );
     }
 
-    // Re-setting the same still-pending email keeps notifiedAt (idempotent, no re-notify).
+    // Re-setting the same still-pending email keeps notifiedAt (idempotent, no re-notify);
+    // any other transition issues a fresh offer.
     const samePending =
       stub.claimEmail === email &&
       stub.claimEmailStatus === ClaimEmailStatus.PENDING;
     const keptNotifiedAt = samePending ? stub.claimEmailNotifiedAt : null;
+    const willNotify = user !== null && keptNotifiedAt === null;
+    const notifiedAt = willNotify ? new Date() : keptNotifiedAt;
 
     try {
-      return await this.runSetClaimEmail(
-        stub,
-        email,
-        user,
-        samePending,
-        keptNotifiedAt,
-      );
+      return await this.prisma.$transaction(async (tx) => {
+        // Changing the anchored email supersedes any prior offer — retire its notification
+        // before issuing the new one (a no-op when the email is unchanged).
+        if (!samePending) {
+          await this.notifications.markActedByTarget(
+            NotificationType.CLAIM_OFFER,
+            stub.id,
+            tx,
+          );
+        }
+
+        await tx.groupMember.update({
+          where: { id: stub.id },
+          data: {
+            claimEmail: email,
+            claimEmailStatus: ClaimEmailStatus.PENDING,
+            claimEmailNotifiedAt: notifiedAt,
+          },
+        });
+
+        if (user && willNotify) {
+          await this.notifyOffer(tx, user.id, stub.id);
+        }
+
+        return {
+          email,
+          status: ClaimEmailStatus.PENDING,
+          notified: notifiedAt !== null,
+          accountExists: user !== null,
+        };
+      });
     } catch (error) {
       // A concurrent set of the same email to another stub races past the clash pre-check
       // and trips @@unique([groupId, claimEmail]) — surface the clean message, not a 500.
@@ -130,52 +158,6 @@ export class ClaimOffersService {
       }
       throw error;
     }
-  }
-
-  private runSetClaimEmail(
-    stub: { id: string; claimEmail: string | null },
-    email: string,
-    user: { id: string } | null,
-    samePending: boolean,
-    keptNotifiedAt: Date | null,
-  ) {
-    return this.prisma.$transaction(async (tx) => {
-      // Changing the anchored email supersedes any prior offer — retire its notification
-      // before issuing the new one (a no-op when the email is unchanged).
-      if (!samePending) {
-        await this.notifications.markActedByTarget(
-          NotificationType.CLAIM_OFFER,
-          stub.id,
-          tx,
-        );
-      }
-
-      await tx.groupMember.update({
-        where: { id: stub.id },
-        data: {
-          claimEmail: email,
-          claimEmailStatus: ClaimEmailStatus.PENDING,
-          claimEmailNotifiedAt: keptNotifiedAt,
-        },
-      });
-
-      let notifiedAt = keptNotifiedAt;
-      if (user && notifiedAt === null) {
-        await this.notifyOffer(tx, user.id, stub.id);
-        notifiedAt = new Date();
-        await tx.groupMember.update({
-          where: { id: stub.id },
-          data: { claimEmailNotifiedAt: notifiedAt },
-        });
-      }
-
-      return {
-        email,
-        status: ClaimEmailStatus.PENDING,
-        notified: notifiedAt !== null,
-        accountExists: user !== null,
-      };
-    });
   }
 
   async clearClaimEmail(
@@ -232,8 +214,10 @@ export class ClaimOffersService {
     }
 
     const accountExists = stub.claimEmail
-      ? (await this.prisma.user.count({ where: { email: stub.claimEmail } })) >
-        0
+      ? (await this.prisma.user.findUnique({
+          where: { email: stub.claimEmail },
+          select: { id: true },
+        })) !== null
       : false;
 
     return {
@@ -245,6 +229,17 @@ export class ClaimOffersService {
   }
 
   // --- Offer recipient side -------------------------------------------------------
+
+  // Throws the shared "not available" 404 unless the stub exists and the viewer owns it
+  // (email match) — the same response for gone vs not-yours, never revealing which.
+  private assertOwnedStub<T extends { claimEmail: string | null }>(
+    stub: T | null,
+    viewerEmail: string,
+  ): asserts stub is T {
+    if (!stub || stub.claimEmail !== viewerEmail) {
+      throw new NotFoundException('Esse perfil não está mais disponível.');
+    }
+  }
 
   async getOffer(
     stubId: string,
@@ -275,10 +270,7 @@ export class ClaimOffersService {
         group: { select: { name: true } },
       },
     });
-    // Same 404 whether the stub is gone or not yours — never reveal which.
-    if (!stub || stub.claimEmail !== viewer.email) {
-      throw new NotFoundException('Esse perfil não está mais disponível.');
-    }
+    this.assertOwnedStub(stub, viewer.email);
 
     return {
       stubGroupMemberId: stub.id,
@@ -312,9 +304,7 @@ export class ClaimOffersService {
           user: { select: { firstName: true, lastName: true } },
         },
       });
-      if (!stub || stub.claimEmail !== viewer.email) {
-        throw new NotFoundException('Esse perfil não está mais disponível.');
-      }
+      this.assertOwnedStub(stub, viewer.email);
 
       const result = await this.claims.performClaim(
         tx,
@@ -377,9 +367,7 @@ export class ClaimOffersService {
           user: { select: { firstName: true, lastName: true } },
         },
       });
-      if (!stub || stub.claimEmail !== viewer.email) {
-        throw new NotFoundException('Esse perfil não está mais disponível.');
-      }
+      this.assertOwnedStub(stub, viewer.email);
 
       // Keep the email (audit + don't re-notify); the admin is told and decides next.
       await tx.groupMember.update({
@@ -443,16 +431,14 @@ export class ClaimOffersService {
       select: { userId: true },
     });
 
-    for (const admin of admins) {
-      await this.notifications.create(
-        {
-          type: NotificationType.CLAIM_OFFER_DECLINED,
-          recipientUserId: admin.userId as string,
-          groupId,
-          data,
-        },
-        tx,
-      );
-    }
+    await this.notifications.createMany(
+      admins.map((admin) => ({
+        type: NotificationType.CLAIM_OFFER_DECLINED,
+        recipientUserId: admin.userId as string,
+        groupId,
+        data,
+      })),
+      tx,
+    );
   }
 }
