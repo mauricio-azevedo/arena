@@ -102,3 +102,15 @@ screen). No email/push delivery — in-app only.
 - Reconciling two real memberships that already shared a match — out of scope, as in
   [stub-players.md](./stub-players.md).
 - Email / push delivery of notifications — in-app only.
+
+## Accepted limitation: the anchor is a mutable, unverified email
+
+Authorization binds to the account whose email **equals** the anchored email, and account
+emails are editable (with no verification step). So a known, accepted edge: if the intended
+owner changes their account email after being anchored, their pending offer goes stale
+(they stop matching and see "não disponível"); and the freed old email could later be
+registered by someone else, who would then be offered — and could confirm — that stub's
+history. Accepted because the blast radius is low (a casual group's match history for a
+not-yet-claimed player) and email verification is deliberately out of scope. Recorded so it
+isn't re-discovered as a bug — closing it would need email verification, or invalidating a
+stub's anchor when an account's email changes.

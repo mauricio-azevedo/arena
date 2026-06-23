@@ -117,6 +117,15 @@ export function getProfileMatches(token: string): Promise<ProfileMatchListItem[]
 - Loading skeletons use `animate-pulse` on muted blocks that match the final
   layout, with `role="status"` / `aria-busy` / `sr-only` text. No visible
   "Carregando…" text.
+- **UI derived from a member's data has a single source.** A member's avatar
+  (`MemberAvatar`, `components/ui/member-avatar.tsx`) and role badge
+  (`memberRoleTag`, `lib/member-role.ts`) are defined once and reused everywhere a
+  member is shown (ranking, match cards, drawers, pickers). Don't re-inline
+  `userId === null` styling or role/status labels per screen — that's what let the
+  same player read "Convidado" on one screen and "Sem conta" on another. The label is
+  UI copy derived from data the client already has; keep it in a shared frontend
+  helper, not as a field on an API response (routes stay use-case-shaped, not
+  UI-shaped — see `backend-conventions.md`).
 
 ## 10. Product/UI quality bar
 
