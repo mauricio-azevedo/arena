@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { type ReactNode, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { LogOut } from 'lucide-react';
 import {
@@ -20,9 +20,13 @@ import { cn } from '@/lib/utils';
 
 type Props = {
   className?: string;
+  // Custom trigger (e.g. a full-width profile row); falls back to the default
+  // "Sair" button. Lets callers restyle the trigger while the confirm dialog and
+  // the logout flow stay single-source here.
+  trigger?: ReactNode;
 };
 
-export function LogoutButton({ className }: Props) {
+export function LogoutButton({ className, trigger }: Props) {
   const router = useRouter();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
@@ -36,15 +40,12 @@ export function LogoutButton({ className }: Props) {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          className={cn('gap-1.5', className)}
-        >
-          <LogOut className="h-4 w-4" />
-          Sair
-        </Button>
+        {trigger ?? (
+          <Button type="button" variant="outline" size="sm" className={cn('gap-1.5', className)}>
+            <LogOut className="h-4 w-4" />
+            Sair
+          </Button>
+        )}
       </AlertDialogTrigger>
 
       <AlertDialogContent>

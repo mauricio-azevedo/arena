@@ -1,10 +1,10 @@
 import { AppShell } from '@/components/app-shell';
-import { Profile } from '@/features/profile/profile';
+import { ProfileScreen } from '@/features/profile/profile-screen';
 
 export default function ProfilePage() {
   return (
-    <AppShell chrome={{ title: 'Perfil' }}>
-      <Profile />
+    <AppShell chrome={{ topBar: false }}>
+      <ProfileScreen />
     </AppShell>
   );
 }

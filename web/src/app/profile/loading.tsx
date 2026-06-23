@@ -1,9 +1,9 @@
 import { AppShell } from '@/components/app-shell';
 import { ProfileLoadingState } from '@/features/profile/components/profile-loading-state';
 
-export default function UserProfileLoading() {
+export default function ProfileLoading() {
   return (
-    <AppShell chrome={{ back: { fallbackHref: '/' } }}>
+    <AppShell chrome={{ topBar: false }}>
       <ProfileLoadingState />
     </AppShell>
   );

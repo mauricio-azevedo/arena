@@ -1,5 +1,5 @@
-import type { ProfileMatchResult } from '../../../enums/profile-match-result.enum';
-import type { ProfileMatchPlayer } from '../../summary/types/profile-summary-match.type';
+import type { ProfileMatchResult } from '../enums/profile-match-result.enum';
+import type { ProfileMatchPlayer } from './profile-summary-match.type';
 
 export type ProfileMatchListItem = {
   id: string;

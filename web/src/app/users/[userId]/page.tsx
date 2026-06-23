@@ -1,5 +1,5 @@
 import { AppShell } from '@/components/app-shell';
-import { Profile } from '@/features/profile/profile';
+import { ProfileScreen } from '@/features/profile/profile-screen';
 
 type Props = {
   params: Promise<{
@@ -11,8 +11,8 @@ export default async function UserProfilePage({ params }: Props) {
   const routeParams = await params;
 
   return (
-    <AppShell chrome={{ title: 'Perfil', back: { fallbackHref: '/' } }}>
-      <Profile userId={routeParams.userId} />
+    <AppShell chrome={{ back: { fallbackHref: '/' } }}>
+      <ProfileScreen userId={routeParams.userId} />
     </AppShell>
   );
 }
