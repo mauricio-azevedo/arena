@@ -4,6 +4,8 @@ import { resolveMemberDisplayName } from '../common/member-display-name';
 import { PrismaService } from '../prisma/prisma.service';
 import type { ProfileMatchListItem } from '../me/types/profile-match-list-item.type';
 import type { ProfileSummaryStats } from '../me/types/profile-summary-stats.type';
+import { RECENT_FORM_SIZE } from '../me/profile-summary/profile-summary-stats.service';
+import { winRatePercent } from '../common/win-rate';
 import type { MemberProfile } from './types/member-profile.type';
 
 @Injectable()
@@ -53,10 +55,13 @@ export class MemberProfileReaderService {
     const matchesPlayed = matches.length;
     const wins = matches.filter((match) => match.result === 'WIN').length;
     const losses = matchesPlayed - wins;
-    const winRate =
-      matchesPlayed === 0 ? 0 : Math.round((wins / matchesPlayed) * 100);
+    const winRate = winRatePercent(wins, matchesPlayed);
+    // Matches are ordered most-recent-first, so the head is the recent form.
+    const recentForm = matches
+      .slice(0, RECENT_FORM_SIZE)
+      .map((match) => match.result);
 
-    return { matchesPlayed, wins, losses, winRate };
+    return { matchesPlayed, wins, losses, winRate, recentForm };
   }
 
   // Mirrors me/profile-matches but scoped to a single membership (groupMemberId)

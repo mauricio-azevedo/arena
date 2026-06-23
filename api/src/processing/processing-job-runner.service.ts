@@ -11,6 +11,7 @@ import type {
 } from '../feed/types/ranking-movement-feed-input.type';
 import { RatingProjectionService } from '../rating/rating-projection.service';
 import { GroupMemberStatsProjectionService } from '../ranking/group-member-stats-projection.service';
+import { GroupMemberPartnerStatsProjectionService } from '../ranking/group-member-partner-stats-projection.service';
 import { WeeklyHighlightsProjectionService } from '../home-highlights/weekly-highlights-projection.service';
 import { RankingMovementService } from '../ranking/ranking-movement.service';
 import { GroupHomeSummaryService } from '../groups/group-home-summary.service';
@@ -74,6 +75,7 @@ export class ProcessingJobRunnerService {
     private readonly ratingProjection: RatingProjectionService,
     private readonly rankingMovements: RankingMovementService,
     private readonly groupMemberStatsProjection: GroupMemberStatsProjectionService,
+    private readonly groupMemberPartnerStatsProjection: GroupMemberPartnerStatsProjectionService,
     private readonly weeklyHighlights: WeeklyHighlightsProjectionService,
     private readonly feed: FeedOrchestratorService,
     private readonly groupHomeSummary: GroupHomeSummaryService,
@@ -265,6 +267,10 @@ export class ProcessingJobRunnerService {
         await this.ratingProjection.syncGroupRatings(tx, groupId);
         await this.rankingMovements.syncGroupRankingState(tx, groupId);
         await this.groupMemberStatsProjection.syncGroupMemberStats(tx, groupId);
+        await this.groupMemberPartnerStatsProjection.syncGroupMemberPartnerStats(
+          tx,
+          groupId,
+        );
         await this.weeklyHighlights.syncGroupHighlights(tx, groupId);
 
         if (changedMatchId && deleteChangedMatchFeed) {

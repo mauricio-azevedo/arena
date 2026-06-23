@@ -111,6 +111,16 @@ PK `groupMemberId`. `groupId`, `matchesCount` (0), `winsCount` (0). FK to
 GroupMember on composite `(groupMemberId, groupId)`, cascade. Indexes:
 `[groupId]`, `[groupId, matchesCount]`.
 
+### GroupMemberPartnerStats _(derived)_
+
+PK `id` (uuid). `groupId`, `groupMemberId` (the player), `partnerMemberId` (the
+teammate), `matchesTogether` (0), `winsTogether` (0). One **directional** row per
+ordered pair so each player reads `WHERE groupMemberId = :me`; rebuilt in full by the
+partner-stats projection. FKs to GroupMember on composite `(groupMemberId, groupId)`
+and `(partnerMemberId, groupId)`, cascade. Unique `[groupMemberId, partnerMemberId]`.
+Indexes: `[groupId]`, `[groupMemberId, winsTogether]`. Powers the profile screen's
+"melhor dupla" / "suas duplas" (merged across groups by partner account at read time).
+
 ### Match
 
 | Column                                      | Type                    | Notes                  |
@@ -260,6 +270,7 @@ present). Chronological highlights — each row tells you when a capability land
 | `20260623014023_add_notifications`                      | `Notification` + `NotificationType` enum (in-app inbox)                   |
 | `20260623020216_add_claim_requests`                     | `ClaimRequest` + `ClaimRequestStatus` enum (later retired)                |
 | `20260623034426_add_claim_email`                        | `GroupMember.claimEmail*` + `ClaimEmailStatus` + `CLAIM_OFFER*` enum vals |
+| `20260623194946_add_group_member_partner_stats`         | `GroupMemberPartnerStats` (per-teammate read model)                       |
 | `20260623035814_retire_claim_links_and_requests`        | drop `ClaimRequest`/`ClaimRequestStatus` + GroupInvite CLAIM columns      |
 
 When changing the schema: edit `schema.prisma` → `npx prisma migrate dev` →

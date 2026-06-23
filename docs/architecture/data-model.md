@@ -28,6 +28,7 @@ User ──< GroupMember >── Group
  │           │             ├──1 GroupHomeSummary              (derived)
  │           │             ├──< MatchRankingSnapshot          (derived)
  │           │             ├──< GroupMemberStats              (derived, 1 per member)
+ │           │             ├──< GroupMemberPartnerStats       (derived, 1 per member-pair)
  │           │             └──< GroupHighlight                (derived, 1 per member+type)
 ```
 
@@ -144,14 +145,15 @@ nonce — editing it invalidates outstanding confirms (the confirm authorizes by
 
 ## 3. Derived read models (rebuilt by projections)
 
-| Model                    | Grain                 | Rebuilt by                   | Holds                                                                                                                               |
-| ------------------------ | --------------------- | ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| `MatchRankingSnapshot`   | 1 per match           | rating projection            | `previousLeaders`, `currentLeaders`, `dethronedLeaders`, `movements` (JSON), `algorithmVersion`                                     |
-| `RankingMovement`        | 1 per (match, member) | ranking-movement service     | `direction`, `positions`, prev/current rank+rating, `passedGroupMemberIds`, `isVisible`, `occurredAt`, `invalidatedAt`              |
-| `GroupMemberStats`       | 1 per member          | stats projection             | `matchesCount`, `winsCount`                                                                                                         |
-| `GroupRankingProjection` | 1 per group           | projection status tracker    | `status`, `version`, `lastProcessedMatchId/At`, `lastError`                                                                         |
-| `GroupHomeSummary`       | 1 per group           | home-summary service         | `membersCount`, `leaders` (JSON), `lastRelevantFeedItem`, `projectionStatus`                                                        |
-| `GroupHighlight`         | 1 per (member, type)  | weekly-highlights projection | `type` (six achievements), `value`, `score`, `anchorAt` (7-day window key), `algorithmVersion` — powers the home "Essa semana" rail |
+| Model                     | Grain                    | Rebuilt by                   | Holds                                                                                                                               |
+| ------------------------- | ------------------------ | ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| `MatchRankingSnapshot`    | 1 per match              | rating projection            | `previousLeaders`, `currentLeaders`, `dethronedLeaders`, `movements` (JSON), `algorithmVersion`                                     |
+| `RankingMovement`         | 1 per (match, member)    | ranking-movement service     | `direction`, `positions`, prev/current rank+rating, `passedGroupMemberIds`, `isVisible`, `occurredAt`, `invalidatedAt`              |
+| `GroupMemberStats`        | 1 per member             | stats projection             | `matchesCount`, `winsCount`                                                                                                         |
+| `GroupMemberPartnerStats` | 1 per (member, teammate) | partner-stats projection     | `matchesTogether`, `winsTogether` (directional; powers the profile "melhor dupla" / "suas duplas")                                  |
+| `GroupRankingProjection`  | 1 per group              | projection status tracker    | `status`, `version`, `lastProcessedMatchId/At`, `lastError`                                                                         |
+| `GroupHomeSummary`        | 1 per group              | home-summary service         | `membersCount`, `leaders` (JSON), `lastRelevantFeedItem`, `projectionStatus`                                                        |
+| `GroupHighlight`          | 1 per (member, type)     | weekly-highlights projection | `type` (six achievements), `value`, `score`, `anchorAt` (7-day window key), `algorithmVersion` — powers the home "Essa semana" rail |
 
 These are caches for fast reads and stored historical truth. If they look wrong,
 the fix is usually to re-run the relevant projection (enqueue a

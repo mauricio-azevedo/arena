@@ -5,6 +5,7 @@ import { ProfileSummaryGroupsService } from '../me/profile-summary/profile-summa
 import { ProfileSummaryMatchesService } from '../me/profile-summary/profile-summary-matches.service';
 import { ProfileSummaryService } from '../me/profile-summary/profile-summary.service';
 import { ProfileSummaryStatsService } from '../me/profile-summary/profile-summary-stats.service';
+import { ProfileSummaryPartnersService } from '../me/profile-summary/profile-summary-partners.service';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 
@@ -15,6 +16,7 @@ import { UsersService } from './users.service';
     UsersService,
     ProfileSummaryService,
     ProfileSummaryStatsService,
+    ProfileSummaryPartnersService,
     ProfileSummaryMatchesService,
     ProfileSummaryGroupsService,
     ProfileMatchesService,

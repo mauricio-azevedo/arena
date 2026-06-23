@@ -21,12 +21,12 @@ arena/
   docs/  documentation (this file lives here)
 ```
 
-| Layer    | Tech                                                                 |
-| -------- | ------------------------------------------------------------------- |
-| Frontend | Next.js 16, React 19, TypeScript, Tailwind v4, shadcn/ui (radix-luma), lucide |
+| Layer    | Tech                                                                                            |
+| -------- | ----------------------------------------------------------------------------------------------- |
+| Frontend | Next.js 16, React 19, TypeScript, Tailwind v4, shadcn/ui (radix-luma), lucide                   |
 | Backend  | NestJS 11, TypeScript, Prisma 7 (`@prisma/adapter-pg` + `pg` Pool), JWT (`@nestjs/jwt`), bcrypt |
-| Database | PostgreSQL 16 (local via `docker-compose`; Neon in hosted environments) |
-| Deploy   | `web` on Vercel (`vercel.json`, only `main` auto-deploys); `api` + DB hosted separately |
+| Database | PostgreSQL 16 (local via `docker-compose`; Neon in hosted environments)                         |
+| Deploy   | `web` on Vercel (`vercel.json`, only `main` auto-deploys); `api` + DB hosted separately         |
 
 There is **no shared package** between `api` and `web`. The frontend re-declares
 the API contract by hand in `web/src/types/api.ts` and per-feature `*.type.ts`
@@ -55,15 +55,15 @@ Controllers are thin: they apply guards, read params/body/current user, and call
 a service. All domain logic lives in services. As modules grow, services are
 split by responsibility rather than kept as one god-service. The recurring roles:
 
-| Suffix / role           | Responsibility                                              | Example |
-| ----------------------- | ----------------------------------------------------------- | ------- |
-| `*.service.ts`          | Use-case business logic                                     | `matches.service.ts` |
-| `*-reader.service.ts`   | Query/read + viewer filtering, returns response shapes      | `feed-reader.service.ts` |
-| `*-writer.service.ts`   | Persistence only, takes a typed draft                       | `feed-writer.service.ts` |
-| `*-orchestrator.service.ts` | Coordinates generator(s) + writer                       | `feed-orchestrator.service.ts` |
-| `*-generator.ts`        | Pure-ish transform: domain input → draft (one per feed type)| `feed/generators/*.generator.ts` |
-| `*-projection.service.ts`   | Recompute derived/read-model state                      | `rating-projection.service.ts`, `group-member-stats-projection.service.ts`, `weekly-highlights-projection.service.ts` |
-| `*-read.service.ts`     | Read a precomputed read model                               | `weekly-highlights-read.service.ts` |
+| Suffix / role               | Responsibility                                               | Example                                                                                                               |
+| --------------------------- | ------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------- |
+| `*.service.ts`              | Use-case business logic                                      | `matches.service.ts`                                                                                                  |
+| `*-reader.service.ts`       | Query/read + viewer filtering, returns response shapes       | `feed-reader.service.ts`                                                                                              |
+| `*-writer.service.ts`       | Persistence only, takes a typed draft                        | `feed-writer.service.ts`                                                                                              |
+| `*-orchestrator.service.ts` | Coordinates generator(s) + writer                            | `feed-orchestrator.service.ts`                                                                                        |
+| `*-generator.ts`            | Pure-ish transform: domain input → draft (one per feed type) | `feed/generators/*.generator.ts`                                                                                      |
+| `*-projection.service.ts`   | Recompute derived/read-model state                           | `rating-projection.service.ts`, `group-member-stats-projection.service.ts`, `weekly-highlights-projection.service.ts` |
+| `*-read.service.ts`         | Read a precomputed read model                                | `weekly-highlights-read.service.ts`                                                                                   |
 
 ### 2.3 Bootstrap (`api/src/main.ts`)
 
@@ -109,7 +109,7 @@ event, e.g. `processing_job.claimed`, `rating_projection.completed`,
 
 > **This supersedes the synchronous "fast path" described in
 > [`rating-architecture.md`](./rating-architecture.md).** That document still
-> describes the conceptual rating math correctly, but the *execution model* has
+> describes the conceptual rating math correctly, but the _execution model_ has
 > moved to an asynchronous in-database job queue. Match writes no longer compute
 > ratings inline.
 
@@ -153,6 +153,8 @@ For a match-related GROUP job the runner recomputes derived state in order:
                                                 + MatchRankingSnapshot (leaders/movements)
 2. ranking-movement.syncGroupRankingState     → RankingMovement rows + visibility
 3. group-member-stats-projection.sync...      → GroupMemberStats (matches/wins)
+3b. group-member-partner-stats-projection.sync → GroupMemberPartnerStats (per-teammate
+                                                 matches/wins; powers profile "duplas")
 4. feed.syncMatchFeedItems                    → match-derived FeedItems
 5. feed.syncGroupRankingMovementFeedItems     → RANKING_MOVEMENT FeedItems
 6. group-home-summary.syncGroupSummary        → GroupHomeSummary read model
@@ -226,7 +228,7 @@ React (server component fetch or client useEffect)
   machine and an `isCurrent` guard against stale updates. All API calls use
   `cache: 'no-store'`.
 - **Auth on the client**: JWT in `localStorage` (`arena_access_token`), decoded
-  manually (`lib/auth.ts`); the token is passed *explicitly* into each API call,
+  manually (`lib/auth.ts`); the token is passed _explicitly_ into each API call,
   never auto-injected.
 - **Chrome & navigation**: `AppShell` wraps screens, enforces route policy
   (`lib/route-policy.ts`), and renders `AppTopBar` + `BottomNav`.
@@ -254,5 +256,5 @@ the data layer.
   (api); `NEXT_PUBLIC_API_URL` (web); `PROCESSING_WORKER_*` /
   `PROCESSING_JOB_*` (worker tuning).
 - **Deploy**: `web` → Vercel, only `main` branch (`vercel.json`).
-</content>
-</invoke>
+  </content>
+  </invoke>

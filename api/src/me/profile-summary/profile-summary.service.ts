@@ -3,6 +3,7 @@ import { PrismaService } from '../../prisma/prisma.service';
 import type { ProfileSummaryResponse } from '../types/profile-summary-response.type';
 import { ProfileSummaryGroupsService } from './profile-summary-groups.service';
 import { ProfileSummaryMatchesService } from './profile-summary-matches.service';
+import { ProfileSummaryPartnersService } from './profile-summary-partners.service';
 import { ProfileSummaryStatsService } from './profile-summary-stats.service';
 
 @Injectable()
@@ -10,6 +11,7 @@ export class ProfileSummaryService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly stats: ProfileSummaryStatsService,
+    private readonly partners: ProfileSummaryPartnersService,
     private readonly matches: ProfileSummaryMatchesService,
     private readonly groups: ProfileSummaryGroupsService,
   ) {}
@@ -25,6 +27,7 @@ export class ProfileSummaryService {
         firstName: true,
         lastName: true,
         email: true,
+        createdAt: true,
       },
     });
 
@@ -32,18 +35,25 @@ export class ProfileSummaryService {
       throw new NotFoundException('User not found');
     }
 
-    const [stats, recentMatches, recentGroups] = await Promise.all([
+    const [stats, partners, recentMatches, recentGroups] = await Promise.all([
       this.stats.calculateStats(userId),
+      this.partners.findPartners(userId),
       this.matches.findRecentMatches(userId),
       this.groups.findRecentGroups(userId),
     ]);
 
     return {
       user: {
-        ...user,
+        id: user.id,
+        firstName: user.firstName,
+        lastName: user.lastName,
         email: options.includeEmail ? user.email : null,
+        memberSince: user.createdAt,
       },
       stats,
+      bestPartner: partners.bestPartner,
+      partners: partners.partners,
+      partnerCount: partners.partnerCount,
       recentMatches,
       recentGroups,
     };
