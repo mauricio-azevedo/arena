@@ -7,6 +7,8 @@ import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/in
 import { Body, Label, Meta, Stat, Title } from '@/components/ui/text';
 import { StandingCard } from '@/features/groups/components/standing-card';
 import { GroupMembersDrawer } from '@/features/groups/components/group-members-drawer';
+import { cn } from '@/lib/utils';
+import { TOUCH_TARGET_48 } from '@/lib/touch-target';
 
 export type GroupSummaryCardProps = {
   group: Group;
@@ -176,7 +178,10 @@ function GroupIdentityHeader({
         <button
           type="button"
           onClick={() => setMembersOpen(true)}
-          className="flex items-center gap-1 transition-opacity active:opacity-60"
+          className={cn(
+            'flex items-center gap-1 transition-opacity active:opacity-60',
+            TOUCH_TARGET_48,
+          )}
         >
           <span className="text-foreground">{memberCount}</span>
           {memberCount === 1 ? 'membro' : 'membros'}
