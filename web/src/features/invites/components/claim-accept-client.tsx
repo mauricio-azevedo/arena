@@ -1,135 +1,161 @@
 'use client';
 
-import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import type { GroupInvite } from '@/types/api';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { Loader2 } from 'lucide-react';
+import type { ClaimMembership, GroupInvite, SharedMatch, ClaimAdmin } from '@/types/api';
+import { Body } from '@/components/ui/text';
+import { acceptClaim } from '@/features/invites/api/invites.api';
 import { getMyGroups } from '@/features/groups/api/groups.api';
-import { acceptInvite } from '@/features/invites/api/invites.api';
+import { getProfileSummary } from '@/features/profile/api/profile.api';
+import { buildAuthHref } from '@/features/auth/helpers/auth-redirect.helper';
 import { getAccessToken } from '@/lib/auth';
+import { ClaimLanding, type ClaimMode } from './claim/claim-landing';
+import { ClaimSuccess } from './claim/claim-success';
+import { ClaimConflict } from './claim/claim-conflict';
 
 type Props = {
   invite: GroupInvite;
 };
 
-// Claim flow: the person takes over a stub player and turns it into their account.
-// Case B (already a member) merges the stub into their existing membership — the
-// backend blocks only if the two ever shared a match, surfaced as an error here.
+type Blocked = { stubName: string; sharedMatches: SharedMatch[]; admins: ClaimAdmin[] };
+
+// The claim flow (`/claim/<token>`): take over a stub player (jogador sem conta) and
+// turn its history into your account. Three landings (logged out / in-out / in-group
+// merge) and two outcomes (claimed / blocked because the two shared a match).
 export function ClaimAcceptClient({ invite }: Props) {
   const router = useRouter();
 
-  const [authToken, setAuthToken] = useState<string | null>(null);
-  const [isChecking, setIsChecking] = useState(true);
-  const [alreadyMember, setAlreadyMember] = useState(false);
-  const [isAccepting, setIsAccepting] = useState(false);
+  const [checking, setChecking] = useState(true);
+  const [mode, setMode] = useState<ClaimMode>('logged-out');
+  const [meName, setMeName] = useState<string | null>(null);
+  const [pending, setPending] = useState(false);
   const [error, setError] = useState('');
+  const [claimed, setClaimed] = useState<ClaimMembership | null>(null);
+  const [blocked, setBlocked] = useState<Blocked | null>(null);
 
   useEffect(() => {
-    const token = getAccessToken();
-    setAuthToken(token);
+    let isCurrent = true;
 
-    if (!token) {
-      setIsChecking(false);
-      return;
-    }
+    async function resolveViewer() {
+      const token = getAccessToken();
 
-    async function checkMembership(token: string) {
+      if (!token) {
+        if (isCurrent) {
+          setMode('logged-out');
+          setChecking(false);
+        }
+        return;
+      }
+
       try {
-        const memberships = await getMyGroups(token);
-        setAlreadyMember(
-          memberships.some((item) => item.groupId === invite.groupId),
-        );
+        const [memberships, profile] = await Promise.all([
+          getMyGroups(token),
+          getProfileSummary(token),
+        ]);
+        if (!isCurrent) return;
+
+        const isMember = memberships.some((item) => item.groupId === invite.groupId);
+        setMode(isMember ? 'merge' : 'claim');
+        setMeName(`${profile.user.firstName} ${profile.user.lastName}`.trim());
       } catch {
-        setAlreadyMember(false);
+        // A failed lookup still lets them claim — treat as a non-member account.
+        if (isCurrent) {
+          setMode('claim');
+        }
       } finally {
-        setIsChecking(false);
+        if (isCurrent) {
+          setChecking(false);
+        }
       }
     }
 
-    checkMembership(token);
+    resolveViewer();
+
+    return () => {
+      isCurrent = false;
+    };
   }, [invite.groupId]);
 
-  async function handleAccept() {
-    if (!authToken) return;
+  async function handleAssume() {
+    const token = getAccessToken();
+    if (!token) return;
 
     setError('');
-    setIsAccepting(true);
+    setPending(true);
 
     try {
-      const result = await acceptInvite(authToken, invite.token);
-      router.push(`/groups/${result.groupId}`);
-      router.refresh();
+      const result = await acceptClaim(token, invite.token);
+
+      if (result.outcome === 'CLAIMED') {
+        setClaimed(result.membership);
+      } else {
+        setBlocked({
+          stubName: result.stubName,
+          sharedMatches: result.sharedMatches,
+          admins: result.admins,
+        });
+      }
     } catch (caught) {
       setError(
         caught instanceof Error
           ? caught.message
           : 'Não foi possível assumir o perfil. Tente novamente.',
       );
-      setIsAccepting(false);
+      setPending(false);
     }
   }
 
-  const group = invite.group;
-  const name = invite.targetDisplayName ?? 'este jogador';
-  const claimHref = `/claim/${invite.token}`;
-  // Already a member → the stub is merged into your account; otherwise it's a
-  // clean take-over.
-  const acceptLabel = alreadyMember
-    ? { idle: 'Juntar com minha conta', busy: 'Juntando…' }
-    : { idle: 'Assumir este perfil', busy: 'Assumindo…' };
+  const stub = invite.stub;
+  const groupName = invite.group?.name ?? 'o grupo';
+
+  // The claim page is only reached for CLAIM invites, which always carry a stub.
+  if (!stub) {
+    return (
+      <Body className="py-10 text-center text-muted-foreground">
+        Este convite não está mais disponível.
+      </Body>
+    );
+  }
+
+  if (claimed) {
+    return <ClaimSuccess stub={stub} membership={claimed} groupName={groupName} />;
+  }
+
+  if (blocked) {
+    return (
+      <ClaimConflict
+        groupId={invite.groupId}
+        groupName={groupName}
+        stubName={blocked.stubName}
+        sharedMatches={blocked.sharedMatches}
+        admins={blocked.admins}
+      />
+    );
+  }
+
+  if (checking) {
+    return (
+      <div className="flex min-h-[60vh] items-center justify-center text-faint-foreground">
+        <Loader2 className="size-6 animate-spin" aria-hidden />
+      </div>
+    );
+  }
+
+  const claimPath = `/claim/${invite.token}`;
 
   return (
-    <div className="space-y-4">
-      <Card>
-        <CardContent className="space-y-4 p-4">
-          <div className="space-y-1">
-            <p className="text-sm text-muted-foreground">Assuma o perfil de</p>
-            <h1 className="text-2xl font-semibold tracking-tight">{name}</h1>
-            <p className="text-sm leading-6 text-muted-foreground">
-              em {group?.name ?? 'um grupo'}. Você fica com todo o histórico de
-              partidas e o rating deste jogador.
-            </p>
-          </div>
-
-          {!authToken ? (
-            <div className="space-y-3">
-              <p className="text-sm leading-6 text-muted-foreground">
-                Entre na sua conta ou crie uma para assumir este perfil.
-              </p>
-              <div className="grid grid-cols-2 gap-2">
-                <Button asChild>
-                  <Link href={`/login?redirect=${encodeURIComponent(claimHref)}`}>Entrar</Link>
-                </Button>
-                <Button asChild variant="outline">
-                  <Link href={`/register?redirect=${encodeURIComponent(claimHref)}`}>
-                    Criar conta
-                  </Link>
-                </Button>
-              </div>
-            </div>
-          ) : isChecking ? (
-            <Button disabled className="w-full">
-              Verificando…
-            </Button>
-          ) : (
-            <div className="space-y-3">
-              {alreadyMember && (
-                <p className="text-sm leading-6 text-muted-foreground">
-                  Você já joga neste grupo. Ao continuar, o histórico de {name} é
-                  juntado na sua conta.
-                </p>
-              )}
-              <Button onClick={handleAccept} disabled={isAccepting} className="w-full">
-                {isAccepting ? acceptLabel.busy : acceptLabel.idle}
-              </Button>
-            </div>
-          )}
-
-          {error && <p className="text-sm text-destructive">{error}</p>}
-        </CardContent>
-      </Card>
-    </div>
+    <ClaimLanding
+      groupName={groupName}
+      stub={stub}
+      mode={mode}
+      meName={meName}
+      pending={pending}
+      error={error}
+      loginHref={buildAuthHref('/login', claimPath)}
+      registerHref={buildAuthHref('/register', claimPath)}
+      onAssume={handleAssume}
+      onReject={() => router.push('/')}
+    />
   );
 }

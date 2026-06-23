@@ -1,5 +1,5 @@
 import { apiRequest } from '@/lib/api-client';
-import type { Group, GroupInvite, User } from '@/types/api';
+import type { AcceptClaimResult, Group, GroupInvite, User } from '@/types/api';
 
 export function createGroupInvite(token: string, groupId: string): Promise<GroupInvite> {
   return apiRequest<GroupInvite>(`/groups/${groupId}/invites`, {
@@ -30,6 +30,18 @@ export function acceptInvite(
   user: User;
 }> {
   return apiRequest(`/invites/${inviteToken}/accept`, {
+    method: 'POST',
+    token: authToken,
+  });
+}
+
+// Same endpoint as acceptInvite, but typed for CLAIM invites: the stub is either
+// claimed/merged (CLAIMED) or refused because the two shared a match (BLOCKED).
+export function acceptClaim(
+  authToken: string,
+  inviteToken: string,
+): Promise<AcceptClaimResult> {
+  return apiRequest<AcceptClaimResult>(`/invites/${inviteToken}/accept`, {
     method: 'POST',
     token: authToken,
   });

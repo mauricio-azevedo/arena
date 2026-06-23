@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
+import type { GroupInvite } from '@/types/api';
 import { AppShell } from '@/components/app-shell';
-import { PageIntro } from '@/components/page-intro';
 import { ClaimAcceptClient } from '@/features/invites/components/claim-accept-client';
 import { getInvite } from '@/features/invites/api/invites.api';
 
@@ -10,21 +10,21 @@ type Props = {
   }>;
 };
 
+// A claim link is opened cold from outside the app, so this is a focused conversion
+// screen: no app chrome (top bar / dock), the page carries its own group context.
 export default async function ClaimPage({ params }: Props) {
   const { token } = await params;
 
+  let invite: GroupInvite;
   try {
-    const invite = await getInvite(token);
-
-    return (
-      <AppShell chrome={{ title: 'Assumir perfil', back: { fallbackHref: '/' } }}>
-        <div className="space-y-6">
-          <PageIntro description="Assuma o perfil deste jogador e mantenha todo o histórico." />
-          <ClaimAcceptClient invite={invite} />
-        </div>
-      </AppShell>
-    );
+    invite = await getInvite(token);
   } catch {
     notFound();
   }
+
+  return (
+    <AppShell chrome={{ topBar: false, bottomNav: false }}>
+      <ClaimAcceptClient invite={invite} />
+    </AppShell>
+  );
 }

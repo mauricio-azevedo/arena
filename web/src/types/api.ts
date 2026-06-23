@@ -89,7 +89,75 @@ export type GroupInvite = {
   targetGroupMemberId?: string | null;
   kind?: 'JOIN' | 'CLAIM';
   targetDisplayName?: string | null;
+  // The stub's history shown on the claim page (CLAIM invites only).
+  stub?: ClaimStubSummary | null;
 };
+
+// One of the stub's recent matches, from the stub's own perspective.
+export type ClaimRecentMatch = {
+  id: string;
+  result: 'WIN' | 'LOSS';
+  partners: string[];
+  opponents: string[];
+  scoreFor: number;
+  scoreAgainst: number;
+  playedAt: string;
+};
+
+export type ClaimStubSummary = {
+  groupMemberId: string;
+  displayName: string;
+  rank: number | null;
+  rating: number;
+  matchesCount: number;
+  recentMatches: ClaimRecentMatch[];
+};
+
+// Result of accepting a CLAIM invite. The shared-match case is a real outcome the
+// claim page renders (the two proved to be different people), not an error.
+export type SharedMatchPlayer = {
+  name: string;
+  isStub: boolean;
+  isYou: boolean;
+};
+
+export type SharedMatchTeam = {
+  team: 'TEAM_A' | 'TEAM_B';
+  score: number;
+  won: boolean;
+  players: SharedMatchPlayer[];
+};
+
+export type SharedMatch = {
+  id: string;
+  playedAt: string;
+  teams: SharedMatchTeam[];
+};
+
+export type ClaimAdmin = {
+  groupMemberId: string;
+  name: string;
+};
+
+export type ClaimMembership = {
+  id: string;
+  groupId: string;
+  userId: string | null;
+  displayName: string | null;
+  rating: number;
+  role: 'ADMIN' | 'MEMBER';
+  group: Group;
+  user: User;
+};
+
+export type AcceptClaimResult =
+  | { outcome: 'CLAIMED'; membership: ClaimMembership }
+  | {
+      outcome: 'BLOCKED';
+      stubName: string;
+      sharedMatches: SharedMatch[];
+      admins: ClaimAdmin[];
+    };
 
 export type AuthResponse = {
   user: User;

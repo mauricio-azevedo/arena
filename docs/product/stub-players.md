@@ -84,7 +84,10 @@ history — same matches, same rating, same ranking position.
   - **The one block:** merging is refused if the stub and that membership ever shared
     a match in the group (as partners *or* opponents). Re-pointing would put the same
     person twice in one match — impossible (`@@unique([matchId, groupMemberId])`).
-    The accept fails with a clear message and nothing changes.
+    The claim returns a *blocked* outcome that the claim page renders in full (it shows
+    the shared matches and admin contacts) and nothing changes. The full claim
+    experience — link vs. request/approval, the claim page, both outcomes — lives in
+    [profile-claim.md](./profile-claim.md).
   - **What's preserved / what isn't:** all match history, ratings and ranking are
     recomputed from the combined set. Match *highlight* feed cards created before the
     merge keep the name as it was recorded (e.g. the old stub name) — they aren't

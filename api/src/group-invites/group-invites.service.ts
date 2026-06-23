@@ -1,18 +1,23 @@
 import {
   BadRequestException,
-  ConflictException,
   ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
 import { randomBytes } from 'crypto';
 import type { Prisma } from '../generated/prisma/client';
-import { GroupMemberRole } from '../generated/prisma/enums';
+import { GroupMemberRole, MatchTeam } from '../generated/prisma/enums';
 import { resolveMemberDisplayName } from '../common/member-display-name';
 import { PrismaService } from '../prisma/prisma.service';
 import { FeedOrchestratorService } from '../feed/feed-orchestrator.service';
 import { GroupHomeSummaryService } from '../groups/group-home-summary.service';
 import { ProcessingJobWriterService } from '../processing/processing-job-writer.service';
+import type { ClaimStubSummary } from './types/claim-summary.type';
+import type {
+  ClaimAdmin,
+  SharedMatch,
+  SharedMatchTeam,
+} from './types/accept-claim-result.type';
 
 @Injectable()
 export class GroupInvitesService {
@@ -177,6 +182,8 @@ export class GroupInvitesService {
             id: true,
             userId: true,
             displayName: true,
+            rating: true,
+            currentRank: true,
             user: { select: { firstName: true, lastName: true } },
           },
         },
@@ -209,6 +216,76 @@ export class GroupInvitesService {
       targetDisplayName: invite.targetGroupMember
         ? resolveMemberDisplayName(invite.targetGroupMember)
         : null,
+      stub: invite.targetGroupMember
+        ? await this.getStubClaimSummary(invite.targetGroupMember)
+        : null,
+    };
+  }
+
+  // The stub's recognizable history for the claim page: where it sits, its rating, and
+  // its last few matches with partner/opponents resolved from the stub's own side.
+  private async getStubClaimSummary(stub: {
+    id: string;
+    displayName: string | null;
+    rating: number;
+    currentRank: number | null;
+    user: { firstName: string; lastName: string } | null;
+  }): Promise<ClaimStubSummary> {
+    const [matchesCount, recent] = await Promise.all([
+      this.prisma.matchPlayer.count({
+        where: { groupMemberId: stub.id, match: { deletedAt: null } },
+      }),
+      this.prisma.matchPlayer.findMany({
+        where: { groupMemberId: stub.id, match: { deletedAt: null } },
+        orderBy: [{ playedAt: 'desc' }, { createdAt: 'desc' }],
+        take: 3,
+        include: {
+          match: {
+            include: {
+              players: {
+                orderBy: [{ team: 'asc' }, { position: 'asc' }],
+                include: {
+                  groupMember: {
+                    select: {
+                      displayName: true,
+                      user: { select: { firstName: true, lastName: true } },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      }),
+    ]);
+
+    const recentMatches = recent.map((matchPlayer) => {
+      const match = matchPlayer.match;
+      const isTeamA = matchPlayer.team === MatchTeam.TEAM_A;
+      return {
+        id: match.id,
+        result: (match.winnerTeam === matchPlayer.team ? 'WIN' : 'LOSS') as
+          | 'WIN'
+          | 'LOSS',
+        partners: match.players
+          .filter((p) => p.team === matchPlayer.team && p.id !== matchPlayer.id)
+          .map((p) => resolveMemberDisplayName(p.groupMember)),
+        opponents: match.players
+          .filter((p) => p.team !== matchPlayer.team)
+          .map((p) => resolveMemberDisplayName(p.groupMember)),
+        scoreFor: isTeamA ? match.gamesA : match.gamesB,
+        scoreAgainst: isTeamA ? match.gamesB : match.gamesA,
+        playedAt: match.playedAt,
+      };
+    });
+
+    return {
+      groupMemberId: stub.id,
+      displayName: resolveMemberDisplayName(stub),
+      rank: stub.currentRank,
+      rating: stub.rating,
+      matchesCount,
+      recentMatches,
     };
   }
 
@@ -351,7 +428,7 @@ export class GroupInvitesService {
           tx,
           groupId,
           invite.id,
-          stub.id,
+          stub,
           existingMembership,
           user.id,
         );
@@ -386,7 +463,10 @@ export class GroupInvitesService {
 
       await this.groupHomeSummary.syncGroupSummary(groupId, tx);
 
-      return this.findMembershipResponse(tx, stub.id);
+      return {
+        outcome: 'CLAIMED' as const,
+        membership: await this.findMembershipResponse(tx, stub.id),
+      };
     });
   }
 
@@ -398,14 +478,33 @@ export class GroupInvitesService {
     tx: Prisma.TransactionClient,
     groupId: string,
     inviteId: string,
-    stubId: string,
+    stub: {
+      id: string;
+      displayName: string | null;
+      user?: { firstName: string; lastName: string } | null;
+    },
     membership: { id: string; leftAt: Date | null },
     userId: string,
   ) {
-    if (await this.hasSharedMatch(tx, groupId, stubId, membership.id)) {
-      throw new ConflictException(
-        'Você e este perfil já estiveram na mesma partida no grupo, então não dá para juntá-los.',
-      );
+    const stubId = stub.id;
+
+    // A shared match means the two are provably different people — merging would put
+    // one person twice in the same match (breaks @@unique([matchId, groupMemberId])).
+    // This isn't an error: the claim page renders it, so return it as a real outcome.
+    const sharedMatches = await this.findSharedMatches(
+      tx,
+      groupId,
+      stubId,
+      membership.id,
+    );
+
+    if (sharedMatches.length > 0) {
+      return {
+        outcome: 'BLOCKED' as const,
+        stubName: resolveMemberDisplayName(stub),
+        sharedMatches,
+        admins: await this.listGroupAdmins(tx, groupId),
+      };
     }
 
     // Move the stub's match history onto the existing membership. This MUST happen
@@ -460,27 +559,83 @@ export class GroupInvitesService {
       tx,
     );
 
-    return this.findMembershipResponse(tx, membership.id);
+    return {
+      outcome: 'CLAIMED' as const,
+      membership: await this.findMembershipResponse(tx, membership.id),
+    };
   }
 
-  // True when both members appear in the same non-deleted match in this group
-  // (as partners or opponents).
-  private async hasSharedMatch(
+  // The non-deleted matches in this group where both members played (as partners or
+  // opponents), with each team's players, score and winner — for the conflict screen.
+  private async findSharedMatches(
     tx: Prisma.TransactionClient,
     groupId: string,
-    aId: string,
-    bId: string,
-  ): Promise<boolean> {
-    const shared = await tx.matchPlayer.findFirst({
+    stubId: string,
+    membershipId: string,
+  ): Promise<SharedMatch[]> {
+    const matches = await tx.match.findMany({
       where: {
         groupId,
-        groupMemberId: bId,
-        match: { deletedAt: null, players: { some: { groupMemberId: aId } } },
+        deletedAt: null,
+        players: { some: { groupMemberId: stubId } },
+        AND: [{ players: { some: { groupMemberId: membershipId } } }],
       },
-      select: { id: true },
+      orderBy: [{ playedAt: 'desc' }, { createdAt: 'desc' }],
+      include: {
+        players: {
+          orderBy: [{ team: 'asc' }, { position: 'asc' }],
+          include: {
+            groupMember: {
+              select: {
+                displayName: true,
+                user: { select: { firstName: true, lastName: true } },
+              },
+            },
+          },
+        },
+      },
     });
 
-    return shared !== null;
+    return matches.map((match) => {
+      const buildTeam = (team: MatchTeam): SharedMatchTeam => ({
+        team,
+        score: team === MatchTeam.TEAM_A ? match.gamesA : match.gamesB,
+        won: match.winnerTeam === team,
+        players: match.players
+          .filter((player) => player.team === team)
+          .map((player) => ({
+            name: resolveMemberDisplayName(player.groupMember),
+            isStub: player.groupMemberId === stubId,
+            isYou: player.groupMemberId === membershipId,
+          })),
+      });
+
+      return {
+        id: match.id,
+        playedAt: match.playedAt,
+        teams: [buildTeam(MatchTeam.TEAM_A), buildTeam(MatchTeam.TEAM_B)],
+      };
+    });
+  }
+
+  // The group's admins, for the "fale com um admin" contact chips on the conflict screen.
+  private async listGroupAdmins(
+    tx: Prisma.TransactionClient,
+    groupId: string,
+  ): Promise<ClaimAdmin[]> {
+    const admins = await tx.groupMember.findMany({
+      where: { groupId, role: GroupMemberRole.ADMIN, leftAt: null },
+      select: {
+        id: true,
+        displayName: true,
+        user: { select: { firstName: true, lastName: true } },
+      },
+    });
+
+    return admins.map((admin) => ({
+      groupMemberId: admin.id,
+      name: resolveMemberDisplayName(admin),
+    }));
   }
 
   async acceptByToken(token: string, body: { userId: string }) {
