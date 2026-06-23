@@ -3,9 +3,9 @@ import type { GroupMember, RankingMovement } from '@/types/api';
 import { Card, CardContent } from '@/components/ui/card';
 import { Body, Heading, Label, Meta, Overline, Stat } from '@/components/ui/text';
 import { MemberName } from '@/features/members/components/member-name';
-import { avatarBgClass, nameInitial } from '@/lib/avatar';
 import { resolveMemberName } from '@/lib/member-name';
 import { cn } from '@/lib/utils';
+import { MemberAvatar } from '@/components/ui/member-avatar';
 
 type Props = {
   ranking: GroupMember[];
@@ -80,16 +80,12 @@ function RankingRow({
         {rank}
       </Stat>
 
-      <Meta
-        className={cn(
-          'flex size-[38px] shrink-0 items-center justify-center rounded-full shadow-[inset_0_0_0_1px_var(--border)]',
-          avatarBgClass(member.id),
-          isCurrent ? 'text-brand' : 'text-muted-foreground',
-        )}
-        aria-hidden
-      >
-        {nameInitial(fullName)}
-      </Meta>
+      <MemberAvatar
+        userId={member.userId}
+        name={fullName}
+        seed={member.id}
+        className={cn('size-[38px] text-meta', isCurrent ? 'text-brand' : 'text-muted-foreground')}
+      />
 
       <div className="flex min-w-0 flex-1 flex-col gap-0.5">
         <div className="flex min-w-0 items-end gap-2">

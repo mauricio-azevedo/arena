@@ -93,12 +93,9 @@ matches stay explainable after later ratings change:
 
 ### GroupInvite
 
-Tokenized join link. `token` (unique), optional `expiresAt`/`revokedAt`,
-`uses`/`maxUses`. Public acceptance flow via `/invites/:token`. When
-`targetGroupMemberId` is set, the invite is a **CLAIM** for that stub player
-(jogador sem conta): accepting attaches the accepter's account to that membership
-(single-use, `maxUses = 1`) instead of creating a new one — see
-`docs/product/stub-players.md`.
+Tokenized **JOIN** link. `token` (unique), optional `expiresAt`/`revokedAt`,
+`uses`/`maxUses`. Public acceptance flow via `/invites/:token`. Claiming a stub is a
+separate flow (email-anchored, on `GroupMember.claimEmail*` — see below), not an invite.
 
 ### FeedItem
 
@@ -121,18 +118,40 @@ The job-queue table that drives the async pipeline. `type`
 `lockedAt`, `lockedBy`, `lastError`, `processedAt`). See
 [`processing-jobs.md`](./processing-jobs.md).
 
+### Notification
+
+Per-user in-app notification — the opposite of `FeedItem` (which is group-public
+with no recipient). `type` (`CLAIM_OFFER` to the offer recipient, `CLAIM_OFFER_DECLINED`
+to admins; the old `CLAIM_REQUEST/APPROVED/DECLINED/INVITE` are deprecated and no longer
+written), `recipientUser` (cascade), optional `group`/`actorUserId`, a denormalized `data`
+(JSON: title/body/meta/actions, frozen at write so old messages never re-render), and read
+state (`readAt`, `actedAt`). Not derived — written directly when the triggering event
+happens. Powers the email-anchored claim flow
+([`../product/profile-claim.md`](../product/profile-claim.md)).
+
+### Email-anchored claim (on GroupMember, no own table)
+
+Claiming a stub has no dedicated table — its state lives in three `GroupMember` columns on
+stubs (`userId = null`): `claimEmail` (the email an admin anchored), `claimEmailStatus`
+(`PENDING`/`DECLINED`), and `claimEmailNotifiedAt` (notify-once dedupe). `@@unique([groupId,
+claimEmail])` keeps one anchored email per stub; `@@index([claimEmail])` powers the
+registration hook that offers waiting stubs to a new account. The email value is the offer's
+nonce — editing it invalidates outstanding confirms (the confirm authorizes by
+`user.email == stub.claimEmail`). The claim/merge core is `ClaimService.performClaim`. See
+[`../product/profile-claim.md`](../product/profile-claim.md).
+
 ---
 
 ## 3. Derived read models (rebuilt by projections)
 
-| Model | Grain | Rebuilt by | Holds |
-| ----- | ----- | ---------- | ----- |
-| `MatchRankingSnapshot` | 1 per match | rating projection | `previousLeaders`, `currentLeaders`, `dethronedLeaders`, `movements` (JSON), `algorithmVersion` |
-| `RankingMovement` | 1 per (match, member) | ranking-movement service | `direction`, `positions`, prev/current rank+rating, `passedGroupMemberIds`, `isVisible`, `occurredAt`, `invalidatedAt` |
-| `GroupMemberStats` | 1 per member | stats projection | `matchesCount`, `winsCount` |
-| `GroupRankingProjection` | 1 per group | projection status tracker | `status`, `version`, `lastProcessedMatchId/At`, `lastError` |
-| `GroupHomeSummary` | 1 per group | home-summary service | `membersCount`, `leaders` (JSON), `lastRelevantFeedItem`, `projectionStatus` |
-| `GroupHighlight` | 1 per (member, type) | weekly-highlights projection | `type` (six achievements), `value`, `score`, `anchorAt` (7-day window key), `algorithmVersion` — powers the home "Essa semana" rail |
+| Model                    | Grain                 | Rebuilt by                   | Holds                                                                                                                               |
+| ------------------------ | --------------------- | ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| `MatchRankingSnapshot`   | 1 per match           | rating projection            | `previousLeaders`, `currentLeaders`, `dethronedLeaders`, `movements` (JSON), `algorithmVersion`                                     |
+| `RankingMovement`        | 1 per (match, member) | ranking-movement service     | `direction`, `positions`, prev/current rank+rating, `passedGroupMemberIds`, `isVisible`, `occurredAt`, `invalidatedAt`              |
+| `GroupMemberStats`       | 1 per member          | stats projection             | `matchesCount`, `winsCount`                                                                                                         |
+| `GroupRankingProjection` | 1 per group           | projection status tracker    | `status`, `version`, `lastProcessedMatchId/At`, `lastError`                                                                         |
+| `GroupHomeSummary`       | 1 per group           | home-summary service         | `membersCount`, `leaders` (JSON), `lastRelevantFeedItem`, `projectionStatus`                                                        |
+| `GroupHighlight`         | 1 per (member, type)  | weekly-highlights projection | `type` (six achievements), `value`, `score`, `anchorAt` (7-day window key), `algorithmVersion` — powers the home "Essa semana" rail |
 
 These are caches for fast reads and stored historical truth. If they look wrong,
 the fix is usually to re-run the relevant projection (enqueue a
@@ -170,4 +189,4 @@ rows.
 - **Algorithm versioning**: rating-bearing rows carry `ratingAlgorithm` /
   `algorithmVersion` (`BEACH_ELO_V1`) so future migrations can identify the
   producer.
-</content>
+  </content>

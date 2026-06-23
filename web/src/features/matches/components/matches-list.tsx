@@ -29,6 +29,7 @@ import { deleteGroupMatch } from '@/features/matches/api/matches.api';
 import { useMatchDrawer } from '@/features/matches/match-drawer/match-drawer-context';
 import { getMatchNarrativeTitle } from '@/features/matches/lib/match-narrative-title';
 import { MemberName } from '@/features/members/components/member-name';
+import { MemberAvatar } from '@/components/ui/member-avatar';
 import { getAccessToken } from '@/lib/auth';
 
 type MatchesListProps = {
@@ -155,9 +156,7 @@ export function MatchCard({
               )}
             />
             <Meta className="truncate text-foreground">{narrativeTitle ?? 'Partida'}</Meta>
-            {swing !== null && (
-              <Meta className="shrink-0 text-muted-foreground">±{swing}</Meta>
-            )}
+            {swing !== null && <Meta className="shrink-0 text-muted-foreground">±{swing}</Meta>}
 
             {showActions && (
               <DropdownMenu>
@@ -284,9 +283,7 @@ function PlayerName({ player, isWinner }: { player: MatchPlayer; isWinner: boole
   return (
     <span className="flex items-baseline gap-1.5">
       <Label className={isWinner ? 'text-foreground' : 'text-muted-foreground'}>
-        <MemberName memberId={player.groupMemberId}>
-          {getPlayerFirstName(player)}
-        </MemberName>
+        <MemberName memberId={player.groupMemberId}>{getPlayerFirstName(player)}</MemberName>
       </Label>
       {player.rankAfter !== null && (
         <Meta className="text-faint-foreground">#{player.rankAfter}</Meta>
@@ -316,10 +313,12 @@ function AvatarPair({ players, isWinner }: { players: MatchPlayer[]; isWinner: b
   return (
     <div className="flex shrink-0">
       {players.slice(0, 2).map((player, index) => (
-        <Meta
+        <MemberAvatar
           key={player.id}
-          className={cn(
-            'flex size-[34px] items-center justify-center rounded-full shadow-[inset_0_0_0_1px_var(--border)]',
+          userId={player.groupMember?.userId ?? null}
+          name={getPlayerFirstName(player)}
+          className={cn('size-[34px] text-meta', index > 0 && '-ml-3')}
+          realClassName={cn(
             isWinner ? 'text-brand-muted' : 'text-muted-foreground',
             isWinner
               ? index === 0
@@ -328,11 +327,8 @@ function AvatarPair({ players, isWinner }: { players: MatchPlayer[]; isWinner: b
               : index === 0
                 ? 'bg-avatar-3'
                 : 'bg-avatar-4',
-            index > 0 && '-ml-3',
           )}
-        >
-          {getPlayerInitial(player)}
-        </Meta>
+        />
       ))}
     </div>
   );
@@ -403,10 +399,6 @@ function getTeamPlayers(match: Match, team: 'TEAM_A' | 'TEAM_B') {
   return match.players
     .filter((player) => player.team === team)
     .sort((a, b) => a.position - b.position);
-}
-
-function getPlayerInitial(player: MatchPlayer) {
-  return (getPlayerFirstName(player).charAt(0) || '?').toUpperCase();
 }
 
 function groupMatchesByDate(matches: Match[]) {

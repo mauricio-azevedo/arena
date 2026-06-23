@@ -11,6 +11,8 @@ import { FeedModule } from './feed/feed.module';
 import { UsersModule } from './users/users.module';
 import { ProcessingModule } from './processing/processing.module';
 import { HomeHighlightsModule } from './home-highlights/home-highlights.module';
+import { NotificationsModule } from './notifications/notifications.module';
+import { ClaimOffersModule } from './claim-offers/claim-offers.module';
 
 @Module({
   imports: [
@@ -26,6 +28,8 @@ import { HomeHighlightsModule } from './home-highlights/home-highlights.module';
     UsersModule,
     ProcessingModule,
     HomeHighlightsModule,
+    NotificationsModule,
+    ClaimOffersModule,
   ],
 })
 export class AppModule {}

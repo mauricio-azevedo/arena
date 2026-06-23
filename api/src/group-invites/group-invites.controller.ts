@@ -25,20 +25,6 @@ export class GroupInvitesController {
     });
   }
 
-  @Post('claim')
-  @UseGuards(JwtAuthGuard)
-  createClaim(
-    @Param('groupId') groupId: string,
-    @CurrentUser() user: AuthUser,
-    @Body() body: { memberId: string },
-  ) {
-    return this.groupInvitesService.createClaimLink(
-      groupId,
-      body.memberId,
-      user.sub,
-    );
-  }
-
   @Get(':token')
   findByToken(@Param('token') token: string) {
     return this.groupInvitesService.findByToken(token);

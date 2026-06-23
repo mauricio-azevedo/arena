@@ -2,7 +2,8 @@ import { Check, Minus, Plus, X } from 'lucide-react';
 import { Label, Meta, Overline, Stat } from '@/components/ui/text';
 import { cn } from '@/lib/utils';
 import { TOUCH_TARGET_48 } from '@/lib/touch-target';
-import { avatarBgClass, type ResolvedPlayer } from './match-player.helpers';
+import { MemberAvatar } from '@/components/ui/member-avatar';
+import { type ResolvedPlayer } from './match-player.helpers';
 import type { SlotKey, Slots } from './use-match-form';
 
 type TeamCardProps = {
@@ -101,16 +102,12 @@ export function TeamCard({
                 showDivider && 'border-t border-divider',
               )}
             >
-              <Meta
-                className={cn(
-                  'flex size-10 shrink-0 items-center justify-center rounded-full shadow-[inset_0_0_0_1px_var(--border)]',
-                  avatarBgClass(player.avatarSeed),
-                  isYou ? 'text-brand' : 'text-muted-foreground',
-                )}
-                aria-hidden
-              >
-                {player.initial}
-              </Meta>
+              <MemberAvatar
+                userId={player.userId}
+                name={player.fullName}
+                seed={player.avatarSeed}
+                className={cn('size-10 text-meta', isYou ? 'text-brand' : 'text-muted-foreground')}
+              />
 
               <div className="flex min-w-0 flex-1 items-baseline gap-1.5">
                 <Label className="truncate text-foreground">{player.fullName}</Label>

@@ -74,6 +74,27 @@ export function getRoutePolicy(pathname: string): RoutePolicy {
     };
   }
 
+  if (normalizedPathname === '/notifications') {
+    return {
+      access: {
+        kind: 'auth',
+        requiresCheck: true,
+      },
+      chrome: primaryAppChrome,
+    };
+  }
+
+  // Email-anchored claim confirm screen: auth-gated, no app chrome.
+  if (/^\/claim\/[^/]+$/.test(normalizedPathname)) {
+    return {
+      access: {
+        kind: 'auth',
+        requiresCheck: true,
+      },
+      chrome: { topBar: false, bottomNav: false, trackNavigation: false },
+    };
+  }
+
   const inviteMatch = normalizedPathname.match(/^\/groups\/([^/]+)\/invite$/);
 
   if (inviteMatch?.[1]) {

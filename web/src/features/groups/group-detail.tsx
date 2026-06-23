@@ -113,6 +113,7 @@ export function GroupDetail({ groupId, tab, autoOpenCompose = false }: Props) {
         groupId={data.group.id}
         groupName={data.group.name}
         ranking={data.ranking}
+        viewerRole={data.membership?.role ?? null}
       >
         <div className="space-y-8">
           <div className="space-y-3">

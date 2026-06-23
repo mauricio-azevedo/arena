@@ -3,7 +3,7 @@ import { Check, Loader2, Plus, Search } from 'lucide-react';
 import { Label, Meta, Overline } from '@/components/ui/text';
 import { DrawerBackHeader } from '@/components/ui/drawer';
 import { cn } from '@/lib/utils';
-import { avatarBgClass } from './match-player.helpers';
+import { MemberAvatar } from '@/components/ui/member-avatar';
 
 export type PickerEntry = {
   id: string;
@@ -11,6 +11,8 @@ export type PickerEntry = {
   fullName: string;
   initial: string;
   avatarSeed: string;
+  // null → jogador sem conta (convidado), rendered as a dashed avatar.
+  userId: string | null;
   rank?: number;
   rating: number;
   isYou: boolean;
@@ -113,16 +115,15 @@ export function PickerView({
                     checked && 'bg-brand/15',
                   )}
                 >
-                  <Meta
+                  <MemberAvatar
+                    userId={entry.userId}
+                    name={entry.fullName}
+                    seed={entry.avatarSeed}
                     className={cn(
-                      'flex size-[42px] shrink-0 items-center justify-center rounded-full shadow-[inset_0_0_0_1px_var(--border)]',
-                      avatarBgClass(entry.avatarSeed),
+                      'size-[42px] text-meta',
                       entry.isYou ? 'text-brand' : 'text-muted-foreground',
                     )}
-                    aria-hidden
-                  >
-                    {entry.initial}
-                  </Meta>
+                  />
 
                   <div className="flex min-w-0 flex-1 flex-col gap-0.5">
                     <div className="flex min-w-0 items-end gap-2">

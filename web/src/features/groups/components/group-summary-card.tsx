@@ -2,10 +2,13 @@
 
 import { useState } from 'react';
 import { Search } from 'lucide-react';
-import type { Group, GroupMember, Match, MyGroup } from '@/types/api';
+import type { Group, GroupMember, GroupMemberRole, Match, MyGroup } from '@/types/api';
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
 import { Body, Label, Meta, Stat, Title } from '@/components/ui/text';
 import { StandingCard } from '@/features/groups/components/standing-card';
+import { GroupMembersDrawer } from '@/features/groups/components/group-members-drawer';
+import { cn } from '@/lib/utils';
+import { TOUCH_TARGET_48 } from '@/lib/touch-target';
 
 export type GroupSummaryCardProps = {
   group: Group;
@@ -42,7 +45,14 @@ export function GroupSummaryCard({
 
   return (
     <div className="space-y-5">
-      <GroupIdentityHeader group={group} memberCount={memberCount} matchCount={matchCount} />
+      <GroupIdentityHeader
+        group={group}
+        members={members}
+        ranking={ranking}
+        memberCount={memberCount}
+        matchCount={matchCount}
+        viewerRole={membership?.role ?? null}
+      />
 
       <GroupSearchField />
 
@@ -138,13 +148,21 @@ function clamp01(value: number) {
 
 function GroupIdentityHeader({
   group,
+  members,
+  ranking,
   memberCount,
   matchCount,
+  viewerRole,
 }: {
   group: Group;
+  members: GroupMember[];
+  ranking: GroupMember[];
   memberCount: number;
   matchCount: number;
+  viewerRole: GroupMemberRole | null;
 }) {
+  const [membersOpen, setMembersOpen] = useState(false);
+
   return (
     <div className="flex flex-col items-center text-center">
       <Stat
@@ -157,14 +175,33 @@ function GroupIdentityHeader({
       <Title className="mt-3">{group.name}</Title>
 
       <Meta className="mt-1.5 flex items-center gap-2 text-muted-foreground">
-        <span className="text-foreground">{memberCount}</span>{' '}
-        {memberCount === 1 ? 'membro' : 'membros'}
+        <button
+          type="button"
+          onClick={() => setMembersOpen(true)}
+          className={cn(
+            'flex items-center gap-1 transition-opacity active:opacity-60',
+            TOUCH_TARGET_48,
+          )}
+        >
+          <span className="text-foreground">{memberCount}</span>
+          {memberCount === 1 ? 'membro' : 'membros'}
+        </button>
         <span className="size-[3px] rounded-full bg-faint-foreground" />
         <span className="text-foreground">{matchCount}</span>{' '}
         {matchCount === 1 ? 'partida' : 'partidas'}
       </Meta>
 
       {group.description && <GroupDescription text={group.description} />}
+
+      <GroupMembersDrawer
+        open={membersOpen}
+        onOpenChange={setMembersOpen}
+        groupId={group.id}
+        groupName={group.name}
+        viewerRole={viewerRole}
+        members={members}
+        ranking={ranking}
+      />
     </div>
   );
 }

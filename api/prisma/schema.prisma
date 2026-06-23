@@ -83,6 +83,21 @@ enum FeedItemVisibility {
   PRIVATE
 }
 
+enum NotificationType {
+  CLAIM_REQUEST // deprecated — pre-email-anchored claim flow
+  CLAIM_APPROVED // deprecated
+  CLAIM_DECLINED // deprecated
+  CLAIM_INVITE // deprecated
+  CLAIM_OFFER // admin anchored an email to a stub → offer to that account
+  CLAIM_OFFER_DECLINED // the offered person declined → tell the admin
+}
+
+// State of the email an admin anchored to a stub (jogador sem conta).
+enum ClaimEmailStatus {
+  PENDING
+  DECLINED
+}
+
 model User {
   id           String @id @default(uuid())
   firstName    String
@@ -99,6 +114,7 @@ model User {
   actorFeedItems          FeedItem[]              @relation("FeedItemActorUser")
   subjectFeedItems        FeedItem[]              @relation("FeedItemSubjectUser")
   groupHighlights         GroupHighlight[]
+  notifications           Notification[]          @relation("NotificationRecipient")
 
   @@index([email])
 }
@@ -126,6 +142,7 @@ model Group {
   homeSummary             GroupHomeSummary?
   memberStats             GroupMemberStats[]
   groupHighlights         GroupHighlight[]
+  notifications           Notification[]
 
 
   @@index([visibility, createdAt])
@@ -144,13 +161,6 @@ model GroupInvite {
   createdById String
   createdBy   User   @relation("GroupInviteCreator", fields: [createdById], references: [id])
 
-  // When set, this invite is a CLAIM for a specific stub player (jogador sem conta):
-  // accepting it attaches the accepter's account to that GroupMember instead of
-  // creating a new membership. Single-use (maxUses = 1).
-  targetGroupMemberId String?
-  targetGroupMember   GroupMember? @relation("GroupInviteTarget", fields: [targetGroupMemberId, groupId], references: [id, groupId], onDelete: Cascade)
-  claimedByUserId     String?
-
   expiresAt DateTime?
   revokedAt DateTime?
 
@@ -163,7 +173,6 @@ model GroupInvite {
   @@index([groupId])
   @@index([createdById])
   @@index([token])
-  @@index([targetGroupMemberId])
 }
 
 model GroupMember {
@@ -192,6 +201,13 @@ model GroupMember {
 
   leftAt DateTime?
 
+  // Email-anchored claim (stubs only): an admin attaches an email; when an account with
+  // that email exists/registers, it's offered the stub's history to confirm. The email
+  // value itself is the auth nonce for the confirm — editing it invalidates old offers.
+  claimEmail           String?
+  claimEmailStatus     ClaimEmailStatus?
+  claimEmailNotifiedAt DateTime?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -200,15 +216,16 @@ model GroupMember {
   rankingMovements      RankingMovement[]
   stats                 GroupMemberStats?
   groupHighlights         GroupHighlight[]
-  claimInvites          GroupInvite[]       @relation("GroupInviteTarget")
 
   @@unique([groupId, userId])
   @@unique([id, groupId])
+  @@unique([groupId, claimEmail])
   @@index([groupId])
   @@index([userId])
   @@index([groupId, rating])
   @@index([groupId, currentRank, rating])
   @@index([groupId, role])
+  @@index([claimEmail])
 }
 
 model GroupMemberStats {
@@ -540,4 +557,30 @@ model FeedItem {
   @@index([subjectUserId, occurredAt])
   @@index([actorGroupMemberId, occurredAt])
   @@index([matchId])
+}
+
+// Per-user in-app notification. Unlike FeedItem (group-public activity, no recipient,
+// no read state), this targets one user and tracks read/acted. `data` is a denormalized
+// render payload (names, counts, deep-link refs) so the inbox needs no joins and old
+// notifications keep rendering even after the entities they describe change.
+model Notification {
+  id              String           @id @default(uuid())
+  type            NotificationType
+  recipientUserId String
+  recipientUser   User             @relation("NotificationRecipient", fields: [recipientUserId], references: [id], onDelete: Cascade)
+  groupId         String?
+  group           Group?           @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  actorUserId     String?
+  // The entity this notification is about (e.g. the stub a CLAIM_OFFER points at). A plain
+  // column, no FK — the stub can be deleted by a merge, and we only need it to resolve the
+  // notification (mark acted) when that entity's state changes.
+  targetGroupMemberId String?
+  data            Json             @default("{}")
+  readAt          DateTime?
+  actedAt         DateTime?
+  createdAt       DateTime         @default(now())
+
+  @@index([recipientUserId, createdAt])
+  @@index([recipientUserId, readAt])
+  @@index([targetGroupMemberId])
 }
