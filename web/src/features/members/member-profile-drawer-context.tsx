@@ -21,17 +21,15 @@ export function useMemberProfileDrawer() {
 
 type MemberProfileDrawerProviderProps = {
   groupId: string;
+  groupName: string;
   ranking: GroupMember[];
-  isAdmin: boolean;
-  onChanged: () => void;
   children: ReactNode;
 };
 
 export function MemberProfileDrawerProvider({
   groupId,
+  groupName,
   ranking,
-  isAdmin,
-  onChanged,
   children,
 }: MemberProfileDrawerProviderProps) {
   // A fresh key each open remounts the drawer content so it refetches — even when
@@ -61,11 +59,11 @@ export function MemberProfileDrawerProvider({
       <MemberProfileDrawer
         open={open}
         groupId={groupId}
+        groupName={groupName}
+        totalMembers={ranking.length}
         target={target}
         rank={target ? rankById.get(target.memberId) : undefined}
-        isAdmin={isAdmin}
         onClose={() => setOpen(false)}
-        onChanged={onChanged}
       />
     </MemberProfileDrawerContext.Provider>
   );

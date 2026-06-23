@@ -2,8 +2,11 @@
 
 import * as React from 'react';
 import { Drawer as DrawerPrimitive } from 'vaul';
+import { ChevronLeft } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
+import { TOUCH_TARGET_48 } from '@/lib/touch-target';
+import { Label, Meta } from '@/components/ui/text';
 
 /**
  * Bottom-sheet drawer (vaul). Tuned for the Arena dark surfaces: a dim overlay,
@@ -14,6 +17,14 @@ import { cn } from '@/lib/utils';
 
 function Drawer({ ...props }: React.ComponentProps<typeof DrawerPrimitive.Root>) {
   return <DrawerPrimitive.Root data-slot="drawer" {...props} />;
+}
+
+// Stacks a second sheet on top of an open drawer: vaul scales the parent back and
+// animates this one up/down. Must be rendered inside the parent Drawer's subtree.
+function DrawerNested({
+  ...props
+}: React.ComponentProps<typeof DrawerPrimitive.NestedRoot>) {
+  return <DrawerPrimitive.NestedRoot data-slot="drawer-nested" {...props} />;
 }
 
 function DrawerTrigger({ ...props }: React.ComponentProps<typeof DrawerPrimitive.Trigger>) {
@@ -47,15 +58,21 @@ function DrawerOverlay({
 function DrawerContent({
   className,
   children,
+  size = 'full',
   ...props
-}: React.ComponentProps<typeof DrawerPrimitive.Content>) {
+}: React.ComponentProps<typeof DrawerPrimitive.Content> & {
+  // `full` fills the sheet to the standard peek height; `fit` hugs its content
+  // (capped at the same height) for short sheets like a player peek.
+  size?: 'full' | 'fit';
+}) {
   return (
     <DrawerPortal>
       <DrawerOverlay />
       <DrawerPrimitive.Content
         data-slot="drawer-content"
         className={cn(
-          'fixed inset-x-0 bottom-0 z-[60] flex h-[calc(100%-3.5rem)] flex-col rounded-t-sheet bg-background text-foreground shadow-float outline-none',
+          'fixed inset-x-0 bottom-0 z-[60] flex flex-col rounded-t-sheet bg-background text-foreground shadow-float outline-none',
+          size === 'fit' ? 'h-auto max-h-[calc(100%-3.5rem)]' : 'h-[calc(100%-3.5rem)]',
           className,
         )}
         {...props}
@@ -90,6 +107,45 @@ function DrawerFooter({ className, ...props }: React.ComponentProps<'div'>) {
   );
 }
 
+// Centered drawer header with a "Voltar" back affordance — for nested/stacked
+// sheets that return to the one beneath (player picker, stub claim, …).
+function DrawerBackHeader({
+  onBack,
+  title,
+  subtitle,
+  backLabel = 'Voltar',
+}: {
+  onBack: () => void;
+  title: React.ReactNode;
+  subtitle?: React.ReactNode;
+  backLabel?: string;
+}) {
+  return (
+    <div className="flex h-[52px] shrink-0 items-center justify-between px-3">
+      <button
+        type="button"
+        onClick={onBack}
+        className={cn(
+          'flex min-w-16 items-center gap-0.5 text-brand transition-opacity active:opacity-60',
+          TOUCH_TARGET_48,
+        )}
+      >
+        <ChevronLeft className="size-[22px]" strokeWidth={2.4} aria-hidden />
+        <Label className="text-brand">{backLabel}</Label>
+      </button>
+
+      <div className="min-w-0 flex-1 text-center">
+        <DrawerTitle className="truncate">{title}</DrawerTitle>
+        {subtitle !== undefined && (
+          <Meta className="text-faint-foreground">{subtitle}</Meta>
+        )}
+      </div>
+
+      <div className="w-16" />
+    </div>
+  );
+}
+
 function DrawerTitle({
   className,
   ...props
@@ -118,6 +174,8 @@ function DrawerDescription({
 
 export {
   Drawer,
+  DrawerNested,
+  DrawerBackHeader,
   DrawerClose,
   DrawerContent,
   DrawerDescription,

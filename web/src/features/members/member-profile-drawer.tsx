@@ -1,40 +1,38 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import Link from 'next/link';
-import { Drawer, DrawerContent, DrawerTitle } from '@/components/ui/drawer';
+import { ChevronRight, Info, UserPlus } from 'lucide-react';
+import { Drawer, DrawerNested, DrawerContent, DrawerTitle } from '@/components/ui/drawer';
 import { Label, Meta } from '@/components/ui/text';
 import { avatarBgClass, nameInitial } from '@/lib/avatar';
 import { cn } from '@/lib/utils';
 import { getAccessToken, getCurrentUserIdFromAccessToken } from '@/lib/auth';
-import { ProfileMatchesList } from '@/features/profile/tabs/matches/sections/profile-matches-list';
-import { getMemberProfile, unlinkMember } from './api/members.api';
-import { StubClaimShare } from './components/stub-claim-share';
+import { createMemberClaimLink, getMemberProfile } from './api/members.api';
+import { StubClaimPanel } from './components/stub-claim-panel';
 import type { MemberProfile } from './types/member-profile.type';
 
 type MemberProfileDrawerProps = {
   open: boolean;
   groupId: string;
+  groupName: string;
+  totalMembers: number;
   // `key` bumps on every open so the content remounts and refetches.
   target: { memberId: string; key: number } | null;
   // Position from the live ranking (index-based); falls back to the stored rank.
   rank?: number;
-  isAdmin: boolean;
   onClose: () => void;
-  // Called after an action that changes the roster (e.g. admin unlink) so the
-  // group can refetch.
-  onChanged: () => void;
 };
 
 export function MemberProfileDrawer({
   open,
   groupId,
+  groupName,
+  totalMembers,
   target,
   rank,
-  isAdmin,
   onClose,
-  onChanged,
 }: MemberProfileDrawerProps) {
   return (
     <Drawer
@@ -45,16 +43,15 @@ export function MemberProfileDrawer({
         }
       }}
     >
-      <DrawerContent aria-describedby={undefined}>
+      <DrawerContent aria-describedby={undefined} size="fit">
         {target && (
           <MemberProfileContent
             key={target.key}
             groupId={groupId}
+            groupName={groupName}
+            totalMembers={totalMembers}
             memberId={target.memberId}
             rank={rank}
-            isAdmin={isAdmin}
-            onClose={onClose}
-            onChanged={onChanged}
           />
         )}
       </DrawerContent>
@@ -64,23 +61,30 @@ export function MemberProfileDrawer({
 
 type ContentProps = {
   groupId: string;
+  groupName: string;
+  totalMembers: number;
   memberId: string;
   rank?: number;
-  isAdmin: boolean;
-  onClose: () => void;
-  onChanged: () => void;
 };
 
 function MemberProfileContent({
   groupId,
+  groupName,
+  totalMembers,
   memberId,
   rank,
-  isAdmin,
-  onClose,
-  onChanged,
 }: ContentProps) {
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
   const [profile, setProfile] = useState<MemberProfile | null>(null);
+  // The claim flow opens as a nested drawer that slides up over the peek. The link
+  // is minted on the first open and held here, so reopening reuses the same
+  // single-use invite instead of generating a new one.
+  const [claimOpen, setClaimOpen] = useState(false);
+  const [claimUrl, setClaimUrl] = useState<string | null>(null);
+  const [claimError, setClaimError] = useState<string | null>(null);
+  // Dedupes concurrent mints (double-tap, or reopening while one is in flight) so
+  // we never burn more than one single-use invite per stub.
+  const claimPending = useRef(false);
 
   useEffect(() => {
     // The content remounts per member (keyed), so initial state is already
@@ -116,79 +120,133 @@ function MemberProfileContent({
   if (status !== 'ready' || !profile) {
     return (
       <FallbackShell>
-        <div className="flex items-center gap-3.5">
-          <div className="size-14 shrink-0 animate-pulse rounded-[1.45rem] bg-surface" />
-          <div className="flex-1 space-y-2">
-            <div className="h-5 w-32 animate-pulse rounded-full bg-surface" />
-            <div className="h-3 w-20 animate-pulse rounded-full bg-surface" />
-          </div>
+        <div className="mt-6 flex flex-col items-center gap-3">
+          <div className="size-16 animate-pulse rounded-full bg-surface" />
+          <div className="h-6 w-36 animate-pulse rounded-full bg-surface" />
+          <div className="h-3 w-24 animate-pulse rounded-full bg-surface" />
         </div>
       </FallbackShell>
     );
   }
 
-  const displayRank = rank ?? profile.currentRank ?? undefined;
-  const profileHref = resolveProfileHref(profile.userId);
-  const canUnlink =
-    isAdmin &&
-    profile.userId !== null &&
-    profile.userId !== getCurrentUserIdFromAccessToken();
+  const isStub = profile.userId === null;
+  const currentUserId = getCurrentUserIdFromAccessToken();
+  const isYou = profile.userId !== null && profile.userId === currentUserId;
+  // Rank comes from the live ranking only (active members). A member not in it —
+  // e.g. one who left — has no current standing, so we show no position line rather
+  // than a stale stored rank against the active-member count (e.g. "#5 de 3").
+  const positionLine = buildPositionLine(rank, totalMembers, groupName, isYou);
+  const profileHref = resolveProfileHref(profile.userId, currentUserId);
+
+  // Open the claim sheet and mint the link on first open (reused afterwards). An
+  // earlier error is cleared so reopening retries; an in-flight mint is not repeated.
+  function openClaim() {
+    setClaimOpen(true);
+
+    if (claimUrl || claimPending.current) {
+      return;
+    }
+
+    const token = getAccessToken();
+
+    if (!token) {
+      setClaimError('Entre na sua conta para gerar o convite.');
+      return;
+    }
+
+    claimPending.current = true;
+    setClaimError(null);
+
+    createMemberClaimLink(token, groupId, memberId)
+      .then((invite) => setClaimUrl(`${window.location.origin}${invite.path}`))
+      .catch(() => setClaimError('Não foi possível gerar o convite. Tente novamente.'))
+      .finally(() => {
+        claimPending.current = false;
+      });
+  }
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col">
-      <div className="shrink-0 px-5 pt-3">
-        <div className="flex items-center gap-3.5">
-          <span
-            className={cn(
-              'flex size-14 shrink-0 items-center justify-center rounded-[1.45rem] text-lg font-semibold text-foreground shadow-[inset_0_0_0_1px_var(--border)]',
-              avatarBgClass(profile.groupMemberId),
-            )}
-            aria-hidden
-          >
-            {nameInitial(profile.displayName)}
-          </span>
+    <div className="flex min-h-0 flex-1 flex-col overflow-y-auto px-6 pt-4 pb-10 [scrollbar-width:none]">
+      {/* identity */}
+      <div className="flex flex-col items-center text-center">
+        <span
+          className={cn(
+            'flex size-16 items-center justify-center rounded-full text-xl font-extrabold',
+            isStub
+              ? 'border border-dashed border-border-accent text-muted-foreground'
+              : cn('text-foreground shadow-hairline', avatarBgClass(profile.groupMemberId)),
+          )}
+          aria-hidden
+        >
+          {nameInitial(profile.displayName)}
+        </span>
 
-          <div className="min-w-0 flex-1">
-            <DrawerTitle className="truncate text-left">{profile.displayName}</DrawerTitle>
-            <Meta className="text-muted-foreground">
-              {displayRank !== undefined ? `#${displayRank} · ` : ''}
-              {Math.round(profile.rating)} pts
+        <div className="mt-3.5 flex max-w-full items-center justify-center gap-2">
+          <DrawerTitle className="truncate text-[1.45rem] font-extrabold tracking-[-0.01em]">
+            {profile.displayName}
+          </DrawerTitle>
+          {isStub && (
+            <span className="shrink-0 rounded-lg bg-tag-warn/15 px-2 py-1 text-[10px] font-extrabold uppercase tracking-wide text-tag-warn">
+              Sem conta
+            </span>
+          )}
+        </div>
+
+        {positionLine && (
+          <Meta className="mt-2 font-bold text-brand">{positionLine}</Meta>
+        )}
+      </div>
+
+      {/* stats */}
+      <div className="mt-5 flex items-center rounded-[1.4rem] bg-surface px-1 py-4 shadow-hairline">
+        <PeekStat value={Math.round(profile.rating)} label="Rating" />
+        <StatDivider />
+        <PeekStat value={`${profile.stats.winRate}%`} label="Aproveit." />
+        <StatDivider />
+        <PeekStat value={profile.stats.matchesPlayed} label="Partidas" />
+      </div>
+
+      {/* action */}
+      {isStub ? (
+        <>
+          <div className="mt-4 flex items-start gap-2.5 rounded-2xl bg-tag-warn/[0.08] px-3.5 py-3 ring-1 ring-inset ring-tag-warn/20">
+            <Info className="mt-px size-4 shrink-0 text-tag-warn" aria-hidden />
+            <Meta className="text-left font-medium text-tag-warn/90">
+              Jogador sem conta. Convide-o para assumir este perfil e levar todo o
+              histórico para o app.
             </Meta>
           </div>
-        </div>
+          <button
+            type="button"
+            onClick={openClaim}
+            className="mt-3 flex h-12 items-center justify-center gap-2 rounded-pill bg-brand text-brand-foreground shadow-button transition-opacity active:opacity-90"
+          >
+            <UserPlus className="size-4.5 text-brand-foreground" aria-hidden />
+            <Label className="text-brand-foreground">Convidar para assumir o perfil</Label>
+          </button>
 
-        <div className="mt-4 grid grid-cols-3 gap-2">
-          <Metric value={profile.stats.matchesPlayed} label="partidas" />
-          <Metric value={profile.stats.wins} label="vitórias" />
-          <Metric value={`${profile.stats.winRate}%`} label="aprov." />
-        </div>
-
-        {profileHref && (
+          <DrawerNested open={claimOpen} onOpenChange={setClaimOpen}>
+            <DrawerContent aria-describedby={undefined} size="fit">
+              <StubClaimPanel
+                name={profile.displayName}
+                url={claimUrl}
+                error={claimError}
+                onBack={() => setClaimOpen(false)}
+              />
+            </DrawerContent>
+          </DrawerNested>
+        </>
+      ) : (
+        profileHref && (
           <Link
             href={profileHref}
-            className="mt-3 flex h-11 items-center justify-center rounded-pill bg-surface text-brand shadow-hairline transition-opacity active:opacity-60"
+            className="mt-4 flex h-12 items-center justify-center gap-1.5 rounded-pill bg-brand text-brand-foreground shadow-button transition-opacity active:opacity-90"
           >
-            <Label className="text-brand">Ver perfil completo</Label>
+            <Label className="text-brand-foreground">Ver perfil completo</Label>
+            <ChevronRight className="size-4.5 text-brand-foreground" aria-hidden />
           </Link>
-        )}
-
-        {profile.userId === null ? (
-          <StubClaimShare groupId={groupId} memberId={profile.groupMemberId} />
-        ) : canUnlink ? (
-          <AdminUnlinkButton
-            groupId={groupId}
-            memberId={profile.groupMemberId}
-            onUnlinked={() => {
-              onChanged();
-              onClose();
-            }}
-          />
-        ) : null}
-      </div>
-
-      <div className="mt-5 min-h-0 flex-1 overflow-y-auto px-4 pb-8 [scrollbar-width:none]">
-        <ProfileMatchesList matches={profile.matches} />
-      </div>
+        )
+      )}
     </div>
   );
 }
@@ -199,105 +257,55 @@ function FallbackShell({ children }: { children: ReactNode }) {
   return (
     <div className="flex min-h-0 flex-1 flex-col">
       <DrawerTitle className="sr-only">Perfil do jogador</DrawerTitle>
-      <div className="px-5 pt-3">{children}</div>
+      <div className="px-6 pt-4">{children}</div>
     </div>
   );
 }
 
-// Admin-only: reverts a claim, turning the member back into a stub.
-function AdminUnlinkButton({
-  groupId,
-  memberId,
-  onUnlinked,
-}: {
-  groupId: string;
-  memberId: string;
-  onUnlinked: () => void;
-}) {
-  const [confirming, setConfirming] = useState(false);
-  const [working, setWorking] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  async function unlink() {
-    const token = getAccessToken();
-    if (!token) return;
-
-    setWorking(true);
-    setError(null);
-
-    try {
-      await unlinkMember(token, groupId, memberId);
-      onUnlinked();
-    } catch (caught) {
-      setError(
-        caught instanceof Error
-          ? caught.message
-          : 'Não foi possível desvincular. Tente novamente.',
-      );
-      setWorking(false);
-    }
-  }
-
-  if (!confirming) {
-    return (
-      <button
-        type="button"
-        onClick={() => setConfirming(true)}
-        className="mt-3 flex h-11 w-full items-center justify-center rounded-pill bg-surface text-tag-warn shadow-hairline transition-opacity active:opacity-60"
-      >
-        <Label className="text-tag-warn">Desvincular conta</Label>
-      </button>
-    );
-  }
-
+function PeekStat({ value, label }: { value: string | number; label: string }) {
   return (
-    <div className="mt-3 rounded-3xl bg-surface px-4 py-3 shadow-hairline">
-      <Meta className="block text-center text-muted-foreground">
-        Desvincular a conta? O jogador volta a ser um perfil sem conta (o histórico é
-        mantido).
-      </Meta>
-      <div className="mt-3 grid grid-cols-2 gap-2">
-        <button
-          type="button"
-          onClick={() => setConfirming(false)}
-          disabled={working}
-          className="flex h-10 items-center justify-center rounded-pill bg-background text-foreground shadow-hairline transition-opacity active:opacity-60"
-        >
-          <Label>Cancelar</Label>
-        </button>
-        <button
-          type="button"
-          onClick={unlink}
-          disabled={working}
-          className="flex h-10 items-center justify-center rounded-pill bg-tag-warn text-background transition-opacity active:opacity-60 disabled:opacity-60"
-        >
-          <Label className="text-background">{working ? 'Desvinculando…' : 'Desvincular'}</Label>
-        </button>
-      </div>
-      {error && <Meta className="mt-2 block text-center text-tag-warn">{error}</Meta>}
-    </div>
-  );
-}
-
-function Metric({ value, label }: { value: string | number; label: string }) {
-  return (
-    <div className="min-w-0 rounded-[1.2rem] bg-surface px-3 py-2 text-center shadow-hairline">
-      <p className="truncate text-lg font-semibold leading-none tracking-[-0.05em] text-foreground">
+    <div className="min-w-0 flex-1 text-center">
+      <p className="truncate text-[1.4rem] font-extrabold leading-none tracking-[-0.03em] tabular-nums text-foreground">
         {value}
       </p>
-      <p className="mt-1 truncate text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+      <p className="mt-1.5 truncate text-[10px] font-bold uppercase tracking-wide text-faint-foreground">
         {label}
       </p>
     </div>
   );
 }
 
+function StatDivider() {
+  return <div className="h-8 w-px shrink-0 bg-border-accent/50" aria-hidden />;
+}
+
+// Position relative to the group: "Você · #3 de 19" for yourself, otherwise
+// "#3 de 19 · <group>". Returns null when the member isn't currently ranked, so
+// the caller hides the line entirely (no misleading standing).
+function buildPositionLine(
+  rank: number | undefined,
+  totalMembers: number,
+  groupName: string,
+  isYou: boolean,
+): string | null {
+  if (rank === undefined) {
+    return null;
+  }
+
+  const position = `#${rank} de ${totalMembers}`;
+
+  return isYou ? `Você · ${position}` : `${position} · ${groupName}`;
+}
+
 // Real members link to their cross-group profile; stub players (userId null) have
 // none, so the caller hides the link entirely.
-function resolveProfileHref(userId: string | null): string | null {
+function resolveProfileHref(
+  userId: string | null,
+  currentUserId: string | null,
+): string | null {
   if (!userId) {
     return null;
   }
 
-  return userId === getCurrentUserIdFromAccessToken() ? '/profile' : `/users/${userId}`;
+  return userId === currentUserId ? '/profile' : `/users/${userId}`;
 }

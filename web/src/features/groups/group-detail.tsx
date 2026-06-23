@@ -111,9 +111,8 @@ export function GroupDetail({ groupId, tab, autoOpenCompose = false }: Props) {
     >
       <MemberProfileDrawerProvider
         groupId={data.group.id}
+        groupName={data.group.name}
         ranking={data.ranking}
-        isAdmin={data.membership?.role === 'ADMIN'}
-        onChanged={() => setRefreshKey((key) => key + 1)}
       >
         <div className="space-y-8">
           <div className="space-y-3">
