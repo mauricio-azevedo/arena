@@ -1,15 +1,26 @@
 'use client';
 
-import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer';
+import { useState } from 'react';
+import { UserPlus } from 'lucide-react';
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerNested,
+  DrawerTitle,
+} from '@/components/ui/drawer';
 import { Label, Meta } from '@/components/ui/text';
 import { cn } from '@/lib/utils';
 import { avatarBgClass, nameInitial } from '@/lib/avatar';
 import { resolveMemberName } from '@/lib/member-name';
+import { StubClaimEmailPanel } from '@/features/members/components/stub-claim-email-panel';
 import type { GroupMember } from '@/types/api';
 
 type GroupMembersDrawerProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  groupId: string;
+  isAdmin: boolean;
   members: GroupMember[];
 };
 
@@ -25,7 +36,18 @@ function roleTag(member: GroupMember): { label: string; className: string } {
   return { label: 'Membro', className: 'bg-background text-muted-foreground' };
 }
 
-export function GroupMembersDrawer({ open, onOpenChange, members }: GroupMembersDrawerProps) {
+export function GroupMembersDrawer({
+  open,
+  onOpenChange,
+  groupId,
+  isAdmin,
+  members,
+}: GroupMembersDrawerProps) {
+  // The "Convidar" shortcut opens the same email panel as the player profile drawer,
+  // for whichever stub the admin tapped. Kept mounted so it animates out cleanly.
+  const [inviteOpen, setInviteOpen] = useState(false);
+  const [inviteTarget, setInviteTarget] = useState<{ memberId: string; name: string } | null>(null);
+
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
       <DrawerContent aria-describedby={undefined} size="fit">
@@ -68,19 +90,48 @@ export function GroupMembersDrawer({ open, onOpenChange, members }: GroupMembers
                     )}
                   </div>
 
-                  <span
-                    className={cn(
-                      'shrink-0 rounded-lg px-2 py-1 text-[10px] font-extrabold uppercase tracking-wide',
-                      tag.className,
-                    )}
-                  >
-                    {tag.label}
-                  </span>
+                  {isStub && isAdmin ? (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setInviteTarget({ memberId: member.id, name: fullName });
+                        setInviteOpen(true);
+                      }}
+                      className="flex shrink-0 items-center gap-1.5 rounded-pill bg-brand px-3 py-1.5 text-brand-foreground shadow-button transition-opacity active:opacity-90"
+                    >
+                      <UserPlus className="size-3.5" strokeWidth={2.4} aria-hidden />
+                      <span className="text-[11px] font-extrabold uppercase tracking-wide">
+                        Convidar
+                      </span>
+                    </button>
+                  ) : (
+                    <span
+                      className={cn(
+                        'shrink-0 rounded-lg px-2 py-1 text-[10px] font-extrabold uppercase tracking-wide',
+                        tag.className,
+                      )}
+                    >
+                      {tag.label}
+                    </span>
+                  )}
                 </div>
               );
             })}
           </div>
         </div>
+
+        <DrawerNested open={inviteOpen} onOpenChange={setInviteOpen}>
+          <DrawerContent aria-describedby={undefined} size="fit">
+            {inviteTarget && (
+              <StubClaimEmailPanel
+                groupId={groupId}
+                memberId={inviteTarget.memberId}
+                stubName={inviteTarget.name}
+                onBack={() => setInviteOpen(false)}
+              />
+            )}
+          </DrawerContent>
+        </DrawerNested>
       </DrawerContent>
     </Drawer>
   );

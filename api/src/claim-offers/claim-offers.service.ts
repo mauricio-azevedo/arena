@@ -109,6 +109,16 @@ export class ClaimOffersService {
     const keptNotifiedAt = samePending ? stub.claimEmailNotifiedAt : null;
 
     return this.prisma.$transaction(async (tx) => {
+      // Changing the anchored email supersedes any prior offer — retire its notification
+      // before issuing the new one (a no-op when the email is unchanged).
+      if (!samePending) {
+        await this.notifications.markActedByTarget(
+          NotificationType.CLAIM_OFFER,
+          stub.id,
+          tx,
+        );
+      }
+
       await tx.groupMember.update({
         where: { id: stub.id },
         data: {
@@ -152,13 +162,20 @@ export class ClaimOffersService {
       throw new NotFoundException('Perfil não encontrado');
     }
 
-    await this.prisma.groupMember.update({
-      where: { id: stub.id },
-      data: {
-        claimEmail: null,
-        claimEmailStatus: null,
-        claimEmailNotifiedAt: null,
-      },
+    await this.prisma.$transaction(async (tx) => {
+      await this.notifications.markActedByTarget(
+        NotificationType.CLAIM_OFFER,
+        stub.id,
+        tx,
+      );
+      await tx.groupMember.update({
+        where: { id: stub.id },
+        data: {
+          claimEmail: null,
+          claimEmailStatus: null,
+          claimEmailNotifiedAt: null,
+        },
+      });
     });
 
     return { email: null, status: null, notified: false, accountExists: false };
@@ -275,6 +292,13 @@ export class ClaimOffersService {
         viewer,
       );
 
+      // Either outcome resolves this person's offer — retire its inbox notification.
+      await this.notifications.markActedByTarget(
+        NotificationType.CLAIM_OFFER,
+        stub.id,
+        tx,
+      );
+
       if (result.outcome === 'BLOCKED') {
         // Race: a shared match was logged after the email was set. Retire the offer and
         // tell the admins; the person sees the conflict from the returned payload.
@@ -340,6 +364,11 @@ export class ClaimOffersService {
         where: { id: stub.id },
         data: { claimEmailStatus: ClaimEmailStatus.DECLINED },
       });
+      await this.notifications.markActedByTarget(
+        NotificationType.CLAIM_OFFER,
+        stub.id,
+        tx,
+      );
       await this.notifyAdmins(tx, stub.groupId, {
         title: `${resolveMemberDisplayName(stub)} não foi reconhecido`,
         body: 'A pessoa que você convidou disse que não é esse perfil.',
@@ -360,23 +389,21 @@ export class ClaimOffersService {
     const stub = await tx.groupMember.findUnique({
       where: { id: stubId },
       select: {
-        displayName: true,
-        user: { select: { firstName: true, lastName: true } },
         group: { select: { id: true, name: true } },
       },
     });
     if (!stub) return;
 
-    const stubName = resolveMemberDisplayName(stub);
     await this.notifications.create(
       {
         type: NotificationType.CLAIM_OFFER,
         recipientUserId,
         groupId: stub.group.id,
+        targetGroupMemberId: stubId,
         data: {
-          title: `Você foi adicionado como ${stubName} em ${stub.group.name}`,
-          body: 'É você? Confirme para assumir o histórico desse perfil.',
-          meta: 'convite do grupo',
+          title: `Você foi convidado pro ${stub.group.name}`,
+          body: 'E já tem partidas suas registradas lá — entre e elas viram suas.',
+          meta: 'convite',
           actions: [{ label: 'Ver', href: `/claim/${stubId}` }],
         },
       },

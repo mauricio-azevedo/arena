@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
 import Link from 'next/link';
-import { ChevronRight, Info, Mail } from 'lucide-react';
+import { ChevronRight, Info, UserPlus } from 'lucide-react';
 import { Drawer, DrawerNested, DrawerContent, DrawerTitle } from '@/components/ui/drawer';
 import { Label, Meta } from '@/components/ui/text';
 import { avatarBgClass, nameInitial } from '@/lib/avatar';
@@ -184,8 +184,8 @@ function MemberProfileContent({
             <Info className="mt-px size-4 shrink-0 text-tag-warn" aria-hidden />
             <Meta className="text-left font-medium text-tag-warn/90">
               {isViewerAdmin
-                ? 'Jogador sem conta. Vincule o email dele para que assuma este perfil — com todo o histórico.'
-                : 'Jogador sem conta. Um admin do grupo pode vincular a conta dele.'}
+                ? 'Jogador sem conta. Convide-o pro grupo pelo email — as partidas dele vão junto.'
+                : 'Jogador sem conta. Um admin do grupo pode convidá-lo.'}
             </Meta>
           </div>
 
@@ -196,8 +196,8 @@ function MemberProfileContent({
                 onClick={() => setEmailOpen(true)}
                 className="mt-3 flex h-12 items-center justify-center gap-2 rounded-pill bg-brand text-brand-foreground shadow-button transition-opacity active:opacity-90"
               >
-                <Mail className="size-4.5 text-brand-foreground" aria-hidden />
-                <Label className="text-brand-foreground">Vincular conta</Label>
+                <UserPlus className="size-4.5 text-brand-foreground" aria-hidden />
+                <Label className="text-brand-foreground">Convidar</Label>
               </button>
 
               <DrawerNested open={emailOpen} onOpenChange={setEmailOpen}>

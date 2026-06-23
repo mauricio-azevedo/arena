@@ -6,6 +6,9 @@ export type CreateNotificationInput = {
   recipientUserId: string;
   groupId?: string | null;
   actorUserId?: string | null;
+  // The entity this is about (e.g. a stub), so the notification can be resolved when that
+  // entity's state changes. See NotificationWriterService.markActedByTarget.
+  targetGroupMemberId?: string | null;
   // Denormalized render payload (names, counts, deep-link refs). Frozen at write time.
   data: Prisma.InputJsonValue;
 };

@@ -571,6 +571,10 @@ model Notification {
   groupId         String?
   group           Group?           @relation(fields: [groupId], references: [id], onDelete: Cascade)
   actorUserId     String?
+  // The entity this notification is about (e.g. the stub a CLAIM_OFFER points at). A plain
+  // column, no FK — the stub can be deleted by a merge, and we only need it to resolve the
+  // notification (mark acted) when that entity's state changes.
+  targetGroupMemberId String?
   data            Json             @default("{}")
   readAt          DateTime?
   actedAt         DateTime?
@@ -578,4 +582,5 @@ model Notification {
 
   @@index([recipientUserId, createdAt])
   @@index([recipientUserId, readAt])
+  @@index([targetGroupMemberId])
 }

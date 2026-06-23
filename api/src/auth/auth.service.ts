@@ -82,23 +82,22 @@ export class AuthService {
       },
       select: {
         id: true,
-        displayName: true,
         group: { select: { id: true, name: true } },
       },
     });
 
     for (const stub of stubs) {
-      const stubName = stub.displayName ?? 'esse perfil';
       await this.prisma.$transaction([
         this.prisma.notification.create({
           data: {
             type: 'CLAIM_OFFER',
             recipientUserId: userId,
             groupId: stub.group.id,
+            targetGroupMemberId: stub.id,
             data: {
-              title: `Você foi adicionado como ${stubName} em ${stub.group.name}`,
-              body: 'É você? Confirme para assumir o histórico desse perfil.',
-              meta: 'convite do grupo',
+              title: `Você foi convidado pro ${stub.group.name}`,
+              body: 'E já tem partidas suas registradas lá — entre e elas viram suas.',
+              meta: 'convite',
               actions: [{ label: 'Ver', href: `/claim/${stub.id}` }],
             },
           },

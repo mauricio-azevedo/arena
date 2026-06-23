@@ -21,15 +21,18 @@ export function ClaimSuccess({ stub, membership, groupName }: ClaimSuccessProps)
         <Check className="size-11 text-success" strokeWidth={2.8} aria-hidden />
       </div>
 
-      <Title className="mt-6 text-foreground">Perfil assumido</Title>
+      <Title className="mt-6 text-foreground">Você está no {groupName}</Title>
       <Body className="mx-auto mt-2 max-w-[19rem] text-muted-foreground">
-        O histórico do perfil{' '}
-        <span className="font-bold text-foreground">{stub.displayName}</span> agora é seu, sob{' '}
-        <span className="font-bold text-foreground">{claimedName}</span> no {groupName}.
+        Suas partidas e seu ranking já estão na sua conta.
       </Body>
 
       <div className="mt-8 flex w-full items-center gap-3.5 rounded-[1.75rem] bg-surface p-4 shadow-hairline">
-        <PersonAvatar seed={claimedName} name={claimedName} accent className="size-[54px] text-stat-md" />
+        <PersonAvatar
+          seed={claimedName}
+          name={claimedName}
+          accent
+          className="size-[54px] text-stat-md"
+        />
         <div className="min-w-0 flex-1 text-left">
           <Label className="block truncate text-foreground">{claimedName}</Label>
           <Meta className="mt-0.5 block text-muted-foreground">

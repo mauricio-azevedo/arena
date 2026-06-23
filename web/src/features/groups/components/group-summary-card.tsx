@@ -48,6 +48,7 @@ export function GroupSummaryCard({
         members={members}
         memberCount={memberCount}
         matchCount={matchCount}
+        isAdmin={membership?.role === 'ADMIN'}
       />
 
       <GroupSearchField />
@@ -147,11 +148,13 @@ function GroupIdentityHeader({
   members,
   memberCount,
   matchCount,
+  isAdmin,
 }: {
   group: Group;
   members: GroupMember[];
   memberCount: number;
   matchCount: number;
+  isAdmin: boolean;
 }) {
   const [membersOpen, setMembersOpen] = useState(false);
 
@@ -182,7 +185,13 @@ function GroupIdentityHeader({
 
       {group.description && <GroupDescription text={group.description} />}
 
-      <GroupMembersDrawer open={membersOpen} onOpenChange={setMembersOpen} members={members} />
+      <GroupMembersDrawer
+        open={membersOpen}
+        onOpenChange={setMembersOpen}
+        groupId={group.id}
+        isAdmin={isAdmin}
+        members={members}
+      />
     </div>
   );
 }

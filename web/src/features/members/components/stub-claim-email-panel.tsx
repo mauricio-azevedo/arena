@@ -97,12 +97,13 @@ export function StubClaimEmailPanel({ groupId, memberId, stubName, onBack }: Pro
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      <DrawerBackHeader onBack={onBack} title="Vincular conta" subtitle={stubName} />
+      <DrawerBackHeader onBack={onBack} title="Convidar" subtitle={stubName} />
 
       <div className="min-h-0 flex-1 overflow-y-auto px-6 pb-10 pt-1 [scrollbar-width:none]">
         <Body className="text-muted-foreground">
-          Vincule o email de <span className="font-bold text-foreground">{stubName}</span>. Quem
-          tiver esse email recebe um convite no app pra assumir o perfil — com todo o histórico.
+          Convide <span className="font-bold text-foreground">{stubName}</span> pro grupo pelo
+          email. Quando existir uma conta com esse email — agora ou quando ele se cadastrar — ele
+          entra e as partidas dele vêm junto.
         </Body>
 
         {loading ? (
@@ -128,10 +129,10 @@ export function StubClaimEmailPanel({ groupId, memberId, stubName, onBack }: Pro
                   className={declined ? 'text-left text-tag-warn/90' : 'text-left text-success'}
                 >
                   {declined
-                    ? `${state.email} disse que não é esse perfil. Você pode tentar outro email.`
+                    ? `${state.email} disse que não é esse perfil. Tente outro email.`
                     : state.accountExists
-                      ? `Convite enviado para ${state.email}. Falta ele confirmar.`
-                      : `Quando ${state.email} criar uma conta, recebe o convite.`}
+                      ? `Convite enviado para ${state.email}.`
+                      : `Assim que ${state.email} tiver uma conta, o convite chega.`}
                 </Meta>
               </div>
             )}

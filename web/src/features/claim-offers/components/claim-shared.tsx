@@ -9,7 +9,7 @@ import type { ClaimRecentMatch } from '@/types/api';
 // The "de qual grupo / que convite é esse" chip at the top of every claim screen.
 export function GroupBrandChip({
   groupName,
-  title = 'Convite para assumir perfil',
+  title = 'Convite',
 }: {
   groupName: string;
   title?: string;

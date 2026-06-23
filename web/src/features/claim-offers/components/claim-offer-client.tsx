@@ -160,9 +160,9 @@ export function ClaimOfferClient({ stubId }: Props) {
           className="size-[88px] text-stat-xl"
         />
         <div className="space-y-2">
-          <Title className="text-balance text-foreground">Assuma o perfil {stub.displayName}</Title>
+          <Title className="text-balance text-foreground">Entre no {groupName}</Title>
           <Body className="mx-auto max-w-[18rem] text-muted-foreground">
-            Você foi adicionado neste grupo. É você? Confirme para assumir todo o histórico.
+            E já criaram partidas com você aqui — ao entrar, elas vão pra sua conta.
           </Body>
         </div>
       </div>
@@ -176,10 +176,10 @@ export function ClaimOfferClient({ stubId }: Props) {
           {pending ? (
             <>
               <Loader2 className="size-4 animate-spin" aria-hidden />
-              Assumindo…
+              Entrando…
             </>
           ) : (
-            'Sou eu — assumir este perfil'
+            'Entrar no grupo'
           )}
         </Button>
         {error && <Meta className="block px-2 text-center text-tag-warn">{error}</Meta>}
