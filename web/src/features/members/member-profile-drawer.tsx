@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { ChevronRight, Info, UserPlus } from 'lucide-react';
 import { Drawer, DrawerNested, DrawerContent, DrawerTitle } from '@/components/ui/drawer';
 import { Label, Meta } from '@/components/ui/text';
-import { avatarBgClass, nameInitial } from '@/lib/avatar';
+import { MemberAvatar } from '@/components/ui/member-avatar';
 import { cn } from '@/lib/utils';
 import { getCurrentUserIdFromAccessToken } from '@/lib/auth';
 import { memberRoleTag } from '@/lib/member-role';
@@ -145,17 +145,12 @@ export function MemberProfileContent({
     <div className="flex min-h-0 flex-1 flex-col overflow-y-auto px-6 pt-4 pb-10 [scrollbar-width:none]">
       {/* identity */}
       <div className="flex flex-col items-center text-center">
-        <span
-          className={cn(
-            'flex size-16 items-center justify-center rounded-full text-xl font-extrabold',
-            isStub
-              ? 'border border-dashed border-border-accent text-muted-foreground'
-              : cn('text-foreground shadow-hairline', avatarBgClass(profile.groupMemberId)),
-          )}
-          aria-hidden
-        >
-          {nameInitial(profile.displayName)}
-        </span>
+        <MemberAvatar
+          userId={profile.userId}
+          name={profile.displayName}
+          seed={profile.groupMemberId}
+          className="size-16 text-xl"
+        />
 
         <div className="mt-3.5 flex max-w-full items-center justify-center gap-2">
           <DrawerTitle className="truncate text-[1.45rem] font-extrabold tracking-[-0.01em]">

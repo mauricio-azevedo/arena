@@ -14,6 +14,8 @@ export type ResolvedPlayer = {
   fullName: string;
   initial: string;
   avatarSeed: string;
+  // null → jogador sem conta (convidado), rendered as a dashed avatar.
+  userId: string | null;
 };
 
 function initialOf(name: string) {
@@ -29,6 +31,7 @@ export function resolveFromMember(member: GroupMember): ResolvedPlayer {
     fullName,
     initial: initialOf(firstName),
     avatarSeed: member.id,
+    userId: member.userId,
   };
 }
 
@@ -55,6 +58,7 @@ export function buildPlayerLookup(members: GroupMember[], match?: Match) {
         fullName,
         initial: initialOf(firstName),
         avatarSeed: player.groupMemberId,
+        userId: player.groupMember?.userId ?? null,
       });
     }
   }

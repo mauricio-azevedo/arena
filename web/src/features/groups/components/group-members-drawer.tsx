@@ -11,9 +11,9 @@ import {
 } from '@/components/ui/drawer';
 import { Label, Meta } from '@/components/ui/text';
 import { cn } from '@/lib/utils';
-import { avatarBgClass, nameInitial } from '@/lib/avatar';
 import { resolveMemberName } from '@/lib/member-name';
 import { memberRoleTag } from '@/lib/member-role';
+import { MemberAvatar } from '@/components/ui/member-avatar';
 import { TOUCH_TARGET_48 } from '@/lib/touch-target';
 import { StubClaimEmailPanel } from '@/features/members/components/stub-claim-email-panel';
 import { MemberProfileContent } from '@/features/members/member-profile-drawer';
@@ -99,20 +99,12 @@ export function GroupMembersDrawer({
                     className="absolute inset-0"
                   />
 
-                  <span
-                    className={cn(
-                      'flex size-[42px] shrink-0 items-center justify-center rounded-full text-meta font-extrabold',
-                      isStub
-                        ? 'border border-dashed border-border-accent text-muted-foreground'
-                        : cn(
-                            'text-foreground shadow-[inset_0_0_0_1px_var(--border)]',
-                            avatarBgClass(member.id),
-                          ),
-                    )}
-                    aria-hidden
-                  >
-                    {nameInitial(fullName)}
-                  </span>
+                  <MemberAvatar
+                    userId={member.userId}
+                    name={fullName}
+                    seed={member.id}
+                    className="size-[42px] text-meta"
+                  />
 
                   <div className="flex min-w-0 flex-1 flex-col">
                     <Label className="truncate text-foreground">{fullName}</Label>

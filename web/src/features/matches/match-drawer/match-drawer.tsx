@@ -104,10 +104,7 @@ function MatchComposer({
   // so they're pickable immediately without waiting for a refetch.
   const [createdMembers, setCreatedMembers] = useState<GroupMember[]>([]);
 
-  const roster = useMemo(
-    () => [...members, ...createdMembers],
-    [members, createdMembers],
-  );
+  const roster = useMemo(() => [...members, ...createdMembers], [members, createdMembers]);
 
   const lookup = useMemo(() => buildPlayerLookup(roster, match), [roster, match]);
 
@@ -129,6 +126,7 @@ function MatchComposer({
             fullName: resolved.fullName,
             initial: resolved.initial,
             avatarSeed: resolved.avatarSeed,
+            userId: resolved.userId,
             rank: rankById.get(member.id),
             rating: member.rating,
             isYou: member.id === currentMembershipId,
