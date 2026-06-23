@@ -12,6 +12,7 @@ import { UsersModule } from './users/users.module';
 import { ProcessingModule } from './processing/processing.module';
 import { HomeHighlightsModule } from './home-highlights/home-highlights.module';
 import { NotificationsModule } from './notifications/notifications.module';
+import { ClaimRequestsModule } from './claim-requests/claim-requests.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { NotificationsModule } from './notifications/notifications.module';
     ProcessingModule,
     HomeHighlightsModule,
     NotificationsModule,
+    ClaimRequestsModule,
   ],
 })
 export class AppModule {}

@@ -1,8 +1,8 @@
 import type { MatchTeam } from '../../generated/prisma/enums';
 
-// Result of accepting a CLAIM invite. The shared-match case is not an error — it's a
-// real outcome the claim page renders (the two proved to be different people), so it
-// comes back as a 200 discriminated union rather than a thrown exception.
+// Result of attaching an account to a stub (via claim link or admin-approved request).
+// The shared-match case is a real outcome callers render (the two proved to be different
+// people), not an error.
 
 export type SharedMatchPlayer = {
   name: string;

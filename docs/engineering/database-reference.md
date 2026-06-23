@@ -18,184 +18,227 @@ For operational guidance (Neon, migrations, resets) see
 
 ## 1. Enums
 
-| Enum | Values |
-| ---- | ------ |
-| `GroupVisibility` | `PUBLIC` |
-| `GroupMemberRole` | `ADMIN`, `MEMBER` |
-| `MatchTeam` | `TEAM_A`, `TEAM_B` |
-| `MatchProcessingStatus` | `PENDING`, `PROCESSING`, `PROCESSED`, `FAILED` |
-| `GroupRankingProjectionStatus` | `CURRENT`, `PROCESSING`, `FAILED` |
-| `RankingMovementDirection` | `UP`, `DOWN` |
-| `ProcessingJobType` | `MATCH_CREATED`, `MATCH_UPDATED`, `MATCH_DELETED`, `GROUP_RANKING_REBUILD`, `PLATFORM_TRENDING_PLAYERS_REBUILD` *(deprecated)* |
-| `ProcessingJobStatus` | `PENDING`, `PROCESSING`, `DONE`, `FAILED` |
-| `ProcessingJobScope` | `GROUP`, `PLATFORM` *(deprecated)* |
-| `FeedItemType` | `GROUP_CREATED`, `MEMBER_JOINED`, `MATCH_CLOSE`, `MATCH_BLOWOUT`, `UPSET_WIN`, `RANKING_MOVEMENT` |
-| `FeedItemScope` | `GROUP`, `USER` |
-| `FeedItemVisibility` | `GROUP_MEMBERS`, `SOCIAL_CIRCLE`, `PUBLIC`, `PRIVATE` |
-| `HighlightType` | `WIN_STREAK_CURRENT`, `WIN_STREAK_RECORD`, `CLIMB`, `LEADERSHIP`, `MILESTONE_MATCHES`, `MILESTONE_WINS` |
-| `NotificationType` | `CLAIM_REQUEST`, `CLAIM_APPROVED`, `CLAIM_DECLINED`, `CLAIM_INVITE` |
+| Enum                           | Values                                                                                                                         |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------ |
+| `GroupVisibility`              | `PUBLIC`                                                                                                                       |
+| `GroupMemberRole`              | `ADMIN`, `MEMBER`                                                                                                              |
+| `MatchTeam`                    | `TEAM_A`, `TEAM_B`                                                                                                             |
+| `MatchProcessingStatus`        | `PENDING`, `PROCESSING`, `PROCESSED`, `FAILED`                                                                                 |
+| `GroupRankingProjectionStatus` | `CURRENT`, `PROCESSING`, `FAILED`                                                                                              |
+| `RankingMovementDirection`     | `UP`, `DOWN`                                                                                                                   |
+| `ProcessingJobType`            | `MATCH_CREATED`, `MATCH_UPDATED`, `MATCH_DELETED`, `GROUP_RANKING_REBUILD`, `PLATFORM_TRENDING_PLAYERS_REBUILD` _(deprecated)_ |
+| `ProcessingJobStatus`          | `PENDING`, `PROCESSING`, `DONE`, `FAILED`                                                                                      |
+| `ProcessingJobScope`           | `GROUP`, `PLATFORM` _(deprecated)_                                                                                             |
+| `FeedItemType`                 | `GROUP_CREATED`, `MEMBER_JOINED`, `MATCH_CLOSE`, `MATCH_BLOWOUT`, `UPSET_WIN`, `RANKING_MOVEMENT`                              |
+| `FeedItemScope`                | `GROUP`, `USER`                                                                                                                |
+| `FeedItemVisibility`           | `GROUP_MEMBERS`, `SOCIAL_CIRCLE`, `PUBLIC`, `PRIVATE`                                                                          |
+| `HighlightType`                | `WIN_STREAK_CURRENT`, `WIN_STREAK_RECORD`, `CLIMB`, `LEADERSHIP`, `MILESTONE_MATCHES`, `MILESTONE_WINS`                        |
+| `NotificationType`             | `CLAIM_REQUEST`, `CLAIM_APPROVED`, `CLAIM_DECLINED`, `CLAIM_INVITE`                                                            |
+| `ClaimRequestStatus`           | `PENDING`, `APPROVED`, `DECLINED`, `CANCELLED`                                                                                 |
 
 ---
 
 ## 2. Tables
 
 ### User
-| Column | Type | Notes |
-| --- | --- | --- |
-| `id` | uuid PK | |
-| `firstName`, `lastName` | String | display name derived at read time |
-| `email` | String | `@unique` |
-| `passwordHash` | String | bcrypt |
-| `createdAt`, `updatedAt` | DateTime | |
+
+| Column                   | Type     | Notes                             |
+| ------------------------ | -------- | --------------------------------- |
+| `id`                     | uuid PK  |                                   |
+| `firstName`, `lastName`  | String   | display name derived at read time |
+| `email`                  | String   | `@unique`                         |
+| `passwordHash`           | String   | bcrypt                            |
+| `createdAt`, `updatedAt` | DateTime |                                   |
+
 Indexes: `@@index([email])`. Relations: createdGroups, memberships, createdInvites, actor/subject feed items, groupHighlights.
 
 ### Group
-| Column | Type | Notes |
-| --- | --- | --- |
-| `id` | uuid PK | |
-| `name` | String | |
-| `description` | String? | |
-| `visibility` | `GroupVisibility` | default `PUBLIC` |
-| `createdById` | FK→User | relation `GroupCreator` |
-| `createdAt`, `updatedAt` | DateTime | |
+
+| Column                   | Type              | Notes                   |
+| ------------------------ | ----------------- | ----------------------- |
+| `id`                     | uuid PK           |                         |
+| `name`                   | String            |                         |
+| `description`            | String?           |                         |
+| `visibility`             | `GroupVisibility` | default `PUBLIC`        |
+| `createdById`            | FK→User           | relation `GroupCreator` |
+| `createdAt`, `updatedAt` | DateTime          |                         |
+
 Indexes: `[visibility, createdAt]`, `[name]`, `[createdById]`.
 Children cascade on group delete (members, matches, invites, feed items, jobs, all derived models).
 
 ### GroupInvite
-| Column | Type | Notes |
-| --- | --- | --- |
-| `id` | uuid PK | |
-| `token` | String | `@unique` |
-| `groupId` | FK→Group | `onDelete: Cascade` |
-| `createdById` | FK→User | |
-| `expiresAt`, `revokedAt` | DateTime? | |
-| `uses` | Int | default 0 |
-| `maxUses` | Int? | |
-| `targetGroupMemberId` | FK→GroupMember? `(id, groupId)` | set → invite is a CLAIM for that stub; `onDelete: Cascade` |
-| `claimedByUserId` | String? | user who claimed (when a CLAIM is accepted) |
+
+| Column                   | Type                            | Notes                                                      |
+| ------------------------ | ------------------------------- | ---------------------------------------------------------- |
+| `id`                     | uuid PK                         |                                                            |
+| `token`                  | String                          | `@unique`                                                  |
+| `groupId`                | FK→Group                        | `onDelete: Cascade`                                        |
+| `createdById`            | FK→User                         |                                                            |
+| `expiresAt`, `revokedAt` | DateTime?                       |                                                            |
+| `uses`                   | Int                             | default 0                                                  |
+| `maxUses`                | Int?                            |                                                            |
+| `targetGroupMemberId`    | FK→GroupMember? `(id, groupId)` | set → invite is a CLAIM for that stub; `onDelete: Cascade` |
+| `claimedByUserId`        | String?                         | user who claimed (when a CLAIM is accepted)                |
+
 Indexes: `[groupId]`, `[createdById]`, `[token]`, `[targetGroupMemberId]`.
 
 ### GroupMember
-| Column | Type | Notes |
-| --- | --- | --- |
-| `id` | uuid PK | |
-| `groupId` | FK→Group | `onDelete: Cascade` |
-| `userId` | FK→User? | nullable — null for stub players (jogadores sem conta); `onDelete: Cascade` |
-| `displayName` | String? | name for stub players; null when `userId` is set (name comes from User) |
-| `rating` | Float | default `1000` |
-| `ratingDeviation/Volatility/Mu/Sigma` | Float? | reserved for future algorithms |
-| `ratingAlgorithm` | String | default `BEACH_ELO_V1` |
-| `currentRank` | Int? | |
-| `role` | `GroupMemberRole` | default `MEMBER` |
-| `leftAt` | DateTime? | soft membership exit |
+
+| Column                                | Type              | Notes                                                                       |
+| ------------------------------------- | ----------------- | --------------------------------------------------------------------------- |
+| `id`                                  | uuid PK           |                                                                             |
+| `groupId`                             | FK→Group          | `onDelete: Cascade`                                                         |
+| `userId`                              | FK→User?          | nullable — null for stub players (jogadores sem conta); `onDelete: Cascade` |
+| `displayName`                         | String?           | name for stub players; null when `userId` is set (name comes from User)     |
+| `rating`                              | Float             | default `1000`                                                              |
+| `ratingDeviation/Volatility/Mu/Sigma` | Float?            | reserved for future algorithms                                              |
+| `ratingAlgorithm`                     | String            | default `BEACH_ELO_V1`                                                      |
+| `currentRank`                         | Int?              |                                                                             |
+| `role`                                | `GroupMemberRole` | default `MEMBER`                                                            |
+| `leftAt`                              | DateTime?         | soft membership exit                                                        |
+
 Uniques: `[groupId, userId]` (NULL `userId` is distinct in Postgres, so a group can
 hold many stub players), `[id, groupId]` (composite used by child FKs).
 Indexes: `[groupId]`, `[userId]`, `[groupId, rating]`, `[groupId, currentRank, rating]`, `[groupId, role]`.
 
-### GroupMemberStats *(derived)*
+### GroupMemberStats _(derived)_
+
 PK `groupMemberId`. `groupId`, `matchesCount` (0), `winsCount` (0). FK to
 GroupMember on composite `(groupMemberId, groupId)`, cascade. Indexes:
 `[groupId]`, `[groupId, matchesCount]`.
 
 ### Match
-| Column | Type | Notes |
-| --- | --- | --- |
-| `id` | uuid PK | |
-| `groupId` | FK→Group | cascade |
-| `gamesA`, `gamesB` | Int | |
-| `winnerTeam` | `MatchTeam?` | derived from score |
-| `teamA/BExpected`, `teamA/BActual` | Float? | rating snapshot |
-| `teamA/BRatingBefore`, `teamA/BRatingAfter` | Float? | rating snapshot |
-| `ratingAlgorithm` | String | default `BEACH_ELO_V1` |
-| `processingStatus` | `MatchProcessingStatus` | default `PROCESSED` |
-| `processedAt`, `processingError` | DateTime?/String? | |
-| `deletedAt` | DateTime? | **soft delete** |
-| `playedAt` | DateTime | timeline ordering key |
+
+| Column                                      | Type                    | Notes                  |
+| ------------------------------------------- | ----------------------- | ---------------------- |
+| `id`                                        | uuid PK                 |                        |
+| `groupId`                                   | FK→Group                | cascade                |
+| `gamesA`, `gamesB`                          | Int                     |                        |
+| `winnerTeam`                                | `MatchTeam?`            | derived from score     |
+| `teamA/BExpected`, `teamA/BActual`          | Float?                  | rating snapshot        |
+| `teamA/BRatingBefore`, `teamA/BRatingAfter` | Float?                  | rating snapshot        |
+| `ratingAlgorithm`                           | String                  | default `BEACH_ELO_V1` |
+| `processingStatus`                          | `MatchProcessingStatus` | default `PROCESSED`    |
+| `processedAt`, `processingError`            | DateTime?/String?       |                        |
+| `deletedAt`                                 | DateTime?               | **soft delete**        |
+| `playedAt`                                  | DateTime                | timeline ordering key  |
+
 Uniques: `[id, groupId]`. Indexes: `[groupId]`, `[groupId, playedAt, createdAt]`,
 `[groupId, winnerTeam]`, `[groupId, ratingAlgorithm]`, `[groupId, processingStatus]`, `[groupId, deletedAt]`.
 
 ### MatchPlayer
-| Column | Type | Notes |
-| --- | --- | --- |
-| `id` | uuid PK | |
-| `matchId`, `groupId` | FK→Match `(id, groupId)` | cascade |
-| `groupMemberId` | FK→GroupMember `(id, groupId)` | `onDelete: Restrict` |
-| `team` | `MatchTeam` | |
-| `position` | Int | |
-| `ratingBefore/After/Delta` | Float | snapshot |
-| `rankBefore/After/Delta` | Int? | snapshot |
-| `movementDirection` | `RankingMovementDirection?` | |
-| `movementPositions` | Int? | |
-| `rating{Deviation,Volatility,Mu,Sigma}Before/After` | Float? | future algorithms |
-| `playedAt` | DateTime | |
+
+| Column                                              | Type                           | Notes                |
+| --------------------------------------------------- | ------------------------------ | -------------------- |
+| `id`                                                | uuid PK                        |                      |
+| `matchId`, `groupId`                                | FK→Match `(id, groupId)`       | cascade              |
+| `groupMemberId`                                     | FK→GroupMember `(id, groupId)` | `onDelete: Restrict` |
+| `team`                                              | `MatchTeam`                    |                      |
+| `position`                                          | Int                            |                      |
+| `ratingBefore/After/Delta`                          | Float                          | snapshot             |
+| `rankBefore/After/Delta`                            | Int?                           | snapshot             |
+| `movementDirection`                                 | `RankingMovementDirection?`    |                      |
+| `movementPositions`                                 | Int?                           |                      |
+| `rating{Deviation,Volatility,Mu,Sigma}Before/After` | Float?                         | future algorithms    |
+| `playedAt`                                          | DateTime                       |                      |
+
 Uniques: `[matchId, groupMemberId]`, `[matchId, team, position]`. Several
 `[groupId, …, playedAt]` and `[groupMemberId, …]` indexes for history reads.
 
-### MatchRankingSnapshot *(derived)*
+### MatchRankingSnapshot _(derived)_
+
 PK `matchId`. `groupId`, JSON `previousLeaders`/`currentLeaders`/`dethronedLeaders`/`movements` (default `[]`), `algorithmVersion`. Indexes `[groupId]`, `[algorithmVersion]`.
 
-### GroupRankingProjection *(derived)*
+### GroupRankingProjection _(derived)_
+
 PK `groupId`. `status` (`GroupRankingProjectionStatus`, default `CURRENT`), `version` (0), `processingJobId?`, `lastProcessedMatchId?`, `lastProcessedAt?`, `lastError?`. Indexes `[status]`, `[lastProcessedAt]`.
 
-### GroupHomeSummary *(derived)*
+### GroupHomeSummary _(derived)_
+
 PK `groupId`. `membersCount`, `leaders` (JSON), `lastRelevantFeedItemId?` (FK→FeedItem `SetNull`), `lastRelevantAt?`, `projectionStatus?`, `lastProcessedAt?`, `lastError?`. Indexes `[lastRelevantAt]`, `[projectionStatus]`.
 
-### RankingMovement *(derived)*
+### RankingMovement _(derived)_
+
 PK uuid. `groupId`, `groupMemberId` (FK `(id, groupId)`), `matchId` (FK `(id, groupId)`), `direction`, `positions`, `previousRank/currentRank`, `previousRating/currentRating`, `passedGroupMemberIds` (JSON), `isVisible` (false), `occurredAt`, `invalidatedAt?`. Unique `[matchId, groupMemberId]`. Indexes `[groupId, occurredAt]`, `[groupMemberId, occurredAt]`, `[matchId]`, `[groupId, isVisible]`.
 
 ### ProcessingJob
-| Column | Type | Notes |
-| --- | --- | --- |
-| `id` | uuid PK | |
-| `type` | `ProcessingJobType` | |
-| `scope` | `ProcessingJobScope` | default `GROUP` |
-| `status` | `ProcessingJobStatus` | default `PENDING` |
-| `groupId` | FK→Group? | cascade |
-| `matchId` | FK→Match? `(id, groupId)` | cascade |
-| `dedupeKey` | String? | live-dedupe of pending jobs |
-| `payload` | Json | default `{}` |
-| `attemptCount` / `maxAttempts` | Int | default 0 / 5 |
-| `availableAt` | DateTime | backoff schedule |
-| `lockedAt`, `lockedBy`, `lastError`, `processedAt` | | claim/lock bookkeeping |
+
+| Column                                             | Type                      | Notes                       |
+| -------------------------------------------------- | ------------------------- | --------------------------- |
+| `id`                                               | uuid PK                   |                             |
+| `type`                                             | `ProcessingJobType`       |                             |
+| `scope`                                            | `ProcessingJobScope`      | default `GROUP`             |
+| `status`                                           | `ProcessingJobStatus`     | default `PENDING`           |
+| `groupId`                                          | FK→Group?                 | cascade                     |
+| `matchId`                                          | FK→Match? `(id, groupId)` | cascade                     |
+| `dedupeKey`                                        | String?                   | live-dedupe of pending jobs |
+| `payload`                                          | Json                      | default `{}`                |
+| `attemptCount` / `maxAttempts`                     | Int                       | default 0 / 5               |
+| `availableAt`                                      | DateTime                  | backoff schedule            |
+| `lockedAt`, `lockedBy`, `lastError`, `processedAt` |                           | claim/lock bookkeeping      |
+
 Indexes: `[status, availableAt]`, `[scope, status, availableAt]`, `[groupId, status, createdAt]`, `[matchId]`, `[dedupeKey]`, `[lockedBy]`.
 
-### GroupHighlight *(derived)*
+### GroupHighlight _(derived)_
+
 PK `id`. FKs: `group` (cascade), `groupMember` `(groupMemberId, groupId)` (cascade), `user` (cascade). `type` (`HighlightType`), `value` (Int), `score` (Float, cross-type ordering), `anchorAt` (DateTime, 7-day read-window key), `algorithmVersion`. Unique `[groupMemberId, type]`. Indexes `[groupId, anchorAt]`, `[score]`, `[userId, anchorAt]`. Rebuilt by the weekly-highlights projection; powers `GET /home/weekly-highlights`.
 
 ### FeedItem
-| Column | Type | Notes |
-| --- | --- | --- |
-| `id` | uuid PK | |
-| `type` | `FeedItemType` | |
-| `scope` | `FeedItemScope` | |
-| `visibility` | `FeedItemVisibility` | |
-| `groupId` | FK→Group? | cascade |
-| `actorUserId` | FK→User? | `SetNull` |
-| `actorGroupMemberId` | FK→GroupMember? | `SetNull` |
-| `subjectUserId` | FK→User? | `Cascade` |
-| `matchId` | FK→Match? | `Cascade` |
-| `importanceScore` | Int | default 0 |
-| `metadata` | Json | type-specific |
-| `occurredAt` | DateTime | |
+
+| Column               | Type                 | Notes         |
+| -------------------- | -------------------- | ------------- |
+| `id`                 | uuid PK              |               |
+| `type`               | `FeedItemType`       |               |
+| `scope`              | `FeedItemScope`      |               |
+| `visibility`         | `FeedItemVisibility` |               |
+| `groupId`            | FK→Group?            | cascade       |
+| `actorUserId`        | FK→User?             | `SetNull`     |
+| `actorGroupMemberId` | FK→GroupMember?      | `SetNull`     |
+| `subjectUserId`      | FK→User?             | `Cascade`     |
+| `matchId`            | FK→Match?            | `Cascade`     |
+| `importanceScore`    | Int                  | default 0     |
+| `metadata`           | Json                 | type-specific |
+| `occurredAt`         | DateTime             |               |
+
 Unique: `[type, matchId]` (idempotent match-derived items). Indexes on
 `[scope, occurredAt]`, `[visibility, occurredAt]`, `[groupId, occurredAt]`,
 `[type, occurredAt]`, `[importanceScore, occurredAt]`, `[actorUserId, occurredAt]`,
 `[subjectUserId, occurredAt]`, `[actorGroupMemberId, occurredAt]`, `[matchId]`.
 
 ### Notification
-| Column | Type | Notes |
-| --- | --- | --- |
-| `id` | uuid PK | |
-| `type` | `NotificationType` | |
-| `recipientUserId` | FK→User | `Cascade`; who receives it |
-| `groupId` | FK→Group? | `Cascade` |
-| `actorUserId` | FK→User? | nullable, no FK relation back |
-| `data` | Json | denormalized render payload (title/body/meta/actions), frozen at write |
-| `readAt` | DateTime? | null = unread |
-| `actedAt` | DateTime? | set when the recipient acts (approve/decline/claim) |
-| `createdAt` | DateTime | |
+
+| Column            | Type               | Notes                                                                  |
+| ----------------- | ------------------ | ---------------------------------------------------------------------- |
+| `id`              | uuid PK            |                                                                        |
+| `type`            | `NotificationType` |                                                                        |
+| `recipientUserId` | FK→User            | `Cascade`; who receives it                                             |
+| `groupId`         | FK→Group?          | `Cascade`                                                              |
+| `actorUserId`     | FK→User?           | nullable, no FK relation back                                          |
+| `data`            | Json               | denormalized render payload (title/body/meta/actions), frozen at write |
+| `readAt`          | DateTime?          | null = unread                                                          |
+| `actedAt`         | DateTime?          | set when the recipient acts (approve/decline/claim)                    |
+| `createdAt`       | DateTime           |                                                                        |
+
 Per-user in-app inbox (unlike `FeedItem`, which is group-public with no recipient or
 read state). Indexes on `[recipientUserId, createdAt]`, `[recipientUserId, readAt]`.
+
+### ClaimRequest
+
+| Column                    | Type                 | Notes                                                |
+| ------------------------- | -------------------- | ---------------------------------------------------- |
+| `id`                      | uuid PK              |                                                      |
+| `groupId`                 | FK→Group             | `Cascade`                                            |
+| `stubGroupMemberId`       | FK→GroupMember?      | `SetNull` — survives the merge that deletes the stub |
+| `requesterUserId`         | FK→User              | `Cascade`; who asked to claim                        |
+| `status`                  | `ClaimRequestStatus` | default `PENDING`                                    |
+| `resolvedByUserId`        | String?              | admin who approved/declined (no FK relation)         |
+| `resolvedAt`              | DateTime?            |                                                      |
+| `createdAt` / `updatedAt` | DateTime             |                                                      |
+
+A request to claim a stub when there's no link; any group admin approves (runs the same
+claim/merge) or declines. Indexes `[groupId, status]`, `[requesterUserId]`,
+`[stubGroupMemberId]`, plus a **partial unique** `(stubGroupMemberId) WHERE status = 'PENDING'`
+(one open request per stub) added via raw SQL in the migration — Prisma can't express it.
 
 ---
 
@@ -204,29 +247,30 @@ read state). Indexes on `[recipientUserId, createdAt]`, `[recipientUserId, readA
 Migrations live in `api/prisma/migrations/` (Prisma, `migration_lock.toml`
 present). Chronological highlights — each row tells you when a capability landed:
 
-| Migration | What it added |
-| --- | --- |
-| `20260519173138_init` | initial schema |
-| `20260520164812` / `20260520171039_add_activity_events` | activity events |
-| `20260520173506_add_feed_items` | `FeedItem` |
-| `20260520195834_update_feed_item_scope` | feed scope |
-| `20260522120000_remove_persisted_display_names` | display name now derived |
-| `20260610190000_add_ranking_movements` | `RankingMovement` |
-| `20260610200000_add_processing_jobs` | `ProcessingJob` queue |
-| `20260611120000_add_ranking_movement_feed_item_type` | `RANKING_MOVEMENT` feed type |
-| `20260611130000_add_match_processing_state` | `Match.processingStatus`/`deletedAt` |
-| `20260611143000_add_persisted_ranking_projections` | `GroupRankingProjection` |
-| `20260612193000_add_group_home_summary` | `GroupHomeSummary` |
-| `20260616030000_add_group_member_stats` | `GroupMemberStats` |
-| `20260616214500_add_processing_job_scope` | job `scope` (GROUP/PLATFORM) |
-| `20260616223500_add_platform_trending_players` | `PlatformTrendingPlayer` |
-| `20260616232500` / `20260617011500` / `20260617150000` | platform-trending job + read-model trims + highlight relations |
-| `20260617024500_add_processing_job_live_dedupe_index` | pending-job dedupe index |
-| `20260621033753_add_group_highlights` | `GroupHighlight` + `HighlightType` enum |
-| `20260621043745_retire_platform_trending` | drop `PlatformTrendingPlayer` (PLATFORM enum values deprecated in place) |
-| `20260621212123_group_member_stub_players` | `GroupMember.displayName` + nullable `userId` (stub players) |
-| `20260621232855_group_invite_claim_target` | `GroupInvite.targetGroupMemberId`/`claimedByUserId` (CLAIM invites) |
-| `20260623014023_add_notifications` | `Notification` + `NotificationType` enum (in-app inbox) |
+| Migration                                               | What it added                                                             |
+| ------------------------------------------------------- | ------------------------------------------------------------------------- |
+| `20260519173138_init`                                   | initial schema                                                            |
+| `20260520164812` / `20260520171039_add_activity_events` | activity events                                                           |
+| `20260520173506_add_feed_items`                         | `FeedItem`                                                                |
+| `20260520195834_update_feed_item_scope`                 | feed scope                                                                |
+| `20260522120000_remove_persisted_display_names`         | display name now derived                                                  |
+| `20260610190000_add_ranking_movements`                  | `RankingMovement`                                                         |
+| `20260610200000_add_processing_jobs`                    | `ProcessingJob` queue                                                     |
+| `20260611120000_add_ranking_movement_feed_item_type`    | `RANKING_MOVEMENT` feed type                                              |
+| `20260611130000_add_match_processing_state`             | `Match.processingStatus`/`deletedAt`                                      |
+| `20260611143000_add_persisted_ranking_projections`      | `GroupRankingProjection`                                                  |
+| `20260612193000_add_group_home_summary`                 | `GroupHomeSummary`                                                        |
+| `20260616030000_add_group_member_stats`                 | `GroupMemberStats`                                                        |
+| `20260616214500_add_processing_job_scope`               | job `scope` (GROUP/PLATFORM)                                              |
+| `20260616223500_add_platform_trending_players`          | `PlatformTrendingPlayer`                                                  |
+| `20260616232500` / `20260617011500` / `20260617150000`  | platform-trending job + read-model trims + highlight relations            |
+| `20260617024500_add_processing_job_live_dedupe_index`   | pending-job dedupe index                                                  |
+| `20260621033753_add_group_highlights`                   | `GroupHighlight` + `HighlightType` enum                                   |
+| `20260621043745_retire_platform_trending`               | drop `PlatformTrendingPlayer` (PLATFORM enum values deprecated in place)  |
+| `20260621212123_group_member_stub_players`              | `GroupMember.displayName` + nullable `userId` (stub players)              |
+| `20260621232855_group_invite_claim_target`              | `GroupInvite.targetGroupMemberId`/`claimedByUserId` (CLAIM invites)       |
+| `20260623014023_add_notifications`                      | `Notification` + `NotificationType` enum (in-app inbox)                   |
+| `20260623020216_add_claim_requests`                     | `ClaimRequest` + `ClaimRequestStatus` enum + partial-unique pending index |
 
 When changing the schema: edit `schema.prisma` → `npx prisma migrate dev` →
 `npx prisma generate` → confirm the backend compiles → update this doc,

@@ -90,6 +90,13 @@ enum NotificationType {
   CLAIM_INVITE
 }
 
+enum ClaimRequestStatus {
+  PENDING
+  APPROVED
+  DECLINED
+  CANCELLED
+}
+
 model User {
   id           String @id @default(uuid())
   firstName    String
@@ -107,6 +114,7 @@ model User {
   subjectFeedItems        FeedItem[]              @relation("FeedItemSubjectUser")
   groupHighlights         GroupHighlight[]
   notifications           Notification[]          @relation("NotificationRecipient")
+  claimRequests           ClaimRequest[]          @relation("ClaimRequestRequester")
 
   @@index([email])
 }
@@ -135,6 +143,7 @@ model Group {
   memberStats             GroupMemberStats[]
   groupHighlights         GroupHighlight[]
   notifications           Notification[]
+  claimRequests           ClaimRequest[]
 
 
   @@index([visibility, createdAt])
@@ -210,6 +219,7 @@ model GroupMember {
   stats                 GroupMemberStats?
   groupHighlights         GroupHighlight[]
   claimInvites          GroupInvite[]       @relation("GroupInviteTarget")
+  claimRequests         ClaimRequest[]      @relation("ClaimRequestStub")
 
   @@unique([groupId, userId])
   @@unique([id, groupId])
@@ -570,4 +580,28 @@ model Notification {
 
   @@index([recipientUserId, createdAt])
   @@index([recipientUserId, readAt])
+}
+
+// A request to claim a stub when there's no link — the person asks, any group admin
+// approves/declines. Approval runs the same claim/merge as the link flow. `stub` is
+// SetNull (not Cascade) so the request survives as an audit record after a merge
+// deletes the stub. A partial unique index (one PENDING per stub) is added in the
+// migration SQL — Prisma can't express partial uniques.
+model ClaimRequest {
+  id                String             @id @default(uuid())
+  groupId           String
+  group             Group              @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  stubGroupMemberId String?
+  stub              GroupMember?       @relation("ClaimRequestStub", fields: [stubGroupMemberId], references: [id], onDelete: SetNull)
+  requesterUserId   String
+  requester         User               @relation("ClaimRequestRequester", fields: [requesterUserId], references: [id], onDelete: Cascade)
+  status            ClaimRequestStatus @default(PENDING)
+  resolvedByUserId  String?
+  resolvedAt        DateTime?
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+
+  @@index([groupId, status])
+  @@index([requesterUserId])
+  @@index([stubGroupMemberId])
 }

@@ -5,19 +5,16 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { randomBytes } from 'crypto';
-import type { Prisma } from '../generated/prisma/client';
 import { GroupMemberRole, MatchTeam } from '../generated/prisma/enums';
 import { resolveMemberDisplayName } from '../common/member-display-name';
 import { PrismaService } from '../prisma/prisma.service';
 import { FeedOrchestratorService } from '../feed/feed-orchestrator.service';
 import { GroupHomeSummaryService } from '../groups/group-home-summary.service';
-import { ProcessingJobWriterService } from '../processing/processing-job-writer.service';
-import type { ClaimStubSummary } from './types/claim-summary.type';
+import { ClaimService } from '../claims/claim.service';
 import type {
-  ClaimAdmin,
-  SharedMatch,
-  SharedMatchTeam,
-} from './types/accept-claim-result.type';
+  ClaimRecentMatch,
+  ClaimStubSummary,
+} from '../claims/types/claim-summary.type';
 
 @Injectable()
 export class GroupInvitesService {
@@ -25,7 +22,7 @@ export class GroupInvitesService {
     private readonly prisma: PrismaService,
     private readonly feedOrchestrator: FeedOrchestratorService,
     private readonly groupHomeSummary: GroupHomeSummaryService,
-    private readonly processingJobs: ProcessingJobWriterService,
+    private readonly claims: ClaimService,
   ) {}
 
   async create(
@@ -259,14 +256,12 @@ export class GroupInvitesService {
       }),
     ]);
 
-    const recentMatches = recent.map((matchPlayer) => {
+    const recentMatches: ClaimRecentMatch[] = recent.map((matchPlayer) => {
       const match = matchPlayer.match;
       const isTeamA = matchPlayer.team === MatchTeam.TEAM_A;
       return {
         id: match.id,
-        result: (match.winnerTeam === matchPlayer.team ? 'WIN' : 'LOSS') as
-          | 'WIN'
-          | 'LOSS',
+        result: match.winnerTeam === matchPlayer.team ? 'WIN' : 'LOSS',
         partners: match.players
           .filter((p) => p.team === matchPlayer.team && p.id !== matchPlayer.id)
           .map((p) => resolveMemberDisplayName(p.groupMember)),
@@ -381,26 +376,13 @@ export class GroupInvitesService {
 
       await this.groupHomeSummary.syncGroupSummary(groupId, tx);
 
-      return this.findMembershipResponse(tx, membership.id);
+      return this.claims.findMembershipResponse(tx, membership.id);
     });
   }
 
-  private findMembershipResponse(tx: Prisma.TransactionClient, id: string) {
-    return tx.groupMember.findUnique({
-      where: { id },
-      include: {
-        group: true,
-        user: {
-          select: { id: true, firstName: true, lastName: true, email: true },
-        },
-      },
-    });
-  }
-
-  // Claim path: attach the accepter's account to the stub. Case A (accepter not yet
-  // a member) is a clean userId set with the history kept on the same groupMemberId.
-  // Case B (already a member) merges the stub into that membership — unless the two
-  // ever shared a match, which would make the merged history impossible.
+  // Claim-link path: attach the accepter's account to the stub. The actual claim/merge
+  // (and the shared-match block) is shared with the request/approval flow via
+  // ClaimService; here we only validate the stub and pass the invite to consume.
   private async acceptClaim(
     groupId: string,
     invite: { id: string; targetGroupMemberId: string | null },
@@ -419,223 +401,10 @@ export class GroupInvitesService {
         throw new BadRequestException('Este perfil já foi assumido.');
       }
 
-      const existingMembership = await tx.groupMember.findUnique({
-        where: { groupId_userId: { groupId, userId: user.id } },
+      return this.claims.performClaim(tx, groupId, stub, user, {
+        inviteId: invite.id,
       });
-
-      if (existingMembership) {
-        return this.mergeStubIntoMembership(
-          tx,
-          groupId,
-          invite.id,
-          stub,
-          existingMembership,
-          user.id,
-        );
-      }
-
-      // Atomic single-use guard: only the first claimer matches userId: null, so
-      // two concurrent accepts of the same link can't both take over the stub.
-      const claimed = await tx.groupMember.updateMany({
-        where: { id: stub.id, userId: null },
-        data: { userId: user.id, displayName: null },
-      });
-
-      if (claimed.count === 0) {
-        throw new BadRequestException('Este perfil já foi assumido.');
-      }
-
-      await tx.groupInvite.update({
-        where: { id: invite.id },
-        data: { uses: { increment: 1 }, claimedByUserId: user.id },
-      });
-
-      await this.feedOrchestrator.createMemberJoinedItem(
-        {
-          groupId,
-          displayName: resolveMemberDisplayName({ user }),
-          actorUserId: user.id,
-          actorGroupMemberId: stub.id,
-          occurredAt: new Date(),
-        },
-        tx,
-      );
-
-      await this.groupHomeSummary.syncGroupSummary(groupId, tx);
-
-      return {
-        outcome: 'CLAIMED' as const,
-        membership: await this.findMembershipResponse(tx, stub.id),
-      };
     });
-  }
-
-  // Case B merge: fold the stub's history into the membership the accepter already
-  // has in this group, then remove the stub. Forbidden when the two ever shared a
-  // match — re-pointing the stub's MatchPlayer rows onto the membership would break
-  // @@unique([matchId, groupMemberId]) (one person twice in the same match).
-  private async mergeStubIntoMembership(
-    tx: Prisma.TransactionClient,
-    groupId: string,
-    inviteId: string,
-    stub: {
-      id: string;
-      displayName: string | null;
-      user?: { firstName: string; lastName: string } | null;
-    },
-    membership: { id: string; leftAt: Date | null },
-    userId: string,
-  ) {
-    const stubId = stub.id;
-
-    // A shared match means the two are provably different people — merging would put
-    // one person twice in the same match (breaks @@unique([matchId, groupMemberId])).
-    // This isn't an error: the claim page renders it, so return it as a real outcome.
-    const sharedMatches = await this.findSharedMatches(
-      tx,
-      groupId,
-      stubId,
-      membership.id,
-    );
-
-    if (sharedMatches.length > 0) {
-      return {
-        outcome: 'BLOCKED' as const,
-        stubName: resolveMemberDisplayName(stub),
-        sharedMatches,
-        admins: await this.listGroupAdmins(tx, groupId),
-      };
-    }
-
-    // Move the stub's match history onto the existing membership. This MUST happen
-    // before the stub is deleted — MatchPlayer's FK is onDelete: Restrict, so any
-    // row left on the stub would block the delete. The shared-match guard above
-    // guarantees no @@unique([matchId, groupMemberId]) collision on the re-point.
-    await tx.matchPlayer.updateMany({
-      where: { groupMemberId: stubId, groupId },
-      data: { groupMemberId: membership.id },
-    });
-
-    // Re-point product moments before the stub is deleted (the FK is SetNull, so a
-    // delete would otherwise orphan them). The actor was really this person.
-    await tx.feedItem.updateMany({
-      where: { actorGroupMemberId: stubId },
-      data: { actorGroupMemberId: membership.id },
-    });
-
-    // Reactivate the membership if the accepter had previously left the group.
-    if (membership.leftAt) {
-      await tx.groupMember.update({
-        where: { id: membership.id },
-        data: { leftAt: null },
-      });
-    }
-
-    // Consume the invite and detach it from the stub so it survives as an audit
-    // record (otherwise the stub delete would cascade it away).
-    await tx.groupInvite.update({
-      where: { id: inviteId },
-      data: {
-        uses: { increment: 1 },
-        claimedByUserId: userId,
-        targetGroupMemberId: null,
-      },
-    });
-
-    // Delete the now-empty stub. Its derived rows cascade; the rebuild recomputes
-    // ratings/ranks/stats with the stub's matches now attributed to the membership.
-    // Guarded delete (count, not throw) so a concurrent accept of the same single-use
-    // link gets a clean message instead of a raw "record not found" on the loser.
-    const deleted = await tx.groupMember.deleteMany({
-      where: { id: stubId, userId: null },
-    });
-
-    if (deleted.count === 0) {
-      throw new BadRequestException('Este perfil já foi assumido.');
-    }
-
-    await this.processingJobs.enqueueGroupJob(
-      { type: 'GROUP_RANKING_REBUILD', groupId },
-      tx,
-    );
-
-    return {
-      outcome: 'CLAIMED' as const,
-      membership: await this.findMembershipResponse(tx, membership.id),
-    };
-  }
-
-  // The non-deleted matches in this group where both members played (as partners or
-  // opponents), with each team's players, score and winner — for the conflict screen.
-  private async findSharedMatches(
-    tx: Prisma.TransactionClient,
-    groupId: string,
-    stubId: string,
-    membershipId: string,
-  ): Promise<SharedMatch[]> {
-    const matches = await tx.match.findMany({
-      where: {
-        groupId,
-        deletedAt: null,
-        players: { some: { groupMemberId: stubId } },
-        AND: [{ players: { some: { groupMemberId: membershipId } } }],
-      },
-      orderBy: [{ playedAt: 'desc' }, { createdAt: 'desc' }],
-      include: {
-        players: {
-          orderBy: [{ team: 'asc' }, { position: 'asc' }],
-          include: {
-            groupMember: {
-              select: {
-                displayName: true,
-                user: { select: { firstName: true, lastName: true } },
-              },
-            },
-          },
-        },
-      },
-    });
-
-    return matches.map((match) => {
-      const buildTeam = (team: MatchTeam): SharedMatchTeam => ({
-        team,
-        score: team === MatchTeam.TEAM_A ? match.gamesA : match.gamesB,
-        won: match.winnerTeam === team,
-        players: match.players
-          .filter((player) => player.team === team)
-          .map((player) => ({
-            name: resolveMemberDisplayName(player.groupMember),
-            isStub: player.groupMemberId === stubId,
-            isYou: player.groupMemberId === membershipId,
-          })),
-      });
-
-      return {
-        id: match.id,
-        playedAt: match.playedAt,
-        teams: [buildTeam(MatchTeam.TEAM_A), buildTeam(MatchTeam.TEAM_B)],
-      };
-    });
-  }
-
-  // The group's admins, for the "fale com um admin" contact chips on the conflict screen.
-  private async listGroupAdmins(
-    tx: Prisma.TransactionClient,
-    groupId: string,
-  ): Promise<ClaimAdmin[]> {
-    const admins = await tx.groupMember.findMany({
-      where: { groupId, role: GroupMemberRole.ADMIN, leftAt: null },
-      select: {
-        id: true,
-        displayName: true,
-        user: { select: { firstName: true, lastName: true } },
-      },
-    });
-
-    return admins.map((admin) => ({
-      groupMemberId: admin.id,
-      name: resolveMemberDisplayName(admin),
-    }));
   }
 
   async acceptByToken(token: string, body: { userId: string }) {

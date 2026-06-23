@@ -131,6 +131,15 @@ never re-render), and read state (`readAt`, `actedAt`). Not derived — written
 directly when the triggering event happens. Powers the claim request/approval flow
 ([`../product/profile-claim.md`](../product/profile-claim.md)).
 
+### ClaimRequest
+
+A request to claim a stub when there's no link: a person asks, any group admin approves
+(running the same claim/merge as the link flow) or declines. `group` (cascade), `stub`
+(→GroupMember, **SetNull** so the request survives the merge that deletes the stub),
+`requester` (→User, cascade), `status` (`PENDING`/`APPROVED`/`DECLINED`/`CANCELLED`),
+`resolvedByUserId`/`resolvedAt`. A partial-unique index enforces one PENDING request per
+stub. The claim/merge core itself is shared with the link flow via `ClaimService`.
+
 ---
 
 ## 3. Derived read models (rebuilt by projections)
