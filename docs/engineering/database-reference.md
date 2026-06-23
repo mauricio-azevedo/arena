@@ -33,6 +33,7 @@ For operational guidance (Neon, migrations, resets) see
 | `FeedItemScope` | `GROUP`, `USER` |
 | `FeedItemVisibility` | `GROUP_MEMBERS`, `SOCIAL_CIRCLE`, `PUBLIC`, `PRIVATE` |
 | `HighlightType` | `WIN_STREAK_CURRENT`, `WIN_STREAK_RECORD`, `CLIMB`, `LEADERSHIP`, `MILESTONE_MATCHES`, `MILESTONE_WINS` |
+| `NotificationType` | `CLAIM_REQUEST`, `CLAIM_APPROVED`, `CLAIM_DECLINED`, `CLAIM_INVITE` |
 
 ---
 
@@ -181,6 +182,21 @@ Unique: `[type, matchId]` (idempotent match-derived items). Indexes on
 `[type, occurredAt]`, `[importanceScore, occurredAt]`, `[actorUserId, occurredAt]`,
 `[subjectUserId, occurredAt]`, `[actorGroupMemberId, occurredAt]`, `[matchId]`.
 
+### Notification
+| Column | Type | Notes |
+| --- | --- | --- |
+| `id` | uuid PK | |
+| `type` | `NotificationType` | |
+| `recipientUserId` | FK→User | `Cascade`; who receives it |
+| `groupId` | FK→Group? | `Cascade` |
+| `actorUserId` | FK→User? | nullable, no FK relation back |
+| `data` | Json | denormalized render payload (title/body/meta/actions), frozen at write |
+| `readAt` | DateTime? | null = unread |
+| `actedAt` | DateTime? | set when the recipient acts (approve/decline/claim) |
+| `createdAt` | DateTime | |
+Per-user in-app inbox (unlike `FeedItem`, which is group-public with no recipient or
+read state). Indexes on `[recipientUserId, createdAt]`, `[recipientUserId, readAt]`.
+
 ---
 
 ## 3. Migration history
@@ -208,6 +224,9 @@ present). Chronological highlights — each row tells you when a capability land
 | `20260617024500_add_processing_job_live_dedupe_index` | pending-job dedupe index |
 | `20260621033753_add_group_highlights` | `GroupHighlight` + `HighlightType` enum |
 | `20260621043745_retire_platform_trending` | drop `PlatformTrendingPlayer` (PLATFORM enum values deprecated in place) |
+| `20260621212123_group_member_stub_players` | `GroupMember.displayName` + nullable `userId` (stub players) |
+| `20260621232855_group_invite_claim_target` | `GroupInvite.targetGroupMemberId`/`claimedByUserId` (CLAIM invites) |
+| `20260623014023_add_notifications` | `Notification` + `NotificationType` enum (in-app inbox) |
 
 When changing the schema: edit `schema.prisma` → `npx prisma migrate dev` →
 `npx prisma generate` → confirm the backend compiles → update this doc,

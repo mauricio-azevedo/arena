@@ -83,6 +83,13 @@ enum FeedItemVisibility {
   PRIVATE
 }
 
+enum NotificationType {
+  CLAIM_REQUEST
+  CLAIM_APPROVED
+  CLAIM_DECLINED
+  CLAIM_INVITE
+}
+
 model User {
   id           String @id @default(uuid())
   firstName    String
@@ -99,6 +106,7 @@ model User {
   actorFeedItems          FeedItem[]              @relation("FeedItemActorUser")
   subjectFeedItems        FeedItem[]              @relation("FeedItemSubjectUser")
   groupHighlights         GroupHighlight[]
+  notifications           Notification[]          @relation("NotificationRecipient")
 
   @@index([email])
 }
@@ -126,6 +134,7 @@ model Group {
   homeSummary             GroupHomeSummary?
   memberStats             GroupMemberStats[]
   groupHighlights         GroupHighlight[]
+  notifications           Notification[]
 
 
   @@index([visibility, createdAt])
@@ -540,4 +549,25 @@ model FeedItem {
   @@index([subjectUserId, occurredAt])
   @@index([actorGroupMemberId, occurredAt])
   @@index([matchId])
+}
+
+// Per-user in-app notification. Unlike FeedItem (group-public activity, no recipient,
+// no read state), this targets one user and tracks read/acted. `data` is a denormalized
+// render payload (names, counts, deep-link refs) so the inbox needs no joins and old
+// notifications keep rendering even after the entities they describe change.
+model Notification {
+  id              String           @id @default(uuid())
+  type            NotificationType
+  recipientUserId String
+  recipientUser   User             @relation("NotificationRecipient", fields: [recipientUserId], references: [id], onDelete: Cascade)
+  groupId         String?
+  group           Group?           @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  actorUserId     String?
+  data            Json             @default("{}")
+  readAt          DateTime?
+  actedAt         DateTime?
+  createdAt       DateTime         @default(now())
+
+  @@index([recipientUserId, createdAt])
+  @@index([recipientUserId, readAt])
 }

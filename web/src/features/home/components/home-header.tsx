@@ -2,11 +2,11 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Bell } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Meta, Title } from '@/components/ui/text';
 import { getMe } from '@/features/auth/api/auth.api';
 import { getAccessToken } from '@/lib/auth';
+import { NotificationBell } from '@/features/notifications/components/notification-bell';
 
 function greeting() {
   const hour = new Date().getHours();
@@ -63,14 +63,7 @@ export function HomeHeader() {
         </div>
 
         {isLoggedIn ? (
-          // Placeholder: notificações ainda não existem; botão inerte.
-          <button
-            type="button"
-            aria-label="Notificações"
-            className="flex size-11 shrink-0 items-center justify-center rounded-full bg-surface text-foreground shadow-hairline transition-transform active:scale-95"
-          >
-            <Bell className="size-5" strokeWidth={2} aria-hidden />
-          </button>
+          <NotificationBell />
         ) : (
           <Button asChild size="lg">
             <Link href="/login">Entrar</Link>

@@ -121,18 +121,28 @@ The job-queue table that drives the async pipeline. `type`
 `lockedAt`, `lockedBy`, `lastError`, `processedAt`). See
 [`processing-jobs.md`](./processing-jobs.md).
 
+### Notification
+
+Per-user in-app notification — the opposite of `FeedItem` (which is group-public
+with no recipient). `type` (`CLAIM_REQUEST`, `CLAIM_APPROVED`, `CLAIM_DECLINED`,
+`CLAIM_INVITE`), `recipientUser` (cascade), optional `group`/`actorUserId`, a
+denormalized `data` (JSON: title/body/meta/actions, frozen at write so old messages
+never re-render), and read state (`readAt`, `actedAt`). Not derived — written
+directly when the triggering event happens. Powers the claim request/approval flow
+([`../product/profile-claim.md`](../product/profile-claim.md)).
+
 ---
 
 ## 3. Derived read models (rebuilt by projections)
 
-| Model | Grain | Rebuilt by | Holds |
-| ----- | ----- | ---------- | ----- |
-| `MatchRankingSnapshot` | 1 per match | rating projection | `previousLeaders`, `currentLeaders`, `dethronedLeaders`, `movements` (JSON), `algorithmVersion` |
-| `RankingMovement` | 1 per (match, member) | ranking-movement service | `direction`, `positions`, prev/current rank+rating, `passedGroupMemberIds`, `isVisible`, `occurredAt`, `invalidatedAt` |
-| `GroupMemberStats` | 1 per member | stats projection | `matchesCount`, `winsCount` |
-| `GroupRankingProjection` | 1 per group | projection status tracker | `status`, `version`, `lastProcessedMatchId/At`, `lastError` |
-| `GroupHomeSummary` | 1 per group | home-summary service | `membersCount`, `leaders` (JSON), `lastRelevantFeedItem`, `projectionStatus` |
-| `GroupHighlight` | 1 per (member, type) | weekly-highlights projection | `type` (six achievements), `value`, `score`, `anchorAt` (7-day window key), `algorithmVersion` — powers the home "Essa semana" rail |
+| Model                    | Grain                 | Rebuilt by                   | Holds                                                                                                                               |
+| ------------------------ | --------------------- | ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| `MatchRankingSnapshot`   | 1 per match           | rating projection            | `previousLeaders`, `currentLeaders`, `dethronedLeaders`, `movements` (JSON), `algorithmVersion`                                     |
+| `RankingMovement`        | 1 per (match, member) | ranking-movement service     | `direction`, `positions`, prev/current rank+rating, `passedGroupMemberIds`, `isVisible`, `occurredAt`, `invalidatedAt`              |
+| `GroupMemberStats`       | 1 per member          | stats projection             | `matchesCount`, `winsCount`                                                                                                         |
+| `GroupRankingProjection` | 1 per group           | projection status tracker    | `status`, `version`, `lastProcessedMatchId/At`, `lastError`                                                                         |
+| `GroupHomeSummary`       | 1 per group           | home-summary service         | `membersCount`, `leaders` (JSON), `lastRelevantFeedItem`, `projectionStatus`                                                        |
+| `GroupHighlight`         | 1 per (member, type)  | weekly-highlights projection | `type` (six achievements), `value`, `score`, `anchorAt` (7-day window key), `algorithmVersion` — powers the home "Essa semana" rail |
 
 These are caches for fast reads and stored historical truth. If they look wrong,
 the fix is usually to re-run the relevant projection (enqueue a
@@ -170,4 +180,4 @@ rows.
 - **Algorithm versioning**: rating-bearing rows carry `ratingAlgorithm` /
   `algorithmVersion` (`BEACH_ELO_V1`) so future migrations can identify the
   producer.
-</content>
+  </content>

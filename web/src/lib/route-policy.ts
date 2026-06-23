@@ -74,6 +74,16 @@ export function getRoutePolicy(pathname: string): RoutePolicy {
     };
   }
 
+  if (normalizedPathname === '/notifications') {
+    return {
+      access: {
+        kind: 'auth',
+        requiresCheck: true,
+      },
+      chrome: primaryAppChrome,
+    };
+  }
+
   const inviteMatch = normalizedPathname.match(/^\/groups\/([^/]+)\/invite$/);
 
   if (inviteMatch?.[1]) {
