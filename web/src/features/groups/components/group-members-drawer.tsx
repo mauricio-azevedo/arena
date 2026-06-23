@@ -58,12 +58,22 @@ export function GroupMembersDrawer({
     null,
   );
   const [inviteOpen, setInviteOpen] = useState(false);
-  const [inviteTarget, setInviteTarget] = useState<{ memberId: string; name: string } | null>(null);
+  const [inviteTarget, setInviteTarget] = useState<{
+    memberId: string;
+    name: string;
+    key: number;
+  } | null>(null);
 
   function openProfile(memberId: string) {
     seq.current += 1;
     setProfileTarget({ memberId, key: seq.current });
     setProfileOpen(true);
+  }
+
+  function openInvite(memberId: string, name: string) {
+    seq.current += 1;
+    setInviteTarget({ memberId, name, key: seq.current });
+    setInviteOpen(true);
   }
 
   function rankOf(memberId: string): number | undefined {
@@ -116,10 +126,7 @@ export function GroupMembersDrawer({
                   {isStub && isAdmin ? (
                     <button
                       type="button"
-                      onClick={() => {
-                        setInviteTarget({ memberId: member.id, name: fullName });
-                        setInviteOpen(true);
-                      }}
+                      onClick={() => openInvite(member.id, fullName)}
                       className={cn(
                         'relative z-10 flex shrink-0 items-center gap-1.5 rounded-pill bg-brand px-3 py-1.5 text-brand-foreground shadow-button transition-opacity active:opacity-90',
                         TOUCH_TARGET_48,
@@ -167,6 +174,7 @@ export function GroupMembersDrawer({
           <DrawerContent aria-describedby={undefined} size="fit">
             {inviteTarget && (
               <StubClaimEmailPanel
+                key={inviteTarget.key}
                 groupId={groupId}
                 memberId={inviteTarget.memberId}
                 stubName={inviteTarget.name}

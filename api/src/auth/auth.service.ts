@@ -7,6 +7,8 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { PrismaService } from '../prisma/prisma.service';
+import { structuredLog } from '../observability/structured-log';
+import { claimOfferNotificationData } from '../claim-offers/claim-offer-notification';
 
 const SALT_ROUNDS = 10;
 
@@ -61,8 +63,17 @@ export class AuthService {
       select: this.userSelect(),
     });
 
-    // A stub may have been waiting for this email — offer it now (never auto-claims).
-    await this.notifyPendingClaimOffers(user.id, email);
+    // A stub may have been waiting for this email — offer it now (never auto-claims). A
+    // best-effort side effect: its failure must never fail the registration the user just
+    // completed (the account is already committed; failing here would lock them out).
+    try {
+      await this.notifyPendingClaimOffers(user.id, email);
+    } catch (error) {
+      structuredLog('auth.claim_offer_notify_failed', {
+        userId: user.id,
+        error: error instanceof Error ? error.message : String(error),
+      });
+    }
 
     return {
       user,
@@ -94,12 +105,7 @@ export class AuthService {
             recipientUserId: userId,
             groupId: stub.group.id,
             targetGroupMemberId: stub.id,
-            data: {
-              title: `Você foi convidado pro ${stub.group.name}`,
-              body: 'E já tem partidas suas registradas lá — entre e elas viram suas.',
-              meta: 'convite',
-              actions: [{ label: 'Ver', href: `/claim/${stub.id}` }],
-            },
+            data: claimOfferNotificationData(stub.id, stub.group.name),
           },
         }),
         this.prisma.groupMember.update({

@@ -1,4 +1,4 @@
-import { Fragment, type ReactNode } from 'react';
+import { Fragment } from 'react';
 import { cn } from '@/lib/utils';
 import { Label, Meta, Overline, Stat } from '@/components/ui/text';
 import { avatarBgClass, nameInitial } from '@/lib/avatar';
@@ -38,43 +38,6 @@ export function DashedAvatar({ initial, className }: { initial: string; classNam
       )}
     >
       {initial}
-    </div>
-  );
-}
-
-// One side of a "stub → you" merge preview: a card with an avatar and a labelled name.
-// Shared by the claim landing and the admin approval-request review.
-export function PreviewCard({ children, accent }: { children: ReactNode; accent?: boolean }) {
-  return (
-    <div
-      className={
-        accent
-          ? 'flex min-w-0 flex-1 flex-col items-center gap-2 rounded-3xl bg-brand/10 px-2 py-3.5 shadow-[inset_0_0_0_1.5px_var(--brand)]'
-          : 'flex min-w-0 flex-1 flex-col items-center gap-2 rounded-3xl bg-surface px-2 py-3.5 shadow-hairline'
-      }
-    >
-      {children}
-    </div>
-  );
-}
-
-export function PreviewName({
-  name,
-  sub,
-  accent,
-}: {
-  name: string;
-  sub: string;
-  accent?: boolean;
-}) {
-  return (
-    <div className="w-full min-w-0 text-center">
-      <Label className="block truncate text-foreground">{name}</Label>
-      <Meta
-        className={accent ? 'block truncate text-brand' : 'block truncate text-faint-foreground'}
-      >
-        {sub}
-      </Meta>
     </div>
   );
 }

@@ -133,6 +133,7 @@ export function MemberProfileContent({
 
   const isStub = profile.userId === null;
   const isViewerAdmin = viewerRole === 'ADMIN';
+  const roleTag = memberRoleTag(profile);
   const currentUserId = getCurrentUserIdFromAccessToken();
   const isYou = profile.userId !== null && profile.userId === currentUserId;
   // Rank comes from the live ranking only (active members). A member not in it —
@@ -160,10 +161,10 @@ export function MemberProfileContent({
             <span
               className={cn(
                 'shrink-0 rounded-lg px-2 py-1 text-[10px] font-extrabold uppercase tracking-wide',
-                memberRoleTag(profile).className,
+                roleTag.className,
               )}
             >
-              {memberRoleTag(profile).label}
+              {roleTag.label}
             </span>
           )}
         </div>

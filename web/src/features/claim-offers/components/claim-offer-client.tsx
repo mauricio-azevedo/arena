@@ -88,11 +88,13 @@ export function ClaimOfferClient({ stubId }: Props) {
   async function handleDecline() {
     const token = getAccessToken();
     if (!token) return;
+    setError('');
     setPending(true);
     try {
       await declineClaimOffer(token, stubId);
       setDeclined(true);
     } catch {
+      setError('Não foi possível agora. Tente novamente.');
       setPending(false);
     }
   }

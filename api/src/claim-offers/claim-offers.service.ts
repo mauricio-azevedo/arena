@@ -3,7 +3,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import type { Prisma } from '../generated/prisma/client';
+import { Prisma } from '../generated/prisma/client';
 import {
   ClaimEmailStatus,
   GroupMemberRole,
@@ -18,6 +18,7 @@ import type {
   ClaimEmailState,
   ClaimOfferDetail,
 } from './types/claim-offer.types';
+import { claimOfferNotificationData } from './claim-offer-notification';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -108,6 +109,36 @@ export class ClaimOffersService {
       stub.claimEmailStatus === ClaimEmailStatus.PENDING;
     const keptNotifiedAt = samePending ? stub.claimEmailNotifiedAt : null;
 
+    try {
+      return await this.runSetClaimEmail(
+        stub,
+        email,
+        user,
+        samePending,
+        keptNotifiedAt,
+      );
+    } catch (error) {
+      // A concurrent set of the same email to another stub races past the clash pre-check
+      // and trips @@unique([groupId, claimEmail]) — surface the clean message, not a 500.
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === 'P2002'
+      ) {
+        throw new BadRequestException(
+          'Esse email já está vinculado a outro perfil neste grupo.',
+        );
+      }
+      throw error;
+    }
+  }
+
+  private runSetClaimEmail(
+    stub: { id: string; claimEmail: string | null },
+    email: string,
+    user: { id: string } | null,
+    samePending: boolean,
+    keptNotifiedAt: Date | null,
+  ) {
     return this.prisma.$transaction(async (tx) => {
       // Changing the anchored email supersedes any prior offer — retire its notification
       // before issuing the new one (a no-op when the email is unchanged).
@@ -292,33 +323,13 @@ export class ClaimOffersService {
         viewer,
       );
 
-      // Either outcome resolves this person's offer — retire its inbox notification.
+      // Either outcome resolves this person's offer — retire its inbox notification and
+      // free the anchor on the (case-A) row; for a merge the row is already gone (0 rows).
       await this.notifications.markActedByTarget(
         NotificationType.CLAIM_OFFER,
         stub.id,
         tx,
       );
-
-      if (result.outcome === 'BLOCKED') {
-        // Race: a shared match was logged after the email was set. Retire the offer and
-        // tell the admins; the person sees the conflict from the returned payload.
-        await tx.groupMember.updateMany({
-          where: { id: stub.id },
-          data: {
-            claimEmail: null,
-            claimEmailStatus: null,
-            claimEmailNotifiedAt: null,
-          },
-        });
-        await this.notifyAdmins(tx, stub.groupId, {
-          title: `Não deu pra vincular ${resolveMemberDisplayName(stub)}`,
-          body: 'A pessoa convidada e esse perfil jogaram a mesma partida, então não pode ser a mesma conta.',
-          meta: 'conflito',
-        });
-        return result;
-      }
-
-      // CLAIMED — free the anchor on the case-A row (for a merge the row is already gone).
       await tx.groupMember.updateMany({
         where: { id: stub.id },
         data: {
@@ -327,6 +338,17 @@ export class ClaimOffersService {
           claimEmailNotifiedAt: null,
         },
       });
+
+      if (result.outcome === 'BLOCKED') {
+        // Race: a shared match was logged after the email was set. The person sees the
+        // conflict from the returned payload; tell the admins it couldn't be linked.
+        await this.notifyAdmins(tx, stub.groupId, {
+          title: `Não deu pra vincular ${resolveMemberDisplayName(stub)}`,
+          body: 'A pessoa convidada e esse perfil jogaram a mesma partida, então não pode ser a mesma conta.',
+          meta: 'conflito',
+        });
+      }
+
       return result;
     });
   }
@@ -400,12 +422,7 @@ export class ClaimOffersService {
         recipientUserId,
         groupId: stub.group.id,
         targetGroupMemberId: stubId,
-        data: {
-          title: `Você foi convidado pro ${stub.group.name}`,
-          body: 'E já tem partidas suas registradas lá — entre e elas viram suas.',
-          meta: 'convite',
-          actions: [{ label: 'Ver', href: `/claim/${stubId}` }],
-        },
+        data: claimOfferNotificationData(stubId, stub.group.name),
       },
       tx,
     );
