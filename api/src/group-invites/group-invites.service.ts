@@ -5,17 +5,12 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { randomBytes } from 'crypto';
-import { GroupMemberRole, MatchTeam } from '../generated/prisma/enums';
+import { GroupMemberRole } from '../generated/prisma/enums';
 import { resolveMemberDisplayName } from '../common/member-display-name';
-import { requireGroupAdmin } from '../common/require-group-admin';
 import { PrismaService } from '../prisma/prisma.service';
 import { FeedOrchestratorService } from '../feed/feed-orchestrator.service';
 import { GroupHomeSummaryService } from '../groups/group-home-summary.service';
 import { ClaimService } from '../claims/claim.service';
-import type {
-  ClaimRecentMatch,
-  ClaimStubSummary,
-} from '../claims/types/claim-summary.type';
 
 @Injectable()
 export class GroupInvitesService {
@@ -26,6 +21,8 @@ export class GroupInvitesService {
     private readonly claims: ClaimService,
   ) {}
 
+  // A regular group JOIN invite (admin-only). Claiming a stub is a separate flow
+  // (email-anchored, see claim-offers).
   async create(
     groupId: string,
     body: {
@@ -102,51 +99,6 @@ export class GroupInvitesService {
     };
   }
 
-  // Generates a single-use CLAIM link for a stub player (jogador sem conta): whoever
-  // opens it and signs in attaches their account to that GroupMember. Admin-only —
-  // handing out a claim link is vouching that the holder is that player.
-  async createClaimLink(
-    groupId: string,
-    memberId: string,
-    requesterUserId: string,
-  ) {
-    const group = await this.prisma.group.findUnique({
-      where: { id: groupId },
-    });
-
-    if (!group) {
-      throw new NotFoundException('Group not found');
-    }
-
-    await requireGroupAdmin(this.prisma, groupId, requesterUserId);
-
-    const member = await this.prisma.groupMember.findUnique({
-      where: { id: memberId },
-    });
-
-    if (!member || member.groupId !== groupId || member.leftAt) {
-      throw new NotFoundException('Member not found in this group');
-    }
-
-    if (member.userId !== null) {
-      throw new BadRequestException('Este jogador já tem uma conta vinculada.');
-    }
-
-    const token = randomBytes(24).toString('hex');
-
-    const invite = await this.prisma.groupInvite.create({
-      data: {
-        groupId,
-        createdById: requesterUserId,
-        token,
-        targetGroupMemberId: memberId,
-        maxUses: 1,
-      },
-    });
-
-    return { ...invite, path: `/claim/${invite.token}` };
-  }
-
   async findByToken(token: string) {
     const invite = await this.prisma.groupInvite.findUnique({
       where: { token },
@@ -169,16 +121,6 @@ export class GroupInvitesService {
             email: true,
           },
         },
-        targetGroupMember: {
-          select: {
-            id: true,
-            userId: true,
-            displayName: true,
-            rating: true,
-            currentRank: true,
-            user: { select: { firstName: true, lastName: true } },
-          },
-        },
       },
     });
 
@@ -198,85 +140,7 @@ export class GroupInvitesService {
       throw new BadRequestException('Invite has reached the usage limit');
     }
 
-    if (invite.targetGroupMember && invite.targetGroupMember.userId !== null) {
-      throw new BadRequestException('Este perfil já foi assumido.');
-    }
-
-    return {
-      ...invite,
-      kind: invite.targetGroupMemberId ? ('CLAIM' as const) : ('JOIN' as const),
-      targetDisplayName: invite.targetGroupMember
-        ? resolveMemberDisplayName(invite.targetGroupMember)
-        : null,
-      stub: invite.targetGroupMember
-        ? await this.getStubClaimSummary(invite.targetGroupMember)
-        : null,
-    };
-  }
-
-  // The stub's recognizable history for the claim page: where it sits, its rating, and
-  // its last few matches with partner/opponents resolved from the stub's own side.
-  private async getStubClaimSummary(stub: {
-    id: string;
-    displayName: string | null;
-    rating: number;
-    currentRank: number | null;
-    user: { firstName: string; lastName: string } | null;
-  }): Promise<ClaimStubSummary> {
-    const [matchesCount, recent] = await Promise.all([
-      this.prisma.matchPlayer.count({
-        where: { groupMemberId: stub.id, match: { deletedAt: null } },
-      }),
-      this.prisma.matchPlayer.findMany({
-        where: { groupMemberId: stub.id, match: { deletedAt: null } },
-        orderBy: [{ playedAt: 'desc' }, { createdAt: 'desc' }],
-        take: 3,
-        include: {
-          match: {
-            include: {
-              players: {
-                orderBy: [{ team: 'asc' }, { position: 'asc' }],
-                include: {
-                  groupMember: {
-                    select: {
-                      displayName: true,
-                      user: { select: { firstName: true, lastName: true } },
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      }),
-    ]);
-
-    const recentMatches: ClaimRecentMatch[] = recent.map((matchPlayer) => {
-      const match = matchPlayer.match;
-      const isTeamA = matchPlayer.team === MatchTeam.TEAM_A;
-      return {
-        id: match.id,
-        result: match.winnerTeam === matchPlayer.team ? 'WIN' : 'LOSS',
-        partners: match.players
-          .filter((p) => p.team === matchPlayer.team && p.id !== matchPlayer.id)
-          .map((p) => resolveMemberDisplayName(p.groupMember)),
-        opponents: match.players
-          .filter((p) => p.team !== matchPlayer.team)
-          .map((p) => resolveMemberDisplayName(p.groupMember)),
-        scoreFor: isTeamA ? match.gamesA : match.gamesB,
-        scoreAgainst: isTeamA ? match.gamesB : match.gamesA,
-        playedAt: match.playedAt,
-      };
-    });
-
-    return {
-      groupMemberId: stub.id,
-      displayName: resolveMemberDisplayName(stub),
-      rank: stub.currentRank,
-      rating: stub.rating,
-      matchesCount,
-      recentMatches,
-    };
+    return invite;
   }
 
   async accept(groupId: string, token: string, body: { userId: string }) {
@@ -313,10 +177,6 @@ export class GroupInvitesService {
 
     if (invite.maxUses !== null && invite.uses >= invite.maxUses) {
       throw new BadRequestException('Invite has reached the usage limit');
-    }
-
-    if (invite.targetGroupMemberId) {
-      return this.acceptClaim(groupId, invite, user);
     }
 
     return this.prisma.$transaction(async (tx) => {
@@ -372,33 +232,6 @@ export class GroupInvitesService {
       await this.groupHomeSummary.syncGroupSummary(groupId, tx);
 
       return this.claims.findMembershipResponse(tx, membership.id);
-    });
-  }
-
-  // Claim-link path: attach the accepter's account to the stub. The actual claim/merge
-  // (and the shared-match block) is shared with the request/approval flow via
-  // ClaimService; here we only validate the stub and pass the invite to consume.
-  private async acceptClaim(
-    groupId: string,
-    invite: { id: string; targetGroupMemberId: string | null },
-    user: { id: string; firstName: string; lastName: string },
-  ) {
-    return this.prisma.$transaction(async (tx) => {
-      const stub = await tx.groupMember.findUnique({
-        where: { id: invite.targetGroupMemberId as string },
-      });
-
-      if (!stub || stub.groupId !== groupId || stub.leftAt) {
-        throw new NotFoundException('Perfil não encontrado');
-      }
-
-      if (stub.userId !== null) {
-        throw new BadRequestException('Este perfil já foi assumido.');
-      }
-
-      return this.claims.performClaim(tx, groupId, stub, user, {
-        inviteId: invite.id,
-      });
     });
   }
 

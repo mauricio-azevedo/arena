@@ -61,10 +61,54 @@ export class AuthService {
       select: this.userSelect(),
     });
 
+    // A stub may have been waiting for this email — offer it now (never auto-claims).
+    await this.notifyPendingClaimOffers(user.id, email);
+
     return {
       user,
       accessToken: this.signToken(user.id, user.email),
     };
+  }
+
+  // Stubs an admin anchored to this email but couldn't notify yet (no account existed).
+  // Now that the account exists, send the same claim offer it would have gotten then.
+  private async notifyPendingClaimOffers(userId: string, email: string) {
+    const stubs = await this.prisma.groupMember.findMany({
+      where: {
+        claimEmail: email,
+        userId: null,
+        claimEmailStatus: 'PENDING',
+        claimEmailNotifiedAt: null,
+      },
+      select: {
+        id: true,
+        displayName: true,
+        group: { select: { id: true, name: true } },
+      },
+    });
+
+    for (const stub of stubs) {
+      const stubName = stub.displayName ?? 'esse perfil';
+      await this.prisma.$transaction([
+        this.prisma.notification.create({
+          data: {
+            type: 'CLAIM_OFFER',
+            recipientUserId: userId,
+            groupId: stub.group.id,
+            data: {
+              title: `Você foi adicionado como ${stubName} em ${stub.group.name}`,
+              body: 'É você? Confirme para assumir o histórico desse perfil.',
+              meta: 'convite do grupo',
+              actions: [{ label: 'Ver', href: `/claim/${stub.id}` }],
+            },
+          },
+        }),
+        this.prisma.groupMember.update({
+          where: { id: stub.id },
+          data: { claimEmailNotifiedAt: new Date() },
+        }),
+      ]);
+    }
   }
 
   async login(body: { email: string; password: string }) {

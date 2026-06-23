@@ -11,6 +11,10 @@ import type {
   SharedMatch,
   SharedMatchTeam,
 } from './types/claim-result.type';
+import type {
+  ClaimRecentMatch,
+  ClaimStubSummary,
+} from './types/claim-summary.type';
 
 type PrismaClientLike = Prisma.TransactionClient | PrismaService;
 
@@ -22,16 +26,10 @@ type ClaimStub = {
   user?: { firstName: string; lastName: string } | null;
 };
 
-type PerformClaimOptions = {
-  // When the claim is authorized by a single-use link, the invite to consume.
-  // Absent for admin-approved requests, which carry their own authorization.
-  inviteId?: string;
-};
-
-// The core of "attach this account to this stub", shared by the claim-link flow
-// (group-invites) and the request/approval flow (claim-requests). Case A (the person
-// isn't a member yet) is a clean userId set; case B (already a member) merges the stub
-// into that membership — unless the two ever shared a match, which makes it impossible.
+// The core of "attach this account to this stub", driven by the email-anchored claim
+// confirm (claim-offers). Case A (the person isn't a member yet) is a clean userId set;
+// case B (already a member) merges the stub into that membership — unless the two ever
+// shared a match, which makes it impossible.
 @Injectable()
 export class ClaimService {
   constructor(
@@ -46,7 +44,6 @@ export class ClaimService {
     groupId: string,
     stub: ClaimStub,
     user: ClaimUser,
-    options: PerformClaimOptions = {},
   ) {
     const existingMembership = await tx.groupMember.findUnique({
       where: { groupId_userId: { groupId, userId: user.id } },
@@ -58,8 +55,6 @@ export class ClaimService {
         groupId,
         stub,
         existingMembership,
-        user,
-        options,
       );
     }
 
@@ -72,15 +67,6 @@ export class ClaimService {
 
     if (claimed.count === 0) {
       throw new BadRequestException('Este perfil já foi assumido.');
-    }
-
-    await this.cancelStalePendingRequests(tx, stub.id);
-
-    if (options.inviteId) {
-      await tx.groupInvite.update({
-        where: { id: options.inviteId },
-        data: { uses: { increment: 1 }, claimedByUserId: user.id },
-      });
     }
 
     await this.feedOrchestrator.createMemberJoinedItem(
@@ -111,8 +97,6 @@ export class ClaimService {
     groupId: string,
     stub: ClaimStub,
     membership: { id: string; leftAt: Date | null },
-    user: ClaimUser,
-    options: PerformClaimOptions,
   ) {
     const sharedMatches = await this.findSharedMatches(
       tx,
@@ -129,10 +113,6 @@ export class ClaimService {
         admins: await this.listGroupAdmins(tx, groupId),
       };
     }
-
-    // The stub is being claimed — cancel any open request for it BEFORE the delete
-    // (its FK is SetNull, so after the delete the where clause wouldn't match).
-    await this.cancelStalePendingRequests(tx, stub.id);
 
     // Move the stub's match history onto the existing membership. This MUST happen
     // before the stub is deleted — MatchPlayer's FK is onDelete: Restrict, so any row
@@ -158,19 +138,6 @@ export class ClaimService {
       });
     }
 
-    // Consume the invite (link flow only) and detach it from the stub so it survives as
-    // an audit record (otherwise the stub delete would cascade it away).
-    if (options.inviteId) {
-      await tx.groupInvite.update({
-        where: { id: options.inviteId },
-        data: {
-          uses: { increment: 1 },
-          claimedByUserId: user.id,
-          targetGroupMemberId: null,
-        },
-      });
-    }
-
     // Delete the now-empty stub. Its derived rows cascade; the rebuild recomputes
     // ratings/ranks/stats with the stub's matches now attributed to the membership.
     // Guarded delete (count, not throw) so a concurrent claim gets a clean message.
@@ -193,17 +160,69 @@ export class ClaimService {
     };
   }
 
-  // Once a stub is claimed, an open request to claim it can never succeed — cancel it
-  // so its notification and the admin review screen reflect that it's resolved instead
-  // of still offering "Aprovar". (The partial-unique index means at most one is pending.)
-  private cancelStalePendingRequests(
-    tx: Prisma.TransactionClient,
-    stubId: string,
-  ) {
-    return tx.claimRequest.updateMany({
-      where: { stubGroupMemberId: stubId, status: 'PENDING' },
-      data: { status: 'CANCELLED', resolvedAt: new Date() },
+  // The stub's recognizable history for the confirm screen: rank, rating, and its last
+  // few matches with partner/opponents resolved from the stub's own side.
+  async getStubClaimSummary(stub: {
+    id: string;
+    displayName: string | null;
+    rating: number;
+    currentRank: number | null;
+    user: { firstName: string; lastName: string } | null;
+  }): Promise<ClaimStubSummary> {
+    const [matchesCount, recent] = await Promise.all([
+      this.prisma.matchPlayer.count({
+        where: { groupMemberId: stub.id, match: { deletedAt: null } },
+      }),
+      this.prisma.matchPlayer.findMany({
+        where: { groupMemberId: stub.id, match: { deletedAt: null } },
+        orderBy: [{ playedAt: 'desc' }, { createdAt: 'desc' }],
+        take: 3,
+        include: {
+          match: {
+            include: {
+              players: {
+                orderBy: [{ team: 'asc' }, { position: 'asc' }],
+                include: {
+                  groupMember: {
+                    select: {
+                      displayName: true,
+                      user: { select: { firstName: true, lastName: true } },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      }),
+    ]);
+
+    const recentMatches: ClaimRecentMatch[] = recent.map((matchPlayer) => {
+      const match = matchPlayer.match;
+      const isTeamA = matchPlayer.team === MatchTeam.TEAM_A;
+      return {
+        id: match.id,
+        result: match.winnerTeam === matchPlayer.team ? 'WIN' : 'LOSS',
+        partners: match.players
+          .filter((p) => p.team === matchPlayer.team && p.id !== matchPlayer.id)
+          .map((p) => resolveMemberDisplayName(p.groupMember)),
+        opponents: match.players
+          .filter((p) => p.team !== matchPlayer.team)
+          .map((p) => resolveMemberDisplayName(p.groupMember)),
+        scoreFor: isTeamA ? match.gamesA : match.gamesB,
+        scoreAgainst: isTeamA ? match.gamesB : match.gamesA,
+        playedAt: match.playedAt,
+      };
     });
+
+    return {
+      groupMemberId: stub.id,
+      displayName: resolveMemberDisplayName(stub),
+      rank: stub.currentRank,
+      rating: stub.rating,
+      matchesCount,
+      recentMatches,
+    };
   }
 
   findMembershipResponse(tx: Prisma.TransactionClient, id: string) {
