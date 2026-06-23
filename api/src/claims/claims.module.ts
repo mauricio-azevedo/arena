@@ -5,8 +5,8 @@ import { GroupsModule } from '../groups/groups.module';
 import { ProcessingModule } from '../processing/processing.module';
 import { ClaimService } from './claim.service';
 
-// Shared core of "attach an account to a stub", reused by the claim-link flow
-// (group-invites) and the request/approval flow (claim-requests).
+// Shared core of "attach an account to a stub" (performClaim/findSharedMatches/
+// getStubClaimSummary), driven by the email-anchored claim confirm (claim-offers).
 @Module({
   imports: [PrismaModule, FeedModule, GroupsModule, ProcessingModule],
   providers: [ClaimService],

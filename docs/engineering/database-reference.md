@@ -33,8 +33,8 @@ For operational guidance (Neon, migrations, resets) see
 | `FeedItemScope`                | `GROUP`, `USER`                                                                                                                |
 | `FeedItemVisibility`           | `GROUP_MEMBERS`, `SOCIAL_CIRCLE`, `PUBLIC`, `PRIVATE`                                                                          |
 | `HighlightType`                | `WIN_STREAK_CURRENT`, `WIN_STREAK_RECORD`, `CLIMB`, `LEADERSHIP`, `MILESTONE_MATCHES`, `MILESTONE_WINS`                        |
-| `NotificationType`             | `CLAIM_REQUEST`, `CLAIM_APPROVED`, `CLAIM_DECLINED`, `CLAIM_INVITE`                                                            |
-| `ClaimRequestStatus`           | `PENDING`, `APPROVED`, `DECLINED`, `CANCELLED`                                                                                 |
+| `NotificationType`             | `CLAIM_OFFER`, `CLAIM_OFFER_DECLINED`, + deprecated `CLAIM_REQUEST`/`CLAIM_APPROVED`/`CLAIM_DECLINED`/`CLAIM_INVITE`           |
+| `ClaimEmailStatus`             | `PENDING`, `DECLINED`                                                                                                          |
 
 ---
 
@@ -68,38 +68,42 @@ Children cascade on group delete (members, matches, invites, feed items, jobs, a
 
 ### GroupInvite
 
-| Column                   | Type                            | Notes                                                      |
-| ------------------------ | ------------------------------- | ---------------------------------------------------------- |
-| `id`                     | uuid PK                         |                                                            |
-| `token`                  | String                          | `@unique`                                                  |
-| `groupId`                | FK→Group                        | `onDelete: Cascade`                                        |
-| `createdById`            | FK→User                         |                                                            |
-| `expiresAt`, `revokedAt` | DateTime?                       |                                                            |
-| `uses`                   | Int                             | default 0                                                  |
-| `maxUses`                | Int?                            |                                                            |
-| `targetGroupMemberId`    | FK→GroupMember? `(id, groupId)` | set → invite is a CLAIM for that stub; `onDelete: Cascade` |
-| `claimedByUserId`        | String?                         | user who claimed (when a CLAIM is accepted)                |
+| Column                   | Type      | Notes               |
+| ------------------------ | --------- | ------------------- |
+| `id`                     | uuid PK   |                     |
+| `token`                  | String    | `@unique`           |
+| `groupId`                | FK→Group  | `onDelete: Cascade` |
+| `createdById`            | FK→User   |                     |
+| `expiresAt`, `revokedAt` | DateTime? |                     |
+| `uses`                   | Int       | default 0           |
+| `maxUses`                | Int?      |                     |
 
-Indexes: `[groupId]`, `[createdById]`, `[token]`, `[targetGroupMemberId]`.
+JOIN-only (claiming a stub is the email-anchored flow, not an invite). Indexes:
+`[groupId]`, `[createdById]`, `[token]`.
 
 ### GroupMember
 
-| Column                                | Type              | Notes                                                                       |
-| ------------------------------------- | ----------------- | --------------------------------------------------------------------------- |
-| `id`                                  | uuid PK           |                                                                             |
-| `groupId`                             | FK→Group          | `onDelete: Cascade`                                                         |
-| `userId`                              | FK→User?          | nullable — null for stub players (jogadores sem conta); `onDelete: Cascade` |
-| `displayName`                         | String?           | name for stub players; null when `userId` is set (name comes from User)     |
-| `rating`                              | Float             | default `1000`                                                              |
-| `ratingDeviation/Volatility/Mu/Sigma` | Float?            | reserved for future algorithms                                              |
-| `ratingAlgorithm`                     | String            | default `BEACH_ELO_V1`                                                      |
-| `currentRank`                         | Int?              |                                                                             |
-| `role`                                | `GroupMemberRole` | default `MEMBER`                                                            |
-| `leftAt`                              | DateTime?         | soft membership exit                                                        |
+| Column                                | Type                | Notes                                                                       |
+| ------------------------------------- | ------------------- | --------------------------------------------------------------------------- |
+| `id`                                  | uuid PK             |                                                                             |
+| `groupId`                             | FK→Group            | `onDelete: Cascade`                                                         |
+| `userId`                              | FK→User?            | nullable — null for stub players (jogadores sem conta); `onDelete: Cascade` |
+| `displayName`                         | String?             | name for stub players; null when `userId` is set (name comes from User)     |
+| `rating`                              | Float               | default `1000`                                                              |
+| `ratingDeviation/Volatility/Mu/Sigma` | Float?              | reserved for future algorithms                                              |
+| `ratingAlgorithm`                     | String              | default `BEACH_ELO_V1`                                                      |
+| `currentRank`                         | Int?                |                                                                             |
+| `role`                                | `GroupMemberRole`   | default `MEMBER`                                                            |
+| `leftAt`                              | DateTime?           | soft membership exit                                                        |
+| `claimEmail`                          | String?             | stubs only — email an admin anchored for the email-anchored claim           |
+| `claimEmailStatus`                    | `ClaimEmailStatus?` | `PENDING`/`DECLINED` (null = none); the offer's lifecycle                   |
+| `claimEmailNotifiedAt`                | DateTime?           | dedupe — set once the CLAIM_OFFER notification is sent                      |
 
 Uniques: `[groupId, userId]` (NULL `userId` is distinct in Postgres, so a group can
-hold many stub players), `[id, groupId]` (composite used by child FKs).
-Indexes: `[groupId]`, `[userId]`, `[groupId, rating]`, `[groupId, currentRank, rating]`, `[groupId, role]`.
+hold many stub players), `[id, groupId]` (composite used by child FKs),
+`[groupId, claimEmail]` (one anchored email per stub per group; NULLs distinct).
+Indexes: `[groupId]`, `[userId]`, `[groupId, rating]`, `[groupId, currentRank, rating]`,
+`[groupId, role]`, `[claimEmail]` (lookup on registration).
 
 ### GroupMemberStats _(derived)_
 
@@ -220,25 +224,9 @@ Unique: `[type, matchId]` (idempotent match-derived items). Indexes on
 | `createdAt`       | DateTime           |                                                                        |
 
 Per-user in-app inbox (unlike `FeedItem`, which is group-public with no recipient or
-read state). Indexes on `[recipientUserId, createdAt]`, `[recipientUserId, readAt]`.
-
-### ClaimRequest
-
-| Column                    | Type                 | Notes                                                |
-| ------------------------- | -------------------- | ---------------------------------------------------- |
-| `id`                      | uuid PK              |                                                      |
-| `groupId`                 | FK→Group             | `Cascade`                                            |
-| `stubGroupMemberId`       | FK→GroupMember?      | `SetNull` — survives the merge that deletes the stub |
-| `requesterUserId`         | FK→User              | `Cascade`; who asked to claim                        |
-| `status`                  | `ClaimRequestStatus` | default `PENDING`                                    |
-| `resolvedByUserId`        | String?              | admin who approved/declined (no FK relation)         |
-| `resolvedAt`              | DateTime?            |                                                      |
-| `createdAt` / `updatedAt` | DateTime             |                                                      |
-
-A request to claim a stub when there's no link; any group admin approves (runs the same
-claim/merge) or declines. Indexes `[groupId, status]`, `[requesterUserId]`,
-`[stubGroupMemberId]`, plus a **partial unique** `(stubGroupMemberId) WHERE status = 'PENDING'`
-(one open request per stub) added via raw SQL in the migration — Prisma can't express it.
+read state). `CLAIM_OFFER` carries the email-anchored claim offer (deep-links to the
+confirm screen); `CLAIM_OFFER_DECLINED` tells admins the offer was declined or hit a
+conflict. Indexes on `[recipientUserId, createdAt]`, `[recipientUserId, readAt]`.
 
 ---
 
@@ -268,9 +256,11 @@ present). Chronological highlights — each row tells you when a capability land
 | `20260621033753_add_group_highlights`                   | `GroupHighlight` + `HighlightType` enum                                   |
 | `20260621043745_retire_platform_trending`               | drop `PlatformTrendingPlayer` (PLATFORM enum values deprecated in place)  |
 | `20260621212123_group_member_stub_players`              | `GroupMember.displayName` + nullable `userId` (stub players)              |
-| `20260621232855_group_invite_claim_target`              | `GroupInvite.targetGroupMemberId`/`claimedByUserId` (CLAIM invites)       |
+| `20260621232855_group_invite_claim_target`              | `GroupInvite.targetGroupMemberId`/`claimedByUserId` (later retired)       |
 | `20260623014023_add_notifications`                      | `Notification` + `NotificationType` enum (in-app inbox)                   |
-| `20260623020216_add_claim_requests`                     | `ClaimRequest` + `ClaimRequestStatus` enum + partial-unique pending index |
+| `20260623020216_add_claim_requests`                     | `ClaimRequest` + `ClaimRequestStatus` enum (later retired)                |
+| `20260623034426_add_claim_email`                        | `GroupMember.claimEmail*` + `ClaimEmailStatus` + `CLAIM_OFFER*` enum vals |
+| `20260623035814_retire_claim_links_and_requests`        | drop `ClaimRequest`/`ClaimRequestStatus` + GroupInvite CLAIM columns      |
 
 When changing the schema: edit `schema.prisma` → `npx prisma migrate dev` →
 `npx prisma generate` → confirm the backend compiles → update this doc,

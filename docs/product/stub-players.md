@@ -1,7 +1,7 @@
 # Stub Players — "Jogadores sem conta"
 
-> **Phase:** Product definition (concept). This document owns the *why*, the *experience*,
-> and the *rules*. It does **not** describe implementation — the engineering plan lives
+> **Phase:** Product definition (concept). This document owns the _why_, the _experience_,
+> and the _rules_. It does **not** describe implementation — the engineering plan lives
 > separately and is disposable; this document is meant to outlive it.
 
 A way to add someone to a group and start scoring them **right now**, without that
@@ -23,7 +23,7 @@ an admin-only invite link. That's ceremony for the wrong moment.
 player profile on the spot — just a name — and that profile can immediately join
 matches and the ranking. No phone, no login, no invite.
 
-Account, login, and invites stop being the *entry* path and become an *upgrade* path:
+Account, login, and invites stop being the _entry_ path and become an _upgrade_ path:
 when the person later wants their own account, they claim the stub profile and keep
 all their history (matches, rating). That upgrade flow is **future work**, not part of
 the first release.
@@ -65,31 +65,31 @@ flow, not to everyone else day to day.
 When the person wants their own account, they **take over** the stub and keep all its
 history — same matches, same rating, same ranking position.
 
-- **Trigger:** any member opens the stub's profile and generates a **single-use
-  link/QR** ("Convidar para assumir este perfil"), then hands it to the person. The
-  social trust already exists — you give the link to the right player.
-- **Taking over:** the person opens the link, logs in or creates an account, and taps
-  "Assumir este perfil". From then on they *are* that player; their real name replaces
-  the stub name everywhere automatically.
+- **Trigger:** an **admin** opens the stub's profile and **anchors an email** to it
+  ("Vincular conta"). The social trust already exists — the admin vouches by email.
+- **Taking over:** when an account with that email exists (or later registers), that
+  person gets an in-app offer and **confirms** ("Sou eu"). It never auto-links. From then
+  on they _are_ that player; their real name replaces the stub name everywhere
+  automatically.
 - **Why it's clean:** because matches reference the membership (not the account),
   taking over is just attaching an account to the same membership — **zero history
   migration, no rating recompute**.
-- **Trust:** the link alone is enough (the group vouches by sharing it). Reverting a
-  claim (detaching the account so the member goes back to being a stub) exists as a
-  backend capability but is not currently surfaced in the UI.
-- **Already a member? (merge)** If the person taking over is *already* in the group,
+- **Trust:** the admin's email anchor is the vouch; the owner's confirm is the consent —
+  both required. Reverting a claim (detaching the account so the member goes back to being
+  a stub) exists as a backend capability but is not currently surfaced in the UI.
+- **Already a member? (merge)** If the person taking over is _already_ in the group,
   we **merge** the stub into the membership they already have: the stub's matches are
   re-pointed onto that membership, the stub is removed, and ratings/ranks/stats are
   rebuilt (async `GROUP_RANKING_REBUILD`) so the combined history is consistent.
   - **The one block:** merging is refused if the stub and that membership ever shared
-    a match in the group (as partners *or* opponents). Re-pointing would put the same
+    a match in the group (as partners _or_ opponents). Re-pointing would put the same
     person twice in one match — impossible (`@@unique([matchId, groupMemberId])`).
-    The claim returns a *blocked* outcome that the claim page renders in full (it shows
-    the shared matches and admin contacts) and nothing changes. The full claim
-    experience — link vs. request/approval, the claim page, both outcomes — lives in
-    [profile-claim.md](./profile-claim.md).
+    This is caught when the admin anchors the email (it can't belong to a member who
+    shared a match); the residual race is refused at confirm and nothing changes. The
+    full claim experience — anchoring the email, the confirm screen, both outcomes —
+    lives in [profile-claim.md](./profile-claim.md).
   - **What's preserved / what isn't:** all match history, ratings and ranking are
-    recomputed from the combined set. Match *highlight* feed cards created before the
+    recomputed from the combined set. Match _highlight_ feed cards created before the
     merge keep the name as it was recorded (e.g. the old stub name) — they aren't
     re-rendered; this is accepted as historical for a rare operation.
 

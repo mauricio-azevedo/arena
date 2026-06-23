@@ -93,12 +93,9 @@ matches stay explainable after later ratings change:
 
 ### GroupInvite
 
-Tokenized join link. `token` (unique), optional `expiresAt`/`revokedAt`,
-`uses`/`maxUses`. Public acceptance flow via `/invites/:token`. When
-`targetGroupMemberId` is set, the invite is a **CLAIM** for that stub player
-(jogador sem conta): accepting attaches the accepter's account to that membership
-(single-use, `maxUses = 1`) instead of creating a new one — see
-`docs/product/stub-players.md`.
+Tokenized **JOIN** link. `token` (unique), optional `expiresAt`/`revokedAt`,
+`uses`/`maxUses`. Public acceptance flow via `/invites/:token`. Claiming a stub is a
+separate flow (email-anchored, on `GroupMember.claimEmail*` — see below), not an invite.
 
 ### FeedItem
 
@@ -124,21 +121,24 @@ The job-queue table that drives the async pipeline. `type`
 ### Notification
 
 Per-user in-app notification — the opposite of `FeedItem` (which is group-public
-with no recipient). `type` (`CLAIM_REQUEST`, `CLAIM_APPROVED`, `CLAIM_DECLINED`,
-`CLAIM_INVITE`), `recipientUser` (cascade), optional `group`/`actorUserId`, a
-denormalized `data` (JSON: title/body/meta/actions, frozen at write so old messages
-never re-render), and read state (`readAt`, `actedAt`). Not derived — written
-directly when the triggering event happens. Powers the claim request/approval flow
+with no recipient). `type` (`CLAIM_OFFER` to the offer recipient, `CLAIM_OFFER_DECLINED`
+to admins; the old `CLAIM_REQUEST/APPROVED/DECLINED/INVITE` are deprecated and no longer
+written), `recipientUser` (cascade), optional `group`/`actorUserId`, a denormalized `data`
+(JSON: title/body/meta/actions, frozen at write so old messages never re-render), and read
+state (`readAt`, `actedAt`). Not derived — written directly when the triggering event
+happens. Powers the email-anchored claim flow
 ([`../product/profile-claim.md`](../product/profile-claim.md)).
 
-### ClaimRequest
+### Email-anchored claim (on GroupMember, no own table)
 
-A request to claim a stub when there's no link: a person asks, any group admin approves
-(running the same claim/merge as the link flow) or declines. `group` (cascade), `stub`
-(→GroupMember, **SetNull** so the request survives the merge that deletes the stub),
-`requester` (→User, cascade), `status` (`PENDING`/`APPROVED`/`DECLINED`/`CANCELLED`),
-`resolvedByUserId`/`resolvedAt`. A partial-unique index enforces one PENDING request per
-stub. The claim/merge core itself is shared with the link flow via `ClaimService`.
+Claiming a stub has no dedicated table — its state lives in three `GroupMember` columns on
+stubs (`userId = null`): `claimEmail` (the email an admin anchored), `claimEmailStatus`
+(`PENDING`/`DECLINED`), and `claimEmailNotifiedAt` (notify-once dedupe). `@@unique([groupId,
+claimEmail])` keeps one anchored email per stub; `@@index([claimEmail])` powers the
+registration hook that offers waiting stubs to a new account. The email value is the offer's
+nonce — editing it invalidates outstanding confirms (the confirm authorizes by
+`user.email == stub.claimEmail`). The claim/merge core is `ClaimService.performClaim`. See
+[`../product/profile-claim.md`](../product/profile-claim.md).
 
 ---
 
