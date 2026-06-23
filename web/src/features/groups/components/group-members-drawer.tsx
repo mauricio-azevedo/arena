@@ -13,7 +13,9 @@ import { Label, Meta } from '@/components/ui/text';
 import { cn } from '@/lib/utils';
 import { avatarBgClass, nameInitial } from '@/lib/avatar';
 import { resolveMemberName } from '@/lib/member-name';
+import { TOUCH_TARGET_48 } from '@/lib/touch-target';
 import { StubClaimEmailPanel } from '@/features/members/components/stub-claim-email-panel';
+import { useMemberProfileDrawer } from '@/features/members/member-profile-drawer-context';
 import type { GroupMember } from '@/types/api';
 
 type GroupMembersDrawerProps = {
@@ -43,10 +45,18 @@ export function GroupMembersDrawer({
   isAdmin,
   members,
 }: GroupMembersDrawerProps) {
+  const { openMemberProfile } = useMemberProfileDrawer();
   // The "Convidar" shortcut opens the same email panel as the player profile drawer,
   // for whichever stub the admin tapped. Kept mounted so it animates out cleanly.
   const [inviteOpen, setInviteOpen] = useState(false);
   const [inviteTarget, setInviteTarget] = useState<{ memberId: string; name: string } | null>(null);
+
+  // Tapping a row hands off to that member's profile drawer; close the list first so the
+  // two sheets don't stack.
+  function openProfile(memberId: string) {
+    onOpenChange(false);
+    openMemberProfile(memberId);
+  }
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
@@ -66,8 +76,16 @@ export function GroupMembersDrawer({
               return (
                 <div
                   key={member.id}
-                  className="flex items-center gap-3 border-t border-divider px-4 py-3 first:border-t-0"
+                  className="relative flex items-center gap-3 border-t border-divider px-4 py-3 first:border-t-0"
                 >
+                  {/* Stretched hit area: the whole row opens this member's profile. */}
+                  <button
+                    type="button"
+                    aria-label={`Ver perfil de ${fullName}`}
+                    onClick={() => openProfile(member.id)}
+                    className="absolute inset-0"
+                  />
+
                   <span
                     className={cn(
                       'flex size-[42px] shrink-0 items-center justify-center rounded-full text-meta font-extrabold',
@@ -97,7 +115,10 @@ export function GroupMembersDrawer({
                         setInviteTarget({ memberId: member.id, name: fullName });
                         setInviteOpen(true);
                       }}
-                      className="flex shrink-0 items-center gap-1.5 rounded-pill bg-brand px-3 py-1.5 text-brand-foreground shadow-button transition-opacity active:opacity-90"
+                      className={cn(
+                        'relative z-10 flex shrink-0 items-center gap-1.5 rounded-pill bg-brand px-3 py-1.5 text-brand-foreground shadow-button transition-opacity active:opacity-90',
+                        TOUCH_TARGET_48,
+                      )}
                     >
                       <UserPlus className="size-3.5" strokeWidth={2.4} aria-hidden />
                       <span className="text-[11px] font-extrabold uppercase tracking-wide">
