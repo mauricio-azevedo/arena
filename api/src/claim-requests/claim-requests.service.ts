@@ -1,12 +1,12 @@
 import {
   BadRequestException,
   ConflictException,
-  ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
 import { GroupMemberRole } from '../generated/prisma/enums';
 import { resolveMemberDisplayName } from '../common/member-display-name';
+import { requireGroupAdmin } from '../common/require-group-admin';
 import { PrismaService } from '../prisma/prisma.service';
 import { ClaimService } from '../claims/claim.service';
 import { NotificationWriterService } from '../notifications/notification-writer.service';
@@ -97,47 +97,61 @@ export class ClaimRequestsService {
     const stubName = resolveMemberDisplayName(stub);
     const requesterName = `${requester.firstName} ${requester.lastName}`.trim();
 
-    return this.prisma.$transaction(async (tx) => {
-      const request = await tx.claimRequest.create({
-        data: { groupId, stubGroupMemberId: stub.id, requesterUserId },
-      });
+    try {
+      return await this.prisma.$transaction(async (tx) => {
+        const request = await tx.claimRequest.create({
+          data: { groupId, stubGroupMemberId: stub.id, requesterUserId },
+        });
 
-      const admins = await tx.groupMember.findMany({
-        where: {
-          groupId,
-          role: GroupMemberRole.ADMIN,
-          leftAt: null,
-          userId: { not: null },
-        },
-        select: { userId: true },
-      });
-
-      for (const admin of admins) {
-        await this.notifications.create(
-          {
-            type: 'CLAIM_REQUEST',
-            recipientUserId: admin.userId as string,
+        const admins = await tx.groupMember.findMany({
+          where: {
             groupId,
-            actorUserId: requesterUserId,
-            data: {
-              title: `${requesterName} quer assumir o perfil ${stubName}`,
-              body: `Pediu para assumir este perfil em ${group.name}. Sem partidas em comum — pode aprovar.`,
-              meta: 'pede sua aprovação',
-              actions: [
-                { label: 'Revisar', href: `/claim-requests/${request.id}` },
-              ],
-            },
+            role: GroupMemberRole.ADMIN,
+            leftAt: null,
+            userId: { not: null },
           },
-          tx,
+          select: { userId: true },
+        });
+
+        for (const admin of admins) {
+          await this.notifications.create(
+            {
+              type: 'CLAIM_REQUEST',
+              recipientUserId: admin.userId as string,
+              groupId,
+              actorUserId: requesterUserId,
+              data: {
+                title: `${requesterName} quer assumir o perfil ${stubName}`,
+                body: `Pediu para assumir este perfil em ${group.name}. Sem partidas em comum — pode aprovar.`,
+                meta: 'pede sua aprovação',
+                actions: [
+                  { label: 'Revisar', href: `/claim-requests/${request.id}` },
+                ],
+              },
+            },
+            tx,
+          );
+        }
+
+        return {
+          outcome: 'REQUESTED' as const,
+          requestId: request.id,
+          status: request.status,
+        };
+      });
+    } catch (error) {
+      // A concurrent request for the same stub trips the partial-unique pending index
+      // — surface it as the same clean message as the pre-check above.
+      if (
+        error instanceof Object &&
+        (error as { code?: string }).code === 'P2002'
+      ) {
+        throw new BadRequestException(
+          'Já existe uma solicitação pendente para este perfil.',
         );
       }
-
-      return {
-        outcome: 'REQUESTED',
-        requestId: request.id,
-        status: request.status,
-      };
-    });
+      throw error;
+    }
   }
 
   async approve(requestId: string, adminUserId: string) {
@@ -154,14 +168,24 @@ export class ClaimRequestsService {
     if (request.status !== 'PENDING') {
       throw new BadRequestException('Esta solicitação já foi resolvida.');
     }
+    // The stub FK is SetNull, so a pending request can lose its stub if it was claimed
+    // another way meanwhile. Narrow to a non-null id for the lookup below.
+    const stubGroupMemberId = request.stubGroupMemberId;
+    if (!stubGroupMemberId) {
+      throw new BadRequestException('Este perfil não está mais disponível.');
+    }
 
-    const admin = await this.requireGroupAdmin(request.groupId, adminUserId);
+    const admin = await requireGroupAdmin(
+      this.prisma,
+      request.groupId,
+      adminUserId,
+    );
     const adminName = resolveMemberDisplayName(admin);
 
     return this.prisma.$transaction(async (tx) => {
       const stub = await tx.groupMember.findFirst({
         where: {
-          id: request.stubGroupMemberId ?? '',
+          id: stubGroupMemberId,
           groupId: request.groupId,
         },
         select: {
@@ -244,7 +268,11 @@ export class ClaimRequestsService {
       throw new BadRequestException('Esta solicitação já foi resolvida.');
     }
 
-    const admin = await this.requireGroupAdmin(request.groupId, adminUserId);
+    const admin = await requireGroupAdmin(
+      this.prisma,
+      request.groupId,
+      adminUserId,
+    );
     const stubName = request.stub
       ? resolveMemberDisplayName(request.stub)
       : 'o perfil';
@@ -303,7 +331,7 @@ export class ClaimRequestsService {
 
     // Visible to group admins (to act) and to the requester (to track status).
     if (request.requesterUserId !== viewerUserId) {
-      await this.requireGroupAdmin(request.groupId, viewerUserId);
+      await requireGroupAdmin(this.prisma, request.groupId, viewerUserId);
     }
 
     let hasConflict = false;
@@ -356,26 +384,5 @@ export class ClaimRequestsService {
       createdAt: request.createdAt,
       resolvedAt: request.resolvedAt,
     };
-  }
-
-  private async requireGroupAdmin(groupId: string, userId: string) {
-    const membership = await this.prisma.groupMember.findUnique({
-      where: { groupId_userId: { groupId, userId } },
-      select: {
-        role: true,
-        leftAt: true,
-        displayName: true,
-        user: { select: { firstName: true, lastName: true } },
-      },
-    });
-
-    if (!membership || membership.leftAt) {
-      throw new ForbiddenException('Apenas membros do grupo podem fazer isso');
-    }
-    if (membership.role !== GroupMemberRole.ADMIN) {
-      throw new ForbiddenException('Apenas admins do grupo podem aprovar');
-    }
-
-    return membership;
   }
 }

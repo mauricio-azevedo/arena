@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowRight, Check, Loader2, ShieldCheck, TriangleAlert, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Body, Label, Meta, Title } from '@/components/ui/text';
+import { Body, Meta, Title } from '@/components/ui/text';
 import { formatFeedItemTime } from '@/features/feed/helpers/feed-item-time.helper';
 import { getAccessToken } from '@/lib/auth';
 import {
@@ -16,6 +16,8 @@ import {
   DashedAvatar,
   GroupBrandChip,
   PersonAvatar,
+  PreviewCard,
+  PreviewName,
   StatTrio,
 } from '@/features/invites/components/claim/claim-shared';
 import { nameInitial } from '@/lib/avatar';
@@ -289,33 +291,6 @@ function Banner({
         aria-hidden
       />
       <Meta className={tone === 'success' ? 'text-success' : 'text-tag-warn'}>{children}</Meta>
-    </div>
-  );
-}
-
-function PreviewCard({ children, accent }: { children: React.ReactNode; accent?: boolean }) {
-  return (
-    <div
-      className={
-        accent
-          ? 'flex min-w-0 flex-1 flex-col items-center gap-2 rounded-3xl bg-brand/10 px-2 py-3.5 shadow-[inset_0_0_0_1.5px_var(--brand)]'
-          : 'flex min-w-0 flex-1 flex-col items-center gap-2 rounded-3xl bg-surface px-2 py-3.5 shadow-hairline'
-      }
-    >
-      {children}
-    </div>
-  );
-}
-
-function PreviewName({ name, sub, accent }: { name: string; sub: string; accent?: boolean }) {
-  return (
-    <div className="w-full min-w-0 text-center">
-      <Label className="block truncate text-foreground">{name}</Label>
-      <Meta
-        className={accent ? 'block truncate text-brand' : 'block truncate text-faint-foreground'}
-      >
-        {sub}
-      </Meta>
     </div>
   );
 }

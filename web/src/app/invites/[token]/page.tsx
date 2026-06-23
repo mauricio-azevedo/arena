@@ -1,4 +1,5 @@
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
+import type { GroupInvite } from '@/types/api';
 import { AppShell } from '@/components/app-shell';
 import { PageIntro } from '@/components/page-intro';
 import { InviteAcceptClient } from '@/features/invites/components/invite-accept-client';
@@ -13,18 +14,26 @@ type Props = {
 export default async function InvitePage({ params }: Props) {
   const { token } = await params;
 
+  let invite: GroupInvite;
   try {
-    const invite = await getInvite(token);
-
-    return (
-      <AppShell chrome={{ title: 'Convite para grupo', back: { fallbackHref: '/' } }}>
-        <div className="space-y-6">
-          <PageIntro description="Entre no grupo para registrar partidas e acompanhar o ranking." />
-          <InviteAcceptClient invite={invite} />
-        </div>
-      </AppShell>
-    );
+    invite = await getInvite(token);
   } catch {
     notFound();
   }
+
+  // A claim link opened on the join route belongs to the dedicated claim screen,
+  // which renders the stub history and handles the claim/merge outcome. (redirect()
+  // must run outside the try/catch — it signals via a thrown control-flow error.)
+  if (invite.kind === 'CLAIM') {
+    redirect(`/claim/${token}`);
+  }
+
+  return (
+    <AppShell chrome={{ title: 'Convite para grupo', back: { fallbackHref: '/' } }}>
+      <div className="space-y-6">
+        <PageIntro description="Entre no grupo para registrar partidas e acompanhar o ranking." />
+        <InviteAcceptClient invite={invite} />
+      </div>
+    </AppShell>
+  );
 }

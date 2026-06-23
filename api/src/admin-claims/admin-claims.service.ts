@@ -1,11 +1,10 @@
 import {
   BadRequestException,
-  ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { GroupMemberRole } from '../generated/prisma/enums';
 import { resolveMemberDisplayName } from '../common/member-display-name';
+import { requireGroupAdmin } from '../common/require-group-admin';
 import { PrismaService } from '../prisma/prisma.service';
 import { ClaimService } from '../claims/claim.service';
 import { NotificationWriterService } from '../notifications/notification-writer.service';
@@ -24,7 +23,7 @@ export class AdminClaimsService {
 
   // "Reivindicar direto": the admin takes over the stub onto their own account now.
   async claimForSelf(groupId: string, stubId: string, adminUserId: string) {
-    const admin = await this.requireGroupAdmin(groupId, adminUserId);
+    const admin = await requireGroupAdmin(this.prisma, groupId, adminUserId);
 
     return this.prisma.$transaction(async (tx) => {
       const stub = await tx.groupMember.findFirst({
@@ -60,7 +59,7 @@ export class AdminClaimsService {
     adminUserId: string,
     targetUserId: string,
   ) {
-    const admin = await this.requireGroupAdmin(groupId, adminUserId);
+    const admin = await requireGroupAdmin(this.prisma, groupId, adminUserId);
 
     const target = await this.prisma.user.findUnique({
       where: { id: targetUserId },
@@ -116,26 +115,5 @@ export class AdminClaimsService {
     });
 
     return { ok: true as const };
-  }
-
-  private async requireGroupAdmin(groupId: string, userId: string) {
-    const membership = await this.prisma.groupMember.findUnique({
-      where: { groupId_userId: { groupId, userId } },
-      select: {
-        role: true,
-        leftAt: true,
-        displayName: true,
-        user: { select: { firstName: true, lastName: true } },
-      },
-    });
-
-    if (!membership || membership.leftAt) {
-      throw new ForbiddenException('Apenas membros do grupo podem fazer isso');
-    }
-    if (membership.role !== GroupMemberRole.ADMIN) {
-      throw new ForbiddenException('Apenas admins do grupo podem fazer isso');
-    }
-
-    return membership;
   }
 }

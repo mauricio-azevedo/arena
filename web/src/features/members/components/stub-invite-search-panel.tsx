@@ -29,6 +29,8 @@ export function StubInviteSearchPanel({ groupId, memberId, stubName, onBack }: P
 
   useEffect(() => {
     const token = getAccessToken();
+    // Guards against an earlier, slower response landing after a newer query.
+    let active = true;
 
     const timer = setTimeout(() => {
       const term = query.trim();
@@ -39,12 +41,21 @@ export function StubInviteSearchPanel({ groupId, memberId, stubName, onBack }: P
       }
       setSearching(true);
       searchUsers(token, term)
-        .then((users) => setResults(users))
-        .catch(() => setResults([]))
-        .finally(() => setSearching(false));
+        .then((users) => {
+          if (active) setResults(users);
+        })
+        .catch(() => {
+          if (active) setResults([]);
+        })
+        .finally(() => {
+          if (active) setSearching(false);
+        });
     }, 250);
 
-    return () => clearTimeout(timer);
+    return () => {
+      active = false;
+      clearTimeout(timer);
+    };
   }, [query]);
 
   function invite(user: UserSearchResult) {

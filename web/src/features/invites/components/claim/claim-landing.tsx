@@ -8,6 +8,8 @@ import {
   DashedAvatar,
   GroupBrandChip,
   PersonAvatar,
+  PreviewCard,
+  PreviewName,
   RecentMatches,
   StatTrio,
 } from './claim-shared';
@@ -50,11 +52,12 @@ export function ClaimLanding({
       <GroupBrandChip groupName={groupName} />
 
       <div className="flex flex-col items-center gap-4 text-center">
-        <DashedAvatar initial={nameInitial(stub.displayName)} className="size-[88px] text-stat-xl" />
+        <DashedAvatar
+          initial={nameInitial(stub.displayName)}
+          className="size-[88px] text-stat-xl"
+        />
         <div className="space-y-2">
-          <Title className="text-balance text-foreground">
-            Assuma o perfil {stub.displayName}
-          </Title>
+          <Title className="text-balance text-foreground">Assuma o perfil {stub.displayName}</Title>
           <Body className="mx-auto max-w-[18rem] text-muted-foreground">{subtitle}</Body>
         </div>
       </div>
@@ -141,45 +144,6 @@ function MergePreview({
         <PersonAvatar seed={meName} name={meName} accent className="size-[42px] text-label" />
         <PreviewName name={meName} sub={meSub} accent />
       </PreviewCard>
-    </div>
-  );
-}
-
-function PreviewCard({
-  children,
-  accent,
-}: {
-  children: React.ReactNode;
-  accent?: boolean;
-}) {
-  return (
-    <div
-      className={
-        accent
-          ? 'flex min-w-0 flex-1 flex-col items-center gap-2 rounded-3xl bg-brand/10 px-2 py-3.5 shadow-[inset_0_0_0_1.5px_var(--brand)]'
-          : 'flex min-w-0 flex-1 flex-col items-center gap-2 rounded-3xl bg-surface px-2 py-3.5 shadow-hairline'
-      }
-    >
-      {children}
-    </div>
-  );
-}
-
-function PreviewName({
-  name,
-  sub,
-  accent,
-}: {
-  name: string;
-  sub: string;
-  accent?: boolean;
-}) {
-  return (
-    <div className="w-full min-w-0 text-center">
-      <Label className="block truncate text-foreground">{name}</Label>
-      <Meta className={accent ? 'block truncate text-brand' : 'block truncate text-faint-foreground'}>
-        {sub}
-      </Meta>
     </div>
   );
 }
