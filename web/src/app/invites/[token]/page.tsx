@@ -1,4 +1,4 @@
-import { notFound, redirect } from 'next/navigation';
+import { notFound } from 'next/navigation';
 import type { GroupInvite } from '@/types/api';
 import { AppShell } from '@/components/app-shell';
 import { PageIntro } from '@/components/page-intro';
@@ -19,13 +19,6 @@ export default async function InvitePage({ params }: Props) {
     invite = await getInvite(token);
   } catch {
     notFound();
-  }
-
-  // A claim link opened on the join route belongs to the dedicated claim screen,
-  // which renders the stub history and handles the claim/merge outcome. (redirect()
-  // must run outside the try/catch — it signals via a thrown control-flow error.)
-  if (invite.kind === 'CLAIM') {
-    redirect(`/claim/${token}`);
   }
 
   return (

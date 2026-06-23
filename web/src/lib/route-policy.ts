@@ -84,13 +84,14 @@ export function getRoutePolicy(pathname: string): RoutePolicy {
     };
   }
 
-  if (/^\/claim-requests\/[^/]+$/.test(normalizedPathname)) {
+  // Email-anchored claim confirm screen: auth-gated, no app chrome.
+  if (/^\/claim\/[^/]+$/.test(normalizedPathname)) {
     return {
       access: {
         kind: 'auth',
         requiresCheck: true,
       },
-      chrome: primaryAppChrome,
+      chrome: { topBar: false, bottomNav: false, trackNavigation: false },
     };
   }
 

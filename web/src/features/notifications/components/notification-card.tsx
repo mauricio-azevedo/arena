@@ -9,6 +9,8 @@ import type { AppNotification, NotificationType } from '@/types/api';
 type Visual = { Icon: LucideIcon; circle: string };
 
 const TYPE_VISUAL: Record<NotificationType, Visual> = {
+  CLAIM_OFFER: { Icon: UserPlus, circle: 'bg-brand/15 text-brand' },
+  CLAIM_OFFER_DECLINED: { Icon: X, circle: 'bg-surface text-muted-foreground' },
   CLAIM_REQUEST: { Icon: ArrowUpToLine, circle: 'bg-tag-warn/15 text-tag-warn' },
   CLAIM_APPROVED: { Icon: Check, circle: 'bg-success/15 text-success' },
   CLAIM_DECLINED: { Icon: X, circle: 'bg-surface text-muted-foreground' },
@@ -20,9 +22,7 @@ export function NotificationCard({ notification }: { notification: AppNotificati
   const { title, body, meta, actions } = notification.data;
   const unread = !notification.read;
 
-  const metaLine = [formatFeedItemTime(notification.createdAt), meta]
-    .filter(Boolean)
-    .join(' · ');
+  const metaLine = [formatFeedItemTime(notification.createdAt), meta].filter(Boolean).join(' · ');
 
   return (
     <div

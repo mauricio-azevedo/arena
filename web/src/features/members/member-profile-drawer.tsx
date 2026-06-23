@@ -1,19 +1,17 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
 import Link from 'next/link';
-import { Check, ChevronRight, Info, Send, UserPlus } from 'lucide-react';
+import { ChevronRight, Info, Mail } from 'lucide-react';
 import { Drawer, DrawerNested, DrawerContent, DrawerTitle } from '@/components/ui/drawer';
 import { Label, Meta } from '@/components/ui/text';
 import { avatarBgClass, nameInitial } from '@/lib/avatar';
 import { cn } from '@/lib/utils';
-import { getAccessToken, getCurrentUserIdFromAccessToken } from '@/lib/auth';
-import { createClaimRequest } from '@/features/claim-requests/api/claim-requests.api';
+import { getCurrentUserIdFromAccessToken } from '@/lib/auth';
 import type { GroupMemberRole } from '@/types/api';
-import { claimStubDirect, createMemberClaimLink, getMemberProfile } from './api/members.api';
-import { StubClaimPanel } from './components/stub-claim-panel';
-import { StubInviteSearchPanel } from './components/stub-invite-search-panel';
+import { getMemberProfile } from './api/members.api';
+import { StubClaimEmailPanel } from './components/stub-claim-email-panel';
 import type { MemberProfile } from './types/member-profile.type';
 
 type MemberProfileDrawerProps = {
@@ -84,23 +82,8 @@ function MemberProfileContent({
 }: ContentProps) {
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
   const [profile, setProfile] = useState<MemberProfile | null>(null);
-  // The claim flow opens as a nested drawer that slides up over the peek. The link
-  // is minted on the first open and held here, so reopening reuses the same
-  // single-use invite instead of generating a new one.
-  const [claimOpen, setClaimOpen] = useState(false);
-  const [claimUrl, setClaimUrl] = useState<string | null>(null);
-  const [claimError, setClaimError] = useState<string | null>(null);
-  // Dedupes concurrent mints (double-tap, or reopening while one is in flight) so
-  // we never burn more than one single-use invite per stub.
-  const claimPending = useRef(false);
-  // "Sou eu — assumir este perfil": admins take over immediately (claimed); everyone
-  // else asks the group's admins to approve (sent). `blocked` = shared a match.
-  const [requestState, setRequestState] = useState<
-    'idle' | 'sending' | 'sent' | 'claimed' | 'blocked'
-  >('idle');
-  const [requestMsg, setRequestMsg] = useState<string | null>(null);
-  // "Enviar pelo app" (admin): nested sheet to search a user and invite them.
-  const [inviteOpen, setInviteOpen] = useState(false);
+  // "Vincular conta" opens as a nested sheet where an admin anchors an email to the stub.
+  const [emailOpen, setEmailOpen] = useState(false);
 
   useEffect(() => {
     // The content remounts per member (keyed), so initial state is already
@@ -155,71 +138,6 @@ function MemberProfileContent({
   const positionLine = buildPositionLine(rank, totalMembers, groupName, isYou);
   const profileHref = resolveProfileHref(profile.userId, currentUserId);
 
-  // Open the claim sheet and mint the link on first open (reused afterwards). An
-  // earlier error is cleared so reopening retries; an in-flight mint is not repeated.
-  function openClaim() {
-    setClaimOpen(true);
-
-    if (claimUrl || claimPending.current) {
-      return;
-    }
-
-    const token = getAccessToken();
-
-    if (!token) {
-      setClaimError('Entre na sua conta para gerar o convite.');
-      return;
-    }
-
-    claimPending.current = true;
-    setClaimError(null);
-
-    createMemberClaimLink(token, groupId, memberId)
-      .then((invite) => setClaimUrl(`${window.location.origin}${invite.path}`))
-      .catch(() => setClaimError('Não foi possível gerar o convite. Tente novamente.'))
-      .finally(() => {
-        claimPending.current = false;
-      });
-  }
-
-  // "Sou eu": an admin takes over immediately; anyone else asks an admin to approve.
-  // Both refuse if the viewer and the stub ever shared a match.
-  function selfClaim() {
-    const token = getAccessToken();
-
-    if (!token) {
-      setRequestMsg('Entre na sua conta para continuar.');
-      return;
-    }
-
-    setRequestState('sending');
-    setRequestMsg(null);
-
-    const blocked = () => {
-      setRequestState('blocked');
-      setRequestMsg('Vocês já jogaram a mesma partida, então este perfil não pode ser seu.');
-    };
-    const failed = (caught: unknown) => {
-      setRequestState('idle');
-      setRequestMsg(
-        caught instanceof Error
-          ? caught.message
-          : 'Não foi possível continuar agora. Tente novamente.',
-      );
-    };
-
-    if (isViewerAdmin) {
-      claimStubDirect(token, groupId, memberId)
-        .then((result) => (result.outcome === 'CLAIMED' ? setRequestState('claimed') : blocked()))
-        .catch(failed);
-      return;
-    }
-
-    createClaimRequest(token, groupId, memberId)
-      .then((result) => (result.outcome === 'REQUESTED' ? setRequestState('sent') : blocked()))
-      .catch(failed);
-  }
-
   return (
     <div className="flex min-h-0 flex-1 flex-col overflow-y-auto px-6 pt-4 pb-10 [scrollbar-width:none]">
       {/* identity */}
@@ -266,86 +184,33 @@ function MemberProfileContent({
             <Info className="mt-px size-4 shrink-0 text-tag-warn" aria-hidden />
             <Meta className="text-left font-medium text-tag-warn/90">
               {isViewerAdmin
-                ? 'Jogador sem conta. Convide-o para assumir este perfil e levar todo o histórico para o app.'
-                : 'Jogador sem conta. Se este perfil é você, solicite para assumi-lo.'}
+                ? 'Jogador sem conta. Vincule o email dele para que assuma este perfil — com todo o histórico.'
+                : 'Jogador sem conta. Um admin do grupo pode vincular a conta dele.'}
             </Meta>
           </div>
-          {isViewerAdmin && (
-            <button
-              type="button"
-              onClick={openClaim}
-              className="mt-3 flex h-12 items-center justify-center gap-2 rounded-pill bg-brand text-brand-foreground shadow-button transition-opacity active:opacity-90"
-            >
-              <UserPlus className="size-4.5 text-brand-foreground" aria-hidden />
-              <Label className="text-brand-foreground">Convidar para assumir o perfil</Label>
-            </button>
-          )}
 
           {isViewerAdmin && (
-            <button
-              type="button"
-              onClick={() => setInviteOpen(true)}
-              className="mt-2.5 flex h-12 items-center justify-center gap-2 rounded-pill bg-surface shadow-hairline transition-opacity active:opacity-60"
-            >
-              <Send className="size-4 text-brand" aria-hidden />
-              <Label className="text-foreground">Enviar convite pelo app</Label>
-            </button>
-          )}
+            <>
+              <button
+                type="button"
+                onClick={() => setEmailOpen(true)}
+                className="mt-3 flex h-12 items-center justify-center gap-2 rounded-pill bg-brand text-brand-foreground shadow-button transition-opacity active:opacity-90"
+              >
+                <Mail className="size-4.5 text-brand-foreground" aria-hidden />
+                <Label className="text-brand-foreground">Vincular conta</Label>
+              </button>
 
-          {requestState === 'claimed' || requestState === 'sent' ? (
-            <div className="mt-2.5 flex items-start gap-2.5 rounded-2xl bg-success/[0.08] px-3.5 py-3 ring-1 ring-inset ring-success/20">
-              <Check className="mt-px size-4 shrink-0 text-success" aria-hidden />
-              <Meta className="text-left font-medium text-success">
-                {requestState === 'claimed'
-                  ? 'Você assumiu este perfil — o histórico passou para a sua conta.'
-                  : 'Solicitação enviada. Um admin do grupo vai revisar.'}
-              </Meta>
-            </div>
-          ) : (
-            <button
-              type="button"
-              onClick={selfClaim}
-              disabled={requestState === 'sending'}
-              className="mt-2.5 flex h-12 items-center justify-center rounded-pill bg-surface shadow-hairline transition-opacity active:opacity-60 disabled:opacity-50"
-            >
-              <Label className="text-foreground">
-                {requestState === 'sending'
-                  ? isViewerAdmin
-                    ? 'Assumindo…'
-                    : 'Enviando…'
-                  : isViewerAdmin
-                    ? 'Sou eu — assumir este perfil'
-                    : 'Sou eu — solicitar este perfil'}
-              </Label>
-            </button>
-          )}
-
-          {requestMsg && (
-            <Meta className="mt-2 block px-1 text-center text-tag-warn">{requestMsg}</Meta>
-          )}
-
-          <DrawerNested open={claimOpen} onOpenChange={setClaimOpen}>
-            <DrawerContent aria-describedby={undefined} size="fit">
-              <StubClaimPanel
-                name={profile.displayName}
-                url={claimUrl}
-                error={claimError}
-                onBack={() => setClaimOpen(false)}
-              />
-            </DrawerContent>
-          </DrawerNested>
-
-          {isViewerAdmin && (
-            <DrawerNested open={inviteOpen} onOpenChange={setInviteOpen}>
-              <DrawerContent aria-describedby={undefined} size="fit">
-                <StubInviteSearchPanel
-                  groupId={groupId}
-                  memberId={memberId}
-                  stubName={profile.displayName}
-                  onBack={() => setInviteOpen(false)}
-                />
-              </DrawerContent>
-            </DrawerNested>
+              <DrawerNested open={emailOpen} onOpenChange={setEmailOpen}>
+                <DrawerContent aria-describedby={undefined} size="fit">
+                  <StubClaimEmailPanel
+                    groupId={groupId}
+                    memberId={memberId}
+                    stubName={profile.displayName}
+                    onBack={() => setEmailOpen(false)}
+                  />
+                </DrawerContent>
+              </DrawerNested>
+            </>
           )}
         </>
       ) : (

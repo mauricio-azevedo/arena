@@ -85,12 +85,6 @@ export type GroupInvite = {
   path: string;
   group?: Group;
   createdBy?: User;
-  // Set when the invite is a CLAIM for a specific stub player.
-  targetGroupMemberId?: string | null;
-  kind?: 'JOIN' | 'CLAIM';
-  targetDisplayName?: string | null;
-  // The stub's history shown on the claim page (CLAIM invites only).
-  stub?: ClaimStubSummary | null;
 };
 
 // One of the stub's recent matches, from the stub's own perspective.
@@ -230,6 +224,9 @@ export type CreateMatchInput = {
 };
 
 export type NotificationType =
+  | 'CLAIM_OFFER'
+  | 'CLAIM_OFFER_DECLINED'
+  // Deprecated — pre-email-anchored claim flow (no longer generated).
   | 'CLAIM_REQUEST'
   | 'CLAIM_APPROVED'
   | 'CLAIM_DECLINED'
@@ -254,38 +251,19 @@ export type AppNotification = {
   createdAt: string;
 };
 
-export type ClaimRequestStatus = 'PENDING' | 'APPROVED' | 'DECLINED' | 'CANCELLED';
+// Email-anchored claim. State the admin sees on a stub, and the offer the recipient confirms.
+export type ClaimEmailStatus = 'PENDING' | 'DECLINED';
 
-export type ClaimRequestDetail = {
-  id: string;
-  status: ClaimRequestStatus;
-  groupId: string;
-  groupName: string;
-  stub: {
-    groupMemberId: string | null;
-    name: string;
-    rank: number | null;
-    rating: number | null;
-    matchesCount: number;
-  };
-  requester: { userId: string; name: string };
-  hasConflict: boolean;
-  createdAt: string;
-  resolvedAt: string | null;
+export type ClaimEmailState = {
+  email: string | null;
+  status: ClaimEmailStatus | null;
+  notified: boolean;
+  accountExists: boolean;
 };
 
-export type CreateClaimRequestResult =
-  | { outcome: 'REQUESTED'; requestId: string; status: ClaimRequestStatus }
-  | {
-      outcome: 'BLOCKED';
-      stubName: string;
-      sharedMatches: SharedMatch[];
-      admins: ClaimAdmin[];
-    };
-
-export type UserSearchResult = {
-  id: string;
-  firstName: string;
-  lastName: string;
-  email: string | null;
+export type ClaimOfferDetail = {
+  stubGroupMemberId: string;
+  groupId: string;
+  groupName: string;
+  stub: ClaimStubSummary;
 };
