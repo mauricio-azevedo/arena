@@ -31,8 +31,9 @@ That proof comes in one of two shapes.
    perfil"). Any group admin gets a notification, reviews, and approves or declines.
    Approval runs the exact same claim.
 
-An **admin** never needs to wait: from the stub's drawer they can claim a stub onto a
-chosen account directly, or send that account an in-app invite to claim. _(Later phase.)_
+An **admin** has two shortcuts from the stub's drawer: take the stub over onto their
+**own** account immediately (no approval — they're an admin), or **search any platform
+user** and send them an in-app invite to claim it (the invite carries a single-use link).
 
 ## What the person sees (the claim page)
 

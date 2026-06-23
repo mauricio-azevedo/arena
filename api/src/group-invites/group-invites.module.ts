@@ -12,5 +12,6 @@ import { ClaimsModule } from '../claims/claims.module';
   imports: [PrismaModule, AuthModule, FeedModule, GroupsModule, ClaimsModule],
   controllers: [GroupInvitesController, PublicInvitesController],
   providers: [GroupInvitesService],
+  exports: [GroupInvitesService],
 })
 export class GroupInvitesModule {}

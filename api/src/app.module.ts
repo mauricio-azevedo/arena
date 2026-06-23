@@ -13,6 +13,7 @@ import { ProcessingModule } from './processing/processing.module';
 import { HomeHighlightsModule } from './home-highlights/home-highlights.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { ClaimRequestsModule } from './claim-requests/claim-requests.module';
+import { AdminClaimsModule } from './admin-claims/admin-claims.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { ClaimRequestsModule } from './claim-requests/claim-requests.module';
     HomeHighlightsModule,
     NotificationsModule,
     ClaimRequestsModule,
+    AdminClaimsModule,
   ],
 })
 export class AppModule {}

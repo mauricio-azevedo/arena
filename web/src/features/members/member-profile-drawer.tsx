@@ -3,15 +3,17 @@
 import { useEffect, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import Link from 'next/link';
-import { Check, ChevronRight, Info, UserPlus } from 'lucide-react';
+import { Check, ChevronRight, Info, Send, UserPlus } from 'lucide-react';
 import { Drawer, DrawerNested, DrawerContent, DrawerTitle } from '@/components/ui/drawer';
 import { Label, Meta } from '@/components/ui/text';
 import { avatarBgClass, nameInitial } from '@/lib/avatar';
 import { cn } from '@/lib/utils';
 import { getAccessToken, getCurrentUserIdFromAccessToken } from '@/lib/auth';
 import { createClaimRequest } from '@/features/claim-requests/api/claim-requests.api';
-import { createMemberClaimLink, getMemberProfile } from './api/members.api';
+import type { GroupMemberRole } from '@/types/api';
+import { claimStubDirect, createMemberClaimLink, getMemberProfile } from './api/members.api';
 import { StubClaimPanel } from './components/stub-claim-panel';
+import { StubInviteSearchPanel } from './components/stub-invite-search-panel';
 import type { MemberProfile } from './types/member-profile.type';
 
 type MemberProfileDrawerProps = {
@@ -19,6 +21,7 @@ type MemberProfileDrawerProps = {
   groupId: string;
   groupName: string;
   totalMembers: number;
+  viewerRole?: GroupMemberRole | null;
   // `key` bumps on every open so the content remounts and refetches.
   target: { memberId: string; key: number } | null;
   // Position from the live ranking (index-based); falls back to the stored rank.
@@ -31,6 +34,7 @@ export function MemberProfileDrawer({
   groupId,
   groupName,
   totalMembers,
+  viewerRole,
   target,
   rank,
   onClose,
@@ -51,6 +55,7 @@ export function MemberProfileDrawer({
             groupId={groupId}
             groupName={groupName}
             totalMembers={totalMembers}
+            viewerRole={viewerRole}
             memberId={target.memberId}
             rank={rank}
           />
@@ -64,11 +69,19 @@ type ContentProps = {
   groupId: string;
   groupName: string;
   totalMembers: number;
+  viewerRole?: GroupMemberRole | null;
   memberId: string;
   rank?: number;
 };
 
-function MemberProfileContent({ groupId, groupName, totalMembers, memberId, rank }: ContentProps) {
+function MemberProfileContent({
+  groupId,
+  groupName,
+  totalMembers,
+  viewerRole,
+  memberId,
+  rank,
+}: ContentProps) {
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
   const [profile, setProfile] = useState<MemberProfile | null>(null);
   // The claim flow opens as a nested drawer that slides up over the peek. The link
@@ -80,10 +93,14 @@ function MemberProfileContent({ groupId, groupName, totalMembers, memberId, rank
   // Dedupes concurrent mints (double-tap, or reopening while one is in flight) so
   // we never burn more than one single-use invite per stub.
   const claimPending = useRef(false);
-  // "Sou eu — solicitar este perfil": the no-link path where the viewer asks the
-  // group's admins to approve them taking over this stub.
-  const [requestState, setRequestState] = useState<'idle' | 'sending' | 'sent' | 'blocked'>('idle');
+  // "Sou eu — assumir este perfil": admins take over immediately (claimed); everyone
+  // else asks the group's admins to approve (sent). `blocked` = shared a match.
+  const [requestState, setRequestState] = useState<
+    'idle' | 'sending' | 'sent' | 'claimed' | 'blocked'
+  >('idle');
   const [requestMsg, setRequestMsg] = useState<string | null>(null);
+  // "Enviar pelo app" (admin): nested sheet to search a user and invite them.
+  const [inviteOpen, setInviteOpen] = useState(false);
 
   useEffect(() => {
     // The content remounts per member (keyed), so initial state is already
@@ -129,6 +146,7 @@ function MemberProfileContent({ groupId, groupName, totalMembers, memberId, rank
   }
 
   const isStub = profile.userId === null;
+  const isViewerAdmin = viewerRole === 'ADMIN';
   const currentUserId = getCurrentUserIdFromAccessToken();
   const isYou = profile.userId !== null && profile.userId === currentUserId;
   // Rank comes from the live ranking only (active members). A member not in it —
@@ -164,36 +182,42 @@ function MemberProfileContent({ groupId, groupName, totalMembers, memberId, rank
       });
   }
 
-  // Ask the group's admins to approve you taking over this stub (no link needed).
-  function requestClaim() {
+  // "Sou eu": an admin takes over immediately; anyone else asks an admin to approve.
+  // Both refuse if the viewer and the stub ever shared a match.
+  function selfClaim() {
     const token = getAccessToken();
 
     if (!token) {
-      setRequestMsg('Entre na sua conta para solicitar.');
+      setRequestMsg('Entre na sua conta para continuar.');
       return;
     }
 
     setRequestState('sending');
     setRequestMsg(null);
 
+    const blocked = () => {
+      setRequestState('blocked');
+      setRequestMsg('Vocês já jogaram a mesma partida, então este perfil não pode ser seu.');
+    };
+    const failed = (caught: unknown) => {
+      setRequestState('idle');
+      setRequestMsg(
+        caught instanceof Error
+          ? caught.message
+          : 'Não foi possível continuar agora. Tente novamente.',
+      );
+    };
+
+    if (isViewerAdmin) {
+      claimStubDirect(token, groupId, memberId)
+        .then((result) => (result.outcome === 'CLAIMED' ? setRequestState('claimed') : blocked()))
+        .catch(failed);
+      return;
+    }
+
     createClaimRequest(token, groupId, memberId)
-      .then((result) => {
-        if (result.outcome === 'REQUESTED') {
-          setRequestState('sent');
-          return;
-        }
-        // Shared a match → provably different people; can't be claimed.
-        setRequestState('blocked');
-        setRequestMsg('Vocês já jogaram a mesma partida, então este perfil não pode ser seu.');
-      })
-      .catch((caught) => {
-        setRequestState('idle');
-        setRequestMsg(
-          caught instanceof Error
-            ? caught.message
-            : 'Não foi possível solicitar agora. Tente novamente.',
-        );
-      });
+      .then((result) => (result.outcome === 'REQUESTED' ? setRequestState('sent') : blocked()))
+      .catch(failed);
   }
 
   return (
@@ -254,22 +278,41 @@ function MemberProfileContent({ groupId, groupName, totalMembers, memberId, rank
             <Label className="text-brand-foreground">Convidar para assumir o perfil</Label>
           </button>
 
-          {requestState === 'sent' ? (
+          {isViewerAdmin && (
+            <button
+              type="button"
+              onClick={() => setInviteOpen(true)}
+              className="mt-2.5 flex h-12 items-center justify-center gap-2 rounded-pill bg-surface shadow-hairline transition-opacity active:opacity-60"
+            >
+              <Send className="size-4 text-brand" aria-hidden />
+              <Label className="text-foreground">Enviar convite pelo app</Label>
+            </button>
+          )}
+
+          {requestState === 'claimed' || requestState === 'sent' ? (
             <div className="mt-2.5 flex items-start gap-2.5 rounded-2xl bg-success/[0.08] px-3.5 py-3 ring-1 ring-inset ring-success/20">
               <Check className="mt-px size-4 shrink-0 text-success" aria-hidden />
               <Meta className="text-left font-medium text-success">
-                Solicitação enviada. Um admin do grupo vai revisar.
+                {requestState === 'claimed'
+                  ? 'Você assumiu este perfil — o histórico passou para a sua conta.'
+                  : 'Solicitação enviada. Um admin do grupo vai revisar.'}
               </Meta>
             </div>
           ) : (
             <button
               type="button"
-              onClick={requestClaim}
+              onClick={selfClaim}
               disabled={requestState === 'sending'}
               className="mt-2.5 flex h-12 items-center justify-center rounded-pill bg-surface shadow-hairline transition-opacity active:opacity-60 disabled:opacity-50"
             >
               <Label className="text-foreground">
-                {requestState === 'sending' ? 'Enviando…' : 'Sou eu — solicitar este perfil'}
+                {requestState === 'sending'
+                  ? isViewerAdmin
+                    ? 'Assumindo…'
+                    : 'Enviando…'
+                  : isViewerAdmin
+                    ? 'Sou eu — assumir este perfil'
+                    : 'Sou eu — solicitar este perfil'}
               </Label>
             </button>
           )}
@@ -288,6 +331,19 @@ function MemberProfileContent({ groupId, groupName, totalMembers, memberId, rank
               />
             </DrawerContent>
           </DrawerNested>
+
+          {isViewerAdmin && (
+            <DrawerNested open={inviteOpen} onOpenChange={setInviteOpen}>
+              <DrawerContent aria-describedby={undefined} size="fit">
+                <StubInviteSearchPanel
+                  groupId={groupId}
+                  memberId={memberId}
+                  stubName={profile.displayName}
+                  onBack={() => setInviteOpen(false)}
+                />
+              </DrawerContent>
+            </DrawerNested>
+          )}
         </>
       ) : (
         profileHref && (

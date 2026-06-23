@@ -2,7 +2,7 @@
 
 import { createContext, useCallback, useContext, useMemo, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
-import type { GroupMember } from '@/types/api';
+import type { GroupMember, GroupMemberRole } from '@/types/api';
 import { MemberProfileDrawer } from './member-profile-drawer';
 
 type MemberProfileDrawerContextValue = {
@@ -23,6 +23,8 @@ type MemberProfileDrawerProviderProps = {
   groupId: string;
   groupName: string;
   ranking: GroupMember[];
+  // The viewer's role in this group; gates the admin-only stub shortcuts.
+  viewerRole?: GroupMemberRole | null;
   children: ReactNode;
 };
 
@@ -30,6 +32,7 @@ export function MemberProfileDrawerProvider({
   groupId,
   groupName,
   ranking,
+  viewerRole = null,
   children,
 }: MemberProfileDrawerProviderProps) {
   // A fresh key each open remounts the drawer content so it refetches — even when
@@ -61,6 +64,7 @@ export function MemberProfileDrawerProvider({
         groupId={groupId}
         groupName={groupName}
         totalMembers={ranking.length}
+        viewerRole={viewerRole}
         target={target}
         rank={target ? rankById.get(target.memberId) : undefined}
         onClose={() => setOpen(false)}

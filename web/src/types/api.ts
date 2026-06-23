@@ -282,3 +282,10 @@ export type CreateClaimRequestResult =
       sharedMatches: SharedMatch[];
       admins: ClaimAdmin[];
     };
+
+export type UserSearchResult = {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string | null;
+};

@@ -1,4 +1,7 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Param, Query, UseGuards } from '@nestjs/common';
+import { CurrentUser } from '../auth/current-user.decorator';
+import type { AuthUser } from '../auth/auth.types';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { ProfileMatchesService } from '../me/profile-matches/profile-matches.service';
 import { ProfileSummaryService } from '../me/profile-summary/profile-summary.service';
 import { UsersService } from './users.service';
@@ -10,6 +13,12 @@ export class UsersController {
     private readonly profileSummaryService: ProfileSummaryService,
     private readonly profileMatchesService: ProfileMatchesService,
   ) {}
+
+  @Get('search')
+  @UseGuards(JwtAuthGuard)
+  search(@Query('q') q: string | undefined, @CurrentUser() user: AuthUser) {
+    return this.usersService.search(q ?? '', user.sub);
+  }
 
   @Get(':userId/profile/summary')
   findProfileSummary(@Param('userId') userId: string) {

@@ -37,6 +37,30 @@ export class UsersService {
     });
   }
 
+  // Find platform users by name or email — for an admin inviting someone to claim a
+  // stub. Needs a real query (>= 2 chars), caps at 10, and never returns the searcher.
+  async search(query: string, excludeUserId?: string) {
+    const term = query.trim();
+
+    if (term.length < 2) {
+      return [];
+    }
+
+    return this.prisma.user.findMany({
+      where: {
+        id: excludeUserId ? { not: excludeUserId } : undefined,
+        OR: [
+          { firstName: { contains: term, mode: 'insensitive' } },
+          { lastName: { contains: term, mode: 'insensitive' } },
+          { email: { contains: term, mode: 'insensitive' } },
+        ],
+      },
+      orderBy: [{ firstName: 'asc' }, { lastName: 'asc' }],
+      take: 10,
+      select: { id: true, firstName: true, lastName: true, email: true },
+    });
+  }
+
   private async ensureUserExists(userId: string) {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
