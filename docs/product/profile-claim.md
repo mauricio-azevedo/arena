@@ -1,10 +1,10 @@
 # Reivindicação de perfil — claiming a stub
 
-> **Phase:** Product definition (concept). This document owns the *why*, the *experience*,
-> and the *rules* of the full claim flow. It does **not** describe implementation — the
+> **Phase:** Product definition (concept). This document owns the _why_, the _experience_,
+> and the _rules_ of the full claim flow. It does **not** describe implementation — the
 > engineering plan is separate and disposable; this document outlives it.
 >
-> Companion to [stub-players.md](./stub-players.md), which defines what a stub *is*. This
+> Companion to [stub-players.md](./stub-players.md), which defines what a stub _is_. This
 > doc defines how a stub becomes a real person's account.
 
 A stub player (jogador sem conta) is a name someone typed on the court. **Claiming** is
@@ -13,7 +13,7 @@ rating, and the ranking position the stub already earned.
 
 ## Why this matters
 
-The stub got someone *scoring today*. Claiming is the upgrade path: the person shows up
+The stub got someone _scoring today_. Claiming is the upgrade path: the person shows up
 later, wants their own account, and should inherit the history they actually played —
 not start from zero, and not leave a duplicate behind.
 
@@ -23,15 +23,16 @@ There is exactly one thing that authorizes a claim: **proof you're the right per
 That proof comes in one of two shapes.
 
 1. **Link / QR (immediate).** A member opens the stub's drawer and hands the person a
-   single-use link or QR. Possessing the link *is* the authorization — the group vouched
+   single-use link or QR. Possessing the link _is_ the authorization — the group vouched
    by giving it to you. The person opens it and claims on the spot. This is the common,
    on-the-court path and it exists today.
 2. **Request → admin approval (when there's no link).** The person finds the stub in the
-   group but has no link, so they *ask*. Any group admin gets a notification, reviews, and
-   approves or declines. Approval runs the exact same claim. *(Net-new; later phase.)*
+   group but has no link, so they _ask_ (from the stub's drawer, "Sou eu — solicitar este
+   perfil"). Any group admin gets a notification, reviews, and approves or declines.
+   Approval runs the exact same claim.
 
 An **admin** never needs to wait: from the stub's drawer they can claim a stub onto a
-chosen account directly, or send that account an in-app invite to claim. *(Later phase.)*
+chosen account directly, or send that account an in-app invite to claim. _(Later phase.)_
 
 ## What the person sees (the claim page)
 
@@ -55,18 +56,18 @@ asking to commit:
   name everywhere automatically. A confirmation shows the inherited position/rating/
   partidas and a way into the group.
 - **Conflito (blocked).** If the person and the stub **ever shared a match** in the group
-  (partners *or* opponents), they're provably different people — one can't be the other.
+  (partners _or_ opponents), they're provably different people — one can't be the other.
   The claim is refused and **nothing changes**. This is not an error to hide: the screen
-  *shows the shared match(es)* — teams, scores, the two highlighted names — so the reason
+  _shows the shared match(es)_ — teams, scores, the two highlighted names — so the reason
   is self-evident, and offers admin contacts in case a match was logged by mistake.
 
 > Why the block exists: matches reference the membership, and a person can't appear twice
 > in the same match (`@@unique([matchId, groupMemberId])`). The merge would have to put
 > them on both sides — impossible. See [stub-players.md](./stub-players.md#claiming-a-stub-the-upgrade-path).
 
-## Approval side (later phase)
+## Approval side
 
-When a claim is *requested* rather than linked:
+When a claim is _requested_ rather than linked:
 
 - **Admins are notified** ("{pessoa} quer assumir o perfil {stub}"). The system has
   already checked the shared-match conflict, so the admin only confirms — the review
@@ -82,7 +83,7 @@ When a claim is *requested* rather than linked:
 - The shared-match block is absolute — never overridden, by anyone, including admins.
   Fixing it means fixing the mis-logged match, not forcing the merge.
 - Possessing a valid single-use link is sufficient authorization for a non-admin to claim
-  without approval; approval only exists for the *no-link* request path.
+  without approval; approval only exists for the _no-link_ request path.
 
 ## Not in this concept
 

@@ -253,3 +253,32 @@ export type AppNotification = {
   acted: boolean;
   createdAt: string;
 };
+
+export type ClaimRequestStatus = 'PENDING' | 'APPROVED' | 'DECLINED' | 'CANCELLED';
+
+export type ClaimRequestDetail = {
+  id: string;
+  status: ClaimRequestStatus;
+  groupId: string;
+  groupName: string;
+  stub: {
+    groupMemberId: string | null;
+    name: string;
+    rank: number | null;
+    rating: number | null;
+    matchesCount: number;
+  };
+  requester: { userId: string; name: string };
+  hasConflict: boolean;
+  createdAt: string;
+  resolvedAt: string | null;
+};
+
+export type CreateClaimRequestResult =
+  | { outcome: 'REQUESTED'; requestId: string; status: ClaimRequestStatus }
+  | {
+      outcome: 'BLOCKED';
+      stubName: string;
+      sharedMatches: SharedMatch[];
+      admins: ClaimAdmin[];
+    };

@@ -7,14 +7,20 @@ import { formatFeedItemTime } from '@/features/feed/helpers/feed-item-time.helpe
 import type { ClaimRecentMatch } from '@/types/api';
 
 // The "de qual grupo / que convite é esse" chip at the top of every claim screen.
-export function GroupBrandChip({ groupName }: { groupName: string }) {
+export function GroupBrandChip({
+  groupName,
+  title = 'Convite para assumir perfil',
+}: {
+  groupName: string;
+  title?: string;
+}) {
   return (
     <div className="flex items-center gap-2.5">
       <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-brand to-accent-dark text-meta font-extrabold text-brand-foreground shadow-[inset_0_0_0_1px_var(--border-accent)]">
         {getGroupInitials(groupName)}
       </div>
       <div className="flex min-w-0 flex-col">
-        <Label className="truncate text-foreground">Convite para assumir perfil</Label>
+        <Label className="truncate text-foreground">{title}</Label>
         <Meta className="truncate text-faint-foreground">{groupName}</Meta>
       </div>
     </div>
@@ -22,13 +28,7 @@ export function GroupBrandChip({ groupName }: { groupName: string }) {
 }
 
 // The stub's faceless, dashed avatar — it has no account yet.
-export function DashedAvatar({
-  initial,
-  className,
-}: {
-  initial: string;
-  className?: string;
-}) {
+export function DashedAvatar({ initial, className }: { initial: string; className?: string }) {
   return (
     <div
       aria-hidden
@@ -144,9 +144,7 @@ export function RecentMatches({ matches }: { matches: ClaimRecentMatch[] }) {
                 <Stat size="sm" className="text-foreground">
                   {match.scoreFor}–{match.scoreAgainst}
                 </Stat>
-                <Meta className="text-faint-foreground">
-                  {formatFeedItemTime(match.playedAt)}
-                </Meta>
+                <Meta className="text-faint-foreground">{formatFeedItemTime(match.playedAt)}</Meta>
               </div>
             </div>
           );

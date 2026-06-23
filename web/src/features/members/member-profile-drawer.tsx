@@ -3,12 +3,13 @@
 import { useEffect, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import Link from 'next/link';
-import { ChevronRight, Info, UserPlus } from 'lucide-react';
+import { Check, ChevronRight, Info, UserPlus } from 'lucide-react';
 import { Drawer, DrawerNested, DrawerContent, DrawerTitle } from '@/components/ui/drawer';
 import { Label, Meta } from '@/components/ui/text';
 import { avatarBgClass, nameInitial } from '@/lib/avatar';
 import { cn } from '@/lib/utils';
 import { getAccessToken, getCurrentUserIdFromAccessToken } from '@/lib/auth';
+import { createClaimRequest } from '@/features/claim-requests/api/claim-requests.api';
 import { createMemberClaimLink, getMemberProfile } from './api/members.api';
 import { StubClaimPanel } from './components/stub-claim-panel';
 import type { MemberProfile } from './types/member-profile.type';
@@ -67,13 +68,7 @@ type ContentProps = {
   rank?: number;
 };
 
-function MemberProfileContent({
-  groupId,
-  groupName,
-  totalMembers,
-  memberId,
-  rank,
-}: ContentProps) {
+function MemberProfileContent({ groupId, groupName, totalMembers, memberId, rank }: ContentProps) {
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
   const [profile, setProfile] = useState<MemberProfile | null>(null);
   // The claim flow opens as a nested drawer that slides up over the peek. The link
@@ -85,6 +80,10 @@ function MemberProfileContent({
   // Dedupes concurrent mints (double-tap, or reopening while one is in flight) so
   // we never burn more than one single-use invite per stub.
   const claimPending = useRef(false);
+  // "Sou eu — solicitar este perfil": the no-link path where the viewer asks the
+  // group's admins to approve them taking over this stub.
+  const [requestState, setRequestState] = useState<'idle' | 'sending' | 'sent' | 'blocked'>('idle');
+  const [requestMsg, setRequestMsg] = useState<string | null>(null);
 
   useEffect(() => {
     // The content remounts per member (keyed), so initial state is already
@@ -165,6 +164,38 @@ function MemberProfileContent({
       });
   }
 
+  // Ask the group's admins to approve you taking over this stub (no link needed).
+  function requestClaim() {
+    const token = getAccessToken();
+
+    if (!token) {
+      setRequestMsg('Entre na sua conta para solicitar.');
+      return;
+    }
+
+    setRequestState('sending');
+    setRequestMsg(null);
+
+    createClaimRequest(token, groupId, memberId)
+      .then((result) => {
+        if (result.outcome === 'REQUESTED') {
+          setRequestState('sent');
+          return;
+        }
+        // Shared a match → provably different people; can't be claimed.
+        setRequestState('blocked');
+        setRequestMsg('Vocês já jogaram a mesma partida, então este perfil não pode ser seu.');
+      })
+      .catch((caught) => {
+        setRequestState('idle');
+        setRequestMsg(
+          caught instanceof Error
+            ? caught.message
+            : 'Não foi possível solicitar agora. Tente novamente.',
+        );
+      });
+  }
+
   return (
     <div className="flex min-h-0 flex-1 flex-col overflow-y-auto px-6 pt-4 pb-10 [scrollbar-width:none]">
       {/* identity */}
@@ -192,9 +223,7 @@ function MemberProfileContent({
           )}
         </div>
 
-        {positionLine && (
-          <Meta className="mt-2 font-bold text-brand">{positionLine}</Meta>
-        )}
+        {positionLine && <Meta className="mt-2 font-bold text-brand">{positionLine}</Meta>}
       </div>
 
       {/* stats */}
@@ -212,8 +241,8 @@ function MemberProfileContent({
           <div className="mt-4 flex items-start gap-2.5 rounded-2xl bg-tag-warn/[0.08] px-3.5 py-3 ring-1 ring-inset ring-tag-warn/20">
             <Info className="mt-px size-4 shrink-0 text-tag-warn" aria-hidden />
             <Meta className="text-left font-medium text-tag-warn/90">
-              Jogador sem conta. Convide-o para assumir este perfil e levar todo o
-              histórico para o app.
+              Jogador sem conta. Convide-o para assumir este perfil e levar todo o histórico para o
+              app.
             </Meta>
           </div>
           <button
@@ -224,6 +253,30 @@ function MemberProfileContent({
             <UserPlus className="size-4.5 text-brand-foreground" aria-hidden />
             <Label className="text-brand-foreground">Convidar para assumir o perfil</Label>
           </button>
+
+          {requestState === 'sent' ? (
+            <div className="mt-2.5 flex items-start gap-2.5 rounded-2xl bg-success/[0.08] px-3.5 py-3 ring-1 ring-inset ring-success/20">
+              <Check className="mt-px size-4 shrink-0 text-success" aria-hidden />
+              <Meta className="text-left font-medium text-success">
+                Solicitação enviada. Um admin do grupo vai revisar.
+              </Meta>
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={requestClaim}
+              disabled={requestState === 'sending'}
+              className="mt-2.5 flex h-12 items-center justify-center rounded-pill bg-surface shadow-hairline transition-opacity active:opacity-60 disabled:opacity-50"
+            >
+              <Label className="text-foreground">
+                {requestState === 'sending' ? 'Enviando…' : 'Sou eu — solicitar este perfil'}
+              </Label>
+            </button>
+          )}
+
+          {requestMsg && (
+            <Meta className="mt-2 block px-1 text-center text-tag-warn">{requestMsg}</Meta>
+          )}
 
           <DrawerNested open={claimOpen} onOpenChange={setClaimOpen}>
             <DrawerContent aria-describedby={undefined} size="fit">
@@ -299,10 +352,7 @@ function buildPositionLine(
 
 // Real members link to their cross-group profile; stub players (userId null) have
 // none, so the caller hides the link entirely.
-function resolveProfileHref(
-  userId: string | null,
-  currentUserId: string | null,
-): string | null {
+function resolveProfileHref(userId: string | null, currentUserId: string | null): string | null {
   if (!userId) {
     return null;
   }
