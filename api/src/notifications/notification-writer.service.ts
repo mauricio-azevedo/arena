@@ -10,19 +10,25 @@ type PrismaClientLike = Prisma.TransactionClient | PrismaService;
 export class NotificationWriterService {
   constructor(private readonly prisma: PrismaService) {}
 
+  // One place that maps an input to a notification row, so create() and createMany() can't
+  // drift on the nullable-field defaults.
+  private toRow(
+    input: CreateNotificationInput,
+  ): Prisma.NotificationCreateManyInput {
+    return {
+      type: input.type,
+      recipientUserId: input.recipientUserId,
+      groupId: input.groupId ?? null,
+      actorUserId: input.actorUserId ?? null,
+      targetGroupMemberId: input.targetGroupMemberId ?? null,
+      data: input.data,
+    };
+  }
+
   // Takes an optional tx so a notification is created in the same transaction as the
   // event that triggers it (e.g. a claim approval), never out of sync with it.
   create(input: CreateNotificationInput, tx: PrismaClientLike = this.prisma) {
-    return tx.notification.create({
-      data: {
-        type: input.type,
-        recipientUserId: input.recipientUserId,
-        groupId: input.groupId ?? null,
-        actorUserId: input.actorUserId ?? null,
-        targetGroupMemberId: input.targetGroupMemberId ?? null,
-        data: input.data,
-      },
-    });
+    return tx.notification.create({ data: this.toRow(input) });
   }
 
   // Fan-out: one insert for many recipients (e.g. notifying every group admin), instead
@@ -32,14 +38,7 @@ export class NotificationWriterService {
     tx: PrismaClientLike = this.prisma,
   ) {
     return tx.notification.createMany({
-      data: inputs.map((input) => ({
-        type: input.type,
-        recipientUserId: input.recipientUserId,
-        groupId: input.groupId ?? null,
-        actorUserId: input.actorUserId ?? null,
-        targetGroupMemberId: input.targetGroupMemberId ?? null,
-        data: input.data,
-      })),
+      data: inputs.map((i) => this.toRow(i)),
     });
   }
 
