@@ -105,6 +105,12 @@ model User {
   email        String @unique
   passwordHash String
 
+  // Optional display name shown to others in groups (overrides first+last when set).
+  nickname String?
+  // Palette key for the user's avatar gradient (frontend owns key→gradient). Always
+  // set — assigned (varied) at registration; the default is a NOT-NULL safety net.
+  avatarColor String @default("blue")
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

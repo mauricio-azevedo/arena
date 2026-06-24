@@ -3,8 +3,8 @@
 // Literal class strings (not interpolated) so Tailwind keeps them in the build.
 const AVATAR_BG_CLASSES = ['bg-avatar-1', 'bg-avatar-2', 'bg-avatar-3', 'bg-avatar-4'] as const;
 
-// Stable per-member colour so a player keeps the same avatar fill everywhere
-// (ranking row, picker, team cards). Seed with a stable id, not a name.
+// Deterministic fill for the claim flow's account avatars (which have no
+// avatarColor in their payload). Player avatars elsewhere use MemberAvatar.
 export function avatarBgClass(seed: string): string {
   let hash = 0;
 
@@ -17,4 +17,22 @@ export function avatarBgClass(seed: string): string {
 
 export function nameInitial(name: string): string {
   return (name.trim().charAt(0) || '?').toUpperCase();
+}
+
+// The initials shown inside a player avatar. `count` 2 → first + last word (the
+// default); 1 → first word only. A single-word name yields one letter either way.
+export function memberInitials(name: string, count: 1 | 2 = 2): string {
+  const words = name.trim().split(/\s+/).filter(Boolean);
+
+  if (words.length === 0) {
+    return '?';
+  }
+
+  const first = words[0].charAt(0);
+
+  if (count === 1 || words.length === 1) {
+    return first.toUpperCase();
+  }
+
+  return (first + words[words.length - 1].charAt(0)).toUpperCase();
 }

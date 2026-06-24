@@ -17,13 +17,3 @@ export function highlightSentence(type: HighlightType, value: number): string {
       return `Chegou a ${value} vitórias`;
   }
 }
-
-export function initialsFromName(displayName: string): string {
-  return displayName
-    .split(' ')
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0])
-    .join('')
-    .toUpperCase();
-}

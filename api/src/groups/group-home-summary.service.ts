@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import type { Prisma } from '../generated/prisma/client';
-import { resolveMemberDisplayName } from '../common/member-display-name';
+import {
+  MEMBER_USER_SELECT,
+  resolveMemberDisplayName,
+} from '../common/member-display-name';
 import { PrismaService } from '../prisma/prisma.service';
 
 type PrismaClientLike = Prisma.TransactionClient | PrismaService;
@@ -80,8 +83,7 @@ export class GroupHomeSummaryService {
         currentRank: true,
         user: {
           select: {
-            firstName: true,
-            lastName: true,
+            ...MEMBER_USER_SELECT,
           },
         },
       },

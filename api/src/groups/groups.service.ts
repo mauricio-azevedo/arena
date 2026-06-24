@@ -1,3 +1,4 @@
+import { MEMBER_USER_SELECT } from '../common/member-display-name';
 import {
   BadRequestException,
   Injectable,
@@ -75,8 +76,7 @@ export class GroupsService {
           createdBy: {
             select: {
               id: true,
-              firstName: true,
-              lastName: true,
+              ...MEMBER_USER_SELECT,
               email: true,
             },
           },
@@ -112,8 +112,7 @@ export class GroupsService {
         createdBy: {
           select: {
             id: true,
-            firstName: true,
-            lastName: true,
+            ...MEMBER_USER_SELECT,
             email: true,
           },
         },

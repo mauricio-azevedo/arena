@@ -1,3 +1,4 @@
+import { MEMBER_USER_SELECT } from '../common/member-display-name';
 import {
   ForbiddenException,
   Injectable,
@@ -154,15 +155,13 @@ export class FeedReaderService {
       actorUser: {
         select: {
           id: true,
-          firstName: true,
-          lastName: true,
+          ...MEMBER_USER_SELECT,
         },
       },
       subjectUser: {
         select: {
           id: true,
-          firstName: true,
-          lastName: true,
+          ...MEMBER_USER_SELECT,
         },
       },
     } as const;

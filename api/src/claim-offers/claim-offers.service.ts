@@ -9,7 +9,10 @@ import {
   GroupMemberRole,
   NotificationType,
 } from '../generated/prisma/enums';
-import { resolveMemberDisplayName } from '../common/member-display-name';
+import {
+  MEMBER_USER_SELECT,
+  resolveMemberDisplayName,
+} from '../common/member-display-name';
 import { requireGroupAdmin } from '../common/require-group-admin';
 import { PrismaService } from '../prisma/prisma.service';
 import { ClaimService } from '../claims/claim.service';
@@ -266,7 +269,7 @@ export class ClaimOffersService {
         rating: true,
         currentRank: true,
         claimEmail: true,
-        user: { select: { firstName: true, lastName: true } },
+        user: { select: MEMBER_USER_SELECT },
         group: { select: { name: true } },
       },
     });
@@ -301,7 +304,7 @@ export class ClaimOffersService {
           groupId: true,
           displayName: true,
           claimEmail: true,
-          user: { select: { firstName: true, lastName: true } },
+          user: { select: MEMBER_USER_SELECT },
         },
       });
       this.assertOwnedStub(stub, viewer.email);
@@ -364,7 +367,7 @@ export class ClaimOffersService {
           groupId: true,
           displayName: true,
           claimEmail: true,
-          user: { select: { firstName: true, lastName: true } },
+          user: { select: MEMBER_USER_SELECT },
         },
       });
       this.assertOwnedStub(stub, viewer.email);

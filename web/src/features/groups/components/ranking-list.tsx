@@ -83,8 +83,8 @@ function RankingRow({
       <MemberAvatar
         userId={member.userId}
         name={fullName}
-        seed={member.id}
-        className={cn('size-[38px] text-meta', isCurrent ? 'text-brand' : 'text-muted-foreground')}
+        avatarColor={member.user?.avatarColor ?? null}
+        size="sm"
       />
 
       <div className="flex min-w-0 flex-1 flex-col gap-0.5">

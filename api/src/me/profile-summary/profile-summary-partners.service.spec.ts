@@ -24,6 +24,7 @@ function row(overrides: {
   lastName?: string;
   displayName?: string | null;
   currentRank?: number | null;
+  avatarColor?: string | null;
 }) {
   const {
     partnerMemberId,
@@ -34,6 +35,7 @@ function row(overrides: {
     lastName,
     displayName = null,
     currentRank = null,
+    avatarColor = null,
   } = overrides;
 
   return {
@@ -44,7 +46,9 @@ function row(overrides: {
       userId,
       displayName,
       currentRank,
-      user: firstName ? { firstName, lastName: lastName ?? '' } : null,
+      user: firstName
+        ? { firstName, lastName: lastName ?? '', avatarColor }
+        : null,
     },
   };
 }
@@ -76,6 +80,7 @@ describe('ProfileSummaryPartnersService.findPartners', () => {
         matchesTogether: 8,
         winsTogether: 7,
         currentRank: 5,
+        avatarColor: 'blue',
       }),
       row({
         partnerMemberId: 'k-group-b',
@@ -93,6 +98,7 @@ describe('ProfileSummaryPartnersService.findPartners', () => {
     expect(result.partners[0]).toEqual({
       userId: 'kleiton',
       displayName: 'Kleiton',
+      avatarColor: 'blue',
       // Rank comes from group A (8 matches > 3 matches).
       currentRank: 5,
       matchesTogether: 11,

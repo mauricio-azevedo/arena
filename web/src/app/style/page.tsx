@@ -6,11 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupInput,
-} from '@/components/ui/input-group';
+import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Display, Overline, Heading, Stat, Title } from '@/components/ui/text';
 import { StandingCard } from '@/features/groups/components/standing-card';
@@ -49,16 +45,38 @@ export default function StylePage() {
 
       <Block label="Escala de tipo">
         <div className="space-y-4">
-          <Row name="display"><Display>#5</Display></Row>
-          <Row name="stat-lg"><Stat size="lg">1017</Stat></Row>
-          <Row name="stat-md"><Stat>−22</Stat></Row>
-          <Row name="title"><Title>Masculino Life</Title></Row>
-          <Row name="heading"><Heading>Hoje</Heading></Row>
-          <Row name="action"><span className="text-action">Registrar partida</span></Row>
-          <Row name="label"><span className="text-label">Kenio</span></Row>
-          <Row name="body"><span className="text-body text-faint-foreground">Grupo de duplas às terças à noite</span></Row>
-          <Row name="meta"><span className="text-meta text-muted-foreground">19 membros</span></Row>
-          <Row name="overline"><Overline>Sua posição</Overline></Row>
+          <Row name="display">
+            <Display>#5</Display>
+          </Row>
+          <Row name="stat-lg">
+            <Stat size="lg">1017</Stat>
+          </Row>
+          <Row name="stat-md">
+            <Stat>−22</Stat>
+          </Row>
+          <Row name="title">
+            <Title>Masculino Life</Title>
+          </Row>
+          <Row name="heading">
+            <Heading>Hoje</Heading>
+          </Row>
+          <Row name="action">
+            <span className="text-action">Registrar partida</span>
+          </Row>
+          <Row name="label">
+            <span className="text-label">Kenio</span>
+          </Row>
+          <Row name="body">
+            <span className="text-body text-faint-foreground">
+              Grupo de duplas às terças à noite
+            </span>
+          </Row>
+          <Row name="meta">
+            <span className="text-meta text-muted-foreground">19 membros</span>
+          </Row>
+          <Row name="overline">
+            <Overline>Sua posição</Overline>
+          </Row>
         </div>
       </Block>
 
@@ -249,7 +267,16 @@ function demoPlayer(
       leftAt: null,
       createdAt: TS,
       updatedAt: TS,
-      user: { id, firstName, lastName: '', email: null, createdAt: TS, updatedAt: TS },
+      user: {
+        id,
+        firstName,
+        lastName: '',
+        nickname: null,
+        email: null,
+        avatarColor: null,
+        createdAt: TS,
+        updatedAt: TS,
+      },
     },
   };
 }

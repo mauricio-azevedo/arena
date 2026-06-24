@@ -1,7 +1,10 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { randomUUID } from 'crypto';
 import type { Prisma } from '../generated/prisma/client';
-import { resolveMemberDisplayName } from '../common/member-display-name';
+import {
+  MEMBER_USER_SELECT,
+  resolveMemberDisplayName,
+} from '../common/member-display-name';
 import { PrismaService } from '../prisma/prisma.service';
 import { FeedOrchestratorService } from '../feed/feed-orchestrator.service';
 import type {
@@ -302,8 +305,7 @@ export class ProcessingJobRunnerService {
                 user: {
                   select: {
                     id: true,
-                    firstName: true,
-                    lastName: true,
+                    ...MEMBER_USER_SELECT,
                   },
                 },
               },
@@ -462,8 +464,7 @@ export class ProcessingJobRunnerService {
               include: {
                 user: {
                   select: {
-                    firstName: true,
-                    lastName: true,
+                    ...MEMBER_USER_SELECT,
                   },
                 },
               },

@@ -9,6 +9,7 @@ export type HighlightType =
 export type WeeklyHighlightCard = {
   userId: string;
   displayName: string;
+  avatarColor: string | null;
   groupMemberId: string;
   group: { id: string; name: string };
   achievement: { type: HighlightType; value: number };

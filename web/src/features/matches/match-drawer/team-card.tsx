@@ -13,7 +13,6 @@ type TeamCardProps = {
   score: number;
   isWinner: boolean;
   hasWinner: boolean;
-  currentMembershipId: string | null;
   resolve: (id: string) => ResolvedPlayer | undefined;
   rankOf: (id: string) => number | undefined;
   onAddSlot: (slot: SlotKey) => void;
@@ -30,7 +29,6 @@ export function TeamCard({
   score,
   isWinner,
   hasWinner,
-  currentMembershipId,
   resolve,
   rankOf,
   onAddSlot,
@@ -92,7 +90,6 @@ export function TeamCard({
           }
 
           const rank = rankOf(player.id);
-          const isYou = player.id === currentMembershipId;
 
           return (
             <div
@@ -105,8 +102,8 @@ export function TeamCard({
               <MemberAvatar
                 userId={player.userId}
                 name={player.fullName}
-                seed={player.avatarSeed}
-                className={cn('size-10 text-meta', isYou ? 'text-brand' : 'text-muted-foreground')}
+                avatarColor={player.avatarColor}
+                size="sm"
               />
 
               <div className="flex min-w-0 flex-1 items-baseline gap-1.5">

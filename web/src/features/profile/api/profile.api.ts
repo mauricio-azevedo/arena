@@ -5,7 +5,9 @@ import type { ProfileSummary } from '../types/profile-summary.type';
 export type UpdateProfileInput = {
   firstName?: string;
   lastName?: string;
+  nickname?: string;
   email?: string;
+  avatarColor?: string;
 };
 
 export function getProfileSummary(token: string): Promise<ProfileSummary> {

@@ -112,8 +112,8 @@ export function GroupMembersDrawer({
                   <MemberAvatar
                     userId={member.userId}
                     name={fullName}
-                    seed={member.id}
-                    className="size-[42px] text-meta"
+                    avatarColor={member.user?.avatarColor ?? null}
+                    size="md"
                   />
 
                   <div className="flex min-w-0 flex-1 flex-col">

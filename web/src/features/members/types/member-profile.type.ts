@@ -14,6 +14,7 @@ export type MemberProfile = {
   groupId: string;
   userId: string | null;
   displayName: string;
+  avatarColor: string | null;
   rating: number;
   currentRank: number | null;
   stats: MemberProfileStats;

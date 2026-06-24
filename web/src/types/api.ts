@@ -2,7 +2,9 @@ export type User = {
   id: string;
   firstName: string;
   lastName: string;
+  nickname: string | null;
   email: string | null;
+  avatarColor: string | null;
   createdAt: string;
   updatedAt: string;
 };

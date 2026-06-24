@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { MatchTeam } from '../../generated/prisma/enums';
-import { resolveMemberDisplayName } from '../../common/member-display-name';
+import {
+  MEMBER_USER_SELECT,
+  resolveMemberDisplayName,
+} from '../../common/member-display-name';
 import { PrismaService } from '../../prisma/prisma.service';
 import type { ProfileSummaryMatch } from '../types/profile-summary-match.type';
 
@@ -35,8 +38,7 @@ export class ProfileSummaryMatchesService {
                     displayName: true,
                     user: {
                       select: {
-                        firstName: true,
-                        lastName: true,
+                        ...MEMBER_USER_SELECT,
                       },
                     },
                   },
