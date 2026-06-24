@@ -60,7 +60,7 @@ export function GroupDetailTabs({
               onClick={() => setTab(tab.value)}
               aria-pressed={isSelected}
               className={cn(
-                '-mb-px flex h-12 items-center gap-1.5 border-b-2 whitespace-nowrap transition-colors',
+                '-mb-px flex h-12 items-center gap-tight border-b-2 whitespace-nowrap transition-colors',
                 isSelected
                   ? 'border-brand text-foreground'
                   : 'border-transparent text-faint-foreground hover:text-foreground',

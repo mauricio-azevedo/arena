@@ -8,7 +8,7 @@ type Props = {
 export function ProfileErrorState({ error }: Props) {
   return (
     <Card>
-      <CardContent className="space-y-2 p-4">
+      <CardContent className="space-y-snug p-4">
         <TypographySmall>Algo deu errado</TypographySmall>
         <TypographyMuted>{error}</TypographyMuted>
       </CardContent>

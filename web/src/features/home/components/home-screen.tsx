@@ -38,7 +38,7 @@ export function HomeScreen() {
   }, []);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-section">
       <HomeSearchPlaceholder />
       <WeeklyHighlightsRail />
       <GroupsSection status={status} cards={cards} isLoggedIn={isLoggedIn} />

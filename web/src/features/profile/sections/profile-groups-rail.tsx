@@ -13,14 +13,14 @@ export function ProfileGroupsRail({ groups }: { groups: ProfileSummaryGroup[] })
   }
 
   return (
-    <section className="space-y-3.5">
+    <section className="space-y-comfortable">
       <div className="flex items-center justify-between px-1">
         <Heading>Seus grupos</Heading>
         <Meta className="text-muted-foreground">{groups.length}</Meta>
       </div>
 
       {/* I removed the padding top and bottom here for the same re I did in weekly-highlights-rail.tsx. */}
-      <div className="-mx-4 flex gap-3 overflow-x-auto px-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      <div className="-mx-4 flex gap-base overflow-x-auto px-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {groups.map((group) => (
           <GroupRailCard key={group.id} group={group} />
         ))}
@@ -50,12 +50,12 @@ function GroupRailCard({ group }: { group: ProfileSummaryGroup }) {
         <RankTrend rankDelta={group.rankDelta} />
       </div>
 
-      <Label className="mt-3.5 truncate font-bold">{group.name}</Label>
+      <Label className="mt-comfortable truncate font-bold">{group.name}</Label>
       {group.description && (
         <Meta className="truncate text-faint-foreground">{group.description}</Meta>
       )}
 
-      <div className="mt-3.5 flex items-baseline gap-1.5">
+      <div className="mt-comfortable flex items-baseline gap-tight">
         <Stat size="lg" className="font-extrabold">
           {group.currentRank != null ? `#${group.currentRank}` : '—'}
         </Stat>
@@ -76,7 +76,7 @@ function RankTrend({ rankDelta }: { rankDelta: number | null }) {
   return (
     <span
       className={cn(
-        'inline-flex items-center gap-0.5 font-display text-meta font-extrabold tabular-nums',
+        'inline-flex items-center gap-tight font-display text-meta font-extrabold tabular-nums',
         up ? 'text-success' : 'text-danger',
       )}
     >

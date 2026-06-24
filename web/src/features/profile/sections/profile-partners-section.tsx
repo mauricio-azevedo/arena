@@ -26,7 +26,7 @@ export function ProfilePartnersSection({
 
   if (partners.length === 0) {
     return (
-      <section className="space-y-3">
+      <section className="space-y-comfortable">
         <SectionHeader partnerCount={partnerCount} />
         <div className="rounded-card bg-card px-4 py-5 text-center shadow-card">
           <Body className="text-muted-foreground">
@@ -56,7 +56,7 @@ export function ProfilePartnersSection({
           <button
             type="button"
             onClick={() => setShowAll(true)}
-            className="flex w-full items-center justify-center gap-1.5 border-t border-border px-4 py-3.5 text-label font-bold text-brand transition-colors active:bg-foreground/[0.03]"
+            className="flex w-full items-center justify-center gap-tight border-t border-border px-4 py-3 text-label font-bold text-brand transition-colors active:bg-foreground/[0.03]"
           >
             Ver todas as {partnerCount} duplas
             <ChevronRight className="size-4" strokeWidth={2.4} aria-hidden />

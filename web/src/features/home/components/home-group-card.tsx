@@ -55,7 +55,7 @@ export function HomeGroupCard({ card }: { card: GroupHomeCard }) {
       className="block transition-transform active:scale-[0.99]"
     >
       <Card size="sm">
-        <CardContent className="flex items-center gap-3.5">
+        <CardContent className="flex items-center gap-comfortable">
           <span
             aria-hidden
             className="flex size-[3.25rem] shrink-0 items-center justify-center rounded-full"
@@ -71,13 +71,15 @@ export function HomeGroupCard({ card }: { card: GroupHomeCard }) {
 
           <div className="min-w-0 flex-1">
             <Label className="block truncate">{card.group.name}</Label>
-            <Meta className="mt-1 block text-muted-foreground">
+            <Meta className="mt-tight block text-muted-foreground">
               <span className="text-foreground">{card.group.membersCount}</span> membros
-              <span className="mx-1.5 inline-block size-[3px] rounded-full bg-faint-foreground align-middle" />
+              <span className="mx-tight inline-block size-[3px] rounded-full bg-faint-foreground align-middle" />
               <span className="text-foreground">{card.group.matchesCount}</span> partidas
             </Meta>
             {lastMatch ? (
-              <Meta className={cn('mt-1 flex items-center gap-1.5', TONE[lastMatch.tone].text)}>
+              <Meta
+                className={cn('mt-tight flex items-center gap-tight', TONE[lastMatch.tone].text)}
+              >
                 <span
                   aria-hidden
                   className={cn('size-1.5 rounded-full', TONE[lastMatch.tone].dot)}
@@ -90,10 +92,9 @@ export function HomeGroupCard({ card }: { card: GroupHomeCard }) {
           {isMember ? (
             <div className="shrink-0 text-right">
               <Overline>Você</Overline>
-              <div className="mt-0.5 flex items-baseline justify-end gap-1">
-                <Stat size="md">
-                  {standing?.kind === 'RANKED' ? `#${standing.rank}` : '—'}
-                </Stat>
+              {/* mt-0.5: 2px optical nudge under the "Você" overline — not layout spacing. */}
+              <div className="mt-0.5 flex items-baseline justify-end gap-tight">
+                <Stat size="md">{standing?.kind === 'RANKED' ? `#${standing.rank}` : '—'}</Stat>
                 {movement ? (
                   <TrendBadge direction={movement.direction} positions={movement.positions} />
                 ) : null}
@@ -106,19 +107,13 @@ export function HomeGroupCard({ card }: { card: GroupHomeCard }) {
   );
 }
 
-function TrendBadge({
-  direction,
-  positions,
-}: {
-  direction: 'UP' | 'DOWN';
-  positions: number;
-}) {
+function TrendBadge({ direction, positions }: { direction: 'UP' | 'DOWN'; positions: number }) {
   const up = direction === 'UP';
   const Icon = up ? ArrowUp : ArrowDown;
   return (
     <span
       className={cn(
-        'inline-flex items-center gap-0.5 text-sm font-bold tabular-nums',
+        'inline-flex items-center gap-tight text-sm font-bold tabular-nums',
         up ? 'text-success' : 'text-danger',
       )}
     >

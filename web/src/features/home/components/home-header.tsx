@@ -52,10 +52,11 @@ export function HomeHeader() {
     <header className="fixed inset-x-0 top-0 z-50 px-4 pb-3 pt-[max(1.25rem,env(safe-area-inset-top))]">
       <div className="pointer-events-none absolute inset-0 bg-background/40 backdrop-blur-xs [-webkit-mask-image:linear-gradient(to_bottom,black_60%,transparent)] [mask-image:linear-gradient(to_bottom,black_60%,transparent)]" />
 
-      <div className="relative mx-auto flex h-11 w-full max-w-md items-center justify-between gap-3 leading-tight">
+      <div className="relative mx-auto flex h-11 w-full max-w-md items-center justify-between gap-base leading-tight">
         <div className="min-w-0">
           <Meta className="block text-muted-foreground">{isLoggedIn ? greeting() : 'Olá,'}</Meta>
           {loading ? (
+            // mt-0.5: 2px optical nudge aligning the skeleton line where the Title sits.
             <div className="mt-0.5 h-5 w-28 animate-pulse rounded-full bg-muted" />
           ) : (
             <Title className="truncate">{isLoggedIn ? (firstName ?? 'Você') : 'Bem-vindo'}</Title>

@@ -11,18 +11,18 @@ export function ProfilePerformance({ stats }: { stats: ProfileSummaryStats }) {
   const hasMatches = matchesPlayed > 0;
 
   return (
-    <section className="space-y-3.5">
+    <section className="space-y-comfortable">
       <Heading className="px-1">Desempenho</Heading>
       <Card>
-        <CardContent className="space-y-3">
+        <CardContent className="space-y-base">
           <div className="flex items-center justify-between">
-            <div className="flex items-baseline gap-1.5">
+            <div className="flex items-baseline gap-tight">
               <Stat size="sm" className="text-success">
                 {wins}
               </Stat>
               <Meta className="text-muted-foreground">vitórias</Meta>
             </div>
-            <div className="flex items-baseline gap-1.5">
+            <div className="flex items-baseline gap-tight">
               <Meta className="text-muted-foreground">derrotas</Meta>
               <Stat size="sm" className="text-danger">
                 {losses}
@@ -44,12 +44,12 @@ export function ProfilePerformance({ stats }: { stats: ProfileSummaryStats }) {
           </Meta>
 
           {recentForm.length > 0 && (
-            <div className="space-y-3 pt-2">
+            <div className="space-y-base pt-2">
               <div className="flex items-center justify-between">
                 <Label className="font-bold">Forma recente</Label>
                 <Meta className="text-faint-foreground">últimas {recentForm.length}</Meta>
               </div>
-              <div className="flex gap-1.5">
+              <div className="flex gap-snug">
                 {recentForm.map((result, index) => {
                   const chip = recentFormChip(result);
                   return (

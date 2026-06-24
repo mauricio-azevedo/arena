@@ -191,7 +191,32 @@ export default function StylePage() {
           </CardContent>
         </Card>
       </Block>
+
+      <Block label="Espaçamento — grade de 8 pontos">
+        <div className="space-y-base">
+          <SpacingRow name="tight" px="4" gapClass="gap-tight" />
+          <SpacingRow name="snug" px="8" gapClass="gap-snug" />
+          <SpacingRow name="base" px="12" gapClass="gap-base" />
+          <SpacingRow name="comfortable" px="16" gapClass="gap-comfortable" />
+          <SpacingRow name="section" px="24" gapClass="gap-section" />
+          <SpacingRow name="loose" px="32" gapClass="gap-loose" />
+          <SpacingRow name="page" px="48" gapClass="gap-page" />
+        </div>
+      </Block>
     </main>
+  );
+}
+
+function SpacingRow({ name, px, gapClass }: { name: string; px: string; gapClass: string }) {
+  return (
+    <div className="flex items-center gap-4">
+      <code className="w-28 shrink-0 text-meta text-faint-foreground">{name}</code>
+      <code className="w-8 shrink-0 text-meta text-faint-foreground">{px}</code>
+      <div className={`flex ${gapClass}`}>
+        <span className="size-4 rounded-sm bg-brand/30" />
+        <span className="size-4 rounded-sm bg-brand/30" />
+      </div>
+    </div>
   );
 }
 

@@ -29,11 +29,12 @@ export function ProfileIdentity({
     .join(' · ');
 
   return (
-    <div className="flex items-center gap-3.5">
+    <div className="flex items-center gap-comfortable">
       <MemberAvatar userId={userId} name={name} avatarColor={avatarColor ?? null} size="xl" />
 
       <div className="min-w-0 flex-1">
         <Title className="truncate text-stat-md">{name}</Title>
+        {/* mt-0.5: 2px optical nudge tucking the handle under the Title — not layout spacing. */}
         {handle && <Meta className="mt-0.5 block text-muted-foreground">{handle}</Meta>}
       </div>
 

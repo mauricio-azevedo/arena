@@ -97,7 +97,7 @@ export function ProfileScreen({ userId }: Props) {
   const ownerLabel = isOwn ? 'Você' : user.firstName;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-section">
       <ProfileIdentity
         userId={user.id}
         firstName={user.firstName}
@@ -125,7 +125,7 @@ export function ProfileScreen({ userId }: Props) {
       <ProfileGroupsRail groups={recentGroups} />
 
       {isOwn && (
-        <div className="space-y-4 pt-2">
+        <div className="space-y-comfortable pt-2">
           <ProfileLogoutRow />
           <Meta className="block text-center text-faint-foreground">
             Arena · versão {APP_VERSION}

@@ -172,6 +172,20 @@
     --shadow-card: 0 6px 18px rgba(0, 0, 0, 0.22), inset 0 0 0 1px var(--border);
     --shadow-button: 0 4px 12px rgba(31, 73, 135, 0.4), inset 0 0 0 1px var(--border-accent);
     --shadow-float: 0 18px 40px -16px rgba(0, 0, 0, 0.6), inset 0 0 0 1px var(--border);
+
+    /* -- Spacing -- the 8-point grid (4px base) as a semantic ladder. Use these names
+       for space between elements (gap-snug, space-y-section, mt-comfortable) so off-grid
+       values are unavailable and the recurring relationships change together. See
+       docs/design/spacing.md. Card padding stays owned by --card-spacing. Raw on-grid
+       steps (gap-2) are allowed only for incidental layout with no matching role; never
+       a `.5` step or an arbitrary [px] value. -- */
+    --spacing-tight: 0.25rem; /* 4px - label/value, icon/text, intra-line pairs */
+    --spacing-snug: 0.5rem; /* 8px - related items in a row, chip gaps */
+    --spacing-base: 0.75rem; /* 12px - compact vertical rhythm inside a card */
+    --spacing-comfortable: 1rem; /* 16px - heading-to-card, content padding, footer stacks */
+    --spacing-section: 1.5rem; /* 24px - between major page sections */
+    --spacing-loose: 2rem; /* 32px - hero / drawer-internal blocks */
+    --spacing-page: 3rem; /* 48px - page-level gaps (rare) */
 }
 
 /* ============================================================================

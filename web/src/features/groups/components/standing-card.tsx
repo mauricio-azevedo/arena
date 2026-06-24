@@ -37,10 +37,10 @@ export function StandingCard({
         className="pointer-events-none absolute -bottom-16 -left-8 h-48 w-48 rounded-full bg-[radial-gradient(circle,rgba(0,0,0,0.22),transparent_68%)]"
       />
 
-      <div className="relative flex items-start justify-between gap-4">
+      <div className="relative flex items-start justify-between gap-comfortable">
         <div>
           <Overline>Sua posição</Overline>
-          <Display className="mt-2">{rank !== null ? `#${rank}` : '—'}</Display>
+          <Display className="mt-snug">{rank !== null ? `#${rank}` : '—'}</Display>
           {movement && <RankMovement movement={movement} />}
         </div>
 
@@ -52,7 +52,7 @@ export function StandingCard({
               <Stat size="lg" className="leading-none text-foreground">
                 {pointsToClimb}
               </Stat>
-              <Meta className="mt-1 block text-muted-foreground">
+              <Meta className="mt-tight block text-muted-foreground">
                 pts p/ <span className="text-foreground">#{chasingRank}</span>
               </Meta>
             </>
@@ -60,17 +60,17 @@ export function StandingCard({
         </RatingRing>
       </div>
 
-      <div className="relative my-4 h-px bg-divider" />
+      <div className="relative my-comfortable h-px bg-divider" />
 
       <div className="relative flex items-end justify-between">
         <div>
           <Overline>Rating atual</Overline>
-          <Stat className="mt-1">{Math.round(rating)}</Stat>
+          <Stat className="mt-tight">{Math.round(rating)}</Stat>
         </div>
         {lastChange && (
           <div className="text-right">
             <Overline>{formatRelativeDay(lastChange.occurredAt)}</Overline>
-            <Stat className={`mt-1 ${lastChange.delta < 0 ? 'text-danger' : 'text-success'}`}>
+            <Stat className={`mt-tight ${lastChange.delta < 0 ? 'text-danger' : 'text-success'}`}>
               {formatDelta(lastChange.delta)}
             </Stat>
           </div>
@@ -90,7 +90,7 @@ function RankMovement({
 
   return (
     <Meta
-      className={`mt-2.5 flex items-center gap-1 ${isUp ? 'text-success' : 'text-danger'}`}
+      className={`mt-snug flex items-center gap-tight ${isUp ? 'text-success' : 'text-danger'}`}
     >
       <Icon className="size-3.5" strokeWidth={2.8} aria-hidden />
       {movement.positions}
