@@ -5,7 +5,10 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { MatchTeam } from '../generated/prisma/enums';
-import { resolveMemberDisplayName } from '../common/member-display-name';
+import {
+  MEMBER_USER_SELECT,
+  resolveMemberDisplayName,
+} from '../common/member-display-name';
 import { PrismaService } from '../prisma/prisma.service';
 import type { Prisma } from '../generated/prisma/client';
 import { ProcessingJobWriterService } from '../processing/processing-job-writer.service';
@@ -366,8 +369,7 @@ export class MatchesService {
         displayName: true,
         user: {
           select: {
-            firstName: true,
-            lastName: true,
+            ...MEMBER_USER_SELECT,
           },
         },
       },
@@ -497,8 +499,7 @@ export class MatchesService {
               user: {
                 select: {
                   id: true,
-                  firstName: true,
-                  lastName: true,
+                  ...MEMBER_USER_SELECT,
                   email: true,
                 },
               },

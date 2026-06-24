@@ -1,10 +1,9 @@
 import { cn } from '@/lib/utils';
-import { nameInitial } from '@/lib/avatar';
+import { MemberAvatar } from '@/components/ui/member-avatar';
 import { Label, Meta } from '@/components/ui/text';
 import { partnerRateTone } from '../helpers/partner-rate.helper';
 import { firstNameOf } from '../helpers/profile-name.helper';
 import type { ProfileSummaryPartner } from '../types/profile-summary-partner.type';
-import { ProfileMonogram } from './profile-monogram';
 
 export function PartnerRow({
   partner,
@@ -18,10 +17,13 @@ export function PartnerRow({
   const firstName = firstNameOf(partner.displayName);
 
   return (
-    <div className={cn('flex items-center gap-3 px-4 py-3', divider && 'border-t border-border')}>
-      <ProfileMonogram className="size-[2.625rem] bg-muted text-stat-sm text-muted-foreground">
-        {nameInitial(partner.displayName)}
-      </ProfileMonogram>
+    <div className={cn('flex items-end gap-3 px-4 py-3', divider && 'border-t border-border')}>
+      <MemberAvatar
+        userId={partner.userId}
+        name={partner.displayName}
+        avatarColor={partner.avatarColor}
+        size="md"
+      />
 
       <div className="min-w-0 flex-1">
         <div className="flex min-w-0 items-baseline gap-1.5">

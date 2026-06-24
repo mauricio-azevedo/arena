@@ -10,7 +10,7 @@ export type PickerEntry = {
   firstName: string;
   fullName: string;
   initial: string;
-  avatarSeed: string;
+  avatarColor: string | null;
   // null → jogador sem conta (convidado), rendered as a dashed avatar.
   userId: string | null;
   rank?: number;
@@ -118,11 +118,8 @@ export function PickerView({
                   <MemberAvatar
                     userId={entry.userId}
                     name={entry.fullName}
-                    seed={entry.avatarSeed}
-                    className={cn(
-                      'size-[42px] text-meta',
-                      entry.isYou ? 'text-brand' : 'text-muted-foreground',
-                    )}
+                    avatarColor={entry.avatarColor}
+                    size="md"
                   />
 
                   <div className="flex min-w-0 flex-1 flex-col gap-0.5">

@@ -1,3 +1,4 @@
+import { MEMBER_USER_SELECT } from './member-display-name';
 import { ForbiddenException } from '@nestjs/common';
 import { GroupMemberRole } from '../generated/prisma/enums';
 import type { PrismaService } from '../prisma/prisma.service';
@@ -15,7 +16,7 @@ export async function requireGroupAdmin(
       role: true,
       leftAt: true,
       displayName: true,
-      user: { select: { firstName: true, lastName: true } },
+      user: { select: MEMBER_USER_SELECT },
     },
   });
 

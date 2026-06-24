@@ -1,9 +1,6 @@
 import type { GroupMember, Match } from '@/types/api';
-import { avatarBgClass, nameInitial } from '@/lib/avatar';
+import { nameInitial } from '@/lib/avatar';
 import { resolveMemberName } from '@/lib/member-name';
-
-// Re-exported so existing drawer call-sites keep importing from here.
-export { avatarBgClass };
 
 // A player as the drawer needs to render it — resolved either from the live
 // group roster or, when editing, from the match's own snapshot (so a member who
@@ -13,7 +10,8 @@ export type ResolvedPlayer = {
   firstName: string;
   fullName: string;
   initial: string;
-  avatarSeed: string;
+  // The member's chosen avatar palette key (null → stub/default fill).
+  avatarColor: string | null;
   // null → jogador sem conta (convidado), rendered as a dashed avatar.
   userId: string | null;
 };
@@ -30,7 +28,7 @@ export function resolveFromMember(member: GroupMember): ResolvedPlayer {
     firstName,
     fullName,
     initial: initialOf(firstName),
-    avatarSeed: member.id,
+    avatarColor: member.user?.avatarColor ?? null,
     userId: member.userId,
   };
 }
@@ -57,7 +55,7 @@ export function buildPlayerLookup(members: GroupMember[], match?: Match) {
         firstName,
         fullName,
         initial: initialOf(firstName),
-        avatarSeed: player.groupMemberId,
+        avatarColor: player.groupMember?.user?.avatarColor ?? null,
         userId: player.groupMember?.userId ?? null,
       });
     }

@@ -1,7 +1,10 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import type { Prisma } from '../generated/prisma/client';
 import { GroupMemberRole, MatchTeam } from '../generated/prisma/enums';
-import { resolveMemberDisplayName } from '../common/member-display-name';
+import {
+  MEMBER_USER_SELECT,
+  resolveMemberDisplayName,
+} from '../common/member-display-name';
 import { PrismaService } from '../prisma/prisma.service';
 import { FeedOrchestratorService } from '../feed/feed-orchestrator.service';
 import { GroupHomeSummaryService } from '../groups/group-home-summary.service';
@@ -186,7 +189,7 @@ export class ClaimService {
                   groupMember: {
                     select: {
                       displayName: true,
-                      user: { select: { firstName: true, lastName: true } },
+                      user: { select: MEMBER_USER_SELECT },
                     },
                   },
                 },
@@ -260,7 +263,7 @@ export class ClaimService {
             groupMember: {
               select: {
                 displayName: true,
-                user: { select: { firstName: true, lastName: true } },
+                user: { select: MEMBER_USER_SELECT },
               },
             },
           },
@@ -300,7 +303,7 @@ export class ClaimService {
       select: {
         id: true,
         displayName: true,
-        user: { select: { firstName: true, lastName: true } },
+        user: { select: MEMBER_USER_SELECT },
       },
     });
 

@@ -9,7 +9,7 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from '@/components/ui/drawer';
-import { Body, Meta, Overline } from '@/components/ui/text';
+import { Body, Heading, Meta } from '@/components/ui/text';
 import type { ProfileSummaryPartner } from '../types/profile-summary-partner.type';
 import { PartnerRow } from './partner-row';
 
@@ -91,7 +91,7 @@ export function ProfilePartnersSection({
 function SectionHeader({ partnerCount }: { partnerCount: number }) {
   return (
     <div className="flex items-center justify-between px-1">
-      <Overline className="text-faint-foreground">Suas duplas</Overline>
+      <Heading>Suas duplas</Heading>
       <Meta className="text-muted-foreground">
         {partnerCount} {partnerCount === 1 ? 'parceiro' : 'parceiros'}
       </Meta>

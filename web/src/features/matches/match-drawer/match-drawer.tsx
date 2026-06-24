@@ -125,7 +125,7 @@ function MatchComposer({
             firstName: resolved.firstName,
             fullName: resolved.fullName,
             initial: resolved.initial,
-            avatarSeed: resolved.avatarSeed,
+            avatarColor: resolved.avatarColor,
             userId: resolved.userId,
             rank: rankById.get(member.id),
             rating: member.rating,
@@ -242,7 +242,6 @@ function MatchComposer({
         score={form.scoreA}
         isWinner={form.winner === 'A'}
         hasWinner={form.validScore}
-        currentMembershipId={currentMembershipId}
         resolve={(id) => lookup.get(id)}
         rankOf={(id) => rankById.get(id)}
         onAddSlot={openPicker}
@@ -265,7 +264,6 @@ function MatchComposer({
         score={form.scoreB}
         isWinner={form.winner === 'B'}
         hasWinner={form.validScore}
-        currentMembershipId={currentMembershipId}
         resolve={(id) => lookup.get(id)}
         rankOf={(id) => rankById.get(id)}
         onAddSlot={openPicker}

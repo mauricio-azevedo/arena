@@ -6,7 +6,10 @@ import {
 } from '@nestjs/common';
 import { randomBytes } from 'crypto';
 import { GroupMemberRole } from '../generated/prisma/enums';
-import { resolveMemberDisplayName } from '../common/member-display-name';
+import {
+  MEMBER_USER_SELECT,
+  resolveMemberDisplayName,
+} from '../common/member-display-name';
 import { PrismaService } from '../prisma/prisma.service';
 import { FeedOrchestratorService } from '../feed/feed-orchestrator.service';
 import { GroupHomeSummaryService } from '../groups/group-home-summary.service';
@@ -85,8 +88,7 @@ export class GroupInvitesService {
         createdBy: {
           select: {
             id: true,
-            firstName: true,
-            lastName: true,
+            ...MEMBER_USER_SELECT,
             email: true,
           },
         },
@@ -116,8 +118,7 @@ export class GroupInvitesService {
         createdBy: {
           select: {
             id: true,
-            firstName: true,
-            lastName: true,
+            ...MEMBER_USER_SELECT,
             email: true,
           },
         },

@@ -5,7 +5,10 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { GroupMemberRole } from '../generated/prisma/enums';
-import { resolveMemberDisplayName } from '../common/member-display-name';
+import {
+  MEMBER_USER_SELECT,
+  resolveMemberDisplayName,
+} from '../common/member-display-name';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
@@ -225,8 +228,7 @@ export class MembersService {
       user: {
         select: {
           id: true,
-          firstName: true,
-          lastName: true,
+          ...MEMBER_USER_SELECT,
           email: true,
         },
       },

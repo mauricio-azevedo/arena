@@ -1,3 +1,4 @@
+import { MEMBER_USER_SELECT } from '../common/member-display-name';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 
@@ -71,8 +72,7 @@ export class RankingService {
         user: {
           select: {
             id: true,
-            firstName: true,
-            lastName: true,
+            ...MEMBER_USER_SELECT,
             email: true,
             createdAt: true,
             updatedAt: true,

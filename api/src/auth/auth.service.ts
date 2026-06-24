@@ -1,3 +1,4 @@
+import { MEMBER_USER_SELECT } from '../common/member-display-name';
 import {
   BadRequestException,
   ConflictException,
@@ -7,6 +8,7 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { PrismaService } from '../prisma/prisma.service';
+import { pickDefaultAvatarColor } from '../common/avatar-color';
 import { structuredLog } from '../observability/structured-log';
 import { claimOfferNotificationData } from '../claim-offers/claim-offer-notification';
 
@@ -59,6 +61,7 @@ export class AuthService {
         lastName,
         email,
         passwordHash,
+        avatarColor: pickDefaultAvatarColor(email),
       },
       select: this.userSelect(),
     });
@@ -192,8 +195,7 @@ export class AuthService {
   private userSelect() {
     return {
       id: true,
-      firstName: true,
-      lastName: true,
+      ...MEMBER_USER_SELECT,
       email: true,
       createdAt: true,
       updatedAt: true,

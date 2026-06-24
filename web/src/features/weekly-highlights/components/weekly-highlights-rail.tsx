@@ -2,13 +2,10 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { MemberAvatar } from '@/components/ui/member-avatar';
 import { Heading, Label, Meta } from '@/components/ui/text';
 import { getWeeklyHighlights } from '@/features/weekly-highlights/api/weekly-highlights.api';
-import {
-  highlightSentence,
-  initialsFromName,
-} from '@/features/weekly-highlights/helpers/highlight-copy';
+import { highlightSentence } from '@/features/weekly-highlights/helpers/highlight-copy';
 import { highlightStyle, hueFromId } from '@/features/weekly-highlights/helpers/highlight-style';
 import type { WeeklyHighlightCard } from '@/features/weekly-highlights/types/weekly-highlight.type';
 import { getAccessToken } from '@/lib/auth';
@@ -63,7 +60,8 @@ export function WeeklyHighlightsRail() {
       <Heading className="px-0.5">Essa semana</Heading>
 
       {/* pt/pb dão folga pra sombra do card não ser clipada pelo overflow-x do scroll. */}
-      <div className="-mx-4 flex gap-3 overflow-x-auto px-4 pt-2 pb-5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      {/* I didn't understand how paddint top and bottom would influence shadow clipping horizontally, so I removed them. */}
+      <div className="-mx-4 flex gap-3 overflow-x-auto px-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {cards.map((card) => (
           <HighlightChip key={`${card.userId}-${card.achievement.type}`} card={card} />
         ))}
@@ -86,18 +84,12 @@ function HighlightChip({ card }: { card: WeeklyHighlightCard }) {
       className="flex h-44 w-[12.75rem] shrink-0 snap-start flex-col justify-between rounded-card bg-surface p-4 shadow-card transition-[transform,background-color] active:scale-[0.98]"
     >
       <div className="flex min-w-0 items-center gap-2.5">
-        <Avatar size="lg" className="shrink-0">
-          <AvatarFallback
-            className="font-display"
-            style={{
-              background: `oklch(34% 0.05 ${hue})`,
-              color: `oklch(74% 0.13 ${hue})`,
-              boxShadow: 'inset 0 0 0 1px var(--border)',
-            }}
-          >
-            {initialsFromName(card.displayName)}
-          </AvatarFallback>
-        </Avatar>
+        <MemberAvatar
+          userId={card.userId}
+          name={card.displayName}
+          avatarColor={card.avatarColor}
+          size="sm"
+        />
         <Label className="min-w-0 truncate">{card.displayName}</Label>
       </div>
 

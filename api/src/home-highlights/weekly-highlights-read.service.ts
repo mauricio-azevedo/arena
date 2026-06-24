@@ -1,5 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import {
+  MEMBER_USER_SELECT,
+  resolveMemberAvatarColor,
+  resolveMemberDisplayName,
+} from '../common/member-display-name';
 import { HighlightType } from '../generated/prisma/enums';
 
 // Read-time selection (spec: docs/product/weekly-highlights.md). The heavy work lives in the
@@ -24,12 +29,18 @@ type HighlightRow = {
   value: number;
   score: number;
   group: { id: string; name: string };
-  user: { firstName: string; lastName: string };
+  user: {
+    firstName: string;
+    lastName: string;
+    nickname: string | null;
+    avatarColor: string | null;
+  };
 };
 
 export type WeeklyHighlightCard = {
   userId: string;
   displayName: string;
+  avatarColor: string | null;
   groupMemberId: string;
   group: { id: string; name: string };
   achievement: { type: HighlightType; value: number };
@@ -150,7 +161,8 @@ export class WeeklyHighlightsReadService {
       typeCounts.set(row.type, count + 1);
       cards.push({
         userId: row.userId,
-        displayName: `${row.user.firstName} ${row.user.lastName}`.trim(),
+        displayName: resolveMemberDisplayName({ user: row.user }),
+        avatarColor: resolveMemberAvatarColor({ user: row.user }),
         groupMemberId: row.groupMemberId,
         group: { id: row.group.id, name: row.group.name },
         achievement: { type: row.type, value: row.value },
@@ -169,7 +181,11 @@ export class WeeklyHighlightsReadService {
       value: true,
       score: true,
       group: { select: { id: true, name: true } },
-      user: { select: { firstName: true, lastName: true } },
+      user: {
+        select: {
+          ...MEMBER_USER_SELECT,
+        },
+      },
     } as const;
   }
 }

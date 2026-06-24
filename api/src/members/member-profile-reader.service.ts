@@ -1,6 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { MatchTeam } from '../generated/prisma/enums';
-import { resolveMemberDisplayName } from '../common/member-display-name';
+import {
+  MEMBER_USER_SELECT,
+  resolveMemberAvatarColor,
+  resolveMemberDisplayName,
+} from '../common/member-display-name';
 import { PrismaService } from '../prisma/prisma.service';
 import type { ProfileMatchListItem } from '../me/types/profile-match-list-item.type';
 import type { ProfileSummaryStats } from '../me/types/profile-summary-stats.type';
@@ -25,7 +29,11 @@ export class MemberProfileReaderService {
         displayName: true,
         rating: true,
         currentRank: true,
-        user: { select: { firstName: true, lastName: true } },
+        user: {
+          select: {
+            ...MEMBER_USER_SELECT,
+          },
+        },
       },
     });
 
@@ -40,6 +48,7 @@ export class MemberProfileReaderService {
       groupId: member.groupId,
       userId: member.userId,
       displayName: resolveMemberDisplayName(member),
+      avatarColor: resolveMemberAvatarColor(member),
       rating: member.rating,
       currentRank: member.currentRank,
       stats: this.statsFromMatches(matches),
@@ -86,7 +95,11 @@ export class MemberProfileReaderService {
                   select: {
                     userId: true,
                     displayName: true,
-                    user: { select: { firstName: true, lastName: true } },
+                    user: {
+                      select: {
+                        ...MEMBER_USER_SELECT,
+                      },
+                    },
                   },
                 },
               },

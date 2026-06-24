@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import { Meta } from '@/components/ui/text';
-import { nameInitial } from '@/lib/avatar';
 import { getAccessToken } from '@/lib/auth';
 import { APP_VERSION } from '@/lib/app-version';
 import { getProfileSummary } from './api/profile.api';
@@ -11,6 +10,7 @@ import { ProfileErrorState } from './components/profile-error-state';
 import { ProfileLoadingState } from './components/profile-loading-state';
 import { ProfileSignedOutState } from './components/profile-signed-out-state';
 import { ProfileBestPartner } from './sections/profile-best-partner';
+import { type EditedUser, ProfileEditDrawer } from './sections/profile-edit-drawer';
 import { ProfileGroupsRail } from './sections/profile-groups-rail';
 import { ProfileIdentity } from './sections/profile-identity';
 import { ProfileLogoutRow } from './sections/profile-logout-row';
@@ -30,6 +30,11 @@ export function ProfileScreen({ userId }: Props) {
 
   const [status, setStatus] = useState<Status>('loading');
   const [summary, setSummary] = useState<ProfileSummary | null>(null);
+  const [editing, setEditing] = useState(false);
+
+  function applyEdit(edited: EditedUser) {
+    setSummary((prev) => (prev ? { ...prev, user: { ...prev.user, ...edited } } : prev));
+  }
 
   useEffect(() => {
     let isCurrent = true;
@@ -89,12 +94,19 @@ export function ProfileScreen({ userId }: Props) {
   const partners = summary.partners ?? [];
   const partnerCount = summary.partnerCount ?? partners.length;
   const recentGroups = summary.recentGroups ?? [];
-  const fullName = `${user.firstName} ${user.lastName}`.trim();
   const ownerLabel = isOwn ? 'Você' : user.firstName;
 
   return (
-    <div className="space-y-[18px]">
-      <ProfileIdentity name={fullName} memberSince={user.memberSince} />
+    <div className="space-y-6">
+      <ProfileIdentity
+        userId={user.id}
+        firstName={user.firstName}
+        lastName={user.lastName}
+        nickname={user.nickname}
+        avatarColor={user.avatarColor}
+        memberSince={user.memberSince}
+        onEdit={isOwn ? () => setEditing(true) : undefined}
+      />
 
       <ProfilePerformance stats={stats} />
 
@@ -102,7 +114,9 @@ export function ProfileScreen({ userId }: Props) {
         <ProfileBestPartner
           partner={bestPartner}
           ownerLabel={ownerLabel}
-          ownerMonogram={nameInitial(user.firstName)}
+          ownerUserId={user.id}
+          ownerName={`${user.firstName} ${user.lastName}`}
+          ownerAvatarColor={user.avatarColor}
         />
       )}
 
@@ -117,6 +131,16 @@ export function ProfileScreen({ userId }: Props) {
             Arena · versão {APP_VERSION}
           </Meta>
         </div>
+      )}
+
+      {isOwn && (
+        <ProfileEditDrawer
+          open={editing}
+          onOpenChange={setEditing}
+          token={getAccessToken() ?? ''}
+          user={user}
+          onSaved={applyEdit}
+        />
       )}
     </div>
   );

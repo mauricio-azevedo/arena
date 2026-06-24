@@ -149,8 +149,8 @@ export function MemberProfileContent({
         <MemberAvatar
           userId={profile.userId}
           name={profile.displayName}
-          seed={profile.groupMemberId}
-          className="size-16 text-xl"
+          avatarColor={profile.avatarColor}
+          size="xl"
         />
 
         <div className="mt-3.5 flex max-w-full items-center justify-center gap-2">

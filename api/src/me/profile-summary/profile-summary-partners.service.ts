@@ -1,5 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { resolveMemberDisplayName } from '../../common/member-display-name';
+import {
+  MEMBER_USER_SELECT,
+  resolveMemberAvatarColor,
+  resolveMemberDisplayName,
+} from '../../common/member-display-name';
 import { winRatePercent } from '../../common/win-rate';
 import { PrismaService } from '../../prisma/prisma.service';
 import type { ProfileSummaryPartner } from '../types/profile-summary-partner.type';
@@ -11,6 +15,7 @@ const MIN_BEST_PARTNER_MATCHES = 3;
 type MergedPartner = {
   userId: string | null;
   displayName: string;
+  avatarColor: string | null;
   currentRank: number | null;
   // Games in the group that contributed `currentRank`, so the most-played group wins
   // the tie when a partner is merged across groups.
@@ -46,8 +51,7 @@ export class ProfileSummaryPartnersService {
             currentRank: true,
             user: {
               select: {
-                firstName: true,
-                lastName: true,
+                ...MEMBER_USER_SELECT,
               },
             },
           },
@@ -71,6 +75,7 @@ export class ProfileSummaryPartnersService {
         merged.set(key, {
           userId: partner.userId,
           displayName: resolveMemberDisplayName(partner),
+          avatarColor: resolveMemberAvatarColor(partner),
           currentRank: partner.currentRank,
           rankSourceMatches: row.matchesTogether,
           matchesTogether: row.matchesTogether,
@@ -115,6 +120,7 @@ export class ProfileSummaryPartnersService {
     return {
       userId: partner.userId,
       displayName: partner.displayName,
+      avatarColor: partner.avatarColor,
       currentRank: partner.currentRank,
       matchesTogether: partner.matchesTogether,
       winsTogether: partner.winsTogether,

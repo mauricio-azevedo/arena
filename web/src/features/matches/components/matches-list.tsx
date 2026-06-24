@@ -259,7 +259,7 @@ function DuplaRow({
 }) {
   return (
     <div className="flex items-center gap-3">
-      <AvatarPair players={players} isWinner={isWinner} />
+      <AvatarPair players={players} />
 
       <div className="flex min-w-0 flex-1 flex-col gap-0.5">
         {players.map((player) => (
@@ -309,25 +309,17 @@ function InlineMovement({ isUp, positions }: { isUp: boolean; positions: number 
   );
 }
 
-function AvatarPair({ players, isWinner }: { players: MatchPlayer[]; isWinner: boolean }) {
+function AvatarPair({ players }: { players: MatchPlayer[] }) {
   return (
     <div className="flex shrink-0">
       {players.slice(0, 2).map((player, index) => (
         <MemberAvatar
           key={player.id}
           userId={player.groupMember?.userId ?? null}
-          name={getPlayerFirstName(player)}
-          className={cn('size-[34px] text-meta', index > 0 && '-ml-3')}
-          realClassName={cn(
-            isWinner ? 'text-brand-muted' : 'text-muted-foreground',
-            isWinner
-              ? index === 0
-                ? 'bg-avatar-1'
-                : 'bg-avatar-2'
-              : index === 0
-                ? 'bg-avatar-3'
-                : 'bg-avatar-4',
-          )}
+          name={getPlayerFullName(player)}
+          avatarColor={player.groupMember?.user?.avatarColor ?? null}
+          size="xs"
+          className={index > 0 ? '-ml-3' : undefined}
         />
       ))}
     </div>
@@ -459,4 +451,8 @@ function formatDateGroup(dateKey: string) {
 
 function getPlayerFirstName(player: MatchPlayer) {
   return resolveMemberName(player.groupMember).firstName;
+}
+
+function getPlayerFullName(player: MatchPlayer) {
+  return resolveMemberName(player.groupMember).fullName;
 }

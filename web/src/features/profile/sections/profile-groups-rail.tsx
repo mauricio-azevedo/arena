@@ -19,7 +19,8 @@ export function ProfileGroupsRail({ groups }: { groups: ProfileSummaryGroup[] })
         <Meta className="text-muted-foreground">{groups.length}</Meta>
       </div>
 
-      <div className="-mx-4 flex gap-3 overflow-x-auto px-4 pt-2 pb-5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      {/* I removed the padding top and bottom here for the same re I did in weekly-highlights-rail.tsx. */}
+      <div className="-mx-4 flex gap-3 overflow-x-auto px-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {groups.map((group) => (
           <GroupRailCard key={group.id} group={group} />
         ))}

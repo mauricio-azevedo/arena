@@ -1,7 +1,10 @@
 import { Injectable, Logger } from '@nestjs/common';
 import type { Prisma } from '../generated/prisma/client';
 import { MatchTeam } from '../generated/prisma/enums';
-import { resolveMemberDisplayName } from '../common/member-display-name';
+import {
+  MEMBER_USER_SELECT,
+  resolveMemberDisplayName,
+} from '../common/member-display-name';
 import { structuredLog } from '../observability/structured-log';
 import { calculateBeachRating } from './calculate-beach-rating';
 
@@ -71,8 +74,7 @@ export class RatingProjectionService {
         displayName: true,
         user: {
           select: {
-            firstName: true,
-            lastName: true,
+            ...MEMBER_USER_SELECT,
           },
         },
       },

@@ -7,24 +7,37 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { Prisma } from '../generated/prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
+import { isAvatarColorKey } from '../common/avatar-color';
 import type { UpdateProfileInput } from './types/update-profile-input.type';
 
 const MAX_NAME_LENGTH = 80;
+const MAX_NICKNAME_LENGTH = 24;
 const MAX_EMAIL_LENGTH = 254;
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const PROFILE_UPDATE_FIELDS = ['firstName', 'lastName', 'email'] as const;
+const PROFILE_UPDATE_FIELDS = [
+  'firstName',
+  'lastName',
+  'nickname',
+  'email',
+  'avatarColor',
+] as const;
 
 type NormalizedUpdateProfileInput = {
   firstName?: string;
   lastName?: string;
+  // null clears the field back to the default.
+  nickname?: string | null;
   email?: string;
+  avatarColor?: string;
 };
 
 type ProfileUser = {
   id: string;
   firstName: string;
   lastName: string;
+  nickname: string | null;
   email: string;
+  avatarColor: string;
   createdAt: Date;
   updatedAt: Date;
 };
@@ -94,6 +107,20 @@ export class MeService {
       updateData.lastName = input.lastName;
     }
 
+    if (
+      input.nickname !== undefined &&
+      input.nickname !== currentUser.nickname
+    ) {
+      updateData.nickname = input.nickname;
+    }
+
+    if (
+      input.avatarColor !== undefined &&
+      input.avatarColor !== currentUser.avatarColor
+    ) {
+      updateData.avatarColor = input.avatarColor;
+    }
+
     if (input.email !== undefined && input.email !== currentUser.email) {
       await this.ensureEmailIsAvailable(input.email, currentUser.id);
       updateData.email = input.email;
@@ -141,30 +168,70 @@ export class MeService {
     }
 
     const input: NormalizedUpdateProfileInput = {};
-    const hasFirstName = Object.prototype.hasOwnProperty.call(
-      body,
-      'firstName',
-    );
-    const hasLastName = Object.prototype.hasOwnProperty.call(body, 'lastName');
-    const hasEmail = Object.prototype.hasOwnProperty.call(body, 'email');
+    const has = (field: string) =>
+      Object.prototype.hasOwnProperty.call(body, field);
 
-    if (!hasFirstName && !hasLastName && !hasEmail) {
+    if (!PROFILE_UPDATE_FIELDS.some((field) => has(field))) {
       throw new BadRequestException('At least one profile field is required');
     }
 
-    if (hasFirstName) {
+    if (has('firstName')) {
       input.firstName = this.normalizeNameField(body.firstName, 'First name');
     }
 
-    if (hasLastName) {
+    if (has('lastName')) {
       input.lastName = this.normalizeNameField(body.lastName, 'Last name');
     }
 
-    if (hasEmail) {
+    if (has('nickname')) {
+      input.nickname = this.normalizeNicknameField(body.nickname);
+    }
+
+    if (has('email')) {
       input.email = this.normalizeEmailField(body.email);
     }
 
+    if (has('avatarColor')) {
+      input.avatarColor = this.normalizeAvatarColorField(body.avatarColor);
+    }
+
     return input;
+  }
+
+  // Empty → null (clears the nickname back to first+last name).
+  private normalizeNicknameField(value: unknown): string | null {
+    if (typeof value !== 'string') {
+      throw new BadRequestException('Nickname must be a string');
+    }
+
+    const normalized = value.trim().replace(/\s+/g, ' ');
+
+    if (!normalized) {
+      return null;
+    }
+
+    if (normalized.length > MAX_NICKNAME_LENGTH) {
+      throw new BadRequestException(
+        `Nickname must have at most ${MAX_NICKNAME_LENGTH} characters`,
+      );
+    }
+
+    return normalized;
+  }
+
+  // Must be a known palette key — there is no "no colour" state to clear to.
+  private normalizeAvatarColorField(value: unknown): string {
+    if (typeof value !== 'string') {
+      throw new BadRequestException('Avatar color must be a string');
+    }
+
+    const normalized = value.trim();
+
+    if (!isAvatarColorKey(normalized)) {
+      throw new BadRequestException('Invalid avatar color');
+    }
+
+    return normalized;
   }
 
   private normalizeNameField(value: unknown, label: string) {
@@ -255,7 +322,9 @@ export class MeService {
       id: true,
       firstName: true,
       lastName: true,
+      nickname: true,
       email: true,
+      avatarColor: true,
       createdAt: true,
       updatedAt: true,
     };
