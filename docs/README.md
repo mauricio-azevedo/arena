@@ -18,6 +18,7 @@ Product docs describe what Arena should do and why.
 Design docs describe how the product should feel and behave.
 
 - [`design/loading-and-skeletons.md`](design/loading-and-skeletons.md): loading UX patterns, contextual skeletons, route transitions, and anti-patterns.
+- [`design/spacing.md`](design/spacing.md): the 8-point grid and the semantic spacing ladder (`gap-snug`, `space-y-section`, …).
 
 ### Architecture
 

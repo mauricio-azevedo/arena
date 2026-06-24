@@ -16,7 +16,7 @@ export function RankingList({ ranking, currentMembershipId }: Props) {
   if (ranking.length === 0) {
     return (
       <Card>
-        <CardContent className="space-y-2 p-4">
+        <CardContent className="space-y-snug p-4">
           <Label className="block text-foreground">Nenhum jogador no ranking ainda</Label>
           <Body className="text-muted-foreground">
             Registre partidas para transformar os membros em uma disputa real.
@@ -27,7 +27,7 @@ export function RankingList({ ranking, currentMembershipId }: Props) {
   }
 
   return (
-    <section aria-label="Ranking do grupo" className="space-y-3">
+    <section aria-label="Ranking do grupo" className="space-y-base">
       <div className="flex items-baseline justify-between px-0.5">
         <Heading>Classificação</Heading>
         <Meta className="text-faint-foreground">Rating</Meta>
@@ -72,7 +72,7 @@ function RankingRow({
   return (
     <div
       className={cn(
-        'flex items-center gap-3 border-t border-divider px-4 py-3 first:border-t-0',
+        'flex items-center gap-base border-t border-divider px-4 py-3 first:border-t-0',
         isCurrent && 'bg-brand/15',
       )}
     >
@@ -87,8 +87,8 @@ function RankingRow({
         size="sm"
       />
 
-      <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-        <div className="flex min-w-0 items-end gap-2">
+      <div className="flex min-w-0 flex-1 flex-col gap-tight">
+        <div className="flex min-w-0 items-end gap-snug">
           <Label className="min-w-0 truncate text-foreground">
             <MemberName memberId={member.id}>{fullName}</MemberName>
           </Label>
@@ -129,7 +129,7 @@ function Movement({ movement }: { movement?: RankingMovement | null }) {
     <Meta
       aria-label={label}
       className={cn(
-        'inline-flex shrink-0 items-center gap-0.5',
+        'inline-flex shrink-0 items-center gap-tight',
         isUp ? 'text-success' : 'text-danger',
       )}
     >

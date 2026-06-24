@@ -114,6 +114,10 @@ export function getProfileMatches(token: string): Promise<ProfileMatchListItem[]
 - `cn()` from `lib/utils.ts` (`clsx` + `tailwind-merge`) for class composition.
 - Tailwind v4 via `@tailwindcss/postcss`; theme tokens (oklch CSS variables) in
   `app/globals.css`; `dark` class on `<body>`.
+- **Spacing follows the 8-point grid via the semantic ladder** (`gap-snug`,
+  `space-y-section`, `mt-comfortable`, …); see [`../design/spacing.md`](../design/spacing.md).
+  Gaps and margins use the ladder — no `.5` Tailwind steps or arbitrary `[px]` spacing.
+  Padding stays numeric Tailwind.
 - Loading skeletons use `animate-pulse` on muted blocks that match the final
   layout, with `role="status"` / `aria-busy` / `sr-only` text. No visible
   "Carregando…" text.

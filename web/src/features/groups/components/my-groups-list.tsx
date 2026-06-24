@@ -56,7 +56,7 @@ export function MyGroupsList({ loadGroups, ratingLabel = 'rating' }: Props) {
   if (error) {
     return (
       <Card>
-        <CardContent className="space-y-2 p-4">
+        <CardContent className="space-y-snug p-4">
           <p className="text-sm font-semibold text-foreground">Algo deu errado</p>
           <p className="text-sm leading-6 text-muted-foreground">{error}</p>
         </CardContent>
@@ -69,7 +69,7 @@ export function MyGroupsList({ loadGroups, ratingLabel = 'rating' }: Props) {
   }
 
   return (
-    <section className="space-y-3" aria-label="Grupos do perfil">
+    <section className="space-y-base" aria-label="Grupos do perfil">
       {myGroups.map((membership) => (
         <MyGroupCard key={membership.id} membership={membership} ratingLabel={ratingLabel} />
       ))}
@@ -88,14 +88,14 @@ function MyGroupCard({ membership, ratingLabel }: { membership: MyGroup; ratingL
       className="block rounded-[1.75rem] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
     >
       <Card className="br-pressable bg-gradient-to-br from-card via-card to-primary/8">
-        <CardContent className="space-y-4 p-4">
-          <div className="flex items-start gap-3">
+        <CardContent className="space-y-comfortable p-4">
+          <div className="flex items-start gap-base">
             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[1.35rem] bg-muted text-sm font-semibold text-foreground">
               {getGroupInitials(group.name)}
             </div>
 
-            <div className="min-w-0 flex-1 space-y-1">
-              <div className="flex min-w-0 items-center gap-2">
+            <div className="min-w-0 flex-1 space-y-tight">
+              <div className="flex min-w-0 items-center gap-snug">
                 <p className="truncate text-base font-semibold tracking-[-0.025em] text-foreground">
                   {group.name}
                 </p>
@@ -109,10 +109,10 @@ function MyGroupCard({ membership, ratingLabel }: { membership: MyGroup; ratingL
               )}
             </div>
 
-            <ChevronRight className="mt-1 h-4 w-4 shrink-0 text-muted-foreground" />
+            <ChevronRight className="mt-tight h-4 w-4 shrink-0 text-muted-foreground" />
           </div>
 
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-3 gap-snug">
             <GroupMetric label="membros" value={memberCount} />
             <GroupMetric label="partidas" value={matchCount} />
             <GroupMetric label={ratingLabel.toLowerCase()} value={Math.round(membership.rating)} />
@@ -129,7 +129,7 @@ function GroupMetric({ label, value }: { label: string; value: string | number }
       <p className="truncate text-lg font-semibold leading-none tracking-[-0.05em] text-foreground">
         {value}
       </p>
-      <p className="mt-1 truncate text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+      <p className="mt-tight truncate text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
         {label}
       </p>
     </div>
@@ -146,18 +146,18 @@ function RoleBadge() {
 
 function GroupsLoadingState() {
   return (
-    <section className="space-y-3" aria-label="Carregando grupos">
+    <section className="space-y-base" aria-label="Carregando grupos">
       {Array.from({ length: 3 }).map((_, index) => (
         <Card key={index} className="bg-gradient-to-br from-card via-card to-primary/8">
-          <CardContent className="space-y-4 p-4">
-            <div className="flex items-start gap-3">
+          <CardContent className="space-y-comfortable p-4">
+            <div className="flex items-start gap-base">
               <div className="h-12 w-12 shrink-0 animate-pulse rounded-[1.35rem] bg-muted" />
-              <div className="min-w-0 flex-1 space-y-2">
+              <div className="min-w-0 flex-1 space-y-snug">
                 <div className="h-5 w-2/3 animate-pulse rounded-full bg-muted" />
                 <div className="h-4 w-full animate-pulse rounded-full bg-muted/70" />
               </div>
             </div>
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-3 gap-snug">
               <div className="h-14 animate-pulse rounded-[1.2rem] bg-muted/80" />
               <div className="h-14 animate-pulse rounded-[1.2rem] bg-muted/70" />
               <div className="h-14 animate-pulse rounded-[1.2rem] bg-muted/60" />
@@ -172,8 +172,8 @@ function GroupsLoadingState() {
 function SignedOutGroupsState() {
   return (
     <Card className="bg-gradient-to-br from-card via-card to-primary/8">
-      <CardContent className="space-y-4 p-4">
-        <div className="space-y-2">
+      <CardContent className="space-y-comfortable p-4">
+        <div className="space-y-snug">
           <div className="flex h-11 w-11 items-center justify-center rounded-[1.25rem] bg-muted text-foreground">
             <UsersRound className="h-5 w-5" />
           </div>
@@ -183,7 +183,7 @@ function SignedOutGroupsState() {
           </p>
         </div>
 
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-2 gap-snug">
           <Button asChild>
             <Link href="/login?redirect=/">Entrar</Link>
           </Button>
@@ -200,8 +200,8 @@ function SignedOutGroupsState() {
 function EmptyGroupsState() {
   return (
     <Card className="bg-gradient-to-br from-card via-card to-primary/8">
-      <CardContent className="space-y-4 p-4">
-        <div className="space-y-2">
+      <CardContent className="space-y-comfortable p-4">
+        <div className="space-y-snug">
           <div className="flex h-11 w-11 items-center justify-center rounded-[1.25rem] bg-muted text-foreground">
             <UsersRound className="h-5 w-5" />
           </div>
@@ -213,7 +213,7 @@ function EmptyGroupsState() {
 
         <Button asChild className="w-full rounded-full">
           <Link href="/groups/new">
-            <Plus className="mr-2 h-4 w-4" />
+            <Plus className="mr-snug h-4 w-4" />
             Criar grupo
           </Link>
         </Button>

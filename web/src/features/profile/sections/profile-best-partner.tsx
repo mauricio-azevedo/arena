@@ -24,12 +24,12 @@ export function ProfileBestPartner({
   const ringClass = 'ring-[3px] ring-background';
 
   return (
-    <section className="space-y-3.5">
+    <section className="space-y-comfortable">
       <Heading className="px-1">Melhor dupla</Heading>
       <Card>
         <CardContent>
-          <div className="flex items-center justify-between gap-3.5">
-            <div className="flex min-w-0 items-center gap-3.5">
+          <div className="flex items-center justify-between gap-comfortable">
+            <div className="flex min-w-0 items-center gap-base">
               <div className="flex">
                 <MemberAvatar
                   userId={ownerUserId}
@@ -51,6 +51,7 @@ export function ProfileBestPartner({
                 <Label className="block truncate font-display font-extrabold">
                   {ownerLabel} &amp; {partnerFirstName}
                 </Label>
+                {/* mt-0.5: 2px optical nudge tucking the Meta under the Label — not layout spacing. */}
                 <Meta className="mt-0.5 block text-muted-foreground">
                   {partner.winsTogether}–{partner.lossesTogether} juntos · {partner.matchesTogether}{' '}
                   jogos

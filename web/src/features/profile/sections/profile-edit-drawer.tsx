@@ -155,9 +155,9 @@ function EditForm({
         </button>
       </div>
 
-      <div className="min-h-0 flex-1 overflow-y-auto px-[18px] pt-2 pb-[30px] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      <div className="min-h-0 flex-1 overflow-y-auto px-4 pt-2 pb-8 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {/* avatar hero + color picker */}
-        <div className="mt-1 mb-7 flex flex-col items-center">
+        <div className="mt-tight mb-loose flex flex-col items-center">
           <MemberAvatar
             userId={user.id}
             name={`${firstName} ${lastName}`}
@@ -166,7 +166,7 @@ function EditForm({
             className="shadow-float"
           />
 
-          <div className="mt-6 flex max-w-[19rem] flex-wrap justify-center gap-3.5">
+          <div className="mt-section flex max-w-[19rem] flex-wrap justify-center gap-base">
             {AVATAR_COLORS.map((color) => {
               const selected = color.key === avatarColor;
               return (
@@ -227,11 +227,11 @@ function EditForm({
             autoComplete="email"
           />
         </div>
-        <Meta className="mt-2.5 block px-1.5 leading-relaxed text-faint-foreground">
+        <Meta className="mt-snug block px-1.5 leading-relaxed text-faint-foreground">
           O apelido é como você aparece para outros jogadores nos grupos.
         </Meta>
 
-        {error && <Meta className="mt-4 block text-center text-danger">{error}</Meta>}
+        {error && <Meta className="mt-comfortable block text-center text-danger">{error}</Meta>}
       </div>
     </div>
   );

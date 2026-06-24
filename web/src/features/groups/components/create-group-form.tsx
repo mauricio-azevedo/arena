@@ -80,8 +80,8 @@ export function CreateGroupForm() {
   return (
     <Card>
       <CardContent className="p-4">
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
+        <form onSubmit={handleSubmit} className="space-y-comfortable">
+          <div className="space-y-snug">
             <Label htmlFor="name">Nome do grupo</Label>
             <Input
               id="name"
@@ -92,7 +92,7 @@ export function CreateGroupForm() {
             />
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-snug">
             <Label htmlFor="description">Descrição</Label>
             <Textarea
               id="description"

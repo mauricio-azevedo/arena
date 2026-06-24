@@ -17,7 +17,7 @@ export function PartnerRow({
   const firstName = firstNameOf(partner.displayName);
 
   return (
-    <div className={cn('flex items-end gap-3 px-4 py-3', divider && 'border-t border-border')}>
+    <div className={cn('flex items-end gap-base px-4 py-3', divider && 'border-t border-border')}>
       <MemberAvatar
         userId={partner.userId}
         name={partner.displayName}
@@ -26,14 +26,14 @@ export function PartnerRow({
       />
 
       <div className="min-w-0 flex-1">
-        <div className="flex min-w-0 items-baseline gap-1.5">
+        <div className="flex min-w-0 items-baseline gap-tight">
           <Label className="truncate font-bold">{firstName}</Label>
           {partner.currentRank != null && (
             <Meta className="shrink-0 text-faint-foreground">#{partner.currentRank}</Meta>
           )}
         </div>
 
-        <div className="mt-1.5 flex items-center gap-2">
+        <div className="mt-snug flex items-center gap-snug">
           <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-foreground/10">
             <div
               className={cn('h-full rounded-full', tone.bar)}

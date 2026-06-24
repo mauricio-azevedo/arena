@@ -64,9 +64,9 @@ export function GroupHomeList() {
   const suggestionItems = items.filter((item) => item.relationship === 'PUBLIC_SUGGESTION');
   if (memberItems.length === 0) {
     return (
-      <section className="space-y-4">
+      <section className="space-y-comfortable">
         {hasToken && <PublicSuggestionIntro />}
-        <div className="space-y-3">
+        <div className="space-y-base">
           {suggestionItems.map((item) => (
             <DiscoveryGroupCard key={item.group.id} item={item} />
           ))}
@@ -86,15 +86,15 @@ export function GroupHomeList() {
   const featuredItem = memberItems[0]!;
   const compactItems = memberItems.slice(1);
   return (
-    <section className="space-y-3">
-      <div className="flex items-center gap-3 px-1">
+    <section className="space-y-base">
+      <div className="flex items-center gap-base px-1">
         <Users className="h-4 w-4" aria-hidden="true" />
         <h2 className="text-base font-semibold tracking-[-0.035em] text-foreground">Meus Grupos</h2>
       </div>
       {memberItems.length > 1 && <HomeTopline items={memberItems} />}
       <FeaturedGroupCard item={featuredItem} />
       {compactItems.length > 0 && (
-        <div className="space-y-3">
+        <div className="space-y-base">
           {compactItems.map((item) => (
             <CompactGroupCard key={item.group.id} item={item} />
           ))}

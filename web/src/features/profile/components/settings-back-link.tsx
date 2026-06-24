@@ -10,7 +10,7 @@ export function SettingsBackLink({ href, children }: { href: string; children: s
     <button
       type="button"
       onClick={() => router.push(href)}
-      className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+      className="inline-flex items-center gap-tight text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
     >
       <ChevronLeft className="h-4 w-4" />
       {children}

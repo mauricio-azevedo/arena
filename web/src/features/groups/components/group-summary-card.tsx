@@ -172,14 +172,14 @@ function GroupIdentityHeader({
         {getGroupInitials(group.name)}
       </Stat>
 
-      <Title className="mt-3">{group.name}</Title>
+      <Title className="mt-base">{group.name}</Title>
 
-      <Meta className="mt-1.5 flex items-center gap-2 text-muted-foreground">
+      <Meta className="mt-snug flex items-center gap-snug text-muted-foreground">
         <button
           type="button"
           onClick={() => setMembersOpen(true)}
           className={cn(
-            'flex items-center gap-1 transition-opacity active:opacity-60',
+            'flex items-center gap-tight transition-opacity active:opacity-60',
             TOUCH_TARGET_48,
           )}
         >
@@ -214,8 +214,8 @@ function GroupDescription({ text }: { text: string }) {
       asChild
       className={
         open
-          ? 'mt-2 max-w-[320px] text-faint-foreground'
-          : 'mt-2 flex max-w-[320px] items-baseline gap-1 text-faint-foreground'
+          ? 'mt-snug max-w-[320px] text-faint-foreground'
+          : 'mt-snug flex max-w-[320px] items-baseline gap-tight text-faint-foreground'
       }
     >
       <div>

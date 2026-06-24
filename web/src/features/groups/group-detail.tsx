@@ -115,8 +115,8 @@ export function GroupDetail({ groupId, tab, autoOpenCompose = false }: Props) {
         ranking={data.ranking}
         viewerRole={data.membership?.role ?? null}
       >
-        <div className="space-y-8">
-          <div className="space-y-3">
+        <div className="space-y-loose">
+          <div className="space-y-base">
             <GroupSummaryCard
               group={data.group}
               ranking={data.ranking}
@@ -145,7 +145,7 @@ export function GroupDetail({ groupId, tab, autoOpenCompose = false }: Props) {
 function GroupDetailErrorState() {
   return (
     <Card>
-      <CardContent className="space-y-2 p-4">
+      <CardContent className="space-y-snug p-4">
         <Label className="block text-foreground">Não foi possível carregar o grupo</Label>
         <Body className="text-muted-foreground">
           Verifique sua conexão e tente abrir o grupo novamente.

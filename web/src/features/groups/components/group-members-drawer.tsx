@@ -89,7 +89,7 @@ export function GroupMembersDrawer({
           <Meta className="text-muted-foreground">{members.length} no grupo</Meta>
         </DrawerHeader>
 
-        <div className="min-h-0 flex-1 overflow-y-auto px-[18px] pb-[30px] pt-1 [scrollbar-width:none]">
+        <div className="min-h-0 flex-1 overflow-y-auto px-4 pb-8 pt-1 [scrollbar-width:none]">
           <div className="overflow-hidden rounded-3xl bg-surface shadow-hairline">
             {sortedMembers.map((member) => {
               const { fullName } = resolveMemberName(member);
@@ -99,7 +99,7 @@ export function GroupMembersDrawer({
               return (
                 <div
                   key={member.id}
-                  className="relative flex items-center gap-3 border-t border-divider px-4 py-3 first:border-t-0"
+                  className="relative flex items-center gap-base border-t border-divider px-4 py-3 first:border-t-0"
                 >
                   {/* Stretched hit area: the whole row opens this member's profile. */}
                   <button
@@ -128,7 +128,7 @@ export function GroupMembersDrawer({
                       type="button"
                       onClick={() => openInvite(member.id, fullName)}
                       className={cn(
-                        'relative z-10 flex shrink-0 items-center gap-1.5 rounded-pill bg-brand px-3 py-1.5 text-brand-foreground shadow-button transition-opacity active:opacity-90',
+                        'relative z-10 flex shrink-0 items-center gap-tight rounded-pill bg-brand px-3 py-1.5 text-brand-foreground shadow-button transition-opacity active:opacity-90',
                         TOUCH_TARGET_48,
                       )}
                     >

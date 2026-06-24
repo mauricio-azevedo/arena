@@ -77,10 +77,10 @@ export function GroupsSection({
   const showEmpty = !isTodos && memberCards.length === 0;
 
   return (
-    <section className="space-y-3.5" aria-label="Grupos">
-      <Heading className="px-0.5">Grupos</Heading>
+    <section className="space-y-comfortable" aria-label="Grupos">
+      <Heading className="px-1">Grupos</Heading>
 
-      <div className="-mx-4 flex gap-2 overflow-x-auto px-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      <div className="-mx-4 flex gap-snug overflow-x-auto px-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {FILTERS.map(({ key, enabled }) => {
           const active = filter === key;
           return (
@@ -92,9 +92,7 @@ export function GroupsSection({
               onClick={() => enabled && setFilter(key)}
               className={cn(
                 'flex h-11 shrink-0 items-center rounded-pill px-4 shadow-hairline transition-colors',
-                active
-                  ? 'bg-primary text-primary-foreground'
-                  : 'bg-surface text-muted-foreground',
+                active ? 'bg-primary text-primary-foreground' : 'bg-surface text-muted-foreground',
                 !enabled && 'opacity-40',
               )}
             >
@@ -111,7 +109,7 @@ export function GroupsSection({
       ) : showEmpty || list.length === 0 ? (
         <GroupsEmptyState isLoggedIn={isLoggedIn} />
       ) : (
-        <div className="space-y-3">
+        <div className="space-y-base">
           {list.map((card) => (
             <HomeGroupCard key={card.group.id} card={card} />
           ))}
@@ -130,12 +128,12 @@ function GroupsEmptyState({ isLoggedIn }: { isLoggedIn: boolean }) {
       <Title className="mt-5">
         {isLoggedIn ? 'Nenhum grupo ainda' : 'Entre pra ver seus grupos'}
       </Title>
-      <Body className="mt-2 max-w-[18rem] text-muted-foreground">
+      <Body className="mt-snug max-w-[18rem] text-muted-foreground">
         {isLoggedIn
           ? 'Entre num grupo pra registrar partidas e acompanhar seu ranking.'
           : 'Faça login pra acompanhar seu ranking e registrar partidas.'}
       </Body>
-      <div className="mt-5 flex w-full max-w-[19rem] flex-col gap-2.5">
+      <div className="mt-5 flex w-full max-w-[19rem] flex-col gap-snug">
         {isLoggedIn ? (
           <Button asChild size="lg">
             <Link href="/groups">
@@ -160,7 +158,7 @@ function GroupsEmptyState({ isLoggedIn }: { isLoggedIn: boolean }) {
 
 function GroupsSkeleton() {
   return (
-    <div className="space-y-3" role="status" aria-busy="true">
+    <div className="space-y-base" role="status" aria-busy="true">
       {[0, 1, 2].map((index) => (
         <div key={index} className="h-[5.25rem] animate-pulse rounded-card bg-muted/80" />
       ))}
@@ -171,7 +169,7 @@ function GroupsSkeleton() {
 function GroupsError() {
   return (
     <Card>
-      <CardContent className="space-y-1.5 p-4">
+      <CardContent className="space-y-snug p-4">
         <Label className="block text-foreground">Não foi possível carregar os grupos</Label>
         <Body className="text-muted-foreground">Verifique sua conexão e tente novamente.</Body>
       </CardContent>
