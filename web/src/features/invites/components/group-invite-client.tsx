@@ -52,8 +52,8 @@ export function GroupInviteClient({ groupId }: Props) {
             </p>
           </div>
 
-          <Button onClick={handleCreateInvite} disabled={isCreating} className="w-full">
-            {isCreating ? 'Gerando...' : 'Gerar link de convite'}
+          <Button onClick={handleCreateInvite} loading={isCreating} className="w-full">
+            Gerar link de convite
           </Button>
 
           {error && <p className="text-sm text-destructive">{error}</p>}

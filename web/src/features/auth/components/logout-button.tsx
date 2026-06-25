@@ -54,13 +54,13 @@ export function LogoutButton({ className, trigger }: Props) {
           <AlertDialogCancel disabled={isLoggingOut}>Cancelar</AlertDialogCancel>
           <AlertDialogAction
             variant="destructive"
-            disabled={isLoggingOut}
+            loading={isLoggingOut}
             onClick={(event) => {
               event.preventDefault();
               handleLogout();
             }}
           >
-            {isLoggingOut ? 'Saindo...' : 'Sair'}
+            Sair
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

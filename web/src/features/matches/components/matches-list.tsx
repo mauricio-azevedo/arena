@@ -233,13 +233,13 @@ export function MatchCard({
             <AlertDialogCancel disabled={isDeleting}>Cancelar</AlertDialogCancel>
 
             <AlertDialogAction
-              disabled={isDeleting}
+              loading={isDeleting}
               onClick={(event) => {
                 event.preventDefault();
                 handleDelete();
               }}
             >
-              {isDeleting ? 'Apagando...' : 'Apagar'}
+              Apagar
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

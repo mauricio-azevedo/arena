@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Check, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Body, Label, Meta, Title } from '@/components/ui/text';
+import { Body, Meta, Title } from '@/components/ui/text';
 import { nameInitial } from '@/lib/avatar';
 import { getAccessToken } from '@/lib/auth';
 import type { ClaimAdmin, ClaimMembership, ClaimOfferDetail, SharedMatch } from '@/types/api';
@@ -28,7 +28,7 @@ export function ClaimOfferClient({ stubId }: Props) {
   const router = useRouter();
   const [status, setStatus] = useState<Status>('loading');
   const [offer, setOffer] = useState<ClaimOfferDetail | null>(null);
-  const [pending, setPending] = useState(false);
+  const [busy, setBusy] = useState<'confirm' | 'decline' | null>(null);
   const [error, setError] = useState('');
   const [claimed, setClaimed] = useState<ClaimMembership | null>(null);
   const [blocked, setBlocked] = useState<Blocked | null>(null);
@@ -63,7 +63,7 @@ export function ClaimOfferClient({ stubId }: Props) {
     const token = getAccessToken();
     if (!token) return;
     setError('');
-    setPending(true);
+    setBusy('confirm');
     try {
       const result = await confirmClaimOffer(token, stubId);
       if (result.outcome === 'CLAIMED') {
@@ -81,7 +81,7 @@ export function ClaimOfferClient({ stubId }: Props) {
           ? caught.message
           : 'Não foi possível assumir agora. Tente novamente.',
       );
-      setPending(false);
+      setBusy(null);
     }
   }
 
@@ -89,13 +89,13 @@ export function ClaimOfferClient({ stubId }: Props) {
     const token = getAccessToken();
     if (!token) return;
     setError('');
-    setPending(true);
+    setBusy('decline');
     try {
       await declineClaimOffer(token, stubId);
       setDeclined(true);
     } catch {
       setError('Não foi possível agora. Tente novamente.');
-      setPending(false);
+      setBusy(null);
     }
   }
 
@@ -174,25 +174,26 @@ export function ClaimOfferClient({ stubId }: Props) {
       <RecentMatches matches={stub.recentMatches} />
 
       <div className="space-y-3">
-        <Button size="lg" className="w-full" disabled={pending} onClick={handleConfirm}>
-          {pending ? (
-            <>
-              <Loader2 className="size-4 animate-spin" aria-hidden />
-              Entrando…
-            </>
-          ) : (
-            'Entrar no grupo'
-          )}
+        <Button
+          size="lg"
+          className="w-full"
+          loading={busy === 'confirm'}
+          disabled={busy !== null}
+          onClick={handleConfirm}
+        >
+          Entrar no grupo
         </Button>
         {error && <Meta className="block px-2 text-center text-tag-warn">{error}</Meta>}
-        <button
-          type="button"
+        <Button
+          variant="ghost"
+          size="lg"
+          className="w-full text-muted-foreground"
+          loading={busy === 'decline'}
+          disabled={busy !== null}
           onClick={handleDecline}
-          disabled={pending}
-          className="flex h-11 w-full items-center justify-center text-muted-foreground transition-opacity active:opacity-60 disabled:opacity-50"
         >
-          <Label>Não sou eu</Label>
-        </button>
+          Não sou eu
+        </Button>
       </div>
     </div>
   );

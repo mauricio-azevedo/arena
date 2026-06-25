@@ -4,7 +4,7 @@ import * as React from 'react';
 import { AlertDialog as AlertDialogPrimitive } from 'radix-ui';
 
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
+import { Button, ButtonSpinner } from '@/components/ui/button';
 
 function AlertDialog({ ...props }: React.ComponentProps<typeof AlertDialogPrimitive.Root>) {
   return <AlertDialogPrimitive.Root data-slot="alert-dialog" {...props} />;
@@ -131,20 +131,36 @@ function AlertDialogDescription({
 }
 
 // Dialog buttons default to size 'lg' — 48px, 16px, bold: the platform action treatment.
+// `loading` opts into the same trailing-edge busy spinner as a plain Button; since
+// the primitive's spinner is skipped under `asChild`, we render it here instead.
 function AlertDialogAction({
   className,
   variant = 'default',
   size = 'lg',
+  loading,
+  disabled,
+  children,
   ...props
 }: React.ComponentProps<typeof AlertDialogPrimitive.Action> &
-  Pick<React.ComponentProps<typeof Button>, 'variant' | 'size'>) {
+  Pick<React.ComponentProps<typeof Button>, 'variant' | 'size' | 'loading'>) {
   return (
     <Button variant={variant} size={size} asChild>
       <AlertDialogPrimitive.Action
         data-slot="alert-dialog-action"
-        className={cn(className)}
+        className={cn(loading !== undefined && 'relative', className)}
+        aria-busy={loading || undefined}
+        disabled={disabled || loading}
         {...props}
-      />
+      >
+        {loading !== undefined ? (
+          <>
+            {children}
+            <ButtonSpinner loading={loading} />
+          </>
+        ) : (
+          children
+        )}
+      </AlertDialogPrimitive.Action>
     </Button>
   );
 }

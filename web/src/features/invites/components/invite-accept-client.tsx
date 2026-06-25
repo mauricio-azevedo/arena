@@ -130,8 +130,8 @@ export function InviteAcceptClient({ invite }: Props) {
               </Button>
             </div>
           ) : (
-            <Button onClick={handleAcceptInvite} disabled={isAccepting} className="w-full">
-              {isAccepting ? 'Entrando...' : 'Entrar no grupo'}
+            <Button onClick={handleAcceptInvite} loading={isAccepting} className="w-full">
+              Entrar no grupo
             </Button>
           )}
 

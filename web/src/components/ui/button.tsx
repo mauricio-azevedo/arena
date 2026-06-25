@@ -84,15 +84,7 @@ function Button({
       {showSpinnerSlot ? (
         <>
           {children}
-          <span
-            aria-hidden
-            className={cn(
-              'pointer-events-none absolute inset-y-0 right-3 flex items-center transition-opacity duration-200',
-              loading ? 'opacity-100' : 'opacity-0',
-            )}
-          >
-            <Loader2 className={cn('size-[1.125rem]', loading && 'animate-spin')} />
-          </span>
+          <ButtonSpinner loading={loading} />
         </>
       ) : (
         children
@@ -101,4 +93,21 @@ function Button({
   );
 }
 
-export { Button, buttonVariants };
+// Trailing-edge busy spinner, single-sourced so plain Buttons and `asChild`
+// surfaces (e.g. AlertDialogAction) share one treatment: a spinner that fades
+// in at the inline-end while the label stays put — never shifting the text.
+function ButtonSpinner({ loading }: { loading: boolean }) {
+  return (
+    <span
+      aria-hidden
+      className={cn(
+        'pointer-events-none absolute inset-y-0 right-3 flex items-center transition-opacity duration-200',
+        loading ? 'opacity-100' : 'opacity-0',
+      )}
+    >
+      <Loader2 className={cn('size-[1.125rem]', loading && 'animate-spin')} />
+    </span>
+  );
+}
+
+export { Button, ButtonSpinner, buttonVariants };

@@ -101,8 +101,8 @@ export function CreateGroupForm() {
 
           {error && <p className="text-sm text-destructive">{error}</p>}
 
-          <Button type="submit" className="w-full" disabled={isSubmitting}>
-            {isSubmitting ? 'Criando...' : 'Criar grupo'}
+          <Button type="submit" className="w-full" loading={isSubmitting}>
+            Criar grupo
           </Button>
         </form>
       </CardContent>

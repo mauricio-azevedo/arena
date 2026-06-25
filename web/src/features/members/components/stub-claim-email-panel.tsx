@@ -3,8 +3,9 @@
 import { useEffect, useState } from 'react';
 import { Check, Loader2, Mail } from 'lucide-react';
 import { DrawerBackHeader } from '@/components/ui/drawer';
+import { Button } from '@/components/ui/button';
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
-import { Body, Label, Meta } from '@/components/ui/text';
+import { Body, Meta } from '@/components/ui/text';
 import { getAccessToken } from '@/lib/auth';
 import type { ClaimEmailState } from '@/types/api';
 import {
@@ -26,7 +27,7 @@ export function StubClaimEmailPanel({ groupId, memberId, stubName, onBack }: Pro
   const [loading, setLoading] = useState(true);
   const [state, setState] = useState<ClaimEmailState | null>(null);
   const [email, setEmail] = useState('');
-  const [saving, setSaving] = useState(false);
+  const [busy, setBusy] = useState<'save' | 'remove' | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -60,7 +61,7 @@ export function StubClaimEmailPanel({ groupId, memberId, stubName, onBack }: Pro
   async function save() {
     const token = getAccessToken();
     if (!token) return;
-    setSaving(true);
+    setBusy('save');
     setError(null);
     try {
       const next = await setClaimEmail(token, groupId, memberId, email.trim());
@@ -72,14 +73,14 @@ export function StubClaimEmailPanel({ groupId, memberId, stubName, onBack }: Pro
           : 'Não foi possível vincular agora. Tente novamente.',
       );
     } finally {
-      setSaving(false);
+      setBusy(null);
     }
   }
 
   async function remove() {
     const token = getAccessToken();
     if (!token) return;
-    setSaving(true);
+    setBusy('remove');
     setError(null);
     try {
       const next = await clearClaimEmail(token, groupId, memberId);
@@ -88,7 +89,7 @@ export function StubClaimEmailPanel({ groupId, memberId, stubName, onBack }: Pro
     } catch {
       setError('Não foi possível remover agora.');
     } finally {
-      setSaving(false);
+      setBusy(null);
     }
   }
 
@@ -158,30 +159,27 @@ export function StubClaimEmailPanel({ groupId, memberId, stubName, onBack }: Pro
 
             {error && <Meta className="mt-2 block px-1 text-center text-tag-warn">{error}</Meta>}
 
-            <button
-              type="button"
+            <Button
+              size="lg"
+              className="mt-3 w-full"
+              loading={busy === 'save'}
+              disabled={busy !== null || !email.trim() || !dirty}
               onClick={save}
-              disabled={saving || !email.trim() || !dirty}
-              className="mt-3 flex h-12 w-full items-center justify-center gap-2 rounded-pill bg-brand text-brand-foreground shadow-button transition-opacity active:opacity-90 disabled:opacity-50"
             >
-              {saving ? (
-                <Loader2 className="size-4 animate-spin text-brand-foreground" aria-hidden />
-              ) : (
-                <Label className="text-brand-foreground">
-                  {state?.email ? 'Atualizar email' : 'Enviar convite'}
-                </Label>
-              )}
-            </button>
+              {state?.email ? 'Atualizar email' : 'Enviar convite'}
+            </Button>
 
             {state?.email && (
-              <button
-                type="button"
+              <Button
+                variant="ghost"
+                size="lg"
+                className="mt-2 w-full text-muted-foreground"
+                loading={busy === 'remove'}
+                disabled={busy !== null}
                 onClick={remove}
-                disabled={saving}
-                className="mt-2 flex h-11 w-full items-center justify-center transition-opacity active:opacity-60 disabled:opacity-50"
               >
-                <Label className="text-muted-foreground">Remover email</Label>
-              </button>
+                Remover email
+              </Button>
             )}
           </>
         )}
