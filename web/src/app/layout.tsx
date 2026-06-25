@@ -5,6 +5,7 @@ import './globals.css';
 import { cn } from '@/lib/utils';
 import { NavigationProvider } from '@/providers/navigation-provider';
 import { ToastProvider } from '@/components/ui/toast';
+import { AuthDrawerProvider } from '@/features/auth/auth-drawer-provider';
 
 // The single Arena face — humanist geometric sans, from running text (500) to
 // the hero rank and figures (800). Per the type audit, there is no second face.
@@ -51,7 +52,9 @@ export default function RootLayout({
     <html lang="pt-BR" className={cn('h-full', 'antialiased', 'font-sans', plusJakarta.variable)}>
       <body className="min-h-full flex flex-col dark">
         <ToastProvider>
-          <NavigationProvider>{children}</NavigationProvider>
+          <AuthDrawerProvider>
+            <NavigationProvider>{children}</NavigationProvider>
+          </AuthDrawerProvider>
         </ToastProvider>
       </body>
     </html>

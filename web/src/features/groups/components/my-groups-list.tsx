@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { ChevronRight, Plus, UsersRound } from 'lucide-react';
 import type { MyGroup } from '@/types/api';
 import { getMyGroups } from '@/features/groups/api/groups.api';
+import { useAuthDrawer } from '@/features/auth/auth-drawer-provider';
 import { getAccessToken } from '@/lib/auth';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -170,6 +171,8 @@ function GroupsLoadingState() {
 }
 
 function SignedOutGroupsState() {
+  const { open } = useAuthDrawer();
+
   return (
     <Card className="bg-gradient-to-br from-card via-card to-primary/8">
       <CardContent className="space-y-comfortable p-4">
@@ -184,12 +187,15 @@ function SignedOutGroupsState() {
         </div>
 
         <div className="grid grid-cols-2 gap-snug">
-          <Button asChild>
-            <Link href="/login?redirect=/">Entrar</Link>
+          <Button onClick={() => open({ view: 'login', intent: { redirectPath: '/' } })}>
+            Entrar
           </Button>
 
-          <Button asChild variant="outline">
-            <Link href="/register?redirect=/">Criar conta</Link>
+          <Button
+            variant="outline"
+            onClick={() => open({ view: 'signup', intent: { redirectPath: '/' } })}
+          >
+            Criar conta
           </Button>
         </div>
       </CardContent>

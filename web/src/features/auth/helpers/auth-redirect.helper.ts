@@ -1,13 +1,8 @@
 import { getInternalPathname, getSafeInternalHref } from '@/lib/internal-href';
 
-export type AuthRoute = '/login' | '/register';
-
 const DEFAULT_AUTH_REDIRECT = '/';
 
-export function getSafeAuthRedirectPath(
-  redirect: unknown,
-  fallback = DEFAULT_AUTH_REDIRECT,
-) {
+export function getSafeAuthRedirectPath(redirect: unknown, fallback = DEFAULT_AUTH_REDIRECT) {
   const safeFallback = getSafeAuthRedirectFallback(fallback);
   const safeRedirect = getSafeInternalHref(redirect, safeFallback);
   const pathname = getInternalPathname(safeRedirect);
@@ -17,16 +12,6 @@ export function getSafeAuthRedirectPath(
   }
 
   return safeRedirect;
-}
-
-export function buildAuthHref(
-  route: AuthRoute,
-  redirect: unknown,
-  fallback = DEFAULT_AUTH_REDIRECT,
-) {
-  const safeRedirect = getSafeAuthRedirectPath(redirect, fallback);
-
-  return `${route}?redirect=${encodeURIComponent(safeRedirect)}`;
 }
 
 function getSafeAuthRedirectFallback(fallback: unknown) {
@@ -40,6 +25,8 @@ function getSafeAuthRedirectFallback(fallback: unknown) {
   return safeFallback;
 }
 
-function isAuthPathname(pathname: string): pathname is AuthRoute {
+// The /login and /register paths are thin shims that just open the auth sheet, so a
+// post-auth redirect must never resolve to one (it would re-open the sheet).
+function isAuthPathname(pathname: string): boolean {
   return pathname === '/login' || pathname === '/register';
 }

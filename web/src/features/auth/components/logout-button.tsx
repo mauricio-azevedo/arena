@@ -1,7 +1,6 @@
 'use client';
 
 import { type ReactNode, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { LogOut } from 'lucide-react';
 import {
   AlertDialog,
@@ -27,14 +26,13 @@ type Props = {
 };
 
 export function LogoutButton({ className, trigger }: Props) {
-  const router = useRouter();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   function handleLogout() {
     setIsLoggingOut(true);
     removeAccessToken();
-    router.replace('/login');
-    router.refresh();
+    // Hard reset to public home so every client token-read flips to signed-out.
+    window.location.assign('/');
   }
 
   return (

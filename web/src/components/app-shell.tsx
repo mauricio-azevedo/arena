@@ -4,10 +4,7 @@ import { Suspense, type ReactNode, useEffect, useMemo, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { AppTopBar, type AppTopBarBack } from '@/components/app-top-bar';
 import { BottomNav } from '@/components/bottom-nav';
-import {
-  buildAuthHref,
-  getSafeAuthRedirectPath,
-} from '@/features/auth/helpers/auth-redirect.helper';
+import { useAuthDrawer } from '@/features/auth/auth-drawer-provider';
 import { getMyGroups } from '@/features/groups/api/groups.api';
 import { getAccessToken } from '@/lib/auth';
 import { cn } from '@/lib/utils';
@@ -36,6 +33,8 @@ export function AppShell({ children, chrome }: AppShellProps) {
   const pathname = usePathname();
   const router = useRouter();
 
+  const { open: openAuthDrawer } = useAuthDrawer();
+
   const currentPathname = pathname ?? '/';
   const routePolicy = useMemo(() => getRoutePolicy(currentPathname), [currentPathname]);
   const routeAccess = routePolicy.access;
@@ -56,20 +55,13 @@ export function AppShell({ children, chrome }: AppShellProps) {
 
       const token = getAccessToken();
 
-      if (routeAccess.kind === 'guest') {
-        if (!token) {
-          setAccessState('allowed');
-          return;
-        }
-
-        setAccessState('redirecting');
-        router.replace(getSafeAuthRedirectPath(getRedirectParam()));
-        return;
-      }
-
       if (!token) {
+        // No /login route anymore: send them to public home and open the auth
+        // sheet, remembering where they meant to go so success lands them there.
         setAccessState('redirecting');
-        router.replace(buildAuthHref('/login', getCurrentPathWithSearch()));
+        const intendedPath = getCurrentPathWithSearch();
+        router.replace('/');
+        openAuthDrawer({ view: 'login', intent: { redirectPath: intendedPath } });
         return;
       }
 
@@ -115,7 +107,7 @@ export function AppShell({ children, chrome }: AppShellProps) {
     return () => {
       isCurrent = false;
     };
-  }, [routeAccess, router]);
+  }, [routeAccess, router, openAuthDrawer]);
 
   const shouldHoldContent = routeAccess.requiresCheck && accessState !== 'allowed';
   const customHeader = chrome?.header;
@@ -150,7 +142,9 @@ export function AppShell({ children, chrome }: AppShellProps) {
         </div>
       </div>
 
-      {showTopBar && <AppTopBar title={chrome?.title} back={chrome?.back} trailing={chrome?.trailing} />}
+      {showTopBar && (
+        <AppTopBar title={chrome?.title} back={chrome?.back} trailing={chrome?.trailing} />
+      )}
       {customHeader}
       {showBottomNav && <BottomNav />}
       <Suspense fallback={null}>
@@ -184,12 +178,4 @@ function getCurrentPathWithSearch() {
   }
 
   return `${window.location.pathname}${window.location.search}`;
-}
-
-function getRedirectParam() {
-  if (typeof window === 'undefined') {
-    return null;
-  }
-
-  return new URLSearchParams(window.location.search).get('redirect');
 }

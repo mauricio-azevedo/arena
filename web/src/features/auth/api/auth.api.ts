@@ -20,6 +20,7 @@ export function register(input: {
   lastName: string;
   email: string;
   password: string;
+  nickname?: string;
 }): Promise<AuthResponse> {
   return apiRequest<AuthResponse>('/auth/register', {
     method: 'POST',

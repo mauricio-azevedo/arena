@@ -26,9 +26,16 @@ type Props = {
   // sits in the page header — so its open-state is lifted to the page. Own profile only.
   settingsOpen?: boolean;
   onSettingsOpenChange?: (open: boolean) => void;
+  // Reported once the token is known, so the page can show the gear only when signed in.
+  onSignedInChange?: (signedIn: boolean) => void;
 };
 
-export function ProfileScreen({ userId, settingsOpen = false, onSettingsOpenChange }: Props) {
+export function ProfileScreen({
+  userId,
+  settingsOpen = false,
+  onSettingsOpenChange,
+  onSignedInChange,
+}: Props) {
   const isOwn = !userId;
 
   const [status, setStatus] = useState<Status>('loading');
@@ -45,6 +52,7 @@ export function ProfileScreen({ userId, settingsOpen = false, onSettingsOpenChan
       setStatus('loading');
 
       const token = getAccessToken();
+      onSignedInChange?.(Boolean(token));
 
       if (!userId && !token) {
         setStatus('signed-out');
@@ -69,7 +77,7 @@ export function ProfileScreen({ userId, settingsOpen = false, onSettingsOpenChan
     return () => {
       isCurrent = false;
     };
-  }, [userId]);
+  }, [userId, onSignedInChange]);
 
   if (status === 'loading') {
     return <ProfileLoadingState />;

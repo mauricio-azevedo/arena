@@ -190,7 +190,13 @@ Deeper subsystem docs: [`processing-jobs.md`](./processing-jobs.md),
 ## 4. Authentication & authorization
 
 - **Login/register** (`auth/auth.service.ts`): bcrypt (10 rounds), JWT signed
-  with `JWT_SECRET`, `expiresIn: 7d`, payload `{ sub: userId, email }`.
+  with `JWT_SECRET`, `expiresIn: 7d`, payload `{ sub: userId, email }`. `register`
+  also accepts an optional `nickname`.
+- **Frontend auth UX**: login and signup are views inside one global bottom-sheet
+  (`features/auth/auth-drawer-provider.tsx` → `useAuthDrawer()`), opened from any
+  signed-out entry point. There are no `/login` / `/register` pages — those paths
+  are thin shims that open the sheet over home. On success the sheet hands off to a
+  full-page navigation so every client `getAccessToken()` branch re-renders.
 - **`JwtAuthGuard`** — required auth; 401 if missing/invalid Bearer token.
 - **`OptionalJwtAuthGuard`** — passes through anonymous, attaches `req.user` if a
   valid token is present (used by endpoints with personalized-but-public content,
