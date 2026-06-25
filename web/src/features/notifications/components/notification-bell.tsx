@@ -36,7 +36,7 @@ export function NotificationBell() {
     <Link
       href="/notifications"
       aria-label={unread > 0 ? `Notificações (${unread} novas)` : 'Notificações'}
-      className="relative flex size-11 shrink-0 items-center justify-center rounded-full bg-surface text-foreground shadow-hairline transition-transform active:scale-95"
+      className="relative flex size-12 shrink-0 items-center justify-center rounded-full bg-surface text-foreground shadow-hairline transition-transform active:scale-95"
     >
       <Bell className="size-5" strokeWidth={2} aria-hidden />
       {unread > 0 && (

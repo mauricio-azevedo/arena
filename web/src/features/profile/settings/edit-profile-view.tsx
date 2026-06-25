@@ -5,8 +5,9 @@ import { Check } from 'lucide-react';
 import { AVATAR_COLORS } from '@/lib/avatar-color';
 import { setAccessToken } from '@/lib/auth';
 import { MemberAvatar } from '@/components/ui/member-avatar';
-import { Drawer, DrawerContent, DrawerTitle } from '@/components/ui/drawer';
-import { Meta, Overline } from '@/components/ui/text';
+import { DrawerActionHeader } from '@/components/ui/drawer';
+import { SheetField } from '@/components/ui/sheet-field';
+import { Meta } from '@/components/ui/text';
 import { updateProfile, type UpdateProfileInput } from '../api/profile.api';
 import type { ProfileUser } from '../types/profile-user.type';
 
@@ -21,48 +22,17 @@ export type EditedUser = {
   avatarColor: string | null;
 };
 
-export function ProfileEditDrawer({
-  open,
-  onOpenChange,
+// Edit-profile as a view inside the settings sheet: a back chevron returns to the
+// menu, and a successful save applies the change and returns to the menu too.
+export function EditProfileView({
   token,
   user,
-  onSaved,
-}: {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  token: string;
-  user: ProfileUser;
-  onSaved: (user: EditedUser) => void;
-}) {
-  return (
-    <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent aria-describedby={undefined}>
-        {/* Remount on open so the form always seeds from the latest user. */}
-        {open && (
-          <EditForm
-            token={token}
-            user={user}
-            onCancel={() => onOpenChange(false)}
-            onSaved={(edited) => {
-              onSaved(edited);
-              onOpenChange(false);
-            }}
-          />
-        )}
-      </DrawerContent>
-    </Drawer>
-  );
-}
-
-function EditForm({
-  token,
-  user,
-  onCancel,
+  onBack,
   onSaved,
 }: {
   token: string;
   user: ProfileUser;
-  onCancel: () => void;
+  onBack: () => void;
   onSaved: (user: EditedUser) => void;
 }) {
   const initial = {
@@ -127,6 +97,7 @@ function EditForm({
         email: result.user.email,
         avatarColor: result.user.avatarColor,
       });
+      onBack();
     } catch (caughtError) {
       setError(friendlyError(caughtError));
       setIsSubmitting(false);
@@ -134,26 +105,17 @@ function EditForm({
   }
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col">
-      <div className="flex h-[52px] shrink-0 items-center justify-between px-4">
-        <button
-          type="button"
-          onClick={onCancel}
-          disabled={isSubmitting}
-          className="min-w-16 text-left text-label text-muted-foreground transition-opacity active:opacity-60 disabled:opacity-40"
-        >
-          Cancelar
-        </button>
-        <DrawerTitle>Editar perfil</DrawerTitle>
-        <button
-          type="button"
-          onClick={handleSave}
-          disabled={!isValid || !hasChanges || isSubmitting}
-          className="min-w-16 text-right text-label font-bold text-brand transition-opacity active:opacity-60 disabled:opacity-40"
-        >
-          {isSubmitting ? 'Salvando…' : 'Salvar'}
-        </button>
-      </div>
+    <div className="flex min-h-0 flex-1 flex-col motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-right-2 motion-safe:duration-200">
+      <DrawerActionHeader
+        left={{ kind: 'back', onClick: onBack, disabled: isSubmitting }}
+        title="Editar perfil"
+        right={{
+          kind: 'save',
+          onClick: handleSave,
+          disabled: !isValid || !hasChanges || isSubmitting,
+          busy: isSubmitting,
+        }}
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto px-4 pt-2 pb-8 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {/* avatar hero + color picker */}
@@ -192,17 +154,18 @@ function EditForm({
         </div>
 
         {/* fields */}
-        <Overline className="mb-3 block px-1 text-faint-foreground">Informações</Overline>
         <div className="overflow-hidden rounded-card bg-surface shadow-hairline">
           <div className="flex items-stretch">
-            <Field
+            <SheetField
+              id="edit-first-name"
               label="Nome"
               value={firstName}
               onChange={setFirstName}
               autoComplete="given-name"
             />
             <div className="w-px bg-border" />
-            <Field
+            <SheetField
+              id="edit-last-name"
               label="Sobrenome"
               value={lastName}
               onChange={setLastName}
@@ -210,7 +173,8 @@ function EditForm({
             />
           </div>
           <div className="h-px bg-border" />
-          <Field
+          <SheetField
+            id="edit-nickname"
             label="Apelido"
             value={nickname}
             onChange={setNickname}
@@ -218,7 +182,8 @@ function EditForm({
             autoComplete="nickname"
           />
           <div className="h-px bg-border" />
-          <Field
+          <SheetField
+            id="edit-email"
             label="Email"
             value={email}
             onChange={setEmail}
@@ -234,36 +199,6 @@ function EditForm({
         {error && <Meta className="mt-comfortable block text-center text-danger">{error}</Meta>}
       </div>
     </div>
-  );
-}
-
-function Field({
-  label,
-  value,
-  onChange,
-  type = 'text',
-  placeholder,
-  autoComplete,
-}: {
-  label: string;
-  value: string;
-  onChange: (value: string) => void;
-  type?: string;
-  placeholder?: string;
-  autoComplete?: string;
-}) {
-  return (
-    <label className="flex min-w-0 flex-1 flex-col px-4 py-3">
-      <Overline className="text-faint-foreground">{label}</Overline>
-      <input
-        value={value}
-        onChange={(event) => onChange(event.target.value)}
-        type={type}
-        placeholder={placeholder}
-        autoComplete={autoComplete}
-        className="mt-1 w-full border-none bg-transparent p-0 text-body font-bold text-foreground outline-none placeholder:font-medium placeholder:text-faint-foreground"
-      />
-    </label>
   );
 }
 
