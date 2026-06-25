@@ -63,7 +63,7 @@ export function SheetField({
           autoComplete={autoComplete}
           disabled={disabled}
           aria-invalid={hasError || undefined}
-          className="min-w-0 flex-1 border-none bg-transparent p-0 text-body font-bold text-foreground outline-none placeholder:font-medium placeholder:text-faint-foreground disabled:opacity-50"
+          className="min-w-0 flex-1 border-none bg-transparent p-0 text-input font-bold text-foreground outline-none placeholder:font-medium placeholder:text-faint-foreground disabled:opacity-50"
         />
         {hasError && (
           <CircleAlert
