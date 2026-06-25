@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Drawer, DrawerContent } from '@/components/ui/drawer';
-import type { AuthDrawerView } from '../auth-drawer-provider';
+import type { AuthDrawerView, AuthNotice } from '../auth-drawer-provider';
 import { AuthLoginView } from './auth-login-view';
 import { AuthSignupView } from './auth-signup-view';
 
@@ -12,11 +12,13 @@ import { AuthSignupView } from './auth-signup-view';
 export function AuthDrawer({
   open,
   view,
+  notice,
   onOpenChange,
   onAuthenticated,
 }: {
   open: boolean;
   view: AuthDrawerView;
+  notice?: AuthNotice | null;
   onOpenChange: (open: boolean) => void;
   onAuthenticated: () => void;
 }) {
@@ -24,7 +26,7 @@ export function AuthDrawer({
     <Drawer open={open} onOpenChange={onOpenChange}>
       <DrawerContent size="fit" aria-describedby={undefined}>
         {/* Remount on open so the view starts where the caller asked and forms seed fresh. */}
-        {open && <AuthViews initialView={view} onAuthenticated={onAuthenticated} />}
+        {open && <AuthViews initialView={view} notice={notice} onAuthenticated={onAuthenticated} />}
       </DrawerContent>
     </Drawer>
   );
@@ -32,9 +34,11 @@ export function AuthDrawer({
 
 function AuthViews({
   initialView,
+  notice,
   onAuthenticated,
 }: {
   initialView: AuthDrawerView;
+  notice?: AuthNotice | null;
   onAuthenticated: () => void;
 }) {
   const [view, setView] = useState<AuthDrawerView>(initialView);
@@ -45,7 +49,12 @@ function AuthViews({
     );
   }
 
+  // The notice (e.g. "session expired") only belongs on the login view.
   return (
-    <AuthLoginView onAuthenticated={onAuthenticated} onSwitchToSignup={() => setView('signup')} />
+    <AuthLoginView
+      notice={notice}
+      onAuthenticated={onAuthenticated}
+      onSwitchToSignup={() => setView('signup')}
+    />
   );
 }
