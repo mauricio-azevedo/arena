@@ -187,8 +187,10 @@ function GroupIdentityHeader({
           {memberCount === 1 ? 'membro' : 'membros'}
         </button>
         <span className="size-[3px] rounded-full bg-faint-foreground" />
-        <span className="text-foreground">{matchCount}</span>{' '}
-        {matchCount === 1 ? 'partida' : 'partidas'}
+        <span className="flex items-center gap-tight">
+          <span className="text-foreground">{matchCount}</span>
+          {matchCount === 1 ? 'partida' : 'partidas'}
+        </span>
       </Meta>
 
       {group.description && <GroupDescription text={group.description} />}
