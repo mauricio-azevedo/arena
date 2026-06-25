@@ -22,7 +22,7 @@ export function AuthDrawer({
 }) {
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent size="fit" aria-describedby={undefined}>
+      <DrawerContent aria-describedby={undefined}>
         {/* Remount on open so the view starts where the caller asked and forms seed fresh. */}
         {open && <AuthViews initialView={view} onAuthenticated={onAuthenticated} />}
       </DrawerContent>

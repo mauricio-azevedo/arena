@@ -43,12 +43,12 @@ export function AuthLoginView({
   }
 
   return (
-    <div className="flex min-h-0 flex-col">
+    <div className="flex min-h-0 flex-1 flex-col">
       <DrawerActionHeader title="Entrar" />
 
       <form
         onSubmit={handleSubmit}
-        className="min-h-0 overflow-y-auto px-4 pt-2 pb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        className="min-h-0 flex-1 overflow-y-auto px-4 pt-2 pb-8 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
         <div className="overflow-hidden rounded-card bg-surface shadow-hairline">
           <SheetField
@@ -86,7 +86,7 @@ export function AuthLoginView({
         <button type="submit" className="sr-only" tabIndex={-1} aria-hidden disabled={!canSubmit} />
       </form>
 
-      <DrawerFooter className="gap-2.5 pt-2.5 pb-[max(env(safe-area-inset-bottom),0.75rem)] shadow-[0_-1px_0_var(--surface)]">
+      <DrawerFooter className="gap-2.5 pt-2.5 pb-[30px] shadow-[0_-1px_0_var(--surface)]">
         {error && <Meta className="text-center text-danger">{error}</Meta>}
         <Button
           type="button"
