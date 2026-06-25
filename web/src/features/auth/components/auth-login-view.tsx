@@ -72,11 +72,21 @@ export function AuthLoginView({
             disabled={isSubmitting}
           />
         </div>
+
+        <button
+          type="button"
+          onClick={onSwitchToSignup}
+          disabled={isSubmitting}
+          className="mt-5 block w-full text-center text-sm font-bold text-muted-foreground transition-opacity active:opacity-60 disabled:opacity-40"
+        >
+          Não tem conta? <span className="text-brand">Criar conta</span>
+        </button>
+
         {/* Submit on Enter; the footer "Entrar" is the primary trigger. */}
         <button type="submit" className="sr-only" tabIndex={-1} aria-hidden disabled={!canSubmit} />
       </form>
 
-      <DrawerFooter className="gap-2.5 pt-2.5 pb-[30px] shadow-[0_-1px_0_var(--surface)]">
+      <DrawerFooter className="gap-2.5 pt-2.5 pb-[max(env(safe-area-inset-bottom),0.75rem)] shadow-[0_-1px_0_var(--surface)]">
         {error && <Meta className="text-center text-danger">{error}</Meta>}
         <Button
           type="button"
@@ -88,14 +98,6 @@ export function AuthLoginView({
         >
           Entrar
         </Button>
-        <button
-          type="button"
-          onClick={onSwitchToSignup}
-          disabled={isSubmitting}
-          className="pt-1 text-center text-sm font-bold text-muted-foreground transition-opacity active:opacity-60 disabled:opacity-40"
-        >
-          Não tem conta? <span className="text-brand">Criar conta</span>
-        </button>
       </DrawerFooter>
     </div>
   );

@@ -126,11 +126,20 @@ export function AuthSignupView({
           O apelido é como você aparece para outros jogadores nos grupos.
         </Meta>
 
+        <button
+          type="button"
+          onClick={onSwitchToLogin}
+          disabled={isSubmitting}
+          className="mt-5 block w-full text-center text-sm font-bold text-muted-foreground transition-opacity active:opacity-60 disabled:opacity-40"
+        >
+          Já tem conta? <span className="text-brand">Entrar</span>
+        </button>
+
         {/* Submit on Enter; the footer "Criar conta" is the primary trigger. */}
         <button type="submit" className="sr-only" tabIndex={-1} aria-hidden disabled={!canSubmit} />
       </form>
 
-      <DrawerFooter className="gap-2.5 pt-2.5 pb-[30px] shadow-[0_-1px_0_var(--surface)]">
+      <DrawerFooter className="gap-2.5 pt-2.5 pb-[max(env(safe-area-inset-bottom),0.75rem)] shadow-[0_-1px_0_var(--surface)]">
         {error && <Meta className="text-center text-danger">{error}</Meta>}
         <Button
           type="button"
@@ -142,14 +151,6 @@ export function AuthSignupView({
         >
           Criar conta
         </Button>
-        <button
-          type="button"
-          onClick={onSwitchToLogin}
-          disabled={isSubmitting}
-          className="pt-1 text-center text-sm font-bold text-muted-foreground transition-opacity active:opacity-60 disabled:opacity-40"
-        >
-          Já tem conta? <span className="text-brand">Entrar</span>
-        </button>
       </DrawerFooter>
     </div>
   );
