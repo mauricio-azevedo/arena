@@ -7,8 +7,8 @@ import { ProfileScreen } from '@/features/profile/profile-screen';
 
 export default function ProfilePage() {
   const [settingsOpen, setSettingsOpen] = useState(false);
-  // The gear only makes sense signed in; ProfileScreen reports this once it reads
-  // the token (and again after a post-auth reload), so the header stays in sync.
+  // The gear only makes sense signed in; ProfileScreen reports this once the profile
+  // has loaded, so the gear reveals together with the content (not over the skeleton).
   const [signedIn, setSignedIn] = useState(false);
 
   return (

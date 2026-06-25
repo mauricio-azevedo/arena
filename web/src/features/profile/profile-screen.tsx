@@ -26,7 +26,8 @@ type Props = {
   // sits in the page header — so its open-state is lifted to the page. Own profile only.
   settingsOpen?: boolean;
   onSettingsOpenChange?: (open: boolean) => void;
-  // Reported once the token is known, so the page can show the gear only when signed in.
+  // Reported once the profile has loaded (not while the skeleton shows), so the page
+  // reveals the settings gear together with the content rather than over the skeleton.
   onSignedInChange?: (signedIn: boolean) => void;
 };
 
@@ -50,9 +51,10 @@ export function ProfileScreen({
 
     async function load() {
       setStatus('loading');
+      // Keep the gear hidden while (re)loading — it should reveal with the content.
+      onSignedInChange?.(false);
 
       const token = getAccessToken();
-      onSignedInChange?.(Boolean(token));
 
       if (!userId && !token) {
         setStatus('signed-out');
@@ -67,6 +69,8 @@ export function ProfileScreen({
         if (!isCurrent) return;
         setSummary(data);
         setStatus('ready');
+        // Reveal the gear now, together with the loaded content.
+        onSignedInChange?.(true);
       } catch {
         if (isCurrent) setStatus('error');
       }
