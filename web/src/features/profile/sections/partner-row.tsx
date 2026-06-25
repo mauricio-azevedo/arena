@@ -40,14 +40,17 @@ export function PartnerRow({
               style={{ width: `${partner.winRate}%` }}
             />
           </div>
-          <Meta className="shrink-0 text-muted-foreground">
+          <Meta className="min-w-[2.5rem] shrink-0 text-right text-muted-foreground">
             {partner.winsTogether}–{partner.lossesTogether}
           </Meta>
         </div>
       </div>
 
       <div
-        className={cn('shrink-0 text-right font-display text-stat-md font-extrabold', tone.text)}
+        className={cn(
+          'w-14 shrink-0 text-right font-display text-stat-md font-extrabold tabular-nums',
+          tone.text,
+        )}
       >
         {partner.winRate}
         <span className="text-[0.6875rem]">%</span>
