@@ -12,16 +12,7 @@ import { CurrentUser } from '../auth/current-user.decorator';
 import type { AuthUser } from '../auth/auth.types';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { MatchesService } from './matches.service';
-
-type MatchBody = {
-  teamAPlayer1Id: string;
-  teamAPlayer2Id: string;
-  teamBPlayer1Id: string;
-  teamBPlayer2Id: string;
-  gamesA: number;
-  gamesB: number;
-  playedAt?: string;
-};
+import type { MatchBody } from './matches.service';
 
 @Controller('groups/:groupId/matches')
 export class MatchesController {

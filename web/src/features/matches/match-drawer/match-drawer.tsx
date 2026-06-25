@@ -6,13 +6,18 @@ import { Drawer, DrawerContent } from '@/components/ui/drawer';
 import { Meta } from '@/components/ui/text';
 import { Info } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import type { MatchPlayerInput } from '@/types/api';
 import { createGroupMatch, updateGroupMatch } from '@/features/matches/api/matches.api';
-import { createGuestMember } from '@/features/groups/api/groups.api';
 import { getAccessToken } from '@/lib/auth';
 import { ComposeView } from './compose-view';
 import { PickerView, type PickerEntry } from './picker-view';
 import { TeamCard } from './team-card';
-import { buildPlayerLookup, resolveFromMember } from './match-player.helpers';
+import {
+  buildPlayerLookup,
+  isDraftGuest,
+  makeDraftGuest,
+  resolveFromMember,
+} from './match-player.helpers';
 import { SLOT_SUBLABELS, useMatchForm, type SlotKey } from './use-match-form';
 
 export type MatchDrawerTarget =
@@ -100,11 +105,11 @@ function MatchComposer({
   const [activeSlot, setActiveSlot] = useState<SlotKey | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  // Stub players created inline this session, merged into the roster optimistically
-  // so they're pickable immediately without waiting for a refetch.
-  const [createdMembers, setCreatedMembers] = useState<GroupMember[]>([]);
+  // Guests named inline this session: local-only drafts, merged into the roster so
+  // they're immediately pickable. They're persisted only when the match is saved.
+  const [draftGuests, setDraftGuests] = useState<GroupMember[]>([]);
 
-  const roster = useMemo(() => [...members, ...createdMembers], [members, createdMembers]);
+  const roster = useMemo(() => [...members, ...draftGuests], [members, draftGuests]);
 
   const lookup = useMemo(() => buildPlayerLookup(roster, match), [roster, match]);
 
@@ -150,19 +155,13 @@ function MatchComposer({
     setView('compose');
   }
 
-  async function handleCreatePlayer(name: string) {
-    const token = getAccessToken();
+  function handleCreatePlayer(name: string) {
+    const draft = makeDraftGuest(groupId, name);
 
-    if (!token) {
-      throw new Error('Missing access token');
-    }
-
-    const created = await createGuestMember(token, groupId, name);
-
-    setCreatedMembers((prev) => [...prev, created]);
+    setDraftGuests((prev) => [...prev, draft]);
 
     if (activeSlot) {
-      form.assign(activeSlot, created.id);
+      form.assign(activeSlot, draft.id);
     }
 
     setActiveSlot(null);
@@ -181,11 +180,20 @@ function MatchComposer({
       return;
     }
 
+    const draftNameById = new Map(draftGuests.map((guest) => [guest.id, guest.displayName ?? '']));
+
+    // A draft slot sends the guest's name (backend creates the stub atomically with
+    // the match); an existing slot sends its member id.
+    const toPlayer = (slot: SlotKey): MatchPlayerInput => {
+      const id = form.slots[slot] as string;
+      return isDraftGuest(id) ? { name: draftNameById.get(id) ?? '' } : { memberId: id };
+    };
+
     const input = {
-      teamAPlayer1Id: form.slots.a1 as string,
-      teamAPlayer2Id: form.slots.a2 as string,
-      teamBPlayer1Id: form.slots.b1 as string,
-      teamBPlayer2Id: form.slots.b2 as string,
+      teamAPlayer1: toPlayer('a1'),
+      teamAPlayer2: toPlayer('a2'),
+      teamBPlayer1: toPlayer('b1'),
+      teamBPlayer2: toPlayer('b2'),
       gamesA: form.scoreA,
       gamesB: form.scoreB,
     };

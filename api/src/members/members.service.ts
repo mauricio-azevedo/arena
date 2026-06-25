@@ -10,6 +10,22 @@ import {
   resolveMemberDisplayName,
 } from '../common/member-display-name';
 import { PrismaService } from '../prisma/prisma.service';
+import type { Prisma } from '../generated/prisma/client';
+
+// Trims and validates a stub player's name, returning the canonical form.
+function normalizeGuestName(rawName: string): string {
+  const name = rawName?.trim();
+
+  if (!name) {
+    throw new BadRequestException('Name is required');
+  }
+
+  if (name.length > 60) {
+    throw new BadRequestException('Name is too long');
+  }
+
+  return name;
+}
 
 @Injectable()
 export class MembersService {
@@ -94,15 +110,8 @@ export class MembersService {
     requesterUserId: string,
     body: { name: string },
   ) {
-    const name = body.name?.trim();
-
-    if (!name) {
-      throw new BadRequestException('Name is required');
-    }
-
-    if (name.length > 60) {
-      throw new BadRequestException('Name is too long');
-    }
+    // Validate the name up front, before any lookups.
+    normalizeGuestName(body.name);
 
     const group = await this.prisma.group.findUnique({
       where: { id: groupId },
@@ -125,7 +134,24 @@ export class MembersService {
       throw new ForbiddenException('Only active group members can add players');
     }
 
-    const membership = await this.prisma.groupMember.create({
+    const memberId = await this.createGuestRow(this.prisma, groupId, body.name);
+
+    return this.findOne(memberId);
+  }
+
+  // Shared core for creating a stub player row (jogador sem conta): validate the
+  // name and insert the membership, returning its id. The caller owns the group
+  // and requester-authorization checks. Takes a client so it can run inside an
+  // outer transaction — e.g. so a stub is only persisted when the match it belongs
+  // to is, never as an orphan from an abandoned form.
+  async createGuestRow(
+    client: Prisma.TransactionClient,
+    groupId: string,
+    rawName: string,
+  ): Promise<string> {
+    const name = normalizeGuestName(rawName);
+
+    const membership = await client.groupMember.create({
       data: {
         groupId,
         userId: null,
@@ -133,7 +159,7 @@ export class MembersService {
       },
     });
 
-    return this.findOne(membership.id);
+    return membership.id;
   }
 
   // Reverts a claim (admin only): detaches the account and turns the membership back

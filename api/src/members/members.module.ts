@@ -9,5 +9,6 @@ import { MemberProfileReaderService } from './member-profile-reader.service';
   imports: [PrismaModule, AuthModule],
   controllers: [MembersController],
   providers: [MembersService, MemberProfileReaderService],
+  exports: [MembersService],
 })
 export class MembersModule {}
