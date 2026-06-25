@@ -1,7 +1,7 @@
 import { ArrowDown, ArrowUp } from 'lucide-react';
 import type { GroupMember, RankingMovement } from '@/types/api';
 import { Card, CardContent } from '@/components/ui/card';
-import { Body, Heading, Label, Meta, Overline, Stat } from '@/components/ui/text';
+import { Body, Label, Meta, Overline, Stat } from '@/components/ui/text';
 import { MemberName } from '@/features/members/components/member-name';
 import { resolveMemberName } from '@/lib/member-name';
 import { cn } from '@/lib/utils';
@@ -28,8 +28,7 @@ export function RankingList({ ranking, currentMembershipId }: Props) {
 
   return (
     <section aria-label="Ranking do grupo" className="space-y-base">
-      <div className="flex items-baseline justify-between px-0.5">
-        <Heading>Classificação</Heading>
+      <div className="flex items-baseline justify-end px-0.5">
         <Meta className="text-faint-foreground">Rating</Meta>
       </div>
 
