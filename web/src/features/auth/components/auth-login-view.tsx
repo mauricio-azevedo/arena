@@ -7,14 +7,21 @@ import { SheetField, SheetPasswordField } from '@/components/ui/sheet-field';
 import { Meta } from '@/components/ui/text';
 import { login } from '@/features/auth/auth.api';
 import { AUTH_EMAIL_REGEX, LOGIN_ERROR } from '@/features/auth/auth-validation';
+import type { AuthNotice } from '@/features/auth/auth-drawer-provider';
 import { setAccessToken } from '@/lib/auth';
+
+const NOTICE_COPY: Record<AuthNotice, string> = {
+  expired: 'Sua sessão expirou. Entre novamente para continuar.',
+};
 
 // Login view inside the auth drawer. On success it stores the token and hands off
 // to `onAuthenticated` (a full-page navigation), so there's no state to reset.
 export function AuthLoginView({
+  notice,
   onAuthenticated,
   onSwitchToSignup,
 }: {
+  notice?: AuthNotice | null;
   onAuthenticated: () => void;
   onSwitchToSignup: () => void;
 }) {
@@ -50,6 +57,10 @@ export function AuthLoginView({
         onSubmit={handleSubmit}
         className="min-h-0 overflow-y-auto px-4 pt-2 pb-[max(env(safe-area-inset-bottom),0.75rem)] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
+        {notice && (
+          <Meta className="mb-3 text-center text-muted-foreground">{NOTICE_COPY[notice]}</Meta>
+        )}
+
         <div className="overflow-hidden rounded-card bg-surface shadow-hairline">
           <SheetField
             id="auth-email"

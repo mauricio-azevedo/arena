@@ -2,6 +2,7 @@ export const ACCESS_TOKEN_STORAGE_KEY = 'arena_access_token';
 
 type JwtPayload = {
   sub?: string;
+  exp?: number;
 };
 
 export function getAccessToken() {
@@ -17,6 +18,8 @@ export function setAccessToken(token: string) {
     return;
   }
 
+  // A fresh token means a live session again — re-arm the expiry handler.
+  sessionExpiredHandled = false;
   window.localStorage.setItem(ACCESS_TOKEN_STORAGE_KEY, token);
 }
 
@@ -39,6 +42,12 @@ export function getCurrentUserIdFromAccessToken() {
 }
 
 export function getUserIdFromAccessToken(token: string) {
+  return decodeAccessToken(token)?.sub ?? null;
+}
+
+// Decodes the JWT payload without verifying the signature — enough to read claims
+// the client trusts loosely (user id, expiry). SSR-safe: returns null without window.
+function decodeAccessToken(token: string): JwtPayload | null {
   try {
     const [, payload] = token.split('.');
 
@@ -46,10 +55,48 @@ export function getUserIdFromAccessToken(token: string) {
       return null;
     }
 
-    const decoded = JSON.parse(window.atob(payload)) as JwtPayload;
-
-    return decoded.sub ?? null;
+    return JSON.parse(window.atob(payload)) as JwtPayload;
   } catch {
     return null;
   }
+}
+
+// True when the token is past its `exp` (or has no readable expiry / is malformed),
+// so the session is effectively dead. Without a window (SSR) there's no session to
+// expire, so it returns false.
+export function isAccessTokenExpired(token: string): boolean {
+  if (typeof window === 'undefined') {
+    return false;
+  }
+
+  const exp = decodeAccessToken(token)?.exp;
+
+  if (typeof exp !== 'number') {
+    return true;
+  }
+
+  return exp * 1000 <= Date.now();
+}
+
+// A dead session is handled in exactly one place (the auth drawer), but detected
+// deep in the API client. This registry bridges the two without coupling lib code
+// to React/UI.
+type SessionExpiredHandler = () => void;
+let sessionExpiredHandler: SessionExpiredHandler | null = null;
+let sessionExpiredHandled = false;
+
+export function setSessionExpiredHandler(handler: SessionExpiredHandler | null) {
+  sessionExpiredHandler = handler;
+}
+
+// Fires the handler once per dead session: concurrent failed requests all call this,
+// but only the first opens the login drawer. Re-armed when a new token is stored.
+export function triggerSessionExpired() {
+  if (sessionExpiredHandled) {
+    return;
+  }
+
+  sessionExpiredHandled = true;
+  removeAccessToken();
+  sessionExpiredHandler?.();
 }
