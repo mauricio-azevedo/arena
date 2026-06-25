@@ -3,6 +3,7 @@
 import { ChevronRight, KeyRound, LogOut, UserRound } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { LogoutButton } from '@/features/auth/components/logout-button';
+import { Button } from '@/components/ui/button';
 import { DrawerActionHeader } from '@/components/ui/drawer';
 import { Label, Overline } from '@/components/ui/text';
 
@@ -38,13 +39,10 @@ export function SettingsMenuView({
 
         <LogoutButton
           trigger={
-            <button
-              type="button"
-              className="mt-comfortable flex w-full items-center justify-center gap-snug rounded-card bg-surface py-3.5 text-label font-bold text-danger shadow-hairline transition-transform active:scale-[0.98]"
-            >
-              <LogOut className="size-[1.125rem]" strokeWidth={2.2} aria-hidden />
+            <Button variant="secondary" size="lg" className="mt-comfortable w-full text-danger">
+              <LogOut aria-hidden />
               Sair da conta
-            </button>
+            </Button>
           }
         />
       </div>

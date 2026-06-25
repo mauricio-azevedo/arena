@@ -50,7 +50,7 @@ export function HomeHeader() {
 
   return (
     <AppHeaderShell>
-      <div className="relative mx-auto flex h-11 w-full max-w-md items-center justify-between gap-base leading-tight">
+      <div className="relative mx-auto flex h-12 w-full max-w-md items-center justify-between gap-base leading-tight">
         <div className="min-w-0">
           <Meta className="block text-muted-foreground">{isLoggedIn ? greeting() : 'Olá,'}</Meta>
           {loading ? (

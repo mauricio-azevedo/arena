@@ -130,10 +130,11 @@ function AlertDialogDescription({
   );
 }
 
+// Dialog buttons default to size 'lg' — 48px, 16px, bold: the platform action treatment.
 function AlertDialogAction({
   className,
   variant = 'default',
-  size = 'default',
+  size = 'lg',
   ...props
 }: React.ComponentProps<typeof AlertDialogPrimitive.Action> &
   Pick<React.ComponentProps<typeof Button>, 'variant' | 'size'>) {
@@ -151,7 +152,7 @@ function AlertDialogAction({
 function AlertDialogCancel({
   className,
   variant = 'outline',
-  size = 'default',
+  size = 'lg',
   ...props
 }: React.ComponentProps<typeof AlertDialogPrimitive.Cancel> &
   Pick<React.ComponentProps<typeof Button>, 'variant' | 'size'>) {
