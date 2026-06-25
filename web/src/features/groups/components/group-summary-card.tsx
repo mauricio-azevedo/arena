@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Search } from 'lucide-react';
 import type { Group, GroupMember, GroupMemberRole, Match, MyGroup } from '@/types/api';
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
-import { Body, Label, Meta, Stat, Title } from '@/components/ui/text';
+import { Body, Dot, Label, Meta, Stat, Title } from '@/components/ui/text';
 import { StandingCard } from '@/features/groups/components/standing-card';
 import { GroupMembersDrawer } from '@/features/groups/components/group-members-drawer';
 import { cn } from '@/lib/utils';
@@ -186,7 +186,7 @@ function GroupIdentityHeader({
           <span className="text-foreground">{memberCount}</span>
           {memberCount === 1 ? 'membro' : 'membros'}
         </button>
-        <span className="size-[3px] rounded-full bg-faint-foreground" />
+        <Dot className="mx-0" />
         <span className="flex items-center gap-tight">
           <span className="text-foreground">{matchCount}</span>
           {matchCount === 1 ? 'partida' : 'partidas'}

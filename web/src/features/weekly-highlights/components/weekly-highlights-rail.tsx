@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { MemberAvatar } from '@/components/ui/member-avatar';
-import { Heading, Label, Meta } from '@/components/ui/text';
+import { Dot, Heading, Label, Meta } from '@/components/ui/text';
 import { getWeeklyHighlights } from '@/features/weekly-highlights/api/weekly-highlights.api';
 import { highlightSentence } from '@/features/weekly-highlights/helpers/highlight-copy';
 import { highlightStyle, hueFromId } from '@/features/weekly-highlights/helpers/highlight-style';
@@ -111,7 +111,15 @@ function HighlightChip({ card }: { card: WeeklyHighlightCard }) {
             style={{ background: `oklch(65% 0.15 ${hue})` }}
           />
           <Meta className="min-w-0 truncate text-muted-foreground">
-            {isArena ? `no Arena · ${card.group.name}` : card.group.name}
+            {isArena ? (
+              <>
+                no Arena
+                <Dot />
+                {card.group.name}
+              </>
+            ) : (
+              card.group.name
+            )}
           </Meta>
         </div>
       </div>

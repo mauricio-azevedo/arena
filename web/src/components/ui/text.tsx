@@ -67,9 +67,7 @@ function Stat({
 /** Screen / group title. */
 function Title({ className, asChild, ...props }: RoleProps<'h1'>) {
   const Comp = asChild ? Slot.Root : 'h1';
-  return (
-    <Comp data-slot="title" className={cn('font-display text-title', className)} {...props} />
-  );
+  return <Comp data-slot="title" className={cn('font-display text-title', className)} {...props} />;
 }
 
 /** In-page section header — e.g. "Hoje". */
@@ -122,4 +120,22 @@ function Overline({
   );
 }
 
-export { Display, Stat, Title, Heading, Label, Body, Meta, Overline };
+/**
+ * Inline dot separator between meta items — the round bolinha in "12 membros · 30
+ * partidas". Use it everywhere a `·` once joined counts or labels so every meta
+ * line reads the same. Carries its own `mx-tight` to self-space inside running
+ * text; inside a gap-spaced flex row pass `className="mx-0"`.
+ */
+function Dot({ className }: { className?: string }) {
+  return (
+    <span
+      aria-hidden
+      className={cn(
+        'mx-tight inline-block size-[3px] shrink-0 rounded-full bg-faint-foreground align-middle',
+        className,
+      )}
+    />
+  );
+}
+
+export { Display, Stat, Title, Heading, Label, Body, Meta, Overline, Dot };

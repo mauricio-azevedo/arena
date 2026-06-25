@@ -5,7 +5,7 @@ import type { ReactNode } from 'react';
 import Link from 'next/link';
 import { ChevronRight, Info, UserPlus } from 'lucide-react';
 import { Drawer, DrawerNested, DrawerContent, DrawerTitle } from '@/components/ui/drawer';
-import { Label, Meta } from '@/components/ui/text';
+import { Dot, Label, Meta } from '@/components/ui/text';
 import { MemberAvatar } from '@/components/ui/member-avatar';
 import { cn } from '@/lib/utils';
 import { getCurrentUserIdFromAccessToken } from '@/lib/auth';
@@ -268,14 +268,26 @@ function buildPositionLine(
   totalMembers: number,
   groupName: string,
   isYou: boolean,
-): string | null {
+): ReactNode {
   if (rank === undefined) {
     return null;
   }
 
   const position = `#${rank} de ${totalMembers}`;
 
-  return isYou ? `Você · ${position}` : `${position} · ${groupName}`;
+  return isYou ? (
+    <>
+      Você
+      <Dot />
+      {position}
+    </>
+  ) : (
+    <>
+      {position}
+      <Dot />
+      {groupName}
+    </>
+  );
 }
 
 // Real members link to their cross-group profile; stub players (userId null) have

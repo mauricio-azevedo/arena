@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { Check, Plus, Search } from 'lucide-react';
-import { Label, Meta, Overline } from '@/components/ui/text';
+import { Dot, Label, Meta, Overline } from '@/components/ui/text';
 import { DrawerBackHeader } from '@/components/ui/drawer';
 import { cn } from '@/lib/utils';
 import { MemberAvatar } from '@/components/ui/member-avatar';
@@ -121,7 +121,12 @@ export function PickerView({
                       )}
                     </div>
                     <Meta className="text-muted-foreground">
-                      {entry.rank !== undefined ? `#${entry.rank} · ` : ''}
+                      {entry.rank !== undefined ? (
+                        <>
+                          #{entry.rank}
+                          <Dot />
+                        </>
+                      ) : null}
                       {Math.round(entry.rating)} pts
                     </Meta>
                   </div>

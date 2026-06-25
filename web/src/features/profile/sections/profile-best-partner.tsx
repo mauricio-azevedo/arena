@@ -1,7 +1,7 @@
 import { cn } from '@/lib/utils';
 import { MemberAvatar } from '@/components/ui/member-avatar';
 import { Card, CardContent } from '@/components/ui/card';
-import { Heading, Label, Meta, Overline } from '@/components/ui/text';
+import { Dot, Heading, Label, Meta, Overline } from '@/components/ui/text';
 import { partnerRateTone } from '../helpers/partner-rate.helper';
 import { firstNameOf } from '../helpers/profile-name.helper';
 import type { ProfileSummaryPartner } from '../types/profile-summary-partner.type';
@@ -53,8 +53,9 @@ export function ProfileBestPartner({
                 </Label>
                 {/* mt-0.5: 2px optical nudge tucking the Meta under the Label — not layout spacing. */}
                 <Meta className="mt-0.5 block text-muted-foreground">
-                  {partner.winsTogether}–{partner.lossesTogether} juntos · {partner.matchesTogether}{' '}
-                  jogos
+                  {partner.winsTogether}–{partner.lossesTogether} juntos
+                  <Dot />
+                  {partner.matchesTogether} jogos
                 </Meta>
               </div>
             </div>
