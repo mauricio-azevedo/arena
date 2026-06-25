@@ -49,7 +49,7 @@ export function SheetField({
         className,
       )}
     >
-      <Overline asChild className={hasError ? 'text-danger' : 'text-faint-foreground'}>
+      <Overline asChild className={hasError ? 'text-danger' : undefined}>
         <label htmlFor={id}>{label}</label>
       </Overline>
 
