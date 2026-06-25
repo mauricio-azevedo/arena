@@ -10,11 +10,10 @@ import { ProfileErrorState } from './components/profile-error-state';
 import { ProfileLoadingState } from './components/profile-loading-state';
 import { ProfileSignedOutState } from './components/profile-signed-out-state';
 import { ProfileBestPartner } from './sections/profile-best-partner';
-import { type EditedUser, ProfileEditDrawer } from './sections/profile-edit-drawer';
 import { ProfileGroupsRail } from './sections/profile-groups-rail';
 import { ProfileIdentity } from './sections/profile-identity';
-import { ProfileLogoutRow } from './sections/profile-logout-row';
 import { ProfilePartnersSection } from './sections/profile-partners-section';
+import { type EditedUser, SettingsDrawer } from './settings/settings-drawer';
 import { ProfilePerformance } from './sections/profile-performance';
 import type { ProfileSummary } from './types/profile-summary.type';
 
@@ -23,14 +22,17 @@ type Status = 'loading' | 'signed-out' | 'ready' | 'error';
 type Props = {
   // Absent → the signed-in user's own profile; present → another player's.
   userId?: string;
+  // Settings sheet lives here (it needs the loaded user), but the gear that opens it
+  // sits in the page header — so its open-state is lifted to the page. Own profile only.
+  settingsOpen?: boolean;
+  onSettingsOpenChange?: (open: boolean) => void;
 };
 
-export function ProfileScreen({ userId }: Props) {
+export function ProfileScreen({ userId, settingsOpen = false, onSettingsOpenChange }: Props) {
   const isOwn = !userId;
 
   const [status, setStatus] = useState<Status>('loading');
   const [summary, setSummary] = useState<ProfileSummary | null>(null);
-  const [editing, setEditing] = useState(false);
 
   function applyEdit(edited: EditedUser) {
     setSummary((prev) => (prev ? { ...prev, user: { ...prev.user, ...edited } } : prev));
@@ -105,7 +107,6 @@ export function ProfileScreen({ userId }: Props) {
         nickname={user.nickname}
         avatarColor={user.avatarColor}
         memberSince={user.memberSince}
-        onEdit={isOwn ? () => setEditing(true) : undefined}
       />
 
       <ProfilePerformance stats={stats} />
@@ -125,18 +126,15 @@ export function ProfileScreen({ userId }: Props) {
       <ProfileGroupsRail groups={recentGroups} />
 
       {isOwn && (
-        <div className="space-y-comfortable pt-2">
-          <ProfileLogoutRow />
-          <Meta className="block text-center text-faint-foreground">
-            Arena · versão {APP_VERSION}
-          </Meta>
-        </div>
+        <Meta className="block pt-2 text-center text-faint-foreground">
+          Arena · versão {APP_VERSION}
+        </Meta>
       )}
 
       {isOwn && (
-        <ProfileEditDrawer
-          open={editing}
-          onOpenChange={setEditing}
+        <SettingsDrawer
+          open={settingsOpen}
+          onOpenChange={onSettingsOpenChange ?? (() => {})}
           token={getAccessToken() ?? ''}
           user={user}
           onSaved={applyEdit}

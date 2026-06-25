@@ -39,6 +39,7 @@ Engineering docs describe how to work on the codebase.
 - [`code-organization.md`](code-organization.md): file/folder organization rules for frontend and backend.
 - [`engineering/backend-conventions.md`](engineering/backend-conventions.md): observed NestJS/API conventions and route map.
 - [`engineering/frontend-conventions.md`](engineering/frontend-conventions.md): observed Next.js/web conventions.
+- [`engineering/code-quality-backlog.md`](engineering/code-quality-backlog.md): tracked DRY/reuse/completeness debt (the Code Quality Baseline lives in `AGENTS.md`).
 - [`engineering/development-setup.md`](engineering/development-setup.md): local setup and development workflow.
 - [`engineering/database.md`](engineering/database.md): database, Prisma, Neon, and migration guidance.
 - [`engineering/database-reference.md`](engineering/database-reference.md): table/enum/index/migration reference mirroring the schema.

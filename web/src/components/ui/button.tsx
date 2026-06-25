@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { Slot } from 'radix-ui';
+import { Loader2 } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 import { TOUCH_TARGET_44 } from '@/lib/touch-target';
@@ -49,13 +50,21 @@ function Button({
   size = 'default',
   asChild = false,
   touchTarget = false,
+  loading,
+  disabled,
+  children,
   ...props
 }: React.ComponentProps<'button'> &
   VariantProps<typeof buttonVariants> & {
     asChild?: boolean;
     touchTarget?: boolean;
+    // When defined, a spinner fades in/out at the trailing edge while the label
+    // stays put (the spinner is absolutely positioned, so it never shifts text).
+    // Skipped for `asChild` since Slot requires a single child.
+    loading?: boolean;
   }) {
   const Comp = asChild ? Slot.Root : 'button';
+  const showSpinnerSlot = loading !== undefined && !asChild;
 
   return (
     <Comp
@@ -65,10 +74,30 @@ function Button({
       className={cn(
         buttonVariants({ variant, size }),
         touchTarget && TOUCH_TARGET_44,
+        showSpinnerSlot && 'relative',
         className,
       )}
+      disabled={disabled || loading}
+      aria-busy={loading || undefined}
       {...props}
-    />
+    >
+      {showSpinnerSlot ? (
+        <>
+          {children}
+          <span
+            aria-hidden
+            className={cn(
+              'pointer-events-none absolute inset-y-0 right-3 flex items-center transition-opacity duration-200',
+              loading ? 'opacity-100' : 'opacity-0',
+            )}
+          >
+            <Loader2 className={cn('size-[1.125rem]', loading && 'animate-spin')} />
+          </span>
+        </>
+      ) : (
+        children
+      )}
+    </Comp>
   );
 }
 

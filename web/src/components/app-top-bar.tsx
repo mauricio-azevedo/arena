@@ -2,6 +2,7 @@
 
 import type { ReactNode } from 'react';
 import { ArrowLeft } from 'lucide-react';
+import { AppHeaderShell } from '@/components/app-header-shell';
 import { Button } from '@/components/ui/button';
 import { TypographySmall } from '@/components/ui/typography';
 import { useSafeNavigation, type BackBehavior } from '@/providers/navigation-provider';
@@ -22,9 +23,7 @@ export function AppTopBar({ title, back, trailing }: AppTopBarProps) {
   const { safeBack } = useSafeNavigation();
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50 px-4 pb-3 pt-[max(1.25rem,env(safe-area-inset-top))]">
-      <div className="pointer-events-none absolute inset-0 bg-background/40 backdrop-blur-xs [-webkit-mask-image:linear-gradient(to_bottom,black_60%,transparent)] [mask-image:linear-gradient(to_bottom,black_60%,transparent)]" />
-
+    <AppHeaderShell>
       <div className="relative mx-auto grid h-11 w-full max-w-md grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center">
         <div className="min-w-0 justify-self-start">
           {back && (
@@ -40,10 +39,14 @@ export function AppTopBar({ title, back, trailing }: AppTopBarProps) {
           )}
         </div>
 
-        {title ? <TypographySmall className="truncate">{title}</TypographySmall> : <span aria-hidden="true" />}
+        {title ? (
+          <TypographySmall className="truncate">{title}</TypographySmall>
+        ) : (
+          <span aria-hidden="true" />
+        )}
 
         <div className="min-w-0 justify-self-end">{trailing}</div>
       </div>
-    </header>
+    </AppHeaderShell>
   );
 }

@@ -130,4 +130,11 @@ create(@Param('groupId') groupId: string, @CurrentUser() user: AuthUser,
 
 Routes are use-case oriented (`GET /me/profile/summary`), never UI-shaped. No
 global `/api` prefix.
+
+---
+
+The **Code Quality Baseline** in `AGENTS.md` applies here too: reuse the existing
+service/helper instead of a parallel copy, extract on real reuse ("local by default,
+shared by necessity" — `code-organization.md`), and don't duplicate cross-cutting
+logic (friendly-error mapping, token handling) across modules.
 </content>

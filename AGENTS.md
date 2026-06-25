@@ -72,3 +72,45 @@ Before shipping UI/UX, confirm:
 6. Navigation feels natural.
 7. Error and success states are clear and actionable.
 8. The result feels ready to ship without the user babysitting every detail.
+
+---
+
+# Arena — Code Quality Baseline
+
+The product bar above applies to the code, too. Reuse, consistency, and completeness are the
+floor, not an upgrade — never something the user should have to ask for. Before adding code, ask:
+
+> Would a mature codebase merge this?
+
+If not clearly yes, revise it before showing it. The recurring failure is shipping the easy half:
+the second hand-rolled copy of something that already exists, or a component that only styles the
+happy path. Hold yourself to:
+
+- **Don't ship the second copy.** If the markup or logic already exists — or you're about to write
+  it a second time — reach for the existing primitive or extract one. Match the established pattern
+  instead of inventing a one-off next to it. One header action bar, one field, one submit flow.
+- **Ship every state.** A shared component owns all the states it can be in — error, loading,
+  empty, disabled, busy — not just the valid case. A field that styles only valid input, or a
+  submit with no busy/error path, is unfinished. Build the error/empty/loading in once, in the
+  shared piece, so every caller gets it for free.
+- **Single-source derived UI.** Anything derived or repeated — labels, badges, avatars, a field's
+  error treatment — lives in one helper/primitive, never re-inlined per screen. (See
+  `frontend-conventions.md` §9.)
+- **Extract on real reuse, not speculation.** Promote a helper/component on the second or third
+  real use, not preemptively — "local by default, shared by necessity" (`code-organization.md`).
+  DRY is about removing real duplication, not building frameworks for one caller.
+- **You shouldn't need to be asked.** Treat DRY, consistency, and complete states as the minimum
+  bar — apply them by default, the same way you wouldn't ship a broken layout.
+
+## Quick checklist
+
+Before finishing code, confirm:
+
+1. This is the only copy of this markup/logic — nothing existing was duplicated.
+2. The component handles every state it has: error, loading, empty, disabled, busy.
+3. It reuses the existing primitive/pattern instead of a parallel one-off.
+4. Derived or repeated UI is single-sourced.
+5. No premature abstraction — nothing was "shared" for a single caller.
+
+Known consistency debt to fold in when you touch the relevant files lives in
+`docs/engineering/code-quality-backlog.md`.

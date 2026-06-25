@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { AppHeaderShell } from '@/components/app-header-shell';
 import { Button } from '@/components/ui/button';
 import { Meta, Title } from '@/components/ui/text';
 import { getMe } from '@/features/auth/api/auth.api';
@@ -47,11 +48,7 @@ export function HomeHeader() {
   }, []);
 
   return (
-    // Mesma casca do AppTopBar (fixed + blur + safe-area + linha h-11) pra a posição
-    // e a altura baterem com o header da tela de grupo.
-    <header className="fixed inset-x-0 top-0 z-50 px-4 pb-3 pt-[max(1.25rem,env(safe-area-inset-top))]">
-      <div className="pointer-events-none absolute inset-0 bg-background/40 backdrop-blur-xs [-webkit-mask-image:linear-gradient(to_bottom,black_60%,transparent)] [mask-image:linear-gradient(to_bottom,black_60%,transparent)]" />
-
+    <AppHeaderShell>
       <div className="relative mx-auto flex h-11 w-full max-w-md items-center justify-between gap-base leading-tight">
         <div className="min-w-0">
           <Meta className="block text-muted-foreground">{isLoggedIn ? greeting() : 'Olá,'}</Meta>
@@ -71,6 +68,6 @@ export function HomeHeader() {
           </Button>
         )}
       </div>
-    </header>
+    </AppHeaderShell>
   );
 }
