@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Plus, UserPlus } from 'lucide-react';
+import { Plus, UserPlus, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Body, Heading, Label, Title } from '@/components/ui/text';
@@ -126,7 +126,11 @@ function GroupsEmptyState({ isLoggedIn }: { isLoggedIn: boolean }) {
   return (
     <div className="flex flex-col items-center px-4 pt-2 text-center">
       <div className="flex size-20 items-center justify-center rounded-full bg-surface shadow-hairline">
-        <UserPlus className="size-8 text-faint-foreground" strokeWidth={1.7} aria-hidden />
+        {isLoggedIn ? (
+          <UserPlus className="size-8 text-faint-foreground" strokeWidth={1.7} aria-hidden />
+        ) : (
+          <Users className="size-8 text-faint-foreground" strokeWidth={1.7} aria-hidden />
+        )}
       </div>
       <Title className="mt-5">
         {isLoggedIn ? 'Nenhum grupo ainda' : 'Entre pra ver seus grupos'}
@@ -145,14 +149,9 @@ function GroupsEmptyState({ isLoggedIn }: { isLoggedIn: boolean }) {
             </Link>
           </Button>
         ) : (
-          <>
-            <Button size="lg" onClick={() => open({ view: 'login' })}>
-              Entrar
-            </Button>
-            <Button size="lg" variant="secondary" onClick={() => open({ view: 'signup' })}>
-              Criar conta
-            </Button>
-          </>
+          <Button size="lg" onClick={() => open({ view: 'login' })}>
+            Entrar
+          </Button>
         )}
       </div>
     </div>
