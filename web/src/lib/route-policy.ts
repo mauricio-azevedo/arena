@@ -8,10 +8,6 @@ export type RouteAccess =
       requiresCheck: false;
     }
   | {
-      kind: 'guest';
-      requiresCheck: true;
-    }
-  | {
       kind: 'auth';
       requiresCheck: true;
       groupId?: string;
@@ -35,24 +31,8 @@ const primaryAppChrome: RouteChromePolicy = {
   trackNavigation: true,
 };
 
-const guestChrome: RouteChromePolicy = {
-  topBar: true,
-  bottomNav: false,
-  trackNavigation: false,
-};
-
 export function getRoutePolicy(pathname: string): RoutePolicy {
   const normalizedPathname = normalizePathname(pathname);
-
-  if (normalizedPathname === '/login' || normalizedPathname === '/register') {
-    return {
-      access: {
-        kind: 'guest',
-        requiresCheck: true,
-      },
-      chrome: guestChrome,
-    };
-  }
 
   if (normalizedPathname === '/profile') {
     return {

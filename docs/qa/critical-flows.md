@@ -15,20 +15,26 @@ For each changed area:
 
 ## Authentication
 
+Login and signup are views inside one global bottom-sheet (`useAuthDrawer`), opened
+from any signed-out entry point — there are no standalone `/login` or `/register`
+screens. On success the sheet closes via a full-page navigation to the intended
+destination so every signed-out branch re-renders.
+
 ### Register
 
-- New user can create an account.
+- New user can create an account (optional nickname).
 - Duplicate email is rejected clearly.
-- Required fields are validated.
-- After register, user lands in an expected authenticated state.
+- Required fields are validated (password ≥ 6 characters).
+- After register, the auth sheet closes and the user lands in an authenticated state.
 
 ### Login
 
 - Existing user can log in.
 - Invalid credentials show a friendly error.
-- Signed-in user is redirected away from login/register screens.
-- Redirect param is respected when safe.
-- Unsafe redirect URLs are ignored.
+- Toggling between the login and signup views keeps the sheet open (no navigation).
+- After auth, the user lands on their intended destination (the screen they were on,
+  or the captured intent target) when safe.
+- Unsafe redirect/intent targets are ignored.
 
 ### Logout
 
@@ -44,7 +50,11 @@ For each changed area:
 - `/groups/:groupId/matches/new` requires group membership.
 - `/groups/:groupId/matches/:matchId/edit` requires group membership.
 - `/groups/:groupId/invite` requires admin role.
-- Signed-in users cannot access `/login` or `/register` as normal guest screens.
+- `/login` and `/register` are deep-link shims: they open the auth sheet over home
+  and replace the URL with `/` (no standalone guest screens); an already-signed-in
+  visitor just lands on home.
+- A tokenless visitor to a protected route is sent home with the auth sheet open,
+  and lands on the originally-intended route after authenticating.
 - Protected content does not flash before access checks finish.
 
 ## Groups
@@ -244,6 +254,7 @@ When a PR affects user-visible behavior, include a validation section like:
 
 ```md
 ## Validation
+
 - [ ] Auth flow checked
 - [ ] Main changed flow checked
 - [ ] Adjacent navigation checked

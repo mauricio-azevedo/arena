@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { getMyGroups } from '@/features/groups/api/groups.api';
 import { acceptInvite } from '@/features/invites/api/invites.api';
+import { useAuthDrawer } from '@/features/auth/auth-drawer-provider';
 import { getAccessToken } from '@/lib/auth';
 
 type Props = {
@@ -16,6 +17,7 @@ type Props = {
 
 export function InviteAcceptClient({ invite }: Props) {
   const router = useRouter();
+  const { open } = useAuthDrawer();
 
   const [authToken, setAuthToken] = useState<string | null>(null);
   const [isCheckingMembership, setIsCheckingMembership] = useState(true);
@@ -95,18 +97,21 @@ export function InviteAcceptClient({ invite }: Props) {
               </p>
 
               <div className="grid grid-cols-2 gap-2">
-                <Button asChild>
-                  <Link href={`/login?redirect=${encodeURIComponent(`/invites/${invite.token}`)}`}>
-                    Entrar
-                  </Link>
+                <Button
+                  onClick={() =>
+                    open({ view: 'login', intent: { redirectPath: `/invites/${invite.token}` } })
+                  }
+                >
+                  Entrar
                 </Button>
 
-                <Button asChild variant="outline">
-                  <Link
-                    href={`/register?redirect=${encodeURIComponent(`/invites/${invite.token}`)}`}
-                  >
-                    Criar conta
-                  </Link>
+                <Button
+                  variant="outline"
+                  onClick={() =>
+                    open({ view: 'signup', intent: { redirectPath: `/invites/${invite.token}` } })
+                  }
+                >
+                  Criar conta
                 </Button>
               </div>
             </div>

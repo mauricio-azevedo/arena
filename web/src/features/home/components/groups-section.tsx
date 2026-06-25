@@ -8,6 +8,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Body, Heading, Label, Title } from '@/components/ui/text';
 import { getAllGroups } from '@/features/groups/api/groups.api';
 import type { GroupHomeCard } from '@/features/groups/types/group-home.type';
+import { useAuthDrawer } from '@/features/auth/auth-drawer-provider';
 import { getAccessToken } from '@/lib/auth';
 import { cn } from '@/lib/utils';
 import { HomeGroupCard } from './home-group-card';
@@ -120,6 +121,8 @@ export function GroupsSection({
 }
 
 function GroupsEmptyState({ isLoggedIn }: { isLoggedIn: boolean }) {
+  const { open } = useAuthDrawer();
+
   return (
     <div className="flex flex-col items-center px-4 pt-2 text-center">
       <div className="flex size-20 items-center justify-center rounded-full bg-surface shadow-hairline">
@@ -143,11 +146,11 @@ function GroupsEmptyState({ isLoggedIn }: { isLoggedIn: boolean }) {
           </Button>
         ) : (
           <>
-            <Button asChild size="lg">
-              <Link href="/login">Entrar</Link>
+            <Button size="lg" onClick={() => open({ view: 'login' })}>
+              Entrar
             </Button>
-            <Button asChild size="lg" variant="secondary">
-              <Link href="/register">Criar conta</Link>
+            <Button size="lg" variant="secondary" onClick={() => open({ view: 'signup' })}>
+              Criar conta
             </Button>
           </>
         )}

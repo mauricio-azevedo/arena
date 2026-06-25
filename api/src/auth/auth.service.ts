@@ -31,11 +31,15 @@ export class AuthService {
     lastName: string;
     email: string;
     password: string;
+    nickname?: string;
   }) {
     const firstName = body.firstName?.trim();
     const lastName = body.lastName?.trim();
     const email = body.email?.trim().toLowerCase();
     const password = body.password;
+    // Optional: an empty/whitespace nickname stays null so it never shadows the
+    // "First Last" display name downstream.
+    const nickname = body.nickname?.trim() || null;
 
     if (!firstName || !lastName || !email || !password) {
       throw new BadRequestException('All fields are required');
@@ -59,6 +63,7 @@ export class AuthService {
       data: {
         firstName,
         lastName,
+        nickname,
         email,
         passwordHash,
         avatarColor: pickDefaultAvatarColor(email),

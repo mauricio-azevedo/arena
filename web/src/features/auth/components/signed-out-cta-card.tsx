@@ -1,15 +1,17 @@
-import Link from 'next/link';
+'use client';
+
 import type { LucideIcon } from 'lucide-react';
 import { LogIn } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { buildAuthHref } from '@/features/auth/helpers/auth-redirect.helper';
+import { useAuthDrawer, type AuthDrawerView } from '@/features/auth/auth-drawer-provider';
 
 type AuthPrimaryAction = 'login' | 'register';
 
 type SignedOutCtaCardProps = {
   title: string;
   description: string;
+  // Where to land after authenticating (e.g. the screen this card sits on).
   redirectPath: string;
   primaryAction: AuthPrimaryAction;
   icon?: LucideIcon;
@@ -22,12 +24,14 @@ export function SignedOutCtaCard({
   primaryAction,
   icon: Icon = LogIn,
 }: SignedOutCtaCardProps) {
-  const loginHref = buildAuthHref('/login', redirectPath);
-  const registerHref = buildAuthHref('/register', redirectPath);
-  const primaryHref = primaryAction === 'login' ? loginHref : registerHref;
-  const secondaryHref = primaryAction === 'login' ? registerHref : loginHref;
+  const { open } = useAuthDrawer();
+
+  const primaryView: AuthDrawerView = primaryAction === 'login' ? 'login' : 'signup';
+  const secondaryView: AuthDrawerView = primaryAction === 'login' ? 'signup' : 'login';
   const primaryLabel = primaryAction === 'login' ? 'Entrar' : 'Criar conta';
   const secondaryLabel = primaryAction === 'login' ? 'Criar conta' : 'Entrar';
+
+  const openView = (view: AuthDrawerView) => open({ view, intent: { redirectPath } });
 
   return (
     <Card className="bg-gradient-to-br from-card via-card to-primary/10">
@@ -42,12 +46,16 @@ export function SignedOutCtaCard({
         </div>
 
         <div className="grid grid-cols-2 gap-2">
-          <Button asChild className="rounded-full">
-            <Link href={primaryHref}>{primaryLabel}</Link>
+          <Button className="rounded-full" onClick={() => openView(primaryView)}>
+            {primaryLabel}
           </Button>
 
-          <Button asChild variant="outline" className="rounded-full">
-            <Link href={secondaryHref}>{secondaryLabel}</Link>
+          <Button
+            variant="outline"
+            className="rounded-full"
+            onClick={() => openView(secondaryView)}
+          >
+            {secondaryLabel}
           </Button>
         </div>
       </CardContent>

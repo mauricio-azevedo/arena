@@ -22,16 +22,12 @@ export function CreateGroupForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    const storedToken = getAccessToken();
-
-    if (!storedToken) {
-      router.replace('/login?redirect=/groups/new');
-      return;
-    }
-
-    setToken(storedToken);
+    // The /groups/new route is auth-gated by the AppShell guard, which sends a
+    // tokenless visitor home and opens the login sheet before this form mounts —
+    // so by the time we run there's a token. We still read it for the submit call.
+    setToken(getAccessToken());
     setIsCheckingToken(false);
-  }, [router]);
+  }, []);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();

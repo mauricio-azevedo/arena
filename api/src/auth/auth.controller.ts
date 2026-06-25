@@ -13,6 +13,7 @@ export class AuthController {
       lastName: string;
       email: string;
       password: string;
+      nickname?: string;
     },
   ) {
     return this.authService.register(body);
