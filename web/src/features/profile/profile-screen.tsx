@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Meta } from '@/components/ui/text';
+import { Dot, Meta } from '@/components/ui/text';
 import { getAccessToken } from '@/lib/auth';
 import { APP_VERSION } from '@/lib/app-version';
 import { getProfileSummary } from './api/profile.api';
@@ -139,7 +139,9 @@ export function ProfileScreen({
 
       {isOwn && (
         <Meta className="block pt-2 text-center text-faint-foreground">
-          Arena · versão {APP_VERSION}
+          Arena
+          <Dot />
+          versão {APP_VERSION}
         </Meta>
       )}
 

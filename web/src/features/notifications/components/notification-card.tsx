@@ -1,7 +1,8 @@
+import { Fragment } from 'react';
 import Link from 'next/link';
 import { ArrowUpToLine, Check, UserPlus, X, type LucideIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Label, Meta } from '@/components/ui/text';
+import { Dot, Label, Meta } from '@/components/ui/text';
 import { cn } from '@/lib/utils';
 import { formatFeedItemTime } from '@/features/feed/helpers/feed-item-time.helper';
 import type { AppNotification, NotificationType } from '@/types/api';
@@ -24,9 +25,11 @@ export function NotificationCard({ notification }: { notification: AppNotificati
   const resolved = notification.acted;
   const unread = !notification.read && !resolved;
 
-  const metaLine = [formatFeedItemTime(notification.createdAt), meta, resolved ? 'resolvido' : null]
-    .filter(Boolean)
-    .join(' · ');
+  const metaParts = [
+    formatFeedItemTime(notification.createdAt),
+    meta,
+    resolved ? 'resolvido' : null,
+  ].filter(Boolean);
 
   return (
     <div
@@ -53,7 +56,16 @@ export function NotificationCard({ notification }: { notification: AppNotificati
         <div className="min-w-0 flex-1 pr-4">
           {title && <Label className="block text-foreground">{title}</Label>}
           {body && <Meta className="mt-1 block leading-relaxed text-muted-foreground">{body}</Meta>}
-          {metaLine && <Meta className="mt-2 block text-faint-foreground">{metaLine}</Meta>}
+          {metaParts.length > 0 && (
+            <Meta className="mt-2 block text-faint-foreground">
+              {metaParts.map((part, index) => (
+                <Fragment key={index}>
+                  {index > 0 && <Dot />}
+                  {part}
+                </Fragment>
+              ))}
+            </Meta>
+          )}
         </div>
       </div>
 

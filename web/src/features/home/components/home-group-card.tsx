@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { ArrowDown, ArrowUp } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
-import { Label, Meta, Overline, Stat } from '@/components/ui/text';
+import { Dot, Label, Meta, Overline, Stat } from '@/components/ui/text';
 import type { GroupHomeCard } from '@/features/groups/types/group-home.type';
 import { hueFromId } from '@/features/weekly-highlights/helpers/highlight-style';
 import { cn } from '@/lib/utils';
@@ -73,7 +73,7 @@ export function HomeGroupCard({ card }: { card: GroupHomeCard }) {
             <Label className="block truncate">{card.group.name}</Label>
             <Meta className="mt-tight block text-muted-foreground">
               <span className="text-foreground">{card.group.membersCount}</span> membros
-              <span className="mx-tight inline-block size-[3px] rounded-full bg-faint-foreground align-middle" />
+              <Dot />
               <span className="text-foreground">{card.group.matchesCount}</span> partidas
             </Meta>
             {lastMatch ? (

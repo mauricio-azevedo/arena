@@ -1,7 +1,7 @@
 import { ArrowDown, ArrowUp } from 'lucide-react';
 import type { GroupMember, RankingMovement } from '@/types/api';
 import { Card, CardContent } from '@/components/ui/card';
-import { Body, Label, Meta, Overline, Stat } from '@/components/ui/text';
+import { Body, Dot, Label, Meta, Overline, Stat } from '@/components/ui/text';
 import { MemberName } from '@/features/members/components/member-name';
 import { resolveMemberName } from '@/lib/member-name';
 import { cn } from '@/lib/utils';
@@ -151,7 +151,8 @@ function StatsLine({ member }: { member: GroupMember }) {
 
   return (
     <Meta className="text-faint-foreground">
-      <span className="text-muted-foreground">{stats.matchesCount}</span> jogos ·{' '}
+      <span className="text-muted-foreground">{stats.matchesCount}</span> jogos
+      <Dot />
       <span className="text-muted-foreground">{winPct}%</span> vit.
     </Meta>
   );

@@ -1,6 +1,6 @@
 import { cn } from '@/lib/utils';
 import { Card, CardContent } from '@/components/ui/card';
-import { Heading, Label, Meta, Stat } from '@/components/ui/text';
+import { Dot, Heading, Label, Meta, Stat } from '@/components/ui/text';
 import { recentFormChip } from '../helpers/recent-form.helper';
 import type { ProfileSummaryStats } from '../types/profile-summary-stats.type';
 
@@ -39,7 +39,8 @@ export function ProfilePerformance({ stats }: { stats: ProfileSummaryStats }) {
           )}
 
           <Meta className="block text-center text-muted-foreground">
-            <span className="font-bold text-foreground">{matchesPlayed}</span> partidas ·{' '}
+            <span className="font-bold text-foreground">{matchesPlayed}</span> partidas
+            <Dot />
             <span className="font-bold text-brand">{winRate}%</span> aproveitamento
           </Meta>
 

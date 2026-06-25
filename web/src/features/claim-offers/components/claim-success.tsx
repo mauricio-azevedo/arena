@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Body, Label, Meta, Title } from '@/components/ui/text';
+import { Body, Dot, Label, Meta, Title } from '@/components/ui/text';
 import type { ClaimMembership, ClaimStubSummary } from '@/types/api';
 import { PersonAvatar } from './claim-shared';
 
@@ -36,8 +36,15 @@ export function ClaimSuccess({ stub, membership, groupName }: ClaimSuccessProps)
         <div className="min-w-0 flex-1 text-left">
           <Label className="block truncate text-foreground">{claimedName}</Label>
           <Meta className="mt-0.5 block text-muted-foreground">
-            {stub.rank ? `#${stub.rank} · ` : ''}
-            {Math.round(stub.rating)} pts · {stub.matchesCount} partidas
+            {stub.rank ? (
+              <>
+                #{stub.rank}
+                <Dot />
+              </>
+            ) : null}
+            {Math.round(stub.rating)} pts
+            <Dot />
+            {stub.matchesCount} partidas
           </Meta>
         </div>
       </div>
