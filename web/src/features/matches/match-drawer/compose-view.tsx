@@ -40,8 +40,14 @@ export function ComposeView({
 
       <DrawerFooter className="gap-2.5 pt-2.5 pb-[30px] shadow-[0_-1px_0_var(--surface)]">
         {error && <Meta className="text-center text-danger">{error}</Meta>}
-        <Button size="lg" className="w-full" disabled={!canSave || isSubmitting} onClick={onSave}>
-          {isSubmitting ? 'Salvando…' : saveLabel}
+        <Button
+          size="lg"
+          className="w-full"
+          loading={isSubmitting}
+          disabled={!canSave}
+          onClick={onSave}
+        >
+          {saveLabel}
         </Button>
       </DrawerFooter>
     </div>

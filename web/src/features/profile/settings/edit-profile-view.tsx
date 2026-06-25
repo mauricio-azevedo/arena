@@ -5,8 +5,10 @@ import { Check } from 'lucide-react';
 import { AVATAR_COLORS } from '@/lib/avatar-color';
 import { setAccessToken } from '@/lib/auth';
 import { MemberAvatar } from '@/components/ui/member-avatar';
-import { DrawerActionHeader } from '@/components/ui/drawer';
+import { Button } from '@/components/ui/button';
+import { DrawerActionHeader, DrawerFooter } from '@/components/ui/drawer';
 import { SheetField } from '@/components/ui/sheet-field';
+import { useToast } from '@/components/ui/toast';
 import { Meta } from '@/components/ui/text';
 import { updateProfile, type UpdateProfileInput } from '../api/profile.api';
 import type { ProfileUser } from '../types/profile-user.type';
@@ -51,6 +53,7 @@ export function EditProfileView({
   const [avatarColor, setAvatarColor] = useState(initial.avatarColor);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
+  const { showToast } = useToast();
 
   const trimmed = {
     firstName: firstName.trim(),
@@ -97,9 +100,10 @@ export function EditProfileView({
         email: result.user.email,
         avatarColor: result.user.avatarColor,
       });
-      onBack();
+      showToast('Perfil atualizado');
     } catch (caughtError) {
       setError(friendlyError(caughtError));
+    } finally {
       setIsSubmitting(false);
     }
   }
@@ -109,12 +113,6 @@ export function EditProfileView({
       <DrawerActionHeader
         left={{ kind: 'back', onClick: onBack, disabled: isSubmitting }}
         title="Editar perfil"
-        right={{
-          kind: 'save',
-          onClick: handleSave,
-          disabled: !isValid || !hasChanges || isSubmitting,
-          busy: isSubmitting,
-        }}
       />
 
       <div className="min-h-0 flex-1 overflow-y-auto px-4 pt-2 pb-8 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
@@ -195,9 +193,20 @@ export function EditProfileView({
         <Meta className="mt-snug block px-1.5 leading-relaxed text-faint-foreground">
           O apelido é como você aparece para outros jogadores nos grupos.
         </Meta>
-
-        {error && <Meta className="mt-comfortable block text-center text-danger">{error}</Meta>}
       </div>
+
+      <DrawerFooter className="gap-2.5 pt-2.5 pb-[30px] shadow-[0_-1px_0_var(--surface)]">
+        {error && <Meta className="text-center text-danger">{error}</Meta>}
+        <Button
+          size="lg"
+          className="w-full"
+          loading={isSubmitting}
+          disabled={!isValid || !hasChanges}
+          onClick={handleSave}
+        >
+          Salvar
+        </Button>
+      </DrawerFooter>
     </div>
   );
 }

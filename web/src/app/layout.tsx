@@ -4,6 +4,7 @@ import { Plus_Jakarta_Sans } from 'next/font/google';
 import './globals.css';
 import { cn } from '@/lib/utils';
 import { NavigationProvider } from '@/providers/navigation-provider';
+import { ToastProvider } from '@/components/ui/toast';
 
 // The single Arena face — humanist geometric sans, from running text (500) to
 // the hero rank and figures (800). Per the type audit, there is no second face.
@@ -47,17 +48,11 @@ export default function RootLayout({
   children: ReactNode;
 }>) {
   return (
-    <html
-      lang="pt-BR"
-      className={cn(
-        'h-full',
-        'antialiased',
-        'font-sans',
-        plusJakarta.variable,
-      )}
-    >
+    <html lang="pt-BR" className={cn('h-full', 'antialiased', 'font-sans', plusJakarta.variable)}>
       <body className="min-h-full flex flex-col dark">
-        <NavigationProvider>{children}</NavigationProvider>
+        <ToastProvider>
+          <NavigationProvider>{children}</NavigationProvider>
+        </ToastProvider>
       </body>
     </html>
   );

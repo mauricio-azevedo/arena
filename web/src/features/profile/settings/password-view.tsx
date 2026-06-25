@@ -1,9 +1,10 @@
 'use client';
 
 import { FormEvent, useMemo, useState } from 'react';
-import { CheckCircle2 } from 'lucide-react';
-import { DrawerActionHeader } from '@/components/ui/drawer';
+import { Button } from '@/components/ui/button';
+import { DrawerActionHeader, DrawerFooter } from '@/components/ui/drawer';
 import { SheetPasswordField } from '@/components/ui/sheet-field';
+import { useToast } from '@/components/ui/toast';
 import { Meta } from '@/components/ui/text';
 import { apiRequest } from '@/lib/api-client';
 import { setAccessToken } from '@/lib/auth';
@@ -12,7 +13,7 @@ const MIN_PASSWORD_LENGTH = 6;
 const MAX_PASSWORD_BYTES = 72;
 
 // Change-password as a view inside the settings sheet: a back chevron returns to
-// the menu; a successful change confirms inline (you stay until you go back).
+// the menu; a successful change clears the fields and confirms with a toast.
 export function PasswordView({ token, onBack }: { token: string; onBack: () => void }) {
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -21,8 +22,8 @@ export function PasswordView({ token, onBack }: { token: string; onBack: () => v
   // failures fall back to a general message under the form.
   const [currentPasswordError, setCurrentPasswordError] = useState('');
   const [error, setError] = useState('');
-  const [successMessage, setSuccessMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { showToast } = useToast();
 
   const validation = useMemo(
     () => validatePasswordForm(currentPassword, newPassword, confirmPassword),
@@ -39,7 +40,6 @@ export function PasswordView({ token, onBack }: { token: string; onBack: () => v
   function handleFieldChange(setValue: (value: string) => void, value: string) {
     setError('');
     setCurrentPasswordError('');
-    setSuccessMessage('');
     setValue(value);
   }
 
@@ -49,7 +49,6 @@ export function PasswordView({ token, onBack }: { token: string; onBack: () => v
 
     setError('');
     setCurrentPasswordError('');
-    setSuccessMessage('');
 
     if (validation.blockingMessage) {
       setError(validation.blockingMessage);
@@ -72,7 +71,7 @@ export function PasswordView({ token, onBack }: { token: string; onBack: () => v
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
-      setSuccessMessage('Senha atualizada com sucesso.');
+      showToast('Senha alterada');
     } catch (caughtError) {
       const message = caughtError instanceof Error ? caughtError.message : '';
       if (/invalid current password/i.test(message)) {
@@ -90,12 +89,6 @@ export function PasswordView({ token, onBack }: { token: string; onBack: () => v
       <DrawerActionHeader
         left={{ kind: 'back', onClick: onBack, disabled: isSubmitting }}
         title="Alterar senha"
-        right={{
-          kind: 'save',
-          onClick: () => handleSave(),
-          disabled: !canSubmit,
-          busy: isSubmitting,
-        }}
       />
 
       <form
@@ -135,18 +128,23 @@ export function PasswordView({ token, onBack }: { token: string; onBack: () => v
           />
         </div>
 
-        {error && <Meta className="mt-comfortable block text-center text-danger">{error}</Meta>}
-
-        {successMessage && (
-          <Meta className="mt-comfortable flex items-center justify-center gap-snug text-success">
-            <CheckCircle2 className="size-4 shrink-0" aria-hidden />
-            {successMessage}
-          </Meta>
-        )}
-
-        {/* Submit on Enter; the header "Salvar" is the primary trigger. */}
+        {/* Submit on Enter; the footer "Salvar" is the primary trigger. */}
         <button type="submit" className="sr-only" tabIndex={-1} aria-hidden disabled={!canSubmit} />
       </form>
+
+      <DrawerFooter className="gap-2.5 pt-2.5 pb-[30px] shadow-[0_-1px_0_var(--surface)]">
+        {error && <Meta className="text-center text-danger">{error}</Meta>}
+        <Button
+          type="button"
+          size="lg"
+          className="w-full"
+          loading={isSubmitting}
+          disabled={!canSubmit}
+          onClick={() => handleSave()}
+        >
+          Salvar
+        </Button>
+      </DrawerFooter>
     </div>
   );
 }
