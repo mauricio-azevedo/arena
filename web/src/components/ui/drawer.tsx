@@ -95,11 +95,18 @@ function DrawerHeader({ className, ...props }: React.ComponentProps<'div'>) {
   );
 }
 
-function DrawerFooter({ className, ...props }: React.ComponentProps<'div'>) {
+// `pinned` (default) sticks the footer to the sheet bottom (mt-auto), as a sibling
+// of the scroll area. `pinned={false}` makes it a normal in-flow block to drop at
+// the end of the scroll content — so the action area scrolls with the fields.
+function DrawerFooter({
+  className,
+  pinned = true,
+  ...props
+}: React.ComponentProps<'div'> & { pinned?: boolean }) {
   return (
     <div
       data-slot="drawer-footer"
-      className={cn('mt-auto flex shrink-0 flex-col gap-2 px-4', className)}
+      className={cn('flex flex-col gap-2 px-4', pinned && 'mt-auto shrink-0', className)}
       {...props}
     />
   );

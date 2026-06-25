@@ -62,12 +62,12 @@ export function AuthSignupView({
   }
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col">
+    <div className="flex min-h-0 flex-col">
       <DrawerActionHeader title="Criar conta" />
 
       <form
         onSubmit={handleSubmit}
-        className="min-h-0 flex-1 overflow-y-auto px-4 pt-2 pb-8 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        className="min-h-0 overflow-y-auto px-4 pt-2 pb-[max(env(safe-area-inset-bottom),0.75rem)] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
         <div className="overflow-hidden rounded-card bg-surface shadow-hairline">
           <div className="flex items-stretch">
@@ -126,32 +126,32 @@ export function AuthSignupView({
           O apelido é como você aparece para outros jogadores nos grupos.
         </Meta>
 
-        <button
-          type="button"
-          onClick={onSwitchToLogin}
-          disabled={isSubmitting}
-          className="mt-5 block w-full text-center text-sm font-bold text-muted-foreground transition-opacity active:opacity-60 disabled:opacity-40"
-        >
-          Já tem conta? <span className="text-brand">Entrar</span>
-        </button>
+        {/* In-flow action area (not pinned), so it never crowds the keyboard. */}
+        <DrawerFooter pinned={false} className="gap-2.5 px-0 pt-5">
+          {error && <Meta className="text-center text-danger">{error}</Meta>}
+          <Button
+            type="button"
+            size="lg"
+            className="w-full"
+            loading={isSubmitting}
+            disabled={!canSubmit}
+            onClick={() => handleSubmit()}
+          >
+            Criar conta
+          </Button>
+          <button
+            type="button"
+            onClick={onSwitchToLogin}
+            disabled={isSubmitting}
+            className="text-center text-sm font-bold text-muted-foreground transition-opacity active:opacity-60 disabled:opacity-40"
+          >
+            Já tem conta? <span className="text-brand">Entrar</span>
+          </button>
+        </DrawerFooter>
 
-        {/* Submit on Enter; the footer "Criar conta" is the primary trigger. */}
+        {/* Submit on Enter; the "Criar conta" button is the primary trigger. */}
         <button type="submit" className="sr-only" tabIndex={-1} aria-hidden disabled={!canSubmit} />
       </form>
-
-      <DrawerFooter className="gap-2.5 pt-2.5 pb-[30px] shadow-[0_-1px_0_var(--surface)]">
-        {error && <Meta className="text-center text-danger">{error}</Meta>}
-        <Button
-          type="button"
-          size="lg"
-          className="w-full"
-          loading={isSubmitting}
-          disabled={!canSubmit}
-          onClick={() => handleSubmit()}
-        >
-          Criar conta
-        </Button>
-      </DrawerFooter>
     </div>
   );
 }
