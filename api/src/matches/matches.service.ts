@@ -11,13 +11,19 @@ import {
 } from '../common/member-display-name';
 import { PrismaService } from '../prisma/prisma.service';
 import type { Prisma } from '../generated/prisma/client';
+import { MembersService } from '../members/members.service';
 import { ProcessingJobWriterService } from '../processing/processing-job-writer.service';
 
-type MatchBody = {
-  teamAPlayer1Id: string;
-  teamAPlayer2Id: string;
-  teamBPlayer1Id: string;
-  teamBPlayer2Id: string;
+// A match player is either an existing group member or a brand-new guest named
+// inline. Stubs for the latter are created inside the match transaction, so they
+// only ever exist when the match they belong to does.
+export type MatchPlayerInput = { memberId: string } | { name: string };
+
+export type MatchBody = {
+  teamAPlayer1: MatchPlayerInput;
+  teamAPlayer2: MatchPlayerInput;
+  teamBPlayer1: MatchPlayerInput;
+  teamBPlayer2: MatchPlayerInput;
   gamesA: number;
   gamesB: number;
   playedAt?: string;
@@ -41,6 +47,7 @@ const RATING_ALGORITHM = 'BEACH_ELO_V1';
 export class MatchesService {
   constructor(
     private readonly prisma: PrismaService,
+    private readonly members: MembersService,
     private readonly processingJobs: ProcessingJobWriterService,
   ) {}
 
@@ -51,7 +58,8 @@ export class MatchesService {
       await this.ensureGroupExists(tx, groupId);
       await this.ensureActiveGroupMember(tx, groupId, userId);
 
-      const membersById = await this.getMembersById(tx, groupId, body);
+      const playerIds = await this.resolvePlayerIds(tx, groupId, body);
+      const membersById = await this.getMembersById(tx, groupId, playerIds);
       const playedAt = this.parsePlayedAt(body.playedAt);
       const match = await tx.match.create({
         data: {
@@ -73,7 +81,7 @@ export class MatchesService {
             create: [
               this.buildPlayerCreate(
                 groupId,
-                body.teamAPlayer1Id,
+                playerIds[0],
                 membersById,
                 MatchTeam.TEAM_A,
                 1,
@@ -81,7 +89,7 @@ export class MatchesService {
               ),
               this.buildPlayerCreate(
                 groupId,
-                body.teamAPlayer2Id,
+                playerIds[1],
                 membersById,
                 MatchTeam.TEAM_A,
                 2,
@@ -89,7 +97,7 @@ export class MatchesService {
               ),
               this.buildPlayerCreate(
                 groupId,
-                body.teamBPlayer1Id,
+                playerIds[2],
                 membersById,
                 MatchTeam.TEAM_B,
                 1,
@@ -97,7 +105,7 @@ export class MatchesService {
               ),
               this.buildPlayerCreate(
                 groupId,
-                body.teamBPlayer2Id,
+                playerIds[3],
                 membersById,
                 MatchTeam.TEAM_B,
                 2,
@@ -138,7 +146,8 @@ export class MatchesService {
         throw new NotFoundException('Match not found');
       }
 
-      const membersById = await this.getMembersById(tx, groupId, body);
+      const playerIds = await this.resolvePlayerIds(tx, groupId, body);
+      const membersById = await this.getMembersById(tx, groupId, playerIds);
       const playedAt = this.parsePlayedAt(body.playedAt);
 
       await tx.matchPlayer.deleteMany({
@@ -165,7 +174,7 @@ export class MatchesService {
             create: [
               this.buildPlayerCreate(
                 groupId,
-                body.teamAPlayer1Id,
+                playerIds[0],
                 membersById,
                 MatchTeam.TEAM_A,
                 1,
@@ -173,7 +182,7 @@ export class MatchesService {
               ),
               this.buildPlayerCreate(
                 groupId,
-                body.teamAPlayer2Id,
+                playerIds[1],
                 membersById,
                 MatchTeam.TEAM_A,
                 2,
@@ -181,7 +190,7 @@ export class MatchesService {
               ),
               this.buildPlayerCreate(
                 groupId,
-                body.teamBPlayer1Id,
+                playerIds[2],
                 membersById,
                 MatchTeam.TEAM_B,
                 1,
@@ -189,7 +198,7 @@ export class MatchesService {
               ),
               this.buildPlayerCreate(
                 groupId,
-                body.teamBPlayer2Id,
+                playerIds[3],
                 membersById,
                 MatchTeam.TEAM_B,
                 2,
@@ -308,19 +317,33 @@ export class MatchesService {
   }
 
   private validateMatchBody(body: MatchBody) {
-    const playerIds = [
-      body.teamAPlayer1Id,
-      body.teamAPlayer2Id,
-      body.teamBPlayer1Id,
-      body.teamBPlayer2Id,
+    const slots = [
+      body.teamAPlayer1,
+      body.teamAPlayer2,
+      body.teamBPlayer1,
+      body.teamBPlayer2,
     ];
 
-    if (playerIds.some((id) => !id)) {
-      throw new BadRequestException('All members are required');
-    }
+    for (const slot of slots) {
+      const memberId =
+        slot && typeof slot === 'object' && 'memberId' in slot
+          ? slot.memberId
+          : undefined;
+      const name =
+        slot && typeof slot === 'object' && 'name' in slot
+          ? slot.name?.trim()
+          : undefined;
 
-    if (new Set(playerIds).size !== 4) {
-      throw new BadRequestException('A player cannot appear twice in a match');
+      // Each slot is exactly one of: an existing member, or a new guest name.
+      if (Boolean(memberId) === Boolean(name)) {
+        throw new BadRequestException(
+          'Each player must be an existing member or a new guest name',
+        );
+      }
+
+      if (name && name.length > 60) {
+        throw new BadRequestException('Name is too long');
+      }
     }
 
     if (body.gamesA < 0 || body.gamesB < 0 || body.gamesA + body.gamesB === 0) {
@@ -330,6 +353,46 @@ export class MatchesService {
     if (body.gamesA === body.gamesB) {
       throw new BadRequestException('A match cannot end in a draw');
     }
+  }
+
+  // Turns the four player slots into four group-member ids, creating a stub row
+  // for any slot that named a new guest. Runs inside the match transaction, so a
+  // failure anywhere downstream rolls the stubs back — they never outlive an
+  // unregistered match. Sequential on purpose: parallel writes on one tx client
+  // are unsafe.
+  private async resolvePlayerIds(
+    tx: Prisma.TransactionClient,
+    groupId: string,
+    body: MatchBody,
+  ): Promise<string[]> {
+    const slots = [
+      body.teamAPlayer1,
+      body.teamAPlayer2,
+      body.teamBPlayer1,
+      body.teamBPlayer2,
+    ];
+
+    const ids: string[] = [];
+
+    for (const slot of slots) {
+      if ('memberId' in slot && slot.memberId) {
+        ids.push(slot.memberId);
+      } else {
+        ids.push(
+          await this.members.createGuestRow(
+            tx,
+            groupId,
+            (slot as { name: string }).name,
+          ),
+        );
+      }
+    }
+
+    if (new Set(ids).size !== 4) {
+      throw new BadRequestException('A player cannot appear twice in a match');
+    }
+
+    return ids;
   }
 
   private async ensureGroupExists(
@@ -348,15 +411,8 @@ export class MatchesService {
   private async getMembersById(
     tx: Prisma.TransactionClient,
     groupId: string,
-    body: MatchBody,
+    memberIds: string[],
   ) {
-    const memberIds = [
-      body.teamAPlayer1Id,
-      body.teamAPlayer2Id,
-      body.teamBPlayer1Id,
-      body.teamBPlayer2Id,
-    ];
-
     const members = await tx.groupMember.findMany({
       where: {
         groupId,

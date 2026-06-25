@@ -215,11 +215,16 @@ export type Match = {
   players: MatchPlayer[];
 };
 
+// A match player is either an existing group member or a brand-new guest named
+// inline. The stub for a guest is created on the backend within the match
+// transaction, so it only exists once the match is actually registered.
+export type MatchPlayerInput = { memberId: string } | { name: string };
+
 export type CreateMatchInput = {
-  teamAPlayer1Id: string;
-  teamAPlayer2Id: string;
-  teamBPlayer1Id: string;
-  teamBPlayer2Id: string;
+  teamAPlayer1: MatchPlayerInput;
+  teamAPlayer2: MatchPlayerInput;
+  teamBPlayer1: MatchPlayerInput;
+  teamBPlayer2: MatchPlayerInput;
   gamesA: number;
   gamesB: number;
   playedAt?: string;

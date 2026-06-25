@@ -20,6 +20,37 @@ function initialOf(name: string) {
   return nameInitial(name);
 }
 
+// Prefix marking a guest named inline but not yet persisted. On submit, slots
+// holding a draft id send the guest's name instead of a member id; the backend
+// creates the stub atomically with the match.
+export const DRAFT_GUEST_PREFIX = 'draft:';
+
+export function isDraftGuest(memberId: string) {
+  return memberId.startsWith(DRAFT_GUEST_PREFIX);
+}
+
+// A local-only stub player: shaped as a GroupMember so it flows through the
+// roster, picker and lookup unchanged, but never touches the network until the
+// match is saved.
+export function makeDraftGuest(groupId: string, name: string): GroupMember {
+  return {
+    id: `${DRAFT_GUEST_PREFIX}${crypto.randomUUID()}`,
+    groupId,
+    userId: null,
+    displayName: name,
+    rating: 1000,
+    ratingDeviation: null,
+    ratingVolatility: null,
+    ratingMu: null,
+    ratingSigma: null,
+    ratingAlgorithm: 'BEACH_ELO_V1',
+    role: 'MEMBER',
+    leftAt: null,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+}
+
 export function resolveFromMember(member: GroupMember): ResolvedPlayer {
   const { firstName, fullName } = resolveMemberName(member);
 
