@@ -1,0 +1,54 @@
+# Code Quality Backlog
+
+Known consistency / DRY / completeness debt — the gap between today's code and the
+[Code Quality Baseline](../../AGENTS.md) (`AGENTS.md`). This is a **living, opportunistic** list:
+fold an item in when you next touch the files it names, not as a standalone refactor. Per "local by
+default, shared by necessity" (`code-organization.md`), extract a shared primitive on the second or
+third real use — several items below have already crossed that line.
+
+The two primitives built for the settings sheet are the model the rest should converge on:
+`components/ui/sheet-field.tsx` (`SheetField` / `SheetPasswordField` — a field with its error state
+built in) and `components/ui/drawer.tsx` (`DrawerActionHeader` — one header action bar).
+
+## High — real duplication or a missing user-facing state
+
+- **Inlined form fields → a card-capable shared field.** `features/auth/components/login-form.tsx`,
+  `features/auth/components/register-form.tsx`, and `features/groups/components/create-group-form.tsx`
+  hand-roll `<Label>`+`<Input>`(+`<Textarea>`) with ad-hoc error text. `SheetField` already solves
+  this for sheets; it (or a sibling) should cover card forms too, so every field gets the same
+  label / error tint / inline-alert / message treatment. (A `SheetTextarea` variant covers
+  create-group's description.)
+- **Inconsistent error UX (5 styles).** Form-level `text-destructive` `<p>` (login, register,
+  create-group, `group-invite-client`, `invite-accept-client`) vs centered `text-danger` `<Meta>`
+  (edit-profile, password, compose) vs `text-tag-warn` `<Meta>` (`claim-offer-client`,
+  `stub-claim-email-panel`, `picker-view`) vs the field-level treatment now in `SheetField`.
+  Standardize: field-level where the error maps to a field; one danger form-level fallback
+  otherwise. `text-tag-warn` is for warnings, not errors.
+- **Missing loading / error / empty states.** `features/members/member-profile-drawer.tsx` and
+  `features/claim-offers/components/claim-offer-client.tsx` show bare error text with no retry;
+  `features/groups/components/group-invite-client.tsx` lacks an initial token-loaded guard. Compare
+  the complete pattern in `features/groups/components/my-groups-list.tsx` (skeleton + error card +
+  empty state).
+
+## Medium — duplicated logic / divergent treatment
+
+- **Duplicated submit/loading/error machine (~7 forms).** The same `useState` error + `isSubmitting`
+  - try/catch/finally lives in login, register, create-group, edit-profile, password,
+    `claim-offer-client`, `stub-claim-email-panel`. Extract a `useFormSubmit` hook.
+- **Duplicated auth/token plumbing.** `getAccessToken()` → call → `setAccessToken(result.accessToken)`
+  is copy-pasted across the same forms; fold into the submit hook or a small wrapper.
+- **Two friendly-error mappers.** `friendlyError` (edit-profile-view) and `getFriendlyPasswordError`
+  (password-view) parse backend messages separately — consolidate into one mapper (API layer).
+- **Missing busy states.** e.g. `stub-claim-email-panel`'s "Remover email" button gives no spinner/
+  busy feedback while saving, unlike its sibling "Enviar convite".
+- **Real-time field guidance is one-off.** `password-view`'s `PasswordGuidance` (live, colored) is
+  the good pattern; auth/create-group only validate on submit.
+
+## Low — cosmetic / premature to share
+
+- **Settings menu `Row`** (`features/profile/settings/settings-menu-view.tsx`) is a local
+  icon+label+chevron helper. The members "Convidar" and groups rows diverge in shape/context, so
+  this is **correctly local for now** — only promote to a shared `MenuRow` when a genuinely matching
+  second use appears.
+- **Custom action buttons** (logout row, pill form buttons) use bespoke classes rather than
+  `<Button>`; revisit if a `danger` button variant is added.

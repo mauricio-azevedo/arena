@@ -130,10 +130,18 @@ export function getProfileMatches(token: string): Promise<ProfileMatchListItem[]
   UI copy derived from data the client already has; keep it in a shared frontend
   helper, not as a field on an API response (routes stay use-case-shaped, not
   UI-shaped — see `backend-conventions.md`).
+- **A shared component owns all its states.** The same single-source rule extends to
+  the field/header/row primitives: build the error, loading, empty, disabled, and busy
+  states into the shared piece (e.g. `SheetField`'s built-in error state, the one
+  `DrawerActionHeader`) so every caller gets them — don't hand-roll a near-duplicate
+  that only styles the happy path. This is the Code Quality Baseline in `AGENTS.md`;
+  open gaps are tracked in `code-quality-backlog.md`.
 
 ## 10. Product/UI quality bar
 
-Follow the bar in `AGENTS.md`: ship-ready copy, no implementation/architecture
-leaking into UI, intentional loading/empty/error states, mobile-first, elegant.
-Tooling: `npm run dev`, `npm run build`, `npm run lint`.
+Follow the bars in `AGENTS.md` — the Product/UI Quality Bar (ship-ready copy, no
+implementation/architecture leaking into UI, intentional loading/empty/error states,
+mobile-first, elegant) and the Code Quality Baseline (reuse the existing primitive,
+ship every state, single-source derived UI). Tooling: `npm run dev`, `npm run build`,
+`npm run lint`.
 </content>

@@ -16,9 +16,13 @@ The goal is not bureaucracy. The goal is to keep Arena maintainable, understanda
 
 - Does the solution follow existing architecture?
 - Does it reuse existing services, components, helpers, types, and patterns?
+- Is this the only copy of the markup/logic — or was a near-duplicate inlined instead of using/extracting a shared primitive?
+- Does each shared component ship every state it can be in (error, loading, empty, disabled, busy), not just the happy path?
 - Are responsibilities placed in the right layer?
 - Are names explicit and consistent with the repo?
 - Did the assistant avoid creating abstractions before reuse was proven?
+
+(Code Quality Baseline in `AGENTS.md`; tracked debt in `engineering/code-quality-backlog.md`.)
 
 ## 3. Product fit
 
@@ -88,6 +92,7 @@ Do not accept the change without further review if:
 - the diff is broad and hard to explain;
 - tests/build are claimed but not actually run;
 - the change introduces hidden coupling;
+- an existing pattern was re-inlined instead of reused/extracted, or a component ships only the happy path (missing error/loading/empty/disabled/busy);
 - UI was changed without explaining the user decision it serves;
 - data logic was added without update/delete/rebuild reasoning;
 - auth or permissions changed without explicit security review.
