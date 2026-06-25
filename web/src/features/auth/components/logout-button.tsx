@@ -7,7 +7,6 @@ import {
   AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
-  AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
@@ -46,13 +45,9 @@ export function LogoutButton({ className, trigger }: Props) {
         )}
       </AlertDialogTrigger>
 
-      <AlertDialogContent>
+      <AlertDialogContent aria-describedby={undefined}>
         <AlertDialogHeader>
           <AlertDialogTitle>Sair da conta?</AlertDialogTitle>
-          <AlertDialogDescription>
-            Você será desconectado deste dispositivo. Para acessar seus grupos novamente, será
-            necessário entrar com sua conta.
-          </AlertDialogDescription>
         </AlertDialogHeader>
 
         <AlertDialogFooter>
