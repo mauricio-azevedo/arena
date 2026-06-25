@@ -91,7 +91,7 @@ export function PickerView({
               setCreateError(null);
             }}
             placeholder="Buscar membro do grupo"
-            className="min-w-0 flex-1 bg-transparent text-input font-semibold text-foreground outline-none placeholder:text-faint-foreground"
+            className="min-w-0 flex-1 bg-transparent text-field font-semibold text-foreground outline-none placeholder:text-faint-foreground"
           />
         </div>
       </div>
