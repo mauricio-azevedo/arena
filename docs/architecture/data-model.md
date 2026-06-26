@@ -64,7 +64,7 @@ competitive state:
 - `userId` is **nullable**: a member can be a **stub player** (jogador sem conta) —
   created inline so someone can be scored today without owning an account. Stubs
   carry their name in `displayName`; real members leave it null and resolve their
-  name from the linked `User`. See `docs/product/stub-players.md`.
+  name from the linked `User`. See `docs/product/guests-and-invites.md`.
 - Unique on `(groupId, userId)` — a user has at most one membership per group;
   Postgres treats NULLs as distinct, so a group can hold many stubs.
 - Also unique on `(id, groupId)` so other tables can FK by the composite key
@@ -128,7 +128,7 @@ written), `recipientUser` (cascade), optional `group`/`actorUserId`, a denormali
 (JSON: title/body/meta/actions, frozen at write so old messages never re-render), and read
 state (`readAt`, `actedAt`). Not derived — written directly when the triggering event
 happens. Powers the email-anchored claim flow
-([`../product/profile-claim.md`](../product/profile-claim.md)).
+([`../product/guests-and-invites.md`](../product/guests-and-invites.md)).
 
 ### Email-anchored claim (on GroupMember, no own table)
 
@@ -139,7 +139,7 @@ claimEmail])` keeps one anchored email per stub; `@@index([claimEmail])` powers 
 registration hook that offers waiting stubs to a new account. The email value is the offer's
 nonce — editing it invalidates outstanding confirms (the confirm authorizes by
 `user.email == stub.claimEmail`). The claim/merge core is `ClaimService.performClaim`. See
-[`../product/profile-claim.md`](../product/profile-claim.md).
+[`../product/guests-and-invites.md`](../product/guests-and-invites.md).
 
 ---
 
