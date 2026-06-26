@@ -65,9 +65,12 @@ Concretely:
 
 ### Negative / trade-offs
 
-- **The unclaimed list is visible to anyone with the link, and take-over is self-served.**
-  Impersonation is bounded by the shared-match block, the admin notification, and admin revert —
-  **accepted for small, trusted groups.** Identity verification stays out of scope.
+- **The unclaimed list is visible to any authenticated link-holder, and take-over is
+  self-served.** Impersonation is bounded by the shared-match block, the admin notification
+  (actionable — revert in one tap), and admin revert — **accepted for small, trusted groups.**
+  The worst case (an impostor takes a high-ranked guest, leaving the real owner to join as a
+  duplicate) is **recoverable** via admin revert + merge, not prevented. Identity verification
+  stays out of scope.
 - **A narrow race-duplicate is accepted:** someone joins as new just before being typed as a
   guest on court; resolved by merge later, not prevented.
 - **The single link is unrevocable for now** — if it leaks, anyone with it can join. Link

@@ -72,9 +72,11 @@ match registration**:
 - One tap creates the player, drops them into the slot and the group.
 
 A brand-new group with fewer than four members is never blocked from opening the match form
-— you build the roster while registering the first match. A guest looks like any other
-player (name + avatar); there is **no "guest" badge**. The only visible difference is that a
-guest's name isn't a link to a profile — there's no account behind it yet.
+— you build the roster while registering the first match. A guest is **visibly marked as
+not-yet-claimed** — a "Convidado" tag and/or the members list grouped by role
+(admins · members · guests) — so it's legible who can still be taken over; the dashed avatar
+already hints at it, and the exact treatment is settled at design time. A guest's name is
+also **not a profile link** — there's no account behind it yet.
 
 ### 2. Opening the group link — "which of these is you?"
 
@@ -114,7 +116,8 @@ Matches reference the **membership**, not the account. So taking over a guest th
 a member is just **attaching an account to the same membership** — zero history migration,
 no rating recompute. The merge case (already a member) re-points the guest's matches onto the
 existing membership and rebuilds ratings/ranks/stats asynchronously, so the combined history
-is consistent.
+is consistent. Because that rebuild is async, the success screen after a merge surfaces a
+brief **"recalculando"** state rather than showing pre-merge numbers as final.
 
 ## Rules
 
@@ -125,7 +128,8 @@ is consistent.
   Its name is **not a profile link** anywhere.
 - A guest has only **two states**: unclaimed (dashed avatar) and claimed. There is **no
   pending/declined/invited state** — nobody anchors a guest to anyone; a person either takes
-  it over or doesn't.
+  it over or doesn't. The unclaimed state is **surfaced** (a "Convidado" tag and/or grouping
+  in the members list), so admins and members can see who's still a guest.
 - **Self-identification is the consent**, the **shared-match block** is the hard guard, and
   the **admin notification + revert** is the safety net. There is no approval gate on the
   happy path.
@@ -149,18 +153,19 @@ is consistent.
 
 ## Cases &amp; edges
 
-| Case                                                                 | Behavior                                                                          |
-| -------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
-| Name typed on court, never claimed                                   | Stays a guest forever; scores normally; dashed avatar.                            |
-| Opens link, finds self in the list                                   | Recognition → takes over instantly; admin notified; reversible.                   |
-| Opens link, not in the list                                          | Joins directly as a new member, no approval.                                      |
-| Unclaimed list is empty                                              | Step is skipped; joins directly.                                                  |
-| Already a member, opens the link                                     | Can take over a guest (merge), or continue into the group.                        |
-| Person taking over is **already a member**                           | Guest merges into their existing membership; ratings/ranks rebuilt async.         |
-| Person and player **shared a match**                                 | Take-over refused (the one block); nothing changes; reuses the conflict screen.   |
-| Race-duplicate (joins as new before being typed as a guest on court) | Accepted; resolved by merge later.                                                |
-| Link forwarded to the wrong person                                   | The recognition screen is the guard; if they take over wrongly, an admin reverts. |
-| Admin created a guest by mistake                                     | Admin deletes the guest.                                                          |
+| Case                                                                 | Behavior                                                                                                                                   |
+| -------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| Name typed on court, never claimed                                   | Stays a guest forever; scores normally; dashed avatar.                                                                                     |
+| Opens link, finds self in the list                                   | Recognition → takes over instantly; admin notified; reversible.                                                                            |
+| Opens link, not in the list                                          | Joins directly as a new member, no approval.                                                                                               |
+| Unclaimed list is empty                                              | Step is skipped; joins directly.                                                                                                           |
+| Already a member, opens the link                                     | Can take over a guest (merge), or continue into the group.                                                                                 |
+| Person taking over is **already a member**                           | Guest merges into their existing membership; ratings/ranks rebuilt async.                                                                  |
+| Person and player **shared a match**                                 | Take-over refused (the one block); nothing changes; reuses the conflict screen.                                                            |
+| Race-duplicate (joins as new before being typed as a guest on court) | Accepted; resolved by merge later.                                                                                                         |
+| Link forwarded to the wrong person                                   | The recognition screen is the guard; if they take over wrongly, an admin reverts.                                                          |
+| Impostor takes over a high-ranked guest (no shared match)            | Accepted; admin notification is actionable (one-tap revert); if the real owner already joined as a duplicate, recovered by revert + merge. |
+| Admin created a guest by mistake                                     | Admin deletes the guest.                                                                                                                   |
 
 ## What changes from today
 
@@ -182,10 +187,16 @@ is consistent.
 
 - **The single link is unrevocable for now.** If it leaks, anyone with it can join; link
   rotation is future work.
-- **The unclaimed list is visible to anyone with the link**, and a take-over is
-  self-served. Impersonation is bounded by the shared-match block, the admin notification,
-  and admin revert — accepted for small, trusted groups. Identity verification is
-  deliberately out of scope.
+- **The unclaimed list is visible to any authenticated link-holder**, and a take-over is
+  self-served. Impersonation is bounded by the shared-match block, the admin notification
+  (actionable — revert in one tap), and admin revert — accepted for small, trusted groups.
+  Worst case: an impostor takes over a high-ranked guest they never played against; the real
+  owner then no longer finds themselves in the list and joins as a duplicate. It is
+  **recoverable** — an admin reverts the take-over (restoring the guest) and merges the
+  duplicate — not prevented. Identity verification is deliberately out of scope.
+- **The recognition screen reveals a guest's recent matches and partners** to any
+  link-holder who selects it — more than just names. Accepted for casual groups as part of
+  the self-identify trade-off.
 
 ## Not in this concept
 
