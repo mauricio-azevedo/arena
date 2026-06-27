@@ -5,7 +5,8 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { randomBytes } from 'crypto';
-import { GroupMemberRole } from '../generated/prisma/enums';
+import type { Prisma } from '../generated/prisma/client';
+import { GroupMemberRole, NotificationType } from '../generated/prisma/enums';
 import {
   MEMBER_USER_SELECT,
   resolveMemberDisplayName,
@@ -14,6 +15,8 @@ import { PrismaService } from '../prisma/prisma.service';
 import { FeedOrchestratorService } from '../feed/feed-orchestrator.service';
 import { GroupHomeSummaryService } from '../groups/group-home-summary.service';
 import { ClaimService } from '../claims/claim.service';
+import { NotificationWriterService } from '../notifications/notification-writer.service';
+import { guestTakenOverNotificationData } from './guest-taken-over-notification';
 
 @Injectable()
 export class GroupInvitesService {
@@ -22,16 +25,19 @@ export class GroupInvitesService {
     private readonly feedOrchestrator: FeedOrchestratorService,
     private readonly groupHomeSummary: GroupHomeSummaryService,
     private readonly claims: ClaimService,
+    private readonly notifications: NotificationWriterService,
   ) {}
 
-  // A regular group JOIN invite (admin-only). Claiming a stub is a separate flow
-  // (email-anchored, see claim-offers).
+  // The group's invite. No target = an "open" invite (the group link: the opener
+  // self-identifies against the roster). A target = a "closed" invite addressed to one
+  // guest (deep-links straight to that guest's recognition). Both are admin-only.
   async create(
     groupId: string,
     body: {
       createdById: string;
       maxUses?: number;
       expiresAt?: string;
+      targetGroupMemberId?: string;
     },
   ) {
     if (!body.createdById) {
@@ -63,6 +69,22 @@ export class GroupInvitesService {
       throw new ForbiddenException('Only group admins can create invites');
     }
 
+    // A closed invite must target an unclaimed guest still in this group.
+    if (body.targetGroupMemberId) {
+      const target = await this.prisma.groupMember.findUnique({
+        where: { id_groupId: { id: body.targetGroupMemberId, groupId } },
+        select: { userId: true, leftAt: true },
+      });
+
+      if (!target || target.leftAt) {
+        throw new NotFoundException('Convidado não encontrado');
+      }
+
+      if (target.userId !== null) {
+        throw new BadRequestException('Esse jogador já tem uma conta');
+      }
+    }
+
     const expiresAt = body.expiresAt ? new Date(body.expiresAt) : null;
 
     if (expiresAt && Number.isNaN(expiresAt.getTime())) {
@@ -82,6 +104,7 @@ export class GroupInvitesService {
         token,
         maxUses: body.maxUses ?? null,
         expiresAt,
+        targetGroupMemberId: body.targetGroupMemberId ?? null,
       },
       include: {
         group: true,
@@ -101,7 +124,7 @@ export class GroupInvitesService {
     };
   }
 
-  async findByToken(token: string) {
+  private async loadValidInvite(token: string) {
     const invite = await this.prisma.groupInvite.findUnique({
       where: { token },
       include: {
@@ -142,6 +165,74 @@ export class GroupInvitesService {
     }
 
     return invite;
+  }
+
+  // Open invite → the group's unclaimed guests (name + avatar seed only, no history).
+  // Closed invite → the target guest's recognition summary. A closed invite whose target
+  // was already taken over (or left) degrades to open with `targetUnavailable`, so the
+  // opener still has a way in.
+  async findByToken(token: string) {
+    const invite = await this.loadValidInvite(token);
+
+    if (!invite.targetGroupMemberId) {
+      return {
+        ...invite,
+        kind: 'OPEN' as const,
+        guests: await this.listUnclaimedGuests(invite.groupId),
+      };
+    }
+
+    const target = await this.loadClaimableGuest(
+      invite.groupId,
+      invite.targetGroupMemberId,
+    );
+
+    if (!target) {
+      return {
+        ...invite,
+        kind: 'OPEN' as const,
+        targetUnavailable: true,
+        guests: await this.listUnclaimedGuests(invite.groupId),
+      };
+    }
+
+    return {
+      ...invite,
+      kind: 'CLOSED' as const,
+      target: await this.claims.getStubClaimSummary(target),
+    };
+  }
+
+  private async listUnclaimedGuests(groupId: string) {
+    const guests = await this.prisma.groupMember.findMany({
+      where: { groupId, userId: null, leftAt: null },
+      orderBy: [{ displayName: 'asc' }],
+      select: { id: true, displayName: true },
+    });
+
+    return guests.map((guest) => ({
+      groupMemberId: guest.id,
+      displayName: guest.displayName ?? '',
+    }));
+  }
+
+  // A guest that can still be taken over in this group: no account, still active. Returns
+  // the shape getStubClaimSummary needs, or null when it isn't claimable anymore.
+  private async loadClaimableGuest(groupId: string, guestId: string) {
+    const guest = await this.prisma.groupMember.findUnique({
+      where: { id_groupId: { id: guestId, groupId } },
+      select: {
+        id: true,
+        displayName: true,
+        rating: true,
+        currentRank: true,
+        userId: true,
+        leftAt: true,
+        user: { select: { firstName: true, lastName: true } },
+      },
+    });
+
+    return guest && guest.userId === null && !guest.leftAt ? guest : null;
   }
 
   async accept(groupId: string, token: string, body: { userId: string }) {
@@ -249,5 +340,132 @@ export class GroupInvitesService {
     }
 
     return this.accept(invite.groupId, token, body);
+  }
+
+  // The recognition payload for a guest picked from the open list (the closed invite
+  // already carries its target's summary in findByToken). Public: the token is the auth.
+  async getGuestSummary(token: string, guestId: string) {
+    const invite = await this.loadValidInvite(token);
+    this.assertGuestAllowed(invite, guestId);
+
+    const guest = await this.loadClaimableGuest(invite.groupId, guestId);
+
+    if (!guest) {
+      throw new NotFoundException('Esse perfil já foi assumido.');
+    }
+
+    return this.claims.getStubClaimSummary(guest);
+  }
+
+  // Take over a guest via an invite — the open-list pick or the closed link's target. The
+  // shared core (performClaim) handles the simple claim and the already-a-member merge,
+  // and refuses when the two ever shared a match.
+  async claimGuest(token: string, guestId: string, userId: string) {
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const invite = await this.loadValidInvite(token);
+    this.assertGuestAllowed(invite, guestId);
+
+    return this.prisma.$transaction(async (tx) => {
+      const guest = await tx.groupMember.findUnique({
+        where: { id_groupId: { id: guestId, groupId: invite.groupId } },
+        select: {
+          id: true,
+          displayName: true,
+          userId: true,
+          leftAt: true,
+          user: { select: { firstName: true, lastName: true } },
+        },
+      });
+
+      if (!guest || guest.leftAt) {
+        throw new NotFoundException('Convidado não encontrado');
+      }
+
+      if (guest.userId !== null) {
+        throw new BadRequestException('Este perfil já foi assumido.');
+      }
+
+      const result = await this.claims.performClaim(
+        tx,
+        invite.groupId,
+        guest,
+        user,
+      );
+
+      if (result.outcome === 'CLAIMED') {
+        await this.notifyGuestTakenOver(
+          tx,
+          invite.groupId,
+          user,
+          result.membership?.id ?? null,
+        );
+      }
+
+      return result;
+    });
+  }
+
+  // Informs the group's admins that a guest was taken over via an invite — best-effort
+  // awareness (and the V2 revert hook). Never the taker themselves; skipped when there
+  // are no other admins.
+  private async notifyGuestTakenOver(
+    tx: Prisma.TransactionClient,
+    groupId: string,
+    user: { id: string; firstName: string; lastName: string },
+    membershipId: string | null,
+  ) {
+    const [group, admins] = await Promise.all([
+      tx.group.findUnique({ where: { id: groupId }, select: { name: true } }),
+      tx.groupMember.findMany({
+        where: {
+          groupId,
+          role: GroupMemberRole.ADMIN,
+          leftAt: null,
+          userId: { not: null },
+        },
+        select: { userId: true },
+      }),
+    ]);
+
+    const recipients = admins
+      .map((admin) => admin.userId)
+      .filter((id): id is string => id !== null && id !== user.id);
+
+    if (recipients.length === 0) {
+      return;
+    }
+
+    const data = guestTakenOverNotificationData(
+      resolveMemberDisplayName({ user }),
+      group?.name ?? '',
+    );
+
+    await this.notifications.createMany(
+      recipients.map((recipientUserId) => ({
+        type: NotificationType.GUEST_TAKEN_OVER,
+        recipientUserId,
+        groupId,
+        actorUserId: user.id,
+        targetGroupMemberId: membershipId,
+        data,
+      })),
+      tx,
+    );
+  }
+
+  // A closed invite (with a target) can only take over its own guest; an open invite has
+  // no target and accepts any unclaimed guest in the group.
+  private assertGuestAllowed(
+    invite: { targetGroupMemberId: string | null },
+    guestId: string,
+  ) {
+    if (invite.targetGroupMemberId && invite.targetGroupMemberId !== guestId) {
+      throw new ForbiddenException('Este convite é de outro jogador.');
+    }
   }
 }

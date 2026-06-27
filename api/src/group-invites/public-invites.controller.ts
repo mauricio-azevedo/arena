@@ -20,4 +20,24 @@ export class PublicInvitesController {
       userId: user.sub,
     });
   }
+
+  // Recognition summary for a guest picked from the open list. Public (token is the auth).
+  @Get(':token/guests/:guestId/summary')
+  guestSummary(
+    @Param('token') token: string,
+    @Param('guestId') guestId: string,
+  ) {
+    return this.groupInvitesService.getGuestSummary(token, guestId);
+  }
+
+  // Take over the guest (open-list pick or closed-link target). Requires an account.
+  @Post(':token/claim/:guestId')
+  @UseGuards(JwtAuthGuard)
+  claim(
+    @Param('token') token: string,
+    @Param('guestId') guestId: string,
+    @CurrentUser() user: AuthUser,
+  ) {
+    return this.groupInvitesService.claimGuest(token, guestId, user.sub);
+  }
 }

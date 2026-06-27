@@ -94,9 +94,12 @@ matches stay explainable after later ratings change:
 
 ### GroupInvite
 
-Tokenized **JOIN** link. `token` (unique), optional `expiresAt`/`revokedAt`,
-`uses`/`maxUses`. Public acceptance flow via `/invites/:token`. Claiming a stub is a
-separate flow (email-anchored, on `GroupMember.claimEmail*` — see below), not an invite.
+Tokenized invite link. `token` (unique), optional `expiresAt`/`revokedAt`,
+`uses`/`maxUses`, and an optional `targetGroupMemberId`: **null = open** (the group's roster
+link — the opener self-identifies against the unclaimed guests) and **set = closed**
+(addressed to one guest, deep-links to its recognition). Public read via `/invites/:token`;
+join via `/invites/:token/accept`; take over a guest via `/invites/:token/claim/:guestId`.
+The older email-anchored claim on `GroupMember.claimEmail*` still coexists (see below).
 
 ### FeedItem
 
@@ -123,11 +126,12 @@ The job-queue table that drives the async pipeline. `type`
 
 Per-user in-app notification — the opposite of `FeedItem` (which is group-public
 with no recipient). `type` (`CLAIM_OFFER` to the offer recipient, `CLAIM_OFFER_DECLINED`
-to admins; the old `CLAIM_REQUEST/APPROVED/DECLINED/INVITE` are deprecated and no longer
-written), `recipientUser` (cascade), optional `group`/`actorUserId`, a denormalized `data`
-(JSON: title/body/meta/actions, frozen at write so old messages never re-render), and read
-state (`readAt`, `actedAt`). Not derived — written directly when the triggering event
-happens. Powers the email-anchored claim flow
+to admins, `GUEST_TAKEN_OVER` to admins when a guest is taken over via an invite; the old
+`CLAIM_REQUEST/APPROVED/DECLINED/INVITE` are deprecated and no longer written),
+`recipientUser` (cascade), optional `group`/`actorUserId`/`targetGroupMemberId`, a
+denormalized `data` (JSON: title/body/meta/actions, frozen at write so old messages never
+re-render), and read state (`readAt`, `actedAt`). Not derived — written directly when the
+triggering event happens. Powers the claim / take-over flows
 ([`../product/guests-and-invites.md`](../product/guests-and-invites.md)).
 
 ### Email-anchored claim (on GroupMember, no own table)

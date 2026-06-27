@@ -7,9 +7,17 @@ import { PublicInvitesController } from './public-invites.controller';
 import { FeedModule } from '../feed/feed.module';
 import { GroupsModule } from '../groups/groups.module';
 import { ClaimsModule } from '../claims/claims.module';
+import { NotificationsModule } from '../notifications/notifications.module';
 
 @Module({
-  imports: [PrismaModule, AuthModule, FeedModule, GroupsModule, ClaimsModule],
+  imports: [
+    PrismaModule,
+    AuthModule,
+    FeedModule,
+    GroupsModule,
+    ClaimsModule,
+    NotificationsModule,
+  ],
   controllers: [GroupInvitesController, PublicInvitesController],
   providers: [GroupInvitesService],
   exports: [GroupInvitesService],

@@ -90,6 +90,7 @@ enum NotificationType {
   CLAIM_INVITE // deprecated
   CLAIM_OFFER // admin anchored an email to a stub → offer to that account
   CLAIM_OFFER_DECLINED // the offered person declined → tell the admin
+  GUEST_TAKEN_OVER // a guest was taken over via an invite → inform group admins
 }
 
 // State of the email an admin anchored to a stub (jogador sem conta).
@@ -174,12 +175,19 @@ model GroupInvite {
   uses    Int  @default(0)
   maxUses Int?
 
+  // Optional target guest: null = open invite (group roster, self-identify); set = closed
+  // invite (addressed to one guest, deep-links to its recognition). FK by composite
+  // (id, groupId) so the target can never belong to another group.
+  targetGroupMemberId String?
+  targetGroupMember   GroupMember? @relation("GroupInviteTarget", fields: [targetGroupMemberId, groupId], references: [id, groupId], onDelete: Cascade)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([groupId])
   @@index([createdById])
   @@index([token])
+  @@index([targetGroupMemberId])
 }
 
 model GroupMember {
@@ -219,6 +227,7 @@ model GroupMember {
   updatedAt DateTime @updatedAt
 
   matchPlayers          MatchPlayer[]
+  targetedByInvites     GroupInvite[]       @relation("GroupInviteTarget")
   actorFeedItems        FeedItem[]          @relation("FeedItemActorGroupMember")
   rankingMovements      RankingMovement[]
   stats                 GroupMemberStats?

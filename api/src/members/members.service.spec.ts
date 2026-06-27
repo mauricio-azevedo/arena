@@ -1,6 +1,7 @@
 import { BadRequestException, ForbiddenException } from '@nestjs/common';
 import { MembersService } from './members.service';
 import type { PrismaService } from '../prisma/prisma.service';
+import type { ProcessingJobWriterService } from '../processing/processing-job-writer.service';
 
 type PrismaMock = {
   group: { findUnique: jest.Mock };
@@ -12,7 +13,11 @@ function buildService() {
     group: { findUnique: jest.fn() },
     groupMember: { findUnique: jest.fn(), create: jest.fn() },
   };
-  const service = new MembersService(prisma as unknown as PrismaService);
+  const processingJobs = { enqueueGroupJob: jest.fn() };
+  const service = new MembersService(
+    prisma as unknown as PrismaService,
+    processingJobs as unknown as ProcessingJobWriterService,
+  );
   return { service, prisma };
 }
 

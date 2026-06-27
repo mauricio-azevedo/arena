@@ -10,6 +10,7 @@ import {
   resolveMemberDisplayName,
 } from '../common/member-display-name';
 import { PrismaService } from '../prisma/prisma.service';
+import { ProcessingJobWriterService } from '../processing/processing-job-writer.service';
 import type { Prisma } from '../generated/prisma/client';
 
 // Trims and validates a stub player's name, returning the canonical form.
@@ -29,7 +30,10 @@ function normalizeGuestName(rawName: string): string {
 
 @Injectable()
 export class MembersService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly processingJobs: ProcessingJobWriterService,
+  ) {}
 
   async create(
     groupId: string,
@@ -214,6 +218,67 @@ export class MembersService {
     await this.prisma.groupMember.update({
       where: { id: member.id },
       data: { userId: null, displayName: resolveMemberDisplayName(member) },
+    });
+
+    return this.findOne(member.id);
+  }
+
+  // Removes a member from the group (admin only) — the same soft-leave for anyone, guest
+  // or real account: their match history stays on the membership, they just drop out of
+  // the active roster and ranking, and a rebuild recomputes ranks without them. Mirrors
+  // unlinkAccount's self-guard so an admin can't strand the group with no admin.
+  async removeMember(
+    groupId: string,
+    memberId: string,
+    requesterUserId: string,
+  ) {
+    const group = await this.prisma.group.findUnique({
+      where: { id: groupId },
+    });
+
+    if (!group) {
+      throw new NotFoundException('Group not found');
+    }
+
+    const requesterMembership = await this.prisma.groupMember.findUnique({
+      where: { groupId_userId: { groupId, userId: requesterUserId } },
+    });
+
+    if (!requesterMembership || requesterMembership.leftAt) {
+      throw new ForbiddenException('Only active group members can do this');
+    }
+
+    if (requesterMembership.role !== GroupMemberRole.ADMIN) {
+      throw new ForbiddenException('Only group admins can remove members');
+    }
+
+    const member = await this.prisma.groupMember.findUnique({
+      where: { id: memberId },
+    });
+
+    if (!member || member.groupId !== groupId) {
+      throw new NotFoundException('Member not found in this group');
+    }
+
+    if (member.userId && member.userId === requesterUserId) {
+      throw new BadRequestException('Você não pode remover a si mesmo.');
+    }
+
+    // Already out: idempotent, nothing to recompute.
+    if (member.leftAt) {
+      return this.findOne(member.id);
+    }
+
+    await this.prisma.$transaction(async (tx) => {
+      await tx.groupMember.update({
+        where: { id: member.id },
+        data: { leftAt: new Date() },
+      });
+
+      await this.processingJobs.enqueueGroupJob(
+        { type: 'GROUP_RANKING_REBUILD', groupId },
+        tx,
+      );
     });
 
     return this.findOne(member.id);

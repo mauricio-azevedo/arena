@@ -17,6 +17,7 @@ export class GroupInvitesController {
     body: {
       maxUses?: number;
       expiresAt?: string;
+      targetGroupMemberId?: string;
     },
   ) {
     return this.groupInvitesService.create(groupId, {
