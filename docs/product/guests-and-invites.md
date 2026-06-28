@@ -128,6 +128,10 @@ The recognition screen answers "is this me?" before asking to commit:
     put the same person twice in one match. The take-over is refused and nothing changes.
 - **Taking over is instant** — no admin approval. The **admin is notified** ("Fulano assumiu
   o convidado Beltrano"), and that notification is **actionable** — revert in one tap.
+- **"Não sou eu"** is a courtesy exit on the recognition screen: it just acknowledges ("sem
+  problemas") and leaves. It records nothing and notifies no one — consistent with there
+  being no pending/declined state; the admin's only signal is that the guest stays
+  unclaimed. See _Decline awareness_ under "Not in this concept" for the future improvement.
 
 ### Why taking over is cheap
 
@@ -229,4 +233,8 @@ brief **"recalculando"** state rather than showing pre-merge numbers as final.
 - **Reconciling two real memberships that already shared a match** — the blocked merge above.
   Would require splitting/curating match history; deliberately out of scope.
 - **Heavier admin governance:** bulk operations, an audit log of take-overs.
+- **Decline awareness** — telling the admin that the person a closed invite was sent to said
+  "não sou eu" (today it's a silent, stateless exit), and the invalidation semantics that
+  would imply (re-target, kill the link, or neither). Deferred — revisit if mis-sends prove
+  common.
 - **Email / push delivery** of notifications — in-app only.
