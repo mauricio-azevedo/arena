@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { CurrentUser } from '../auth/current-user.decorator';
 import type { AuthUser } from '../auth/auth.types';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
@@ -53,5 +61,16 @@ export class MembersController {
     @CurrentUser() user: AuthUser,
   ) {
     return this.membersService.unlinkAccount(groupId, memberId, user.sub);
+  }
+
+  // Remove a member from the group (admin only). Soft-leave: history is preserved.
+  @Delete(':memberId')
+  @UseGuards(JwtAuthGuard)
+  remove(
+    @Param('groupId') groupId: string,
+    @Param('memberId') memberId: string,
+    @CurrentUser() user: AuthUser,
+  ) {
+    return this.membersService.removeMember(groupId, memberId, user.sub);
   }
 }
