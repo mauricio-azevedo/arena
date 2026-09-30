@@ -13,6 +13,7 @@ import { ProcessingModule } from './processing/processing.module';
 import { HomeHighlightsModule } from './home-highlights/home-highlights.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { ClaimOffersModule } from './claim-offers/claim-offers.module';
+import { HealthModule } from './health/health.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { ClaimOffersModule } from './claim-offers/claim-offers.module';
     HomeHighlightsModule,
     NotificationsModule,
     ClaimOffersModule,
+    HealthModule,
   ],
 })
 export class AppModule {}

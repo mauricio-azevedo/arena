@@ -138,6 +138,7 @@ create(@Param('groupId') groupId: string, @CurrentUser() user: AuthUser,
 | `PATCH /me/profile`, `PATCH /me/password`                                                                                                 | required                     | me              |
 | `GET /users/:userId/profile/summary`, `…/profile/matches`, `…/groups`                                                                     | viewer-scoped                | users           |
 | `GET /home/weekly-highlights`                                                                                                             | optional                     | home-highlights |
+| `GET /health` (liveness only — no database access; the hosting platform's health check polls it)                                          | public                       | health          |
 
 Routes are use-case oriented (`GET /me/profile/summary`), never UI-shaped. No
 global `/api` prefix.
