@@ -1,8 +1,15 @@
 {
+  "private": true,
+  "packageManager": "pnpm@11.10.0",
+  "engines": {
+    "node": ">=22 <23"
+  },
   "scripts": {
-    "lint": "npm --prefix api run lint && npm --prefix web run lint",
-    "lint:check": "npm --prefix api run lint:check && npm --prefix web run lint:check",
-    "knip": "npm --prefix api run knip && npm --prefix web run knip",
+    "build": "pnpm -r run build",
+    "lint": "pnpm -r run lint",
+    "lint:check": "pnpm -r run lint:check",
+    "knip": "pnpm -r run knip",
+    "test": "pnpm --filter @arena/api test",
     "format": "prettier . --write --ignore-unknown",
     "format:check": "prettier . --check --ignore-unknown"
   },

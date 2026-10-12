@@ -8,3 +8,5 @@ api/prisma/migrations
 
 .env
 .env.*
+
+pnpm-lock.yaml

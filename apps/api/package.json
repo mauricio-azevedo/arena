@@ -1,5 +1,5 @@
 {
-  "name": "api",
+  "name": "@arena/api",
   "version": "0.0.1",
   "description": "",
   "author": "",
@@ -7,7 +7,7 @@
   "license": "UNLICENSED",
   "scripts": {
     "generate": "prisma generate",
-    "build": "npm run generate && nest build",
+    "build": "pnpm run generate && nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
