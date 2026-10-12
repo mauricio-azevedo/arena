@@ -429,8 +429,8 @@ When adding a new feed event, update all relevant layers.
 ### Backend checklist
 
 1. Add or confirm the `FeedItemType` enum value.
-2. Define an explicit input type in `api/src/feed/types/`.
-3. Create a generator in `api/src/feed/generators/`.
+2. Define an explicit input type in `apps/api/src/feed/types/`.
+3. Create a generator in `apps/api/src/feed/generators/`.
 4. Register the generator in `FeedModule`.
 5. Expose an orchestration method in `FeedOrchestratorService`.
 6. Call the orchestrator from the domain write flow.
@@ -440,7 +440,7 @@ When adding a new feed event, update all relevant layers.
 ### Frontend checklist
 
 1. Add or confirm the frontend feed item type union.
-2. Define metadata type in `web/src/features/feed/types/`.
+2. Define metadata type in `apps/web/src/features/feed/types/`.
 3. Render the event in `FeedItemCard` or a child component.
 4. Keep player/user names clickable when appropriate.
 5. Keep layout mobile-first and scannable.

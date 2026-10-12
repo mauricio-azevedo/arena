@@ -1,6 +1,6 @@
 # Data Model
 
-Reverse-engineered from `api/prisma/schema.prisma` (verified 2026-06-17). This
+Reverse-engineered from `apps/api/prisma/schema.prisma` (verified 2026-06-17). This
 describes entities, relationships, cardinality, and ownership. For column-level
 detail, enums, and indexes see
 [`../engineering/database-reference.md`](../engineering/database-reference.md).

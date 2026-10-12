@@ -4,14 +4,15 @@ Arena is a monorepo with a Next.js frontend, a NestJS backend, Prisma, and Postg
 
 ```txt
 arena/
-  api/   NestJS backend
-  web/   Next.js frontend
-  docs/  project documentation
+  apps/
+    api/   NestJS backend
+    web/   Next.js frontend
+  docs/    project documentation
 ```
 
 ## System responsibilities
 
-### Frontend (`web/`)
+### Frontend (`apps/web/`)
 
 The frontend is responsible for:
 
@@ -31,7 +32,7 @@ The frontend should not:
 - enforce final security decisions;
 - perform business-critical mutations without backend validation.
 
-### Backend (`api/`)
+### Backend (`apps/api/`)
 
 The backend is responsible for:
 
@@ -109,11 +110,11 @@ Code should be organized around product features and domain concepts.
 Examples:
 
 ```txt
-web/src/features/profile
-web/src/features/groups
-web/src/features/feed
-api/src/feed
-api/src/matches
+apps/web/src/features/profile
+apps/web/src/features/groups
+apps/web/src/features/feed
+apps/api/src/feed
+apps/api/src/matches
 ```
 
 See [`../code-organization.md`](../code-organization.md).
@@ -158,43 +159,43 @@ Do not rely only on frontend route protection for permissions.
 
 ## Key modules
 
-### `api/src/auth`
+### `apps/api/src/auth`
 
 Authentication, JWT handling, current user decorators, and guards.
 
-### `api/src/groups`
+### `apps/api/src/groups`
 
 Group creation, group listing, group detail data, and group-level product behavior.
 
-### `api/src/group-invites`
+### `apps/api/src/group-invites`
 
 Invite generation and acceptance.
 
-### `api/src/matches`
+### `apps/api/src/matches`
 
 Match creation, editing, deletion, rating update orchestration, and match-level feed event sync.
 
-### `api/src/feed`
+### `apps/api/src/feed`
 
 Feed item persistence, generation, scoring, and reading.
 
-### `api/src/me`
+### `apps/api/src/me`
 
 Authenticated user's profile data and profile-related tabs.
 
-### `web/src/features/profile`
+### `apps/web/src/features/profile`
 
 Own profile and public-profile-like profile experiences.
 
-### `web/src/features/groups`
+### `apps/web/src/features/groups`
 
 Group list, group detail tabs, group cards, and group-related UI.
 
-### `web/src/features/feed`
+### `apps/web/src/features/feed`
 
 Home feed loading and feed item rendering.
 
-### `web/src/features/matches`
+### `apps/web/src/features/matches`
 
 Match forms and match list rendering.
 

@@ -9,7 +9,7 @@ The production-like hosted database provider is Neon.
 The schema source of truth is:
 
 ```txt
-api/prisma/schema.prisma
+apps/api/prisma/schema.prisma
 ```
 
 Generated Prisma client files should not be edited manually.
@@ -69,7 +69,7 @@ The current schema supports this through the `FeedItem.match` relation with casc
 
 When changing schema:
 
-1. update `api/prisma/schema.prisma`;
+1. update `apps/api/prisma/schema.prisma`;
 2. create a migration;
 3. regenerate Prisma client;
 4. verify backend compiles;
@@ -82,7 +82,7 @@ Do not ship schema changes without migration strategy.
 Generated files live under:
 
 ```txt
-api/src/generated/prisma
+apps/api/src/generated/prisma
 ```
 
 Rules:

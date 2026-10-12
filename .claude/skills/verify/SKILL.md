@@ -7,16 +7,17 @@ description: Build, run and drive Arena (api + web) to verify changes end-to-end
 
 ## Bring-up (order matters)
 
-1. Postgres: `docker-compose up -d` at the repo root → `localhost:5433` (db per `api/.env`).
-2. **API first** (`cd api && npm run start:dev`) — it binds `:3000` (web's default API base).
-3. Web second (`cd web && npm run dev`) — Next auto-shifts to `:3001` because 3000 is taken.
-4. Node is off PATH: `export NVM_DIR="$HOME/.nvm" && . "$NVM_DIR/nvm.sh" && nvm use 22`.
+1. Postgres: `docker-compose up -d` at the repo root → `localhost:5433` (db per `apps/api/.env`).
+2. **API first** (`pnpm --filter @arena/api start:dev`) — it binds `:3000` (web's default API base).
+3. Web second (`pnpm --filter @arena/web dev`) — Next auto-shifts to `:3001` because 3000 is taken.
+4. Node and pnpm are off PATH: `export NVM_DIR="$HOME/.nvm" && . "$NVM_DIR/nvm.sh" && nvm use`
+   (`.nvmrc` pins 22; pnpm is installed in that Node's bin).
 
 Gotchas:
 
 - Stale `nest start --watch` processes survive old sessions, lose the port race after a
   recompile and serve stale code / EADDRINUSE loops. Before starting:
-  `pgrep -af 'arena/[a]pi|[n]est start'` and kill leftovers (bracket trick avoids
+  `pgrep -af 'arena/apps/[a]pi|[n]est start'` and kill leftovers (bracket trick avoids
   pkill self-match; a plain `pkill -f 'next dev'` kills your own shell).
 - Ready checks: `curl localhost:3000/groups` returns JSON (api); web prints `Local:` in its log.
 

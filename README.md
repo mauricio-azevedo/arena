@@ -41,8 +41,9 @@ Backend:
 
 ```txt
 arena/
-  api/      NestJS backend
-  web/      Next.js frontend
+  apps/
+    api/    NestJS backend
+    web/    Next.js frontend
   docs/     product, engineering, and architecture documentation
 ```
 
@@ -70,48 +71,40 @@ Important modeling decisions:
 
 ## Local development
 
+Node 22 (`.nvmrc`) and pnpm 11 (`packageManager` in `package.json`; `corepack enable` installs it). One install at the repo root covers both apps:
+
+```bash
+pnpm install
+docker-compose up -d   # PostgreSQL on localhost:5433
+```
+
 Backend:
 
 ```bash
-cd api
-npm install
-npx prisma migrate dev
-npx prisma generate
-npm run start:dev
+cd apps/api
+pnpm exec prisma migrate dev
+pnpm exec prisma generate
+pnpm run start:dev
 ```
 
 Frontend:
 
 ```bash
-cd web
-npm install
-npm run dev
+cd apps/web
+pnpm run dev
 ```
 
 Environment variables are documented in `docs/engineering/development-setup.md` and should be configured in local env files that are not committed.
 
 ## Validation
 
-Backend:
+From the repo root; each script fans out to the workspace packages:
 
 ```bash
-cd api
-npm run build
-npm run test
-```
-
-Frontend:
-
-```bash
-cd web
-npm run build
-npm run lint
-```
-
-Repository formatting:
-
-```bash
-npm run format:check
+pnpm run build          # both apps
+pnpm run test           # api
+pnpm run lint:check
+pnpm run format:check
 ```
 
 ## Engineering standards

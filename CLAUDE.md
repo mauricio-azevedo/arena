@@ -12,36 +12,42 @@ docs — and keep them current when you change behavior.
 
 ## Stack & repo shape
 
-Monorepo, no shared package between apps (the frontend re-declares the API
-contract by hand).
+pnpm-workspaces monorepo (`pnpm-workspace.yaml`: `apps/*`, `packages/*`); no shared
+package yet (the frontend re-declares the API contract by hand).
 
 ```txt
-api/   NestJS 11 · Prisma 7 (pg adapter) · JWT · in-DB job queue · PostgreSQL
-web/   Next.js 16 (App Router) · React 19 · Tailwind v4 · shadcn/ui · lucide
-docs/  product / design / architecture / engineering / qa
+apps/api/   NestJS 11 · Prisma 7 (pg adapter) · JWT · in-DB job queue · PostgreSQL
+apps/web/   Next.js 16 (App Router) · React 19 · Tailwind v4 · shadcn/ui · lucide
+docs/       product / design / architecture / engineering / qa
 ```
 
 - **DB**: PostgreSQL 16. Local: `docker-compose up` → `localhost:5433`
   (`arena/arena`, db `arena`). Hosted: Neon (verify branch before destructive ops).
-- **Deploy**: `web` → Vercel, only `main` auto-deploys (`vercel.json`).
+- **Deploy**: `apps/web` → Vercel (Root Directory `apps/web`; `apps/web/vercel.json` limits
+  auto-deploys to `main`). `apps/api` → Render (Root Directory = repo root;
+  `pnpm --filter @arena/api build` / `start:prod`). Details: `docs/engineering/development-setup.md`.
 
 ## Commands
 
 ```bash
+# repo root — one install for every workspace package
+pnpm install
+pnpm run build             # pnpm -r run build (both apps)
+pnpm run test              # pnpm --filter @arena/api test
+pnpm run lint:check        # or lint (eslint --fix)
+pnpm run format:check      # or format (prettier --write)
 # api
-cd api && npm install && npx prisma migrate dev && npx prisma generate
-npm run start:dev          # dev server
-npm run build              # prisma generate + nest build
-npm run lint && npm test
+cd apps/api && pnpm exec prisma migrate dev && pnpm exec prisma generate
+pnpm run start:dev         # dev server
+pnpm run build             # prisma generate + nest build
 # web
-cd web && npm install && npm run dev
-npm run build && npm run lint
-# repo root
-npm run format             # prettier
+cd apps/web && pnpm run dev
+pnpm run build && pnpm run lint
 ```
 
-`node` may not be on PATH in this environment; read JSON/config files directly
-rather than via `node -e`.
+Any app script also runs from the root as `pnpm --filter @arena/<app> <script>`.
+`node` and `pnpm` may not be on PATH in this environment (nvm; `.nvmrc` pins 22);
+read JSON/config files directly rather than via `node -e`.
 
 ## Architecture in one screen
 
@@ -94,7 +100,7 @@ rather than via `node -e`.
   verb methods; **named exports** (except Next route files); `import type` for
   types. Feature-first organization; keep code local until genuinely shared.
 - Backend types in per-module `types/`; no `dto/` in practice. Frontend mirrors the
-  API in `web/src/types/api.ts` + feature `*.type.ts` — **sync by hand**.
+  API in `apps/web/src/types/api.ts` + feature `*.type.ts` — **sync by hand**.
 - Logging: `structuredLog('domain.event', {...})` (`observability/structured-log.ts`).
 - API routes are use-case shaped (`GET /me/profile/summary`), never UI-shaped; no
   `/api` prefix.
@@ -108,7 +114,7 @@ rather than via `node -e`.
 | Table/enum/index/migration reference | `docs/engineering/database-reference.md` |
 | Backend conventions + API route map | `docs/engineering/backend-conventions.md` |
 | Frontend conventions | `docs/engineering/frontend-conventions.md` |
-| Subsystems | `docs/architecture/{feed,rating,processing-jobs,platform-trending-players}-*.md` |
+| Subsystems | `docs/architecture/{feed-architecture,rating-architecture,processing-jobs,weekly-highlights}.md` |
 | ADRs | `docs/architecture/adr/` |
 | Product rules | `docs/product/{glossary,feed-events}.md` |
 | Org rules · DB ops · setup | `docs/code-organization.md` · `docs/engineering/database.md` · `docs/engineering/development-setup.md` |
@@ -120,7 +126,7 @@ rather than via `node -e`.
   confirm build → update `database-reference.md` + `data-model.md` + affected docs.
 - New derived state: add a `*-projection.service.ts` and call it from
   `processing-job-runner.service.ts`.
-- Backend response shape change: update `web/src/types/api.ts` (and feature types).
+- Backend response shape change: update `apps/web/src/types/api.ts` (and feature types).
 - Per `docs/README.md`, update docs in the same PR when product behavior, feed/
   rating rules, auth, schema, key UX, API contracts, or QA flows change.
 </content>

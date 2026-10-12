@@ -74,7 +74,7 @@ export type MyGroup = {
   group: Group;
 };
 
-// Machine-readable business error codes (mirrors api/src/common/api-errors.ts —
+// Machine-readable business error codes (mirrors apps/api/src/common/api-errors.ts —
 // append-only). Carried on ApiError (`lib/api-error`); UI branches on these, never
 // on the message copy.
 export type ApiErrorCode =

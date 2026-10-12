@@ -1,7 +1,7 @@
 import type { ApiErrorCode } from '@/types/api';
 
 // The API layer's typed error: `status` is the HTTP status, `code` the
-// machine-readable business code (mirrored from api/src/common/api-errors.ts in
+// machine-readable business code (mirrored from apps/api/src/common/api-errors.ts in
 // types/api.ts). UI branches on these — never on the human-readable message copy.
 export class ApiError extends Error {
   readonly status: number;
