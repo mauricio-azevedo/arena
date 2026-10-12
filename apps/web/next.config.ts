@@ -1,10 +1,7 @@
 import type { NextConfig } from 'next';
-import path from 'node:path';
 
-const nextConfig: NextConfig = {
-  turbopack: {
-    root: path.resolve(process.cwd()),
-  },
-};
+// No turbopack.root pin: Next infers the workspace root from the single pnpm-lock.yaml
+// at the repo root, which keeps future packages/* imports compilable.
+const nextConfig: NextConfig = {};
 
 export default nextConfig;
