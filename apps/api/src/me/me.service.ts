@@ -7,7 +7,7 @@ import { JwtService } from '@nestjs/jwt';
 import { Prisma } from '../generated/prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { API_ERROR_CODES, codedConflict } from '../common/api-errors';
-import { isAvatarColorKey } from '../common/avatar-color';
+import { isAvatarColorKey } from '@arena/contracts';
 import type { UpdateProfileInput } from './types/update-profile-input.type';
 
 const MAX_NAME_LENGTH = 80;
