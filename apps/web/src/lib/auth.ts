@@ -21,6 +21,7 @@ export function setAccessToken(token: string) {
   // A fresh token means a live session again — re-arm the expiry handler.
   sessionExpiredHandled = false;
   window.localStorage.setItem(ACCESS_TOKEN_STORAGE_KEY, token);
+  notifyAccessTokenListeners();
 }
 
 export function removeAccessToken() {
@@ -29,6 +30,32 @@ export function removeAccessToken() {
   }
 
   window.localStorage.removeItem(ACCESS_TOKEN_STORAGE_KEY);
+  notifyAccessTokenListeners();
+}
+
+// Token change notifications: same-tab writes above, other tabs via `storage`.
+// React consumes this through `useAccessToken()` (hooks/use-access-token.ts).
+const accessTokenListeners = new Set<() => void>();
+
+export function subscribeAccessToken(listener: () => void) {
+  const onStorage = (event: StorageEvent) => {
+    // key null = localStorage.clear()
+    if (event.key === null || event.key === ACCESS_TOKEN_STORAGE_KEY) {
+      listener();
+    }
+  };
+
+  accessTokenListeners.add(listener);
+  window.addEventListener('storage', onStorage);
+
+  return () => {
+    accessTokenListeners.delete(listener);
+    window.removeEventListener('storage', onStorage);
+  };
+}
+
+function notifyAccessTokenListeners() {
+  accessTokenListeners.forEach((listener) => listener());
 }
 
 export function getCurrentUserIdFromAccessToken() {

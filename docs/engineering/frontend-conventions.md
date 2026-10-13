@@ -60,7 +60,9 @@ only (except route files, which need `default`).
 - **No React Query / SWR.** Server components `await` API functions directly and
   pass data as props to client components.
 - Client components fetch in `useEffect` with a `'loading' | 'ready' | 'error'`
-  state machine and an `isCurrent` flag to ignore stale responses.
+  state machine and an `isCurrent` flag to ignore stale responses. `setState` only
+  inside the request callbacks (`react-hooks/set-state-in-effect`); derive the rest
+  during render.
 - Every API call passes `cache: 'no-store'`.
 - Standard render branches: loading → skeleton, error → error state, empty →
   empty state, else content.
@@ -101,6 +103,10 @@ export function getProfileMatches(token: string): Promise<ProfileMatchListItem[]
 - `lib/auth.ts`: token in `localStorage` (`arena_access_token`), SSR-guarded
   (`typeof window === 'undefined'`), JWT decoded manually from the base64 payload
   to read `sub`. No auth library.
+- Token as render state: `useAccessToken()` (`hooks/use-access-token.ts`) —
+  `undefined` during SSR/hydration, then token or `null`; re-renders on login/logout
+  in any tab. Reading `getAccessToken()` into state inside an effect fails
+  `react-hooks/set-state-in-effect`.
 
 ## 7. Types
 
