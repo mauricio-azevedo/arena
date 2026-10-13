@@ -6,12 +6,13 @@ setup:
     pnpm install --frozen-lockfile
     cp -n apps/api/.env.example apps/api/.env || true
     just db-up
-    pnpm --filter @arena/api exec prisma generate
+    pnpm turbo run generate
     just migrate-deploy
 
-# API on :3000 and web on :3001, both with reload; Ctrl-C stops both
+# API on :3000 and web on :3001, both with reload; Ctrl-C stops both.
+# Shared packages build first, then rebuild on change.
 dev: db-up
-    pnpm -r --parallel run dev
+    pnpm turbo run dev
 
 # Local PostgreSQL on localhost:5433, returns once it accepts connections
 db-up:
@@ -22,11 +23,9 @@ migrate-deploy:
     pnpm --filter @arena/api exec prisma migrate deploy
 
 # Everything CI runs, in CI order. Needs a migrated DATABASE_URL for e2e.
-# Type-aware lint, unit tests and build all import the generated Prisma client.
+# Turbo builds shared packages and the Prisma client before anything that imports them.
 ci:
-    pnpm --filter @arena/api generate
     pnpm run format:check
-    pnpm run lint:check
-    pnpm -r run build
-    pnpm --filter @arena/api test
+    pnpm turbo run lint:check build test
+    pnpm run lint:docs
     pnpm --filter @arena/api test:e2e
