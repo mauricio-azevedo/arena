@@ -1,0 +1,43 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+# A newer push to the same branch supersedes the running check
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    name: ci
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: arena
+          POSTGRES_PASSWORD: arena
+          POSTGRES_DB: arena
+        ports: ['5432:5432']
+        options: --health-cmd pg_isready --health-interval 5s --health-retries 10
+    env:
+      # prisma.config.ts reads DATABASE_URL at load; the e2e test boots the app against it
+      DATABASE_URL: postgresql://arena:arena@localhost:5432/arena
+      JWT_SECRET: ci-only-not-a-secret
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6 # version from packageManager
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - uses: extractions/setup-just@v4
+      - run: pnpm install --frozen-lockfile
+      - run: just migrate-deploy
+      - run: just ci
