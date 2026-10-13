@@ -138,8 +138,9 @@ A strong PR description should include:
 Both apps deploy from `main`; neither host builds other branches.
 
 - **Web → Vercel.** Root Directory `apps/web`. pnpm is detected from the root `pnpm-lock.yaml` and
-  the `packageManager` field. `apps/web/vercel.json` limits automatic deployments to `main` (Vercel
-  reads `vercel.json` from the Root Directory).
+  the `packageManager` field. The root `vercel.json` limits automatic deployments to `main`: Vercel
+  reads its `git` settings from the repository root, not from the Root Directory (verified
+  2026-10-13: a branch push with the file only under `apps/web` created a preview deployment).
 - **API → Render.** Root Directory stays the repo root: Render cannot read files above it, and the
   lockfile lives there. Build `pnpm install --frozen-lockfile && pnpm --filter @arena/api build`,
   start `pnpm --filter @arena/api start:prod` (runs with `apps/api` as cwd), health check `/health`.
