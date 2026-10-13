@@ -15,3 +15,6 @@ apps/web/ds-bundle
 .env.*
 
 pnpm-lock.yaml
+
+# MADR territory: upstream files verbatim, markdownlint config applies
+docs/decisions

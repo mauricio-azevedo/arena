@@ -11,7 +11,7 @@
 >
 > Replaces the former `stub-players.md` + `profile-claim.md`. The decision and its
 > trade-offs are recorded in
-> [ADR 0004](../architecture/adr/0004-unify-guest-invite-and-claim.md).
+> [ADR 0004](../decisions/0004-unify-guest-invite-and-claim.md).
 
 A **guest** (convidado) is a player who is part of a group but doesn't have an account
 yet. Someone typed their name on the court so they could be scored today; later, the real

@@ -11,6 +11,8 @@ For substantial work, read and follow:
 - `docs/ai/RESEARCH_SOURCES.md`
 - `docs/ai/AI_TENDENCIES_AND_GUARDRAILS.md`
 
+ADRs follow `docs/decisions/README.md`.
+
 ## Default behavior
 
 Do not make broad implementation changes immediately.
