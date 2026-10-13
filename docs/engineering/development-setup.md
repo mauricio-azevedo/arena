@@ -16,14 +16,15 @@ Required tools:
 - Node.js 22 — `.nvmrc` pins the major (`nvm use`);
 - pnpm 11 — the exact version is the `packageManager` field of the root `package.json`
   (`corepack enable` installs it automatically);
-- Docker for the local PostgreSQL (`docker-compose up -d` → `localhost:5433`), or a hosted Neon
+- Docker for the local PostgreSQL (`just db-up` → `localhost:5433`), or a hosted Neon
   database;
+- [`just`](https://just.systems) — the recipes in the root `justfile` (`just --list`);
 - GitHub access to the repository.
 
 Install once, from the repo root:
 
 ```bash
-pnpm install
+just setup
 ```
 
 One lockfile (`pnpm-lock.yaml`) covers every workspace package; there are no per-app installs.

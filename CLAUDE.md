@@ -21,7 +21,7 @@ apps/web/   Next.js 16 (App Router) · React 19 · Tailwind v4 · shadcn/ui · l
 docs/       product / design / architecture / engineering / qa
 ```
 
-- **DB**: PostgreSQL 16. Local: `docker-compose up` → `localhost:5433`
+- **DB**: PostgreSQL 16. Local: `just db-up` → `localhost:5433`
   (`arena/arena`, db `arena`). Hosted: Neon (verify branch before destructive ops).
 - **Deploy**: `apps/web` → Vercel (Root Directory `apps/web`; root `vercel.json` limits
   auto-deploys to `main`). `apps/api` → Render (Root Directory = repo root;

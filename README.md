@@ -1,5 +1,7 @@
 # Arena
 
+[![CI](https://github.com/mauricio-azevedo/arena/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/mauricio-azevedo/arena/actions/workflows/ci.yml)
+
 Arena is a mobile-first web app for casual beach tennis groups.
 
 It helps players create groups, invite friends, register doubles matches, track group-specific ratings, view rankings, follow activity, and build a personal sports history from casual games.
@@ -71,41 +73,19 @@ Important modeling decisions:
 
 ## Local development
 
-Node 22 (`.nvmrc`) and pnpm 11 (`packageManager` in `package.json`; `corepack enable` installs it). One install at the repo root covers both apps:
+Node 22 (`.nvmrc`), pnpm 11 (`packageManager` in `package.json`; `corepack enable` installs it), Docker, and [`just`](https://just.systems).
 
 ```bash
-pnpm install
-docker-compose up -d   # PostgreSQL on localhost:5433
+just setup   # once: install, apps/api/.env from .env.example, PostgreSQL, migrations
+just dev     # API on :3000, web on :3001; Ctrl-C stops both
+just --list  # every recipe
 ```
 
-Backend:
-
-```bash
-cd apps/api
-pnpm exec prisma migrate dev
-pnpm exec prisma generate
-pnpm run start:dev
-```
-
-Frontend:
-
-```bash
-cd apps/web
-pnpm run dev
-```
-
-Environment variables are documented in `docs/engineering/development-setup.md` and should be configured in local env files that are not committed.
+Details and troubleshooting: `docs/engineering/development-setup.md`.
 
 ## Validation
 
-From the repo root; each script fans out to the workspace packages:
-
-```bash
-pnpm run build          # both apps
-pnpm run test           # api
-pnpm run lint:check
-pnpm run format:check
-```
+`just ci` runs what CI runs: format, lint, build, unit tests, and the e2e smoke test against the local database.
 
 ## Engineering standards
 
