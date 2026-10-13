@@ -5,7 +5,7 @@
 Accepted — implemented.
 
 The product concept lives in
-[`../../product/guests-and-invites.md`](../../product/guests-and-invites.md). Open and
+[`../product/guests-and-invites.md`](../product/guests-and-invites.md). Open and
 closed invites are live (backend, `/invites/:token` landing, and the invite sheets on
 the group screen). The email-anchored claim this ADR supersedes kept only its
 recipient-side flow (`/claim/:stubId`, for offers sent before the switch); the
@@ -91,9 +91,9 @@ Concretely:
 ## Supersedes
 
 The email-anchored claim model — currently described in
-[`../data-model.md`](../data-model.md) ("Email-anchored claim") and
-[`../../engineering/database-reference.md`](../../engineering/database-reference.md) — and the
+[`../architecture/data-model.md`](../architecture/data-model.md) ("Email-anchored claim") and
+[`../engineering/database-reference.md`](../engineering/database-reference.md) — and the
 former `stub-players.md` + `profile-claim.md` concept docs, now consolidated into
-[`../../product/guests-and-invites.md`](../../product/guests-and-invites.md). It also supersedes
+[`../product/guests-and-invites.md`](../product/guests-and-invites.md). It also supersedes
 the intermediate sketches considered earlier in the same effort (admin user search + per-guest
 bearer links; and an open-only self-identify link with no addressed variant).

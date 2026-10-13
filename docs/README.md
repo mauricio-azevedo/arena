@@ -32,6 +32,10 @@ Architecture docs describe how the system is structured and why.
 - [`architecture/processing-jobs.md`](architecture/processing-jobs.md): in-database job queue and projection cascade.
 - [`architecture/weekly-highlights.md`](architecture/weekly-highlights.md): home "Essa semana" highlights read model + projection.
 
+### Decisions
+
+- [`decisions/`](decisions/README.md): architecture decision records ([MADR](https://adr.github.io/madr/)) and their templates.
+
 ### Engineering
 
 Engineering docs describe how to work on the codebase.
@@ -81,7 +85,7 @@ docs/
   product/
   design/
   architecture/
-    adr/
+  decisions/
   api/
   engineering/
   qa/

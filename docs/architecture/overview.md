@@ -213,7 +213,7 @@ Current major decisions:
 Future decision records should live under:
 
 ```txt
-docs/architecture/adr/
+docs/decisions/
 ```
 
 Do not create ADRs for every small implementation detail. Use ADRs for decisions that affect architecture, product constraints, or future trade-offs.

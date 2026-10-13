@@ -115,7 +115,7 @@ read JSON/config files directly rather than via `node -e`.
 | Backend conventions + API route map       | `docs/engineering/backend-conventions.md`                                                              |
 | Frontend conventions                      | `docs/engineering/frontend-conventions.md`                                                             |
 | Subsystems                                | `docs/architecture/{feed-architecture,rating-architecture,processing-jobs,weekly-highlights}.md`       |
-| ADRs                                      | `docs/architecture/adr/`                                                                               |
+| ADRs                                      | `docs/decisions/`                                                                                      |
 | Product rules                             | `docs/product/{glossary,feed-events}.md`                                                               |
 | Org rules · DB ops · setup                | `docs/code-organization.md` · `docs/engineering/database.md` · `docs/engineering/development-setup.md` |
 | QA flows                                  | `docs/qa/critical-flows.md`                                                                            |

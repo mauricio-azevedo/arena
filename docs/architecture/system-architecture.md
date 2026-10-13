@@ -175,8 +175,9 @@ placeholder ratings until the worker processes them. UI and reads should tolerat
 
 ### 3.5 Why this design (ADRs)
 
-See `docs/architecture/adr/`:
+See `docs/decisions/`:
 
+- `0000-use-markdown-architectural-decision-records.md` — ADRs follow MADR 4 (#260).
 - `0001-persist-feed-events.md` — feed events are persisted, not reconstructed.
 - `0002-snapshot-match-ratings.md` — match/player rating snapshots are stored.
 - `0003-use-contextual-skeletons-for-route-loading.md` — frontend loading UX.
