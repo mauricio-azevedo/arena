@@ -107,18 +107,18 @@ read JSON/config files directly rather than via `node -e`.
 
 ## Where to look
 
-| Topic | Doc |
-| --- | --- |
-| Full runtime architecture (authoritative) | `docs/architecture/system-architecture.md` |
-| Entities, relationships, derived models | `docs/architecture/data-model.md` |
-| Table/enum/index/migration reference | `docs/engineering/database-reference.md` |
-| Backend conventions + API route map | `docs/engineering/backend-conventions.md` |
-| Frontend conventions | `docs/engineering/frontend-conventions.md` |
-| Subsystems | `docs/architecture/{feed-architecture,rating-architecture,processing-jobs,weekly-highlights}.md` |
-| ADRs | `docs/architecture/adr/` |
-| Product rules | `docs/product/{glossary,feed-events}.md` |
-| Org rules · DB ops · setup | `docs/code-organization.md` · `docs/engineering/database.md` · `docs/engineering/development-setup.md` |
-| QA flows | `docs/qa/critical-flows.md` |
+| Topic                                     | Doc                                                                                                    |
+| ----------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| Full runtime architecture (authoritative) | `docs/architecture/system-architecture.md`                                                             |
+| Entities, relationships, derived models   | `docs/architecture/data-model.md`                                                                      |
+| Table/enum/index/migration reference      | `docs/engineering/database-reference.md`                                                               |
+| Backend conventions + API route map       | `docs/engineering/backend-conventions.md`                                                              |
+| Frontend conventions                      | `docs/engineering/frontend-conventions.md`                                                             |
+| Subsystems                                | `docs/architecture/{feed-architecture,rating-architecture,processing-jobs,weekly-highlights}.md`       |
+| ADRs                                      | `docs/architecture/adr/`                                                                               |
+| Product rules                             | `docs/product/{glossary,feed-events}.md`                                                               |
+| Org rules · DB ops · setup                | `docs/code-organization.md` · `docs/engineering/database.md` · `docs/engineering/development-setup.md` |
+| QA flows                                  | `docs/qa/critical-flows.md`                                                                            |
 
 ## When you change things
 
@@ -129,4 +129,4 @@ read JSON/config files directly rather than via `node -e`.
 - Backend response shape change: update `apps/web/src/types/api.ts` (and feature types).
 - Per `docs/README.md`, update docs in the same PR when product behavior, feed/
   rating rules, auth, schema, key UX, API contracts, or QA flows change.
-</content>
+  </content>

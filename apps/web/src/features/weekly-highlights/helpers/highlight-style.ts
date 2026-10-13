@@ -1,11 +1,4 @@
-import {
-  CalendarCheck,
-  Crown,
-  Flame,
-  Medal,
-  TrendingUp,
-  type LucideIcon,
-} from 'lucide-react';
+import { CalendarCheck, Crown, Flame, Medal, TrendingUp, type LucideIcon } from 'lucide-react';
 import type { HighlightType } from '@/features/weekly-highlights/types/weekly-highlight.type';
 
 type HighlightStyle = {
@@ -28,4 +21,3 @@ const STYLES: Record<HighlightType, HighlightStyle> = {
 export function highlightStyle(type: HighlightType): HighlightStyle {
   return STYLES[type];
 }
-

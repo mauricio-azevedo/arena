@@ -32,14 +32,7 @@ export function RatingRing({ progress, size = 116, className, children }: Rating
             <stop offset="100%" stopColor="var(--ring-to)" />
           </linearGradient>
         </defs>
-        <circle
-          cx="50"
-          cy="50"
-          r={RADIUS}
-          fill="none"
-          stroke="var(--surface)"
-          strokeWidth="8"
-        />
+        <circle cx="50" cy="50" r={RADIUS} fill="none" stroke="var(--surface)" strokeWidth="8" />
         <circle
           cx="50"
           cy="50"

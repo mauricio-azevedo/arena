@@ -13,9 +13,7 @@ export function getInternalPathname(href: string) {
 
   const queryIndex = href.indexOf('?');
   const hashIndex = href.indexOf('#');
-  const endIndex = [queryIndex, hashIndex]
-    .filter((index) => index >= 0)
-    .sort((a, b) => a - b)[0];
+  const endIndex = [queryIndex, hashIndex].filter((index) => index >= 0).sort((a, b) => a - b)[0];
 
   return endIndex === undefined ? href : href.slice(0, endIndex);
 }

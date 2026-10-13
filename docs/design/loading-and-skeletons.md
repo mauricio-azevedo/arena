@@ -167,17 +167,17 @@ Do not remove accessible labels just because visible loading text is not shown.
 
 ## Recommended patterns by scenario
 
-| Scenario | Pattern |
-|---|---|
-| Navigating to group detail | Real back button plus route-level `loading.tsx` with group-detail skeleton |
-| Navigating to public profile | Real back button plus route-level profile skeleton when server data is pending |
-| Navigating to match create/edit | Real back button plus form-shaped skeleton |
-| Switching tabs with already-loaded data | Local selected tab state; do not trigger server navigation |
-| Switching tabs that fetch client-side data | Switch tab immediately, show tab-content skeleton |
-| Saving forms | Button loading state and disabled duplicate submit |
-| Fetching a list | List-shaped skeleton or card skeletons |
-| Empty result | Real empty state, not skeleton |
-| Error result | Real error state with recovery path |
+| Scenario                                   | Pattern                                                                        |
+| ------------------------------------------ | ------------------------------------------------------------------------------ |
+| Navigating to group detail                 | Real back button plus route-level `loading.tsx` with group-detail skeleton     |
+| Navigating to public profile               | Real back button plus route-level profile skeleton when server data is pending |
+| Navigating to match create/edit            | Real back button plus form-shaped skeleton                                     |
+| Switching tabs with already-loaded data    | Local selected tab state; do not trigger server navigation                     |
+| Switching tabs that fetch client-side data | Switch tab immediately, show tab-content skeleton                              |
+| Saving forms                               | Button loading state and disabled duplicate submit                             |
+| Fetching a list                            | List-shaped skeleton or card skeletons                                         |
+| Empty result                               | Real empty state, not skeleton                                                 |
+| Error result                               | Real error state with recovery path                                            |
 
 ## Copy rules
 

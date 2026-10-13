@@ -71,11 +71,7 @@ async function createGroupWithMembers(
   return { groupId: group.id, groupMemberIds };
 }
 
-async function runMatches(
-  groupId: string,
-  gm: string[],
-  specs: MatchSpec[],
-) {
+async function runMatches(groupId: string, gm: string[], specs: MatchSpec[]) {
   for (let index = 0; index < specs.length; index += 1) {
     const [a0, a1, b0, b1, winner] = specs[index];
     const hoursAgo = (specs.length - index) * 10;
@@ -190,9 +186,13 @@ async function main() {
   }
 
   console.log('Seed complete.');
-  console.log(`  Users: ${groupAUsers.length + groupBUsers.length} (password: ${PASSWORD})`);
+  console.log(
+    `  Users: ${groupAUsers.length + groupBUsers.length} (password: ${PASSWORD})`,
+  );
   console.log('  Groups: Quinta-feira (8), Praia Norte (6)');
-  console.log('  Log in as gus@arena.test to see Group A people + Arena backfill.');
+  console.log(
+    '  Log in as gus@arena.test to see Group A people + Arena backfill.',
+  );
   console.log('  Start the API so the worker processes the rebuild jobs.');
 }
 
