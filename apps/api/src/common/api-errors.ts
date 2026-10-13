@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 
 // Machine-readable codes for the business errors the frontend must distinguish.
-// Append-only: the web app mirrors these in `web/src/types/api.ts` and branches on
+// Append-only: the web app mirrors these in `apps/web/src/types/api.ts` and branches on
 // them instead of parsing message copy. Add a code only when a screen needs to react
 // to that specific failure — plain string exceptions stay the default everywhere else.
 export const API_ERROR_CODES = {

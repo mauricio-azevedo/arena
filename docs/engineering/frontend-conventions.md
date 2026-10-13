@@ -1,6 +1,6 @@
 # Frontend Conventions (Next.js / `web`)
 
-Observed conventions in `web/src` (verified 2026-06-17). Descriptive companion to
+Observed conventions in `apps/web/src` (verified 2026-06-17). Descriptive companion to
 [`../code-organization.md`](../code-organization.md).
 
 Stack: Next.js 16 App Router, React 19, TypeScript, Tailwind v4, shadcn/ui
@@ -12,7 +12,7 @@ Portuguese copy (`lang="pt-BR"`).
 ## 1. Directory layout
 
 ```txt
-web/src/
+apps/web/src/
   app/        routes (page.tsx, loading.tsx, layout.tsx) — thin
   components/ globally shared UI (app-shell, bottom-nav, ui/* shadcn primitives)
   features/   product features (the bulk of the code)
@@ -72,7 +72,7 @@ only (except route files, which need `default`).
   **`ApiError`** (`lib/api-error.ts`, extends `Error`) on non-2xx — `message`
   extracted from the JSON body (arrays joined), plus `status` (HTTP) and `code`
   (machine-readable business code, `ApiErrorCode` in `types/api.ts`, mirrored from
-  `api/src/common/api-errors.ts`). Base URL from `NEXT_PUBLIC_API_URL`.
+  `apps/api/src/common/api-errors.ts`). Base URL from `NEXT_PUBLIC_API_URL`.
 - **Branch on `code`/`status`, never on `message`** — backend copy changes freely.
   For error copy, use the single mapper `apiErrorMessage(error, fallback, overrides?)`
   (`lib/api-error.ts`): central PT copy per shared code, per-screen `overrides` for
@@ -160,6 +160,7 @@ export function getProfileMatches(token: string): Promise<ProfileMatchListItem[]
 Follow the bars in `AGENTS.md` — the Product/UI Quality Bar (ship-ready copy, no
 implementation/architecture leaking into UI, intentional loading/empty/error states,
 mobile-first, elegant) and the Code Quality Baseline (reuse the existing primitive,
-ship every state, single-source derived UI). Tooling: `npm run dev`, `npm run build`,
-`npm run lint`.
+ship every state, single-source derived UI). Tooling, from `apps/web` (or
+`pnpm --filter @arena/web <script>` from the repo root): `pnpm run dev`, `pnpm run build`,
+`pnpm run lint`.
 </content>

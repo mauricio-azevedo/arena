@@ -16,10 +16,10 @@ The projection intentionally does not persist `winRate`; consumers derive it fro
 Run these after applying the migration and regenerating the Prisma client:
 
 ```bash
-cd api
-npx prisma migrate dev
-npx prisma generate
-npm run build
+cd apps/api
+pnpm exec prisma migrate dev
+pnpm exec prisma generate
+pnpm run build
 ```
 
 Use a development group with at least four active members.

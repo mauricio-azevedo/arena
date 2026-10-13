@@ -2,33 +2,43 @@
 
 This document describes the expected local development workflow for Arena.
 
-Arena is a monorepo with two applications:
+Arena is a pnpm-workspaces monorepo with two applications:
 
 ```txt
-api/  NestJS backend
-web/  Next.js frontend
+apps/api/  NestJS backend
+apps/web/  Next.js frontend
 ```
 
 ## Prerequisites
 
-Recommended tools:
+Required tools:
 
-- Node.js compatible with the project package manager setup;
-- npm or the package manager defined by the repository lockfiles;
-- PostgreSQL-compatible database, usually Neon for hosted development;
+- Node.js 22 — `.nvmrc` pins the major (`nvm use`);
+- pnpm 11 — the exact version is the `packageManager` field of the root `package.json`
+  (`corepack enable` installs it automatically);
+- Docker for the local PostgreSQL (`docker-compose up -d` → `localhost:5433`), or a hosted Neon
+  database;
 - GitHub access to the repository.
 
-Check the root and app-specific package files before installing dependencies.
+Install once, from the repo root:
+
+```bash
+pnpm install
+```
+
+One lockfile (`pnpm-lock.yaml`) covers every workspace package; there are no per-app installs.
 
 ## Repository layout
 
 ```txt
 arena/
-  api/
-    prisma/
-    src/
-  web/
-    src/
+  apps/
+    api/
+      prisma/
+      src/
+    web/
+      src/
+  packages/
   docs/
 ```
 
@@ -57,12 +67,11 @@ Guidelines:
 
 Typical backend workflow:
 
-```txt
-cd api
-install dependencies
-configure .env
-run Prisma generation/migrations
-start the NestJS dev server
+```bash
+cd apps/api
+# configure .env (DATABASE_URL, JWT_SECRET)
+pnpm exec prisma migrate dev   # applies migrations and regenerates the client
+pnpm run start:dev
 ```
 
 Expected responsibilities of the backend dev server:
@@ -76,11 +85,10 @@ Expected responsibilities of the backend dev server:
 
 Typical frontend workflow:
 
-```txt
-cd web
-install dependencies
-configure .env
-start the Next.js dev server
+```bash
+cd apps/web
+# configure the env file (NEXT_PUBLIC_API_URL)
+pnpm run dev
 ```
 
 Expected responsibilities of the frontend dev server:
@@ -94,7 +102,7 @@ Expected responsibilities of the frontend dev server:
 
 After schema changes:
 
-1. update `api/prisma/schema.prisma`;
+1. update `apps/api/prisma/schema.prisma`;
 2. create/apply the appropriate migration if the database schema changes;
 3. regenerate Prisma client;
 4. update generated files only through the normal Prisma workflow;
@@ -109,7 +117,7 @@ Before opening a PR, ideally verify:
 - backend starts;
 - frontend starts;
 - TypeScript passes;
-- lint passes;
+- `pnpm run lint:check` and `pnpm run format:check` pass;
 - critical changed flows work manually;
 - migrations are included when schema changes require them;
 - docs are updated when product/architecture/API behavior changes.
@@ -124,6 +132,20 @@ A strong PR description should include:
 - validation performed;
 - migration notes when applicable;
 - rollback notes when risky.
+
+## Deployment
+
+Both apps deploy from `main`; neither host builds other branches.
+
+- **Web → Vercel.** Root Directory `apps/web`. pnpm is detected from the root `pnpm-lock.yaml` and
+  the `packageManager` field. The root `vercel.json` limits automatic deployments to `main`: Vercel
+  reads its `git` settings from the repository root, not from the Root Directory (verified
+  2026-10-13: a branch push with the file only under `apps/web` created a preview deployment).
+- **API → Render.** Root Directory stays the repo root: Render cannot read files above it, and the
+  lockfile lives there. Build `pnpm install --frozen-lockfile && pnpm --filter @arena/api build`,
+  start `pnpm --filter @arena/api start:prod` (runs with `apps/api` as cwd), health check `/health`.
+  Migrations are deployed explicitly with `pnpm --filter @arena/api exec prisma migrate deploy`;
+  they are not part of the build.
 
 ## Troubleshooting
 

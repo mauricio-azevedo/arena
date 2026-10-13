@@ -100,7 +100,7 @@ For match-derived events, this should normally be the match `playedAt`, not the 
 ## Backend components
 
 ```txt
-api/src/feed/
+apps/api/src/feed/
   feed.module.ts
   feed.controller.ts
   feed-reader.service.ts
@@ -176,7 +176,7 @@ A generator should:
 
 ### Types
 
-Feed input/draft contracts live in `api/src/feed/types/`.
+Feed input/draft contracts live in `apps/api/src/feed/types/`.
 
 Examples:
 
@@ -193,7 +193,7 @@ ranking-movement-feed-input.type.ts
 ## Frontend components
 
 ```txt
-web/src/features/feed/
+apps/web/src/features/feed/
   home-feed.tsx
   feed.api.ts
   components/

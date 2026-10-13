@@ -53,14 +53,16 @@ Deployment:
 
 - Render;
 - Prisma migrations must be deployed explicitly;
-- Prisma client generation matters because generated client code is stored in the repo.
+- Prisma client generation matters because the generated client is git-ignored and produced by
+  `prisma generate` during the build.
 
 ## Repository structure
 
 ```txt
 arena/
-  api/      NestJS backend
-  web/      Next.js frontend
+  apps/
+    api/    NestJS backend
+    web/    Next.js frontend
   docs/     product, engineering, architecture, QA, and AI workflow docs
 ```
 

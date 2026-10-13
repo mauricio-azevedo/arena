@@ -1,6 +1,6 @@
 # Backend Conventions (NestJS / `api`)
 
-Observed conventions in `api/src` (verified 2026-06-17). This is the _descriptive_
+Observed conventions in `apps/api/src` (verified 2026-06-17). This is the _descriptive_
 companion to the _prescriptive_ [`../code-organization.md`](../code-organization.md)
 — it records what the code actually does today.
 
@@ -51,7 +51,7 @@ create(@Param('groupId') groupId: string, @CurrentUser() user: AuthUser,
   `codedUnauthorized`. They stamp the full body `{ statusCode, error, code, message }`
   (Nest passes object bodies through verbatim, so the factories carry the standard
   fields themselves). The `API_ERROR_CODES` registry is **append-only** — the web app
-  mirrors it by hand in `web/src/types/api.ts` and branches on `code`, never on copy.
+  mirrors it by hand in `apps/web/src/types/api.ts` and branches on `code`, never on copy.
   Plain string exceptions remain the default everywhere else.
 - Multi-write workflows run in `this.prisma.$transaction(async (tx) => …)`.
   Services accept an optional `tx` (`Prisma.TransactionClient | PrismaService`,
@@ -61,7 +61,7 @@ create(@Param('groupId') groupId: string, @CurrentUser() user: AuthUser,
 ## 4. Prisma usage
 
 - Access only through injected `PrismaService` inside services.
-- Generated client in `api/src/generated/prisma/` — import enums from
+- Generated client in `apps/api/src/generated/prisma/` — import enums from
   `../generated/prisma/enums`, types from `../generated/prisma/client`. Never edit
   generated files.
 - `$queryRaw`/`$executeRaw` used for soft-delete filtering (`deletedAt IS NULL`)
@@ -102,8 +102,9 @@ create(@Param('groupId') groupId: string, @CurrentUser() user: AuthUser,
 
 - Jest (`*.spec.ts` under `src`, e2e under `test/`). Coverage is currently thin —
   rating/projection logic is the highest-value place to add tests.
-- `npm run build` (runs `prisma generate` then `nest build`), `npm run lint`
-  (eslint --fix), `npm test`. Prettier at repo root (`npm run format`).
+- From `apps/api` (or `pnpm --filter @arena/api <script>` from the repo root): `pnpm run build`
+  (runs `prisma generate` then `nest build`), `pnpm run lint` (eslint --fix), `pnpm test`.
+  Prettier at the repo root (`pnpm run format`).
 
 ## 10. API route map
 

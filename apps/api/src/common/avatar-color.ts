@@ -1,6 +1,6 @@
 // Avatar palette keys (the frontend owns each key→gradient; the backend only stores
 // and validates the key). Keep this list and its order in sync with the SQL backfill
-// migration and web/src/lib/avatar-color.ts.
+// migration and apps/web/src/lib/avatar-color.ts.
 export const AVATAR_COLOR_KEYS = [
   'blue',
   'green',

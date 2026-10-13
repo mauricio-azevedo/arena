@@ -173,35 +173,42 @@ Do not reorganize based on momentary preference unless the guide is updated.
 
 ## 3. Repository structure
 
-Arena is a monorepo:
+Arena is a pnpm-workspaces monorepo (`pnpm-workspace.yaml` declares `apps/*` and `packages/*`):
 
 ```txt
 arena/
-  api/
-  web/
+  apps/
+    api/
+    web/
+  packages/
   docs/
 ```
 
-### 3.1 `api/`
+### 3.1 `apps/api/`
 
 Backend NestJS application.
 
 ```txt
-api/
+apps/api/
   prisma/
   src/
 ```
 
-### 3.2 `web/`
+### 3.2 `apps/web/`
 
 Frontend Next.js application.
 
 ```txt
-web/
+apps/web/
   src/
 ```
 
-### 3.3 `docs/`
+### 3.3 `packages/`
+
+Shared workspace packages (`@arena/*`), consumed by the apps through `workspace:*` dependencies.
+Empty until the first genuinely shared contract exists — do not create one speculatively.
+
+### 3.4 `docs/`
 
 Project documentation.
 
@@ -230,7 +237,7 @@ docs/api-design.md
 The frontend should follow this high-level structure:
 
 ```txt
-web/src/
+apps/web/src/
   app/
   components/
   features/
