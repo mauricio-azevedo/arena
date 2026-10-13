@@ -34,7 +34,6 @@ export function ProfileSignedOutState() {
       icon={<UserRound className="size-10 text-faint-foreground" strokeWidth={1.8} aria-hidden />}
       title="Entre na sua conta"
     >
-
       <div className="mt-loose flex w-full max-w-[19rem] flex-col gap-base text-left">
         {VALUE_PROPS.map(({ icon: Icon, title, description }) => (
           <div key={title} className="flex items-center gap-base">

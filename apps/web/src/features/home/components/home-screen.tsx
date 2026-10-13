@@ -4,44 +4,47 @@ import { useEffect, useState } from 'react';
 import { getGroupHome } from '@/features/groups/api/groups.api';
 import type { GroupHomeCard } from '@/features/groups/types/group-home.type';
 import { WeeklyHighlightsRail } from '@/features/weekly-highlights/components/weekly-highlights-rail';
-import { getAccessToken } from '@/lib/auth';
+import { useAccessToken } from '@/hooks/use-access-token';
 import { GroupsSection } from './groups-section';
 import { HomeSearchPlaceholder } from './home-search-placeholder';
 
-type Status = 'loading' | 'ready' | 'error';
+type HomeState =
+  | { status: 'loading' }
+  | { status: 'ready'; cards: GroupHomeCard[] }
+  | { status: 'error' };
 
 export function HomeScreen() {
-  const [status, setStatus] = useState<Status>('loading');
-  const [cards, setCards] = useState<GroupHomeCard[]>([]);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const token = useAccessToken();
+  const [home, setHome] = useState<HomeState>({ status: 'loading' });
 
   useEffect(() => {
-    let isCurrent = true;
-    const token = getAccessToken() ?? undefined;
-    setIsLoggedIn(Boolean(token));
-    setStatus('loading');
+    // Storage not readable yet (hydration): wait for the token or null.
+    if (token === undefined) return;
 
-    getGroupHome(token)
-      .then((home) => {
-        if (isCurrent) {
-          setCards(home);
-          setStatus('ready');
-        }
+    let isCurrent = true;
+
+    getGroupHome(token ?? undefined)
+      .then((cards) => {
+        if (isCurrent) setHome({ status: 'ready', cards });
       })
       .catch(() => {
-        if (isCurrent) setStatus('error');
+        if (isCurrent) setHome({ status: 'error' });
       });
 
     return () => {
       isCurrent = false;
     };
-  }, []);
+  }, [token]);
 
   return (
     <div className="space-y-section">
       <HomeSearchPlaceholder />
       <WeeklyHighlightsRail />
-      <GroupsSection status={status} cards={cards} isLoggedIn={isLoggedIn} />
+      <GroupsSection
+        status={home.status}
+        cards={home.status === 'ready' ? home.cards : []}
+        isLoggedIn={Boolean(token)}
+      />
     </div>
   );
 }

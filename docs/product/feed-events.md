@@ -25,14 +25,14 @@ Feed events should not:
 
 ## Current event catalog
 
-| Technical type | UI name | Source | Visibility | Status |
-|---|---|---|---|---|
-| `GROUP_CREATED` | Group created | group creation | `SOCIAL_CIRCLE` | implemented |
-| `MEMBER_JOINED` | Member joined | invite acceptance / membership activation | `GROUP_MEMBERS` | implemented |
-| `MATCH_BLOWOUT` | Atropelo! | match create/update | `GROUP_MEMBERS` | implemented |
-| `MATCH_CLOSE` | No detalhe! | match create/update | `GROUP_MEMBERS` | implemented |
+| Technical type     | UI name                   | Source                                    | Visibility      | Status      |
+| ------------------ | ------------------------- | ----------------------------------------- | --------------- | ----------- |
+| `GROUP_CREATED`    | Group created             | group creation                            | `SOCIAL_CIRCLE` | implemented |
+| `MEMBER_JOINED`    | Member joined             | invite acceptance / membership activation | `GROUP_MEMBERS` | implemented |
+| `MATCH_BLOWOUT`    | Atropelo!                 | match create/update                       | `GROUP_MEMBERS` | implemented |
+| `MATCH_CLOSE`      | No detalhe!               | match create/update                       | `GROUP_MEMBERS` | implemented |
 | `RANKING_MOVEMENT` | ranking movement headline | ranking projection after match processing | `GROUP_MEMBERS` | implemented |
-| `UPSET_WIN` | TBD | match create/update | TBD | planned |
+| `UPSET_WIN`        | TBD                       | match create/update                       | TBD             | planned     |
 
 ## Shared feed item fields
 
@@ -139,14 +139,14 @@ A match generates `MATCH_BLOWOUT` when:
 Examples:
 
 | Stored score | Winner | Generates? | UI score |
-|---|---:|---:|---:|
-| `6-0` | Team A | yes | `6-0` |
-| `6-1` | Team A | yes | `6-1` |
-| `0-6` | Team B | yes | `6-0` |
-| `1-6` | Team B | yes | `6-1` |
-| `6-2` | Team A | no | — |
-| `7-1` | Team A | no | — |
-| `7-6` | Team A | no | — |
+| ------------ | -----: | ---------: | -------: |
+| `6-0`        | Team A |        yes |    `6-0` |
+| `6-1`        | Team A |        yes |    `6-1` |
+| `0-6`        | Team B |        yes |    `6-0` |
+| `1-6`        | Team B |        yes |    `6-1` |
+| `6-2`        | Team A |         no |        — |
+| `7-1`        | Team A |         no |        — |
+| `7-6`        | Team A |         no |        — |
 
 The frontend must display the score from the winning team's perspective, not necessarily the stored Team A / Team B perspective.
 
@@ -197,12 +197,12 @@ A match generates `MATCH_CLOSE` when:
 Examples:
 
 | Stored score | Winner | Generates? | UI score |
-|---|---:|---:|---:|
-| `7-6` | Team A | yes | `7-6` |
-| `6-7` | Team B | yes | `7-6` |
-| `7-5` | Team A | no | — |
-| `6-4` | Team A | no | — |
-| `6-1` | Team A | no | — |
+| ------------ | -----: | ---------: | -------: |
+| `7-6`        | Team A |        yes |    `7-6` |
+| `6-7`        | Team B |        yes |    `7-6` |
+| `7-5`        | Team A |         no |        — |
+| `6-4`        | Team A |         no |        — |
+| `6-1`        | Team A |         no |        — |
 
 The frontend must display the score from the winning team's perspective, not necessarily the stored Team A / Team B perspective.
 
@@ -268,27 +268,27 @@ A movement is relevant when:
 
 This means:
 
-| Movement | Generates? | Reason |
-|---|---:|---|
-| `↑1` to `#1` | yes | new leader |
-| `↑1` not to `#1` | no | too small |
-| `↑2` / `↑3` | yes | visible movement |
-| `↑4+` | yes | big movement |
-| `↓1` from `#1` | yes | leader lost the top |
-| `↓1` not from `#1` | no | too small |
-| `↓2` / `↓3` | yes | visible movement |
-| `↓4+` | yes | big movement |
+| Movement           | Generates? | Reason              |
+| ------------------ | ---------: | ------------------- |
+| `↑1` to `#1`       |        yes | new leader          |
+| `↑1` not to `#1`   |         no | too small           |
+| `↑2` / `↑3`        |        yes | visible movement    |
+| `↑4+`              |        yes | big movement        |
+| `↓1` from `#1`     |        yes | leader lost the top |
+| `↓1` not from `#1` |         no | too small           |
+| `↓2` / `↓3`        |        yes | visible movement    |
+| `↓4+`              |        yes | big movement        |
 
 ### Copy rules
 
 Movement verbs:
 
-| Direction | Positions | Verb |
-|---|---:|---|
-| UP | `2-3` | sobe / sobem |
-| UP | `4+` | dispara / disparam |
-| DOWN | `2-3` | cai / caem |
-| DOWN | `4+` | desaba / desabam |
+| Direction | Positions | Verb               |
+| --------- | --------: | ------------------ |
+| UP        |     `2-3` | sobe / sobem       |
+| UP        |      `4+` | dispara / disparam |
+| DOWN      |     `2-3` | cai / caem         |
+| DOWN      |      `4+` | desaba / desabam   |
 
 Leadership has highest priority and should mention both old and new leader context when available:
 

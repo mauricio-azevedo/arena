@@ -1,6 +1,6 @@
 # Rating Architecture
 
-> **Execution model has changed.** The rating *math* and *snapshot* concepts
+> **Execution model has changed.** The rating _math_ and _snapshot_ concepts
 > below are still accurate, but match writes no longer compute ratings inline via
 > a synchronous "fast path". They enqueue a `ProcessingJob`; an async worker runs
 > a **full group recalculation** (plus the ranking/stats/feed/trending cascade).

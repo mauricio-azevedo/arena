@@ -1,13 +1,6 @@
 'use client';
 
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useMemo,
-  useState,
-  type ReactNode,
-} from 'react';
+import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
 
 const STORAGE_KEY = 'arena:navigation-stack';
@@ -32,7 +25,7 @@ export function NavigationProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
   const [stack, setStack] = useState<string[]>(() => readStack());
 
-  const previousHref = stack.length > 1 ? stack[stack.length - 2] ?? null : null;
+  const previousHref = stack.length > 1 ? (stack[stack.length - 2] ?? null) : null;
 
   const registerHref = useCallback((href: string) => {
     setStack((currentStack) => {

@@ -7,11 +7,20 @@ import type { GroupHomeSummaryService } from '../groups/group-home-summary.servi
 import type { ClaimService } from '../claims/claim.service';
 import type { NotificationWriterService } from '../notifications/notification-writer.service';
 
-type PrismaMock = {
-  group: { findUnique: jest.Mock };
-  groupMember: { findUnique: jest.Mock };
-  groupInvite: { findFirst: jest.Mock; create: jest.Mock };
-};
+// Plain creates read optimistically then INSERT — no transaction, no advisory lock.
+// Only the calls the tests inspect are typed; the rest stay loose mocks.
+function buildPrismaMock() {
+  return {
+    group: { findUnique: jest.fn() },
+    groupMember: { findUnique: jest.fn() },
+    groupInvite: {
+      findFirst: jest.fn<Promise<unknown>, [Prisma.GroupInviteFindFirstArgs]>(),
+      create: jest.fn<Promise<unknown>, [Prisma.GroupInviteCreateArgs]>(),
+    },
+  };
+}
+
+type PrismaMock = ReturnType<typeof buildPrismaMock>;
 
 // The partial unique index throws this on a lost plain-mint race.
 function uniqueViolation() {
@@ -22,12 +31,7 @@ function uniqueViolation() {
 }
 
 function buildService() {
-  // Plain creates read optimistically then INSERT — no transaction, no advisory lock.
-  const prisma: PrismaMock = {
-    group: { findUnique: jest.fn() },
-    groupMember: { findUnique: jest.fn() },
-    groupInvite: { findFirst: jest.fn(), create: jest.fn() },
-  };
+  const prisma = buildPrismaMock();
   const service = new GroupInvitesService(
     prisma as unknown as PrismaService,
     {} as FeedOrchestratorService,
@@ -103,11 +107,9 @@ describe('GroupInvitesService.create', () => {
 
     // Explicit options never touch the reuse read.
     expect(prisma.groupInvite.findFirst).not.toHaveBeenCalled();
-    expect(prisma.groupInvite.create).toHaveBeenCalledWith(
-      expect.objectContaining({
-        data: expect.objectContaining({ maxUses: 5 }),
-      }),
-    );
+    expect(prisma.groupInvite.create).toHaveBeenCalledTimes(1);
+    const [createArgs] = prisma.groupInvite.create.mock.calls[0];
+    expect(createArgs.data).toMatchObject({ maxUses: 5 });
   });
 
   it('reuses per target: a closed invite only matches the same guest', async () => {
@@ -128,11 +130,11 @@ describe('GroupInvitesService.create', () => {
       targetGroupMemberId: 'guest-1',
     });
 
-    expect(prisma.groupInvite.findFirst).toHaveBeenCalledWith(
-      expect.objectContaining({
-        where: expect.objectContaining({ targetGroupMemberId: 'guest-1' }),
-      }),
-    );
+    expect(prisma.groupInvite.findFirst).toHaveBeenCalledTimes(1);
+    const [findFirstArgs] = prisma.groupInvite.findFirst.mock.calls[0];
+    expect(findFirstArgs.where).toMatchObject({
+      targetGroupMemberId: 'guest-1',
+    });
     expect(result.path).toBe('/invites/tok-4');
   });
 

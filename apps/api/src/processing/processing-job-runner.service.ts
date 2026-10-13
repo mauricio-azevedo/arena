@@ -224,8 +224,13 @@ export class ProcessingJobRunnerService {
       case 'GROUP':
         await this.processGroupJob(job);
         return;
-      default:
-        throw new Error(`Unsupported processing job scope: ${job.scope}`);
+      default: {
+        // Exhaustive: a new scope without a case fails to compile here.
+        const unsupported: never = job.scope;
+        throw new Error(
+          `Unsupported processing job scope: ${String(unsupported)}`,
+        );
+      }
     }
   }
 
@@ -255,8 +260,12 @@ export class ProcessingJobRunnerService {
       case 'GROUP_RANKING_REBUILD':
         await this.processGroupProjectionJob(groupId, null, false);
         break;
-      default:
-        throw new Error(`Unsupported group processing job type: ${job.type}`);
+      default: {
+        const unsupported: never = job.type;
+        throw new Error(
+          `Unsupported group processing job type: ${String(unsupported)}`,
+        );
+      }
     }
   }
 

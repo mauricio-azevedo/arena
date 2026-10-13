@@ -28,6 +28,11 @@ const FILTERS: { key: Filter; enabled: boolean }[] = [
 
 type Status = 'loading' | 'ready' | 'error';
 
+type AllGroups =
+  | { status: 'idle' }
+  | { status: 'ready'; cards: GroupHomeCard[] }
+  | { status: 'error' };
+
 export function GroupsSection({
   status,
   cards,
@@ -38,45 +43,44 @@ export function GroupsSection({
   isLoggedIn: boolean;
 }) {
   const [filter, setFilter] = useState<Filter>('Meus');
-  const [allGroups, setAllGroups] = useState<GroupHomeCard[] | null>(null);
-  const [allStatus, setAllStatus] = useState<'idle' | 'loading' | 'error'>('idle');
+  const [allGroups, setAllGroups] = useState<AllGroups>({ status: 'idle' });
   const [createOpen, setCreateOpen] = useState(false);
 
-  // Busca os grupos uma vez quando "Todos" é aberto. allStatus fica FORA das deps:
-  // se estivesse, o setAllStatus('loading') aqui re-rodaria o effect e o cleanup
-  // zeraria isCurrent do fetch em voo, travando no skeleton.
+  // Busca os grupos uma vez quando "Todos" é aberto. `idle` também cobre o fetch em
+  // voo: o skeleton é derivado, nada é setado antes da resposta.
   useEffect(() => {
-    if (filter !== 'Todos' || allGroups !== null) {
+    if (filter !== 'Todos' || allGroups.status !== 'idle') {
       return;
     }
 
     let isCurrent = true;
-    setAllStatus('loading');
 
     getAllGroups(getAccessToken() ?? undefined)
       .then((data) => {
-        if (!isCurrent) return;
-        setAllGroups(data);
-        setAllStatus('idle');
+        if (isCurrent) setAllGroups({ status: 'ready', cards: data });
       })
       .catch(() => {
-        if (isCurrent) setAllStatus('error');
+        if (isCurrent) setAllGroups({ status: 'error' });
       });
 
     return () => {
       isCurrent = false;
     };
-  }, [filter, allGroups]);
+  }, [filter, allGroups.status]);
+
+  function selectFilter(key: Filter) {
+    setFilter(key);
+    // Reabrir "Todos" depois de uma falha tenta de novo.
+    if (key === 'Todos' && allGroups.status === 'error') setAllGroups({ status: 'idle' });
+  }
 
   const memberCards = cards.filter((card) => card.relationship === 'MEMBER');
   const isTodos = filter === 'Todos';
-  const list = isTodos ? (allGroups ?? []) : memberCards;
+  const list = isTodos ? (allGroups.status === 'ready' ? allGroups.cards : []) : memberCards;
   const sectionStatus: Status = isTodos
-    ? allStatus === 'error'
-      ? 'error'
-      : allGroups === null
-        ? 'loading'
-        : 'ready'
+    ? allGroups.status === 'idle'
+      ? 'loading'
+      : allGroups.status
     : status;
   const showEmpty = !isTodos && memberCards.length === 0;
 
@@ -93,7 +97,7 @@ export function GroupsSection({
               type="button"
               disabled={!enabled}
               aria-pressed={active}
-              onClick={() => enabled && setFilter(key)}
+              onClick={() => enabled && selectFilter(key)}
               className={cn(
                 'flex h-11 shrink-0 items-center rounded-pill px-4 shadow-hairline transition-colors',
                 active ? 'bg-primary text-primary-foreground' : 'bg-surface text-muted-foreground',

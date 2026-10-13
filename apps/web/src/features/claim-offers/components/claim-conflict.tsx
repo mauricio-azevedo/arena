@@ -21,8 +21,7 @@ export function ClaimConflict({
   sharedMatches,
   admins,
 }: ClaimConflictProps) {
-  const sharedLabel =
-    sharedMatches.length > 1 ? 'Partidas em comum' : 'A partida em comum';
+  const sharedLabel = sharedMatches.length > 1 ? 'Partidas em comum' : 'A partida em comum';
 
   return (
     <div className="flex flex-col gap-7 py-2">
@@ -31,9 +30,7 @@ export function ClaimConflict({
       <div className="flex flex-col items-center gap-4 text-center">
         <DashedAvatar initial={nameInitial(stubName)} className="size-[88px] text-stat-xl" />
         <div className="space-y-2">
-          <Title className="text-balance text-foreground">
-            Vocês já jogaram a mesma partida
-          </Title>
+          <Title className="text-balance text-foreground">Vocês já jogaram a mesma partida</Title>
           <Body className="mx-auto max-w-[20rem] text-muted-foreground">
             Você e o perfil <span className="font-bold text-foreground">{stubName}</span> já
             apareceram juntos em quadra. Como ninguém joga dos dois lados de um mesmo jogo, este
@@ -118,10 +115,7 @@ function SharedMatchCard({ match }: { match: SharedMatch }) {
                 </span>
               ))}
             </div>
-            <Stat
-              size="sm"
-              className={team.won ? 'text-brand' : 'text-faint-foreground'}
-            >
+            <Stat size="sm" className={team.won ? 'text-brand' : 'text-faint-foreground'}>
               {team.score}
             </Stat>
           </div>

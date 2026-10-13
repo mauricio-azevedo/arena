@@ -5,6 +5,11 @@ coverage
 
 apps/api/src/generated
 apps/api/prisma/migrations
+apps/web/next-env.d.ts
+apps/web/.design-sync/.cache
+apps/web/.design-sync/learnings
+apps/web/.ds-sync
+apps/web/ds-bundle
 
 .env
 .env.*

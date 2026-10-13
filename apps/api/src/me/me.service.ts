@@ -171,8 +171,7 @@ export class MeService {
     }
 
     const input: NormalizedUpdateProfileInput = {};
-    const has = (field: string) =>
-      Object.prototype.hasOwnProperty.call(body, field);
+    const has = (field: string) => Object.hasOwn(body, field);
 
     if (!PROFILE_UPDATE_FIELDS.some((field) => has(field))) {
       throw new BadRequestException('At least one profile field is required');

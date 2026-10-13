@@ -39,7 +39,7 @@ depends on the viewer and on "now", so it can't be precomputed):
 - **Your people** — `GroupHighlight` from the viewer's active groups within the 7-day
   window; one card per person (their strongest), ≤2 per type, up to 5.
 - **Arena backfill** — a viewer-independent, briefly cached pool of the strongest recent
-  highlights from *other* groups, held to a higher bar (streak/record/climb ≥5, milestone
+  highlights from _other_ groups, held to a higher bar (streak/record/climb ≥5, milestone
   ≥50, leadership always). Always appended; fills up to 8 when the viewer has no people of
   their own (logged-out / no group).
 

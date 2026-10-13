@@ -37,7 +37,7 @@ features/profile
 features/groups
 features/feed
 features/auth
-````
+```
 
 Avoid:
 
@@ -60,14 +60,14 @@ Before creating files, routes, schemas, or components, understand the domain.
 
 For structural decisions, think through:
 
-* entities;
-* relationships;
-* cardinality;
-* ownership of data;
-* permissions;
-* privacy;
-* edge cases;
-* future consequences.
+- entities;
+- relationships;
+- cardinality;
+- ownership of data;
+- permissions;
+- privacy;
+- edge cases;
+- future consequences.
 
 Do not design only from the current UI.
 
@@ -259,10 +259,10 @@ app/groups/[groupId]/page.tsx
 
 Rules:
 
-* `app/` should define routes.
-* Route files should stay thin.
-* Business/UI logic should live in `features/`.
-* `page.tsx` should usually import and render a feature component.
+- `app/` should define routes.
+- Route files should stay thin.
+- Business/UI logic should live in `features/`.
+- `page.tsx` should usually import and render a feature component.
 
 Good:
 
@@ -354,9 +354,9 @@ lib/utils.ts
 
 Rules:
 
-* `lib/` must not import from `features/`.
-* `lib/` should not know product-specific UI.
-* `lib/` may contain API primitives, token storage, generic utility functions, and framework glue.
+- `lib/` must not import from `features/`.
+- `lib/` should not know product-specific UI.
+- `lib/` may contain API primitives, token storage, generic utility functions, and framework glue.
 
 ---
 
@@ -405,19 +405,19 @@ features/profile/profile.tsx
 
 The root component can:
 
-* load base feature data;
-* manage feature-level state;
-* coordinate child components;
-* render tabs or subfeatures;
-* handle feature-level loading/error/signed-out states.
+- load base feature data;
+- manage feature-level state;
+- coordinate child components;
+- render tabs or subfeatures;
+- handle feature-level loading/error/signed-out states.
 
 The root component should not:
 
-* contain large formatting helpers;
-* define exported types;
-* contain API calls directly;
-* contain large child sections inline;
-* know details of every nested subfeature.
+- contain large formatting helpers;
+- define exported types;
+- contain API calls directly;
+- contain large child sections inline;
+- know details of every nested subfeature.
 
 ---
 
@@ -456,9 +456,9 @@ A section usually represents a visible area of a page or tab.
 
 Rules:
 
-* Sections may compose components.
-* Sections should not call APIs directly unless they are the root of a subfeature.
-* Sections should not define domain types.
+- Sections may compose components.
+- Sections should not call APIs directly unless they are the root of a subfeature.
+- Sections should not define domain types.
 
 ---
 
@@ -500,11 +500,11 @@ features/profile/
 
 Use this when each tab has:
 
-* its own API;
-* its own types;
-* its own sections;
-* its own loading logic;
-* its own business behavior.
+- its own API;
+- its own types;
+- its own sections;
+- its own loading logic;
+- its own business behavior.
 
 Do not promote tabs to top-level features unless they are used outside the parent feature.
 
@@ -570,12 +570,12 @@ GET /me/profile/matches
 
 API files should:
 
-* export functions only;
-* use `apiRequest`;
-* not contain UI logic;
-* not format data for display;
-* not access `localStorage` directly unless explicitly responsible for auth;
-* not define large types inline.
+- export functions only;
+- use `apiRequest`;
+- not contain UI logic;
+- not format data for display;
+- not access `localStorage` directly unless explicitly responsible for auth;
+- not define large types inline.
 
 Good:
 
@@ -651,11 +651,11 @@ But if `ProfileSummaryStats` is imported elsewhere, it should get its own file.
 
 Create a separate file when the type:
 
-* is imported by more than one file;
-* represents a domain concept;
-* is part of a public API contract;
-* is reused across tabs/features;
-* is large enough to distract from the parent type.
+- is imported by more than one file;
+- represents a domain concept;
+- is part of a public API contract;
+- is reused across tabs/features;
+- is large enough to distract from the parent type.
 
 Good:
 
@@ -715,15 +715,15 @@ export enum ProfileMatchResult {
 
 Use union types when:
 
-* runtime lookup is not needed;
-* values come from the API;
-* the enum is only used for typing.
+- runtime lookup is not needed;
+- values come from the API;
+- the enum is only used for typing.
 
 Use runtime enums or constants when:
 
-* values are iterated over;
-* values are rendered in UI maps;
-* values are used at runtime.
+- values are iterated over;
+- values are rendered in UI maps;
+- values are used at runtime.
 
 ---
 
@@ -856,11 +856,11 @@ profile/enums
 
 Avoid circular dependencies between:
 
-* components;
-* helpers;
-* API files;
-* types;
-* tabs.
+- components;
+- helpers;
+- API files;
+- types;
+- tabs.
 
 If a cycle appears, it usually means code belongs in a parent/shared folder.
 
@@ -882,12 +882,12 @@ Add:
 
 only when the file uses:
 
-* `useState`;
-* `useEffect`;
-* browser APIs;
-* event handlers;
-* localStorage;
-* client-side navigation hooks.
+- `useState`;
+- `useEffect`;
+- browser APIs;
+- event handlers;
+- localStorage;
+- client-side navigation hooks.
 
 ### 14.3 Client boundary placement
 
@@ -940,9 +940,9 @@ export function RecentMatchesSection() {}
 Use camelCase:
 
 ```ts
-formatProfileRelativeDate()
-getProfileMatches()
-buildUserProfileHref()
+formatProfileRelativeDate();
+getProfileMatches();
+buildUserProfileHref();
 ```
 
 ### 15.4 Types
@@ -950,9 +950,9 @@ buildUserProfileHref()
 Use PascalCase:
 
 ```ts
-ProfileUser
-ProfileSummary
-ProfileMatchListItem
+ProfileUser;
+ProfileSummary;
+ProfileMatchListItem;
 ```
 
 ### 15.5 No default exports except framework-required files
@@ -1042,10 +1042,10 @@ rating/
 
 A module should contain:
 
-* controller for HTTP entrypoints;
-* services for business logic;
-* types/dtos for contracts;
-* helper classes when needed.
+- controller for HTTP entrypoints;
+- services for business logic;
+- types/dtos for contracts;
+- helper classes when needed.
 
 ---
 
@@ -1055,19 +1055,19 @@ Controllers should be thin.
 
 Controllers may:
 
-* define routes;
-* apply guards;
-* read params/body/current user;
-* call services;
-* return service results.
+- define routes;
+- apply guards;
+- read params/body/current user;
+- call services;
+- return service results.
 
 Controllers should not:
 
-* contain business logic;
-* query Prisma directly;
-* calculate ratings;
-* build complex response objects;
-* make authorization decisions beyond guard/decorator wiring.
+- contain business logic;
+- query Prisma directly;
+- calculate ratings;
+- build complex response objects;
+- make authorization decisions beyond guard/decorator wiring.
 
 Good:
 
@@ -1204,10 +1204,10 @@ Do not hide business workflows inside helpers.
 
 A helper should be:
 
-* pure or almost pure;
-* easy to test;
-* not dependent on Nest DI;
-* not responsible for database writes.
+- pure or almost pure;
+- easy to test;
+- not dependent on Nest DI;
+- not responsible for database writes.
 
 If it needs dependencies or orchestration, make it a service.
 
@@ -1238,11 +1238,11 @@ Use PascalCase with suffix.
 Examples:
 
 ```ts
-GroupsController
-GroupsService
-GroupsModule
-ProfileSummaryService
-GroupCreatedFeedItemGenerator
+GroupsController;
+GroupsService;
+GroupsModule;
+ProfileSummaryService;
+GroupCreatedFeedItemGenerator;
 ```
 
 ### 23.3 Methods
@@ -1252,11 +1252,11 @@ Use camelCase and verbs.
 Examples:
 
 ```ts
-createGroup()
-findUserFeed()
-getProfileSummary()
-calculateStats()
-findRecentMatches()
+createGroup();
+findUserFeed();
+getProfileSummary();
+calculateStats();
+findRecentMatches();
 ```
 
 ---
@@ -1269,11 +1269,11 @@ Frontend must never know Prisma models directly.
 
 Rules:
 
-* do not expose raw Prisma objects if they contain unnecessary fields;
-* map Prisma results to explicit response types;
-* preserve historical snapshots when needed;
-* keep domain consistency in services/generators;
-* use transactions for multi-write workflows.
+- do not expose raw Prisma objects if they contain unnecessary fields;
+- map Prisma results to explicit response types;
+- preserve historical snapshots when needed;
+- keep domain consistency in services/generators;
+- use transactions for multi-write workflows.
 
 Example:
 
@@ -1360,16 +1360,16 @@ Feed items are persisted domain events/moments.
 
 A feed item should contain:
 
-* type;
-* scope;
-* visibility;
-* actor;
-* subject;
-* optional group;
-* optional match;
-* metadata;
-* importance score;
-* occurred date.
+- type;
+- scope;
+- visibility;
+- actor;
+- subject;
+- optional group;
+- optional match;
+- metadata;
+- importance score;
+- occurred date.
 
 Feed generators should be separated by feed item type.
 
@@ -1474,12 +1474,12 @@ A function should do one thing.
 
 If a function:
 
-* validates;
-* queries;
-* maps;
-* calculates;
-* formats;
-* mutates state;
+- validates;
+- queries;
+- maps;
+- calculates;
+- formats;
+- mutates state;
 
 all at once, split it.
 
@@ -1491,10 +1491,10 @@ A component should stay readable.
 
 If a component contains:
 
-* multiple visual blocks;
-* multiple helper functions;
-* multiple state machines;
-* repeated JSX structures;
+- multiple visual blocks;
+- multiple helper functions;
+- multiple state machines;
+- repeated JSX structures;
 
 split it into sections/components/helpers.
 
@@ -1506,11 +1506,11 @@ Prefer clear code over comments.
 
 Use comments for:
 
-* non-obvious domain decisions;
-* business rules;
-* trade-offs;
-* warnings;
-* algorithm explanations.
+- non-obvious domain decisions;
+- business rules;
+- trade-offs;
+- warnings;
+- algorithm explanations.
 
 Do not comment obvious code.
 
@@ -1518,14 +1518,18 @@ Bad:
 
 ```ts
 // increments uses by 1
-uses: { increment: 1 }
+uses: {
+  increment: 1;
+}
 ```
 
 Good:
 
 ```ts
 // Rejoining a group should consume an invite use because the user becomes active again.
-uses: { increment: 1 }
+uses: {
+  increment: 1;
+}
 ```
 
 ---
@@ -1539,24 +1543,19 @@ uses: { increment: 1 }
 Ask in this order:
 
 1. Is this specific to one feature?
-
-    * Put it inside that feature.
+   - Put it inside that feature.
 
 2. Is this specific to one tab/subfeature?
-
-    * Put it inside that tab/subfeature.
+   - Put it inside that tab/subfeature.
 
 3. Is this shared by multiple tabs within a feature?
-
-    * Put it in the feature root shared folder.
+   - Put it in the feature root shared folder.
 
 4. Is this shared by multiple unrelated features?
-
-    * Put it in a global shared location.
+   - Put it in a global shared location.
 
 5. Is this framework/infrastructure code?
-
-    * Put it in `lib/` or backend infrastructure module.
+   - Put it in `lib/` or backend infrastructure module.
 
 ---
 
@@ -1564,18 +1563,18 @@ Ask in this order:
 
 Create a file if:
 
-* it is exported;
-* it is imported by more than one file;
-* it represents a domain concept;
-* it represents an API contract;
-* it is likely to grow.
+- it is exported;
+- it is imported by more than one file;
+- it represents a domain concept;
+- it represents an API contract;
+- it is likely to grow.
 
 It may stay grouped if:
 
-* it is private to a file;
-* it is tiny;
-* it only exists to compose one parent type;
-* it is not imported independently.
+- it is private to a file;
+- it is tiny;
+- it only exists to compose one parent type;
+- it is not imported independently.
 
 ---
 
@@ -1800,13 +1799,13 @@ profile.tsx
 
 containing:
 
-* API calls;
-* types;
-* helpers;
-* tab rendering;
-* match formatting;
-* group formatting;
-* card components.
+- API calls;
+- types;
+- helpers;
+- tab rendering;
+- match formatting;
+- group formatting;
+- card components.
 
 Good:
 
