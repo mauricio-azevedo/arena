@@ -22,7 +22,9 @@ migrate-deploy:
     pnpm --filter @arena/api exec prisma migrate deploy
 
 # Everything CI runs, in CI order. Needs a migrated DATABASE_URL for e2e.
+# Type-aware lint, unit tests and build all import the generated Prisma client.
 ci:
+    pnpm --filter @arena/api generate
     pnpm run format:check
     pnpm run lint:check
     pnpm -r run build
