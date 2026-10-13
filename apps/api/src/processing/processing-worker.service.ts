@@ -13,7 +13,7 @@ const DEFAULT_BATCH_SIZE = 5;
 export class ProcessingWorkerService implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(ProcessingWorkerService.name);
   private timer: NodeJS.Timeout | null = null;
-  private isRunning = false;
+  private inFlight: Promise<void> | null = null;
 
   constructor(private readonly runner: ProcessingJobRunnerService) {}
 
@@ -28,26 +28,33 @@ export class ProcessingWorkerService implements OnModuleInit, OnModuleDestroy {
       return;
     }
 
-    this.timer = setInterval(() => {
-      void this.tick();
-    }, this.getPollIntervalMs());
-    void this.tick();
+    this.timer = setInterval(() => this.tick(), this.getPollIntervalMs());
+    this.tick();
   }
 
-  onModuleDestroy() {
+  // Stops polling, then waits for the batch already running: PrismaService is
+  // destroyed right after this module and ends the pool, so a batch still in
+  // flight would fail mid-cascade with "Cannot use a pool after calling end".
+  async onModuleDestroy() {
     if (this.timer) {
       clearInterval(this.timer);
       this.timer = null;
     }
+
+    await this.inFlight;
   }
 
-  private async tick() {
-    if (this.isRunning) {
+  private tick() {
+    if (this.inFlight) {
       return;
     }
 
-    this.isRunning = true;
+    this.inFlight = this.runBatch().finally(() => {
+      this.inFlight = null;
+    });
+  }
 
+  private async runBatch() {
     try {
       await this.runner.runNextBatch(this.getBatchSize());
     } catch (error) {
@@ -56,8 +63,6 @@ export class ProcessingWorkerService implements OnModuleInit, OnModuleDestroy {
           ? error.message
           : 'Unknown processing worker error';
       this.logger.error(message);
-    } finally {
-      this.isRunning = false;
     }
   }
 

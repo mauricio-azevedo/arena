@@ -259,7 +259,7 @@ the data layer.
 
 ## 7. Environments & operations
 
-- **Local DB**: `docker-compose up` → Postgres 16 on `localhost:5433`
+- **Local DB**: `just db-up` → Postgres 16 on `localhost:5433`
   (`arena/arena`, db `arena`).
 - **Hosted DB**: Neon (project/branch model — verify branch before destructive
   ops; see [`../engineering/database.md`](../engineering/database.md)).

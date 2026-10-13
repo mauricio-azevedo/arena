@@ -21,7 +21,7 @@ apps/web/   Next.js 16 (App Router) · React 19 · Tailwind v4 · shadcn/ui · l
 docs/       product / design / architecture / engineering / qa
 ```
 
-- **DB**: PostgreSQL 16. Local: `docker-compose up` → `localhost:5433`
+- **DB**: PostgreSQL 16. Local: `just db-up` → `localhost:5433`
   (`arena/arena`, db `arena`). Hosted: Neon (verify branch before destructive ops).
 - **Deploy**: `apps/web` → Vercel (Root Directory `apps/web`; root `vercel.json` limits
   auto-deploys to `main`). `apps/api` → Render (Root Directory = repo root;
@@ -38,7 +38,7 @@ pnpm run lint:check        # or lint (eslint --fix)
 pnpm run format:check      # or format (prettier --write)
 # api
 cd apps/api && pnpm exec prisma migrate dev && pnpm exec prisma generate
-pnpm run start:dev         # dev server
+pnpm run dev               # dev server
 pnpm run build             # prisma generate + nest build
 # web
 cd apps/web && pnpm run dev
