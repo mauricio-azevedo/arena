@@ -7,10 +7,10 @@ description: Build, run and drive Arena (api + web) to verify changes end-to-end
 
 ## Bring-up (order matters)
 
-1. Postgres: `docker-compose up -d` at the repo root → `localhost:5433` (db per `apps/api/.env`).
-2. **API first** (`pnpm --filter @arena/api start:dev`) — it binds `:3000` (web's default API base).
-3. Web second (`pnpm --filter @arena/web dev`) — Next auto-shifts to `:3001` because 3000 is taken.
-4. Node and pnpm are off PATH: `export NVM_DIR="$HOME/.nvm" && . "$NVM_DIR/nvm.sh" && nvm use`
+1. `just dev` at the repo root: Postgres on `localhost:5433` (db per `apps/api/.env`), API on
+   `:3000` (web's default API base), web on `:3001` (`next dev -p 3001`). Ctrl-C stops both.
+   Separately: `pnpm --filter @arena/api dev`, `pnpm --filter @arena/web dev`.
+2. Node and pnpm are off PATH: `export NVM_DIR="$HOME/.nvm" && . "$NVM_DIR/nvm.sh" && nvm use`
    (`.nvmrc` pins 22; pnpm is installed in that Node's bin).
 
 Gotchas:

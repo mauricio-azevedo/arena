@@ -53,7 +53,7 @@ Common variables include:
 ```txt
 DATABASE_URL
 JWT_SECRET
-NEXT_PUBLIC_API_URL
+NEXT_PUBLIC_API_BASE_URL
 ```
 
 Guidelines:
@@ -68,10 +68,15 @@ Guidelines:
 Typical backend workflow:
 
 ```bash
+just setup                     # once: install, .env from .env.example, Postgres, migrations
+just dev                       # API on :3000 and web on :3001; Ctrl-C stops both
+```
+
+Schema changes are applied by their author, not by `just dev`:
+
+```bash
 cd apps/api
-# configure .env (DATABASE_URL, JWT_SECRET)
-pnpm exec prisma migrate dev   # applies migrations and regenerates the client
-pnpm run start:dev
+pnpm exec prisma migrate dev   # creates the migration and regenerates the client
 ```
 
 Expected responsibilities of the backend dev server:
@@ -85,16 +90,16 @@ Expected responsibilities of the backend dev server:
 
 Typical frontend workflow:
 
+`just dev` starts it with the API. Alone:
+
 ```bash
-cd apps/web
-# configure the env file (NEXT_PUBLIC_API_URL)
-pnpm run dev
+pnpm --filter @arena/web dev   # :3001; API base defaults to http://localhost:3000
 ```
 
 Expected responsibilities of the frontend dev server:
 
 - render the mobile-first web app;
-- call the backend API through `NEXT_PUBLIC_API_URL` or equivalent configuration;
+- call the backend API through `NEXT_PUBLIC_API_BASE_URL` (defaults to the local API);
 - manage client-side auth token behavior;
 - show route and feature loading states.
 

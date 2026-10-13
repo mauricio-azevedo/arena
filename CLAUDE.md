@@ -38,7 +38,7 @@ pnpm run lint:check        # or lint (eslint --fix)
 pnpm run format:check      # or format (prettier --write)
 # api
 cd apps/api && pnpm exec prisma migrate dev && pnpm exec prisma generate
-pnpm run start:dev         # dev server
+pnpm run dev               # dev server
 pnpm run build             # prisma generate + nest build
 # web
 cd apps/web && pnpm run dev
