@@ -18,6 +18,7 @@ updates:
         update-types: [minor, patch]
       security:
         applies-to: security-updates
+        patterns: ['*']
     # Conventional Commits title, checked by pr-title.yml.
     commit-message:
       prefix: chore
@@ -30,5 +31,6 @@ updates:
     groups:
       actions:
         applies-to: version-updates
+        patterns: ['*']
     commit-message:
       prefix: ci
