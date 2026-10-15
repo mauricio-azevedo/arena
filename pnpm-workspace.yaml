@@ -15,23 +15,17 @@ allowBuilds:
   esbuild: false
   sharp: false
   unrs-resolver: false
+  '@parcel/watcher': false
 
 # Transitive packages with open security advisories that their parent pins to an
 # older version. Each entry names the parent and the condition that retires it.
 overrides:
-  # @nestjs/platform-express 11 pins multer 2.2.0 (GHSA-wc9g-mqfw-jrwm and three
-  # more); Nest 12 pins 2.4.0. Remove with the Nest 12 upgrade.
-  multer: ^2.4.0
   # prisma 7 pins mysql2 3.15.3 (GHSA-3f6p-5ww8-9rcr, GHSA-rgwj-5xj2-c3m3). Arena
   # uses the pg adapter, mysql2 is never loaded. Remove when prisma moves past 3.23.1.
   mysql2: ^3.24.6
   # markdownlint-cli2 pins smol-toml 1.8.0 (GHSA-r4xh-jqrq-34v2). Remove when it
   # ships >= 1.9.0.
   smol-toml: ^1.9.1
-  # @nestjs/cli lists @swc/cli as an optional peer with a range up to ^0.8, but pnpm
-  # keeps the auto-installed 0.6.0, whose downloader pulls file-type 20
-  # (GHSA-5v7r-6r5c-r473, GHSA-j47w-4g3g-c36v). Remove with the Nest 12 upgrade.
-  '@swc/cli': ^0.8.1
 
 # eslint-config-next 16 bundles three plugins whose latest releases still declare
 # eslint ^9 as a peer; they lint cleanly on 10. Remove when eslint-plugin-import,
