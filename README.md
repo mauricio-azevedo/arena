@@ -73,7 +73,7 @@ Important modeling decisions:
 
 ## Local development
 
-Node 22 (`.nvmrc`), pnpm 11 (`packageManager` in `package.json`; `corepack enable` installs it), Docker, and [`just`](https://just.systems).
+Node 24 (`.nvmrc`), pnpm 11 (`packageManager` in `package.json`; `corepack enable` installs it), Docker, and [`just`](https://just.systems).
 
 ```bash
 just setup   # once: install, apps/api/.env from .env.example, PostgreSQL, migrations
