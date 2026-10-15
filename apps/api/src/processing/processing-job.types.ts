@@ -1,8 +1,5 @@
 export type ProcessingJobType =
-  | 'MATCH_CREATED'
-  | 'MATCH_UPDATED'
-  | 'MATCH_DELETED'
-  | 'GROUP_RANKING_REBUILD';
+  'MATCH_CREATED' | 'MATCH_UPDATED' | 'MATCH_DELETED' | 'GROUP_RANKING_REBUILD';
 
 export type ProcessingJobScope = 'GROUP';
 

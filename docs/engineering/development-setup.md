@@ -150,6 +150,21 @@ A strong PR description should include:
 - migration notes when applicable;
 - rollback notes when risky.
 
+## Dependencies
+
+- `pnpm update -r` moves every package to the newest version inside its range and rewrites the
+  manifest floor to the version that was tested. pnpm holds releases younger than one day
+  (`minimumReleaseAge`); Dependabot waits seven (`cooldown` in `.github/dependabot.yml`).
+- Dependabot opens one weekly PR for minor and patch updates and one PR per major. Majors are
+  deliberate upgrades: read the migration guide, upgrade in their own PR.
+- `overrides` in `pnpm-workspace.yaml` exist only for transitive packages with an open advisory
+  that their parent pins. Each entry names the parent and the condition that retires it; check the
+  list whenever a parent gets a major.
+- A Dependabot alert is dismissed only when no shippable fix exists (no patched version published,
+  or the fix is a major the parent has not adopted) and the package is dev tooling that never sees
+  untrusted input. The dismissal comment names the parent. Alerts on runtime code are fixed, not
+  dismissed.
+
 ## Deployment
 
 Both apps deploy from `main`; neither host builds other branches.

@@ -32,11 +32,7 @@ export type GroupHomeActivity = {
 export type GroupHomeCard = {
   relationship: 'MEMBER' | 'PUBLIC_SUGGESTION';
   sortReason:
-    | 'FAILED'
-    | 'PROCESSING'
-    | 'RECENT_RELEVANT_ACTIVITY'
-    | 'DEFAULT'
-    | 'PUBLIC_SUGGESTION';
+    'FAILED' | 'PROCESSING' | 'RECENT_RELEVANT_ACTIVITY' | 'DEFAULT' | 'PUBLIC_SUGGESTION';
   group: {
     id: string;
     name: string;

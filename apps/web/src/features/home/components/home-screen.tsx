@@ -9,9 +9,7 @@ import { GroupsSection } from './groups-section';
 import { HomeSearchPlaceholder } from './home-search-placeholder';
 
 type HomeState =
-  | { status: 'loading' }
-  | { status: 'ready'; cards: GroupHomeCard[] }
-  | { status: 'error' };
+  { status: 'loading' } | { status: 'ready'; cards: GroupHomeCard[] } | { status: 'error' };
 
 export function HomeScreen() {
   const token = useAccessToken();
