@@ -4,7 +4,8 @@
   "tasks": {
     "generate": {
       "inputs": ["prisma/schema.prisma", "prisma.config.ts"],
-      "outputs": ["src/generated/**"]
+      "outputs": ["src/generated/**"],
+      "passThroughEnv": ["DATABASE_URL"]
     },
     "build": {
       "dependsOn": ["^build", "generate"],
