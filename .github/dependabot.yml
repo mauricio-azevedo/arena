@@ -1,0 +1,34 @@
+# Dependabot version updates. Security updates are enabled in the repository
+# settings and use the same groups and cooldown.
+version: 2
+updates:
+  # One pnpm lockfile at the root covers every workspace package.
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    # Mirrors pnpm's minimumReleaseAge so a fresh release settles before it lands.
+    cooldown:
+      default-days: 7
+    groups:
+      # Minor and patch updates ride together; majors open one PR each.
+      minor-and-patch:
+        applies-to: version-updates
+        update-types: [minor, patch]
+      security:
+        applies-to: security-updates
+    # Conventional Commits title, checked by pr-title.yml.
+    commit-message:
+      prefix: chore
+      include: scope
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    groups:
+      actions:
+        applies-to: version-updates
+    commit-message:
+      prefix: ci
