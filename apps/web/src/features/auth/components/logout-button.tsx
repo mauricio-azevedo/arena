@@ -31,6 +31,7 @@ export function LogoutButton({ className, trigger }: Props) {
     setIsLoggingOut(true);
     removeAccessToken();
     // Hard reset to public home so every client token-read flips to signed-out.
+    // eslint-disable-next-line @next/next/no-location-assign-relative-destination -- full reload is the point
     window.location.assign('/');
   }
 
