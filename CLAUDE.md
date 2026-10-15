@@ -12,8 +12,9 @@ docs — and keep them current when you change behavior.
 
 ## Stack & repo shape
 
-pnpm-workspaces monorepo (`pnpm-workspace.yaml`: `apps/*`, `packages/*`); no shared
-package yet (the frontend re-declares the API contract by hand).
+pnpm-workspaces monorepo (`pnpm-workspace.yaml`: `apps/*`, `packages/*`), tasks run by
+Turborepo (`turbo.json`). `packages/contracts` (`@arena/contracts`) holds the error codes and
+avatar keys both apps share; response types are still re-declared by hand in the frontend.
 
 ```txt
 apps/api/   NestJS 11 · Prisma 7 (pg adapter) · JWT · in-DB job queue · PostgreSQL
@@ -25,21 +26,22 @@ docs/       product / design / architecture / engineering / qa
   (`arena/arena`, db `arena`). Hosted: Neon (verify branch before destructive ops).
 - **Deploy**: `apps/web` → Vercel (Root Directory `apps/web`; root `vercel.json` limits
   auto-deploys to `main`). `apps/api` → Render (Root Directory = repo root;
-  `pnpm --filter @arena/api build` / `start:prod`). Details: `docs/engineering/development-setup.md`.
+  `pnpm turbo run build --filter=@arena/api...` / `start:prod`). Details:
+  `docs/engineering/development-setup.md`.
 
 ## Commands
 
 ```bash
 # repo root — one install for every workspace package
 pnpm install
-pnpm run build             # pnpm -r run build (both apps)
-pnpm run test              # pnpm --filter @arena/api test
+pnpm run build             # turbo run build: contracts → api generate → apps; cached
+pnpm run test              # turbo run test
 pnpm run lint:check        # or lint (eslint --fix)
 pnpm run format:check      # or format (prettier --write)
 # api
 cd apps/api && pnpm exec prisma migrate dev && pnpm exec prisma generate
 pnpm run dev               # dev server
-pnpm run build             # prisma generate + nest build
+pnpm run build             # nest build only; `generate` runs via turbo (or `pnpm run generate`)
 # web
 cd apps/web && pnpm run dev
 pnpm run build && pnpm run lint

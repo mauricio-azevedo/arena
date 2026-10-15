@@ -183,6 +183,7 @@ See `docs/decisions/`:
 - `0003-use-contextual-skeletons-for-route-loading.md` — frontend loading UX.
 - `0004-unify-guest-invite-and-claim.md` — guest invite + claim become one primitive (accepted, implemented).
 - `0005-monorepo-layout-and-tooling.md` — `apps/*` + `packages/*` on pnpm workspaces (accepted, #256).
+- `0006-turborepo-task-graph.md` — Turborepo runs the workspace task graph (accepted, #258).
 
 Deeper subsystem docs: [`processing-jobs.md`](./processing-jobs.md),
 [`feed-architecture.md`](./feed-architecture.md),

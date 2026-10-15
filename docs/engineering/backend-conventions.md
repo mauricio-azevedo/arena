@@ -75,6 +75,9 @@ create(@Param('groupId') groupId: string, @CurrentUser() user: AuthUser,
   `profile-summary-response.type.ts`). One important type per file.
 - Generators implement a shared generic interface
   (`FeedItemGenerator<Input>` → `FeedItemDraft | null`).
+- Values the web app must match exactly (`API_ERROR_CODES`, `AVATAR_COLOR_KEYS`) are imported from
+  `@arena/contracts` (`packages/contracts`), never redeclared. `common/api-errors.ts` re-exports the
+  codes next to the exception factories that stamp them.
 
 ## 6. Auth
 
