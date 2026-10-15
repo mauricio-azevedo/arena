@@ -17,7 +17,7 @@ Turborepo (`turbo.json`). `packages/contracts` (`@arena/contracts`) holds the er
 avatar keys both apps share; response types are still re-declared by hand in the frontend.
 
 ```txt
-apps/api/   NestJS 11 · Prisma 7 (pg adapter) · JWT · in-DB job queue · PostgreSQL
+apps/api/   NestJS 12 · Prisma 7 (pg adapter) · JWT · in-DB job queue · PostgreSQL
 apps/web/   Next.js 16 (App Router) · React 19 · Tailwind v4 · shadcn/ui · lucide
 docs/       product / design / architecture / engineering / qa
 ```

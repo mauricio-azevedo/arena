@@ -16,7 +16,7 @@ Arena is a pnpm-workspaces monorepo with two deployable apps and a PostgreSQL da
 
 ```txt
 arena/
-  apps/api/   NestJS 11 backend (REST, Prisma, in-DB job queue)
+  apps/api/   NestJS 12 backend (REST, Prisma, in-DB job queue)
   apps/web/   Next.js 16 (App Router, React 19) frontend
   docs/       documentation (this file lives here)
 ```
@@ -24,7 +24,7 @@ arena/
 | Layer    | Tech                                                                                            |
 | -------- | ----------------------------------------------------------------------------------------------- |
 | Frontend | Next.js 16, React 19, TypeScript, Tailwind v4, shadcn/ui (radix-luma), lucide                   |
-| Backend  | NestJS 11, TypeScript, Prisma 7 (`@prisma/adapter-pg` + `pg` Pool), JWT (`@nestjs/jwt`), bcrypt |
+| Backend  | NestJS 12, TypeScript, Prisma 7 (`@prisma/adapter-pg` + `pg` Pool), JWT (`@nestjs/jwt`), bcrypt |
 | Database | PostgreSQL 16 (local via `docker-compose`; Neon in hosted environments)                         |
 | Deploy   | `web` on Vercel (`vercel.json`, only `main` auto-deploys); `api` + DB hosted separately         |
 
