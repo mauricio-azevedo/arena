@@ -21,8 +21,7 @@ import { SLOT_KEYS, type SlotKey, useMatchForm } from './use-match-form';
 const EASE = 'cubic-bezier(0.16,1,0.3,1)';
 
 export type MatchDrawerTarget =
-  | { mode: 'create'; key: number }
-  | { mode: 'edit'; key: number; match: Match };
+  { mode: 'create'; key: number } | { mode: 'edit'; key: number; match: Match };
 
 type MatchDrawerProps = {
   open: boolean;

@@ -29,9 +29,7 @@ const FILTERS: { key: Filter; enabled: boolean }[] = [
 type Status = 'loading' | 'ready' | 'error';
 
 type AllGroups =
-  | { status: 'idle' }
-  | { status: 'ready'; cards: GroupHomeCard[] }
-  | { status: 'error' };
+  { status: 'idle' } | { status: 'ready'; cards: GroupHomeCard[] } | { status: 'error' };
 
 export function GroupsSection({
   status,
