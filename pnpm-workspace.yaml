@@ -32,3 +32,12 @@ overrides:
   # keeps the auto-installed 0.6.0, whose downloader pulls file-type 20
   # (GHSA-5v7r-6r5c-r473, GHSA-j47w-4g3g-c36v). Remove with the Nest 12 upgrade.
   '@swc/cli': ^0.8.1
+
+# eslint-config-next 16 bundles three plugins whose latest releases still declare
+# eslint ^9 as a peer; they lint cleanly on 10. Remove when eslint-plugin-import,
+# eslint-plugin-jsx-a11y and eslint-plugin-react declare ^10.
+peerDependencyRules:
+  allowedVersions:
+    'eslint-plugin-import>eslint': '10'
+    'eslint-plugin-jsx-a11y>eslint': '10'
+    'eslint-plugin-react>eslint': '10'
