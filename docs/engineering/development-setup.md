@@ -14,7 +14,7 @@ packages/contracts/  values both apps share (error codes, avatar keys)
 
 Required tools:
 
-- Node.js 22 — `.nvmrc` pins the major (`nvm use`);
+- Node.js 24 — `.nvmrc` pins the major (`nvm use`);
 - pnpm 11 — the exact version is the `packageManager` field of the root `package.json`
   (`corepack enable` installs it automatically);
 - Docker for the local PostgreSQL (`just db-up` → `localhost:5433`), or a hosted Neon
@@ -170,11 +170,12 @@ A strong PR description should include:
 Both apps deploy from `main`; neither host builds other branches.
 
 - **Web → Vercel.** Root Directory `apps/web`. pnpm is detected from the root `pnpm-lock.yaml` and
-  the `packageManager` field. The root `vercel.json` limits automatic deployments to `main`: Vercel
+  the `packageManager` field. Node comes from `engines.node` in `apps/web/package.json`: Vercel
+  ignores `.nvmrc`, and that field overrides the dashboard setting. The root `vercel.json` limits automatic deployments to `main`: Vercel
   reads its `git` settings from the repository root, not from the Root Directory (verified
   2026-10-13: a branch push with the file only under `apps/web` created a preview deployment).
 - **API → Render.** Root Directory stays the repo root: Render cannot read files above it, and the
-  lockfile lives there. Start `pnpm --filter @arena/api start:prod` (runs with `apps/api` as cwd),
+  lockfile lives there. Node comes from `.nvmrc`. Start `pnpm --filter @arena/api start:prod` (runs with `apps/api` as cwd),
   health check `/health`. Build:
 
   ```bash
