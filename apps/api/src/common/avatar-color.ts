@@ -1,22 +1,4 @@
-// Avatar palette keys (the frontend owns each key→gradient; the backend only stores
-// and validates the key). Keep this list and its order in sync with the SQL backfill
-// migration and apps/web/src/lib/avatar-color.ts.
-export const AVATAR_COLOR_KEYS = [
-  'blue',
-  'green',
-  'teal',
-  'amber',
-  'red',
-  'magenta',
-  'violet',
-  'gold',
-] as const;
-
-export type AvatarColorKey = (typeof AVATAR_COLOR_KEYS)[number];
-
-export function isAvatarColorKey(value: string): value is AvatarColorKey {
-  return (AVATAR_COLOR_KEYS as readonly string[]).includes(value);
-}
+import { AVATAR_COLOR_KEYS, type AvatarColorKey } from '@arena/contracts';
 
 // A deterministic, varied default so new accounts aren't all the same colour. Every
 // account gets one at registration — there is no "no colour" state.

@@ -3,22 +3,10 @@ import {
   ConflictException,
   UnauthorizedException,
 } from '@nestjs/common';
+import { API_ERROR_CODES, type ApiErrorCode } from '@arena/contracts';
 
-// Machine-readable codes for the business errors the frontend must distinguish.
-// Append-only: the web app mirrors these in `apps/web/src/types/api.ts` and branches on
-// them instead of parsing message copy. Add a code only when a screen needs to react
-// to that specific failure — plain string exceptions stay the default everywhere else.
-export const API_ERROR_CODES = {
-  GUEST_ALREADY_CLAIMED: 'GUEST_ALREADY_CLAIMED',
-  EMAIL_IN_USE: 'EMAIL_IN_USE',
-  INVALID_CURRENT_PASSWORD: 'INVALID_CURRENT_PASSWORD',
-  PASSWORD_SAME_AS_CURRENT: 'PASSWORD_SAME_AS_CURRENT',
-  PASSWORD_TOO_SHORT: 'PASSWORD_TOO_SHORT',
-  PASSWORD_TOO_LONG: 'PASSWORD_TOO_LONG',
-} as const;
-
-export type ApiErrorCode =
-  (typeof API_ERROR_CODES)[keyof typeof API_ERROR_CODES];
+// Re-exported so a service imports the code and its factory from one place.
+export { API_ERROR_CODES };
 
 // Nest passes object bodies through verbatim (no statusCode/error merge), so each
 // factory stamps the full shape the string form would have produced, plus `code`.

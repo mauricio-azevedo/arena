@@ -1,8 +1,8 @@
-import type { ApiErrorCode } from '@/types/api';
+import type { ApiErrorCode } from '@arena/contracts';
 
 // The API layer's typed error: `status` is the HTTP status, `code` the
-// machine-readable business code (mirrored from apps/api/src/common/api-errors.ts in
-// types/api.ts). UI branches on these — never on the human-readable message copy.
+// machine-readable business code. UI branches on these — never on the human-readable
+// message copy.
 export class ApiError extends Error {
   readonly status: number;
   readonly code: ApiErrorCode | null;

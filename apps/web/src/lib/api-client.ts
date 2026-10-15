@@ -1,6 +1,6 @@
+import type { ApiErrorCode } from '@arena/contracts';
 import { ApiError } from '@/lib/api-error';
 import { isAccessTokenExpired, triggerSessionExpired } from '@/lib/auth';
-import type { ApiErrorCode } from '@/types/api';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:3000';
 

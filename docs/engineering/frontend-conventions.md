@@ -73,8 +73,8 @@ only (except route files, which need `default`).
   sets JSON headers, `Authorization: Bearer <token>` when provided, throws
   **`ApiError`** (`lib/api-error.ts`, extends `Error`) on non-2xx — `message`
   extracted from the JSON body (arrays joined), plus `status` (HTTP) and `code`
-  (machine-readable business code, `ApiErrorCode` in `types/api.ts`, mirrored from
-  `apps/api/src/common/api-errors.ts`). Base URL from `NEXT_PUBLIC_API_URL`.
+  (machine-readable business code, `ApiErrorCode` from `@arena/contracts`). Base URL from
+  `NEXT_PUBLIC_API_BASE_URL`.
 - **Branch on `code`/`status`, never on `message`** — backend copy changes freely.
   For error copy, use the single mapper `apiErrorMessage(error, fallback, overrides?)`
   (`lib/api-error.ts`): central PT copy per shared code, per-screen `overrides` for
@@ -110,9 +110,12 @@ export function getProfileMatches(token: string): Promise<ProfileMatchListItem[]
 
 ## 7. Types
 
-- `types/api.ts` hand-mirrors the backend contract (`User`, `Group`,
+- `types/api.ts` hand-mirrors the backend response types (`User`, `Group`,
   `GroupMember`, `Match`, `MatchPlayer`, …). **Keep it in sync with the API by
-  hand** — there is no codegen or shared package.
+  hand** until the zod migration (`code-quality-backlog.md`). Constants both apps
+  share (`ApiErrorCode`, `AvatarColorKey`) come from `@arena/contracts`; the gradient
+  table in `lib/avatar-color.ts` is keyed by it, so a new key fails `tsc` until it has
+  a gradient.
 - Features prefer lightweight view-model types over reusing full API types when
   they only need a subset.
 - Enums are union types in `enums/*.enum.ts`

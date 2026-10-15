@@ -181,8 +181,12 @@ arena/
     api/
     web/
   packages/
+    contracts/
   docs/
 ```
+
+Turborepo (`turbo.json`) runs the workspace tasks in dependency order: `packages/*` build before
+the apps, and the API's Prisma client is generated before anything that imports it.
 
 ### 3.1 `apps/api/`
 
@@ -206,7 +210,19 @@ apps/web/
 ### 3.3 `packages/`
 
 Shared workspace packages (`@arena/*`), consumed by the apps through `workspace:*` dependencies.
-Empty until the first genuinely shared contract exists — do not create one speculatively.
+Built to `dist/` (the API's `tsc` cannot run a sibling package's `.ts`).
+
+```txt
+packages/contracts/
+  src/
+    api-errors.ts     API_ERROR_CODES, ApiErrorCode
+    avatar-color.ts   AVATAR_COLOR_KEYS, AvatarColorKey, isAvatarColorKey
+    index.ts
+```
+
+`@arena/contracts` holds values both apps must agree on byte for byte. A constant goes there on
+its second consumer, not before; a mirrored _rule_ with different code on each side (member display
+name, password length) stays local.
 
 ### 3.4 `docs/`
 

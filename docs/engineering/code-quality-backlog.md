@@ -31,6 +31,11 @@ built in) and `components/ui/drawer.tsx` (`DrawerActionHeader` — one header ac
 
 ## Medium — duplicated logic / divergent treatment
 
+- **API request/response types are hand-mirrored** in `apps/web/src/types/api.ts` and the feature
+  `*.type.ts` files (~28 response types, request bodies such as `MatchBody`). Move to `zod` schemas
+  in `@arena/contracts`, parsed in controllers and inferred in both apps, module by module (matches
+  first). Follow-up issue filed from #258; OpenAPI rejected there (one same-language consumer).
+
 - **Duplicated submit/loading/error machine (~6 forms).** The same `useState` error + `isSubmitting`
   - try/catch/finally lives in login, register, create-group, edit-profile, password,
     `claim-offer-client`. Extract a `useFormSubmit` hook.

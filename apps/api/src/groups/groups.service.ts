@@ -1,8 +1,6 @@
 import { MEMBER_USER_SELECT } from '../common/member-display-name';
-import {
-  isAvatarColorKey,
-  pickDefaultAvatarColor,
-} from '../common/avatar-color';
+import { isAvatarColorKey } from '@arena/contracts';
+import { pickDefaultAvatarColor } from '../common/avatar-color';
 import {
   BadRequestException,
   Injectable,

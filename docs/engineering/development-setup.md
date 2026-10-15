@@ -2,11 +2,12 @@
 
 This document describes the expected local development workflow for Arena.
 
-Arena is a pnpm-workspaces monorepo with two applications:
+Arena is a pnpm-workspaces monorepo; Turborepo runs the task graph:
 
 ```txt
-apps/api/  NestJS backend
-apps/web/  Next.js frontend
+apps/api/            NestJS backend
+apps/web/            Next.js frontend
+packages/contracts/  values both apps share (error codes, avatar keys)
 ```
 
 ## Prerequisites
@@ -40,6 +41,7 @@ arena/
     web/
       src/
   packages/
+    contracts/
   docs/
 ```
 
@@ -57,6 +59,12 @@ JWT_SECRET
 NEXT_PUBLIC_API_BASE_URL
 ```
 
+Turbo runs tasks in strict env mode: a variable read at task time must be listed under `env` in
+`turbo.json` or the task does not see it, and a cached result would not depend on it. Today only
+`NEXT_PUBLIC_API_BASE_URL` (inlined by `next build`) qualifies; the API reads its variables at
+runtime, outside turbo. `generate` gets `DATABASE_URL` via `passThroughEnv`: `prisma.config.ts`
+refuses to load without it, but the generated client does not depend on its value.
+
 Guidelines:
 
 - never commit real secrets;
@@ -72,6 +80,9 @@ Typical backend workflow:
 just setup                     # once: install, .env from .env.example, Postgres, migrations
 just dev                       # API on :3000 and web on :3001; Ctrl-C stops both
 ```
+
+`just dev` builds `packages/*` first, then watches them alongside both apps; `nest --watch` picks
+up a rebuilt `@arena/contracts`, `next dev` may need a restart.
 
 Schema changes are applied by their author, not by `just dev`:
 
@@ -122,8 +133,8 @@ Before opening a PR, ideally verify:
 
 - backend starts;
 - frontend starts;
-- TypeScript passes;
-- `pnpm run lint:check` and `pnpm run format:check` pass;
+- `just ci` passes (same steps as CI; needs a migrated `DATABASE_URL` for e2e). Turbo caches
+  per task in `.turbo/`; a task with a cache hit replays its logs — `--force` reruns everything;
 - critical changed flows work manually;
 - migrations are included when schema changes require them;
 - docs are updated when product/architecture/API behavior changes.
@@ -148,8 +159,14 @@ Both apps deploy from `main`; neither host builds other branches.
   reads its `git` settings from the repository root, not from the Root Directory (verified
   2026-10-13: a branch push with the file only under `apps/web` created a preview deployment).
 - **API → Render.** Root Directory stays the repo root: Render cannot read files above it, and the
-  lockfile lives there. Build `pnpm install --frozen-lockfile && pnpm --filter @arena/api build`,
-  start `pnpm --filter @arena/api start:prod` (runs with `apps/api` as cwd), health check `/health`.
+  lockfile lives there. Start `pnpm --filter @arena/api start:prod` (runs with `apps/api` as cwd),
+  health check `/health`. Build:
+
+  ```bash
+  pnpm install --frozen-lockfile && pnpm turbo run build --filter=@arena/api...
+  ```
+
+  The trailing `...` builds `@arena/contracts` and runs `generate` before the API.
   Migrations are deployed explicitly with `pnpm --filter @arena/api exec prisma migrate deploy`;
   they are not part of the build.
 
