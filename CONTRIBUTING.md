@@ -1,5 +1,20 @@
 # Contributing
 
+## Board
+
+- Work is tracked on the [Arena project board](https://github.com/users/mauricio-azevedo/projects/12). Every open
+  issue and PR has a card.
+- Columns: Backlog → Ready → In progress → In review → Done.
+  - Backlog: every new issue lands here.
+  - Ready: scoped, next in line.
+  - In progress: branch created.
+  - In review: PR open.
+  - Done: merged or closed.
+- Automatic: new issues and PRs are added to Backlog; closed issues and merged PRs move to Done.
+- Manual: Ready, In progress and In review. Move the card when you pick up, start or open the PR.
+- From the CLI: `gh project item-edit` moves a card; `gh project item-list 12 --owner mauricio-azevedo`
+  shows the board.
+
 ## Branches
 
 - A branch is created from an issue with the GitHub CLI `gh issue develop <issue-number> --checkout`. The issue will be
