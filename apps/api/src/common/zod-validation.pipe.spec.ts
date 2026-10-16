@@ -1,5 +1,5 @@
 import { BadRequestException } from '@nestjs/common';
-import { matchBodySchema } from '@arena/contracts';
+import { matchBodySchema } from '@arena/contracts/matches';
 import { ZodValidationPipe } from './zod-validation.pipe';
 
 const uuid = (n: number) => `0000000${n}-0000-4000-8000-000000000000`;

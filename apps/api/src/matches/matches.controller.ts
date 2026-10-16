@@ -8,7 +8,7 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { matchBodySchema, type MatchBody } from '@arena/contracts';
+import { matchBodySchema, type MatchBody } from '@arena/contracts/matches';
 import { CurrentUser } from '../auth/current-user.decorator';
 import type { AuthUser } from '../auth/auth.types';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';

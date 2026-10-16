@@ -4,7 +4,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import type { MatchBody } from '@arena/contracts';
+import type { MatchBody } from '@arena/contracts/matches';
 import { MatchTeam } from '../generated/prisma/enums';
 import {
   MEMBER_USER_SELECT,
