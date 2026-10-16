@@ -4,6 +4,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import type { MatchBody } from '@arena/contracts';
 import { MatchTeam } from '../generated/prisma/enums';
 import {
   MEMBER_USER_SELECT,
@@ -13,21 +14,6 @@ import { PrismaService } from '../prisma/prisma.service';
 import type { Prisma } from '../generated/prisma/client';
 import { MembersService } from '../members/members.service';
 import { ProcessingJobWriterService } from '../processing/processing-job-writer.service';
-
-// A match player is either an existing group member or a brand-new guest named
-// inline. Stubs for the latter are created inside the match transaction, so they
-// only ever exist when the match they belong to does.
-export type MatchPlayerInput = { memberId: string } | { name: string };
-
-export type MatchBody = {
-  teamAPlayer1: MatchPlayerInput;
-  teamAPlayer2: MatchPlayerInput;
-  teamBPlayer1: MatchPlayerInput;
-  teamBPlayer2: MatchPlayerInput;
-  gamesA: number;
-  gamesB: number;
-  playedAt?: string;
-};
 
 type MatchMember = {
   id: string;
@@ -52,8 +38,6 @@ export class MatchesService {
   ) {}
 
   async create(groupId: string, userId: string, body: MatchBody) {
-    this.validateMatchBody(body);
-
     return this.prisma.$transaction(async (tx) => {
       await this.ensureGroupExists(tx, groupId);
       await this.ensureActiveGroupMember(tx, groupId, userId);
@@ -134,8 +118,6 @@ export class MatchesService {
   }
 
   async update(groupId: string, id: string, userId: string, body: MatchBody) {
-    this.validateMatchBody(body);
-
     return this.prisma.$transaction(async (tx) => {
       await this.ensureGroupExists(tx, groupId);
       await this.ensureActiveGroupMember(tx, groupId, userId);
@@ -316,45 +298,6 @@ export class MatchesService {
     return match;
   }
 
-  private validateMatchBody(body: MatchBody) {
-    const slots = [
-      body.teamAPlayer1,
-      body.teamAPlayer2,
-      body.teamBPlayer1,
-      body.teamBPlayer2,
-    ];
-
-    for (const slot of slots) {
-      const memberId =
-        slot && typeof slot === 'object' && 'memberId' in slot
-          ? slot.memberId
-          : undefined;
-      const name =
-        slot && typeof slot === 'object' && 'name' in slot
-          ? slot.name?.trim()
-          : undefined;
-
-      // Each slot is exactly one of: an existing member, or a new guest name.
-      if (Boolean(memberId) === Boolean(name)) {
-        throw new BadRequestException(
-          'Each player must be an existing member or a new guest name',
-        );
-      }
-
-      if (name && name.length > 60) {
-        throw new BadRequestException('Name is too long');
-      }
-    }
-
-    if (body.gamesA < 0 || body.gamesB < 0 || body.gamesA + body.gamesB === 0) {
-      throw new BadRequestException('Invalid score');
-    }
-
-    if (body.gamesA === body.gamesB) {
-      throw new BadRequestException('A match cannot end in a draw');
-    }
-  }
-
   // Turns the four player slots into four group-member ids, creating a stub row
   // for any slot that named a new guest. Runs inside the match transaction, so a
   // failure anywhere downstream rolls the stubs back — they never outlive an
@@ -375,16 +318,10 @@ export class MatchesService {
     const ids: string[] = [];
 
     for (const slot of slots) {
-      if ('memberId' in slot && slot.memberId) {
+      if ('memberId' in slot) {
         ids.push(slot.memberId);
       } else {
-        ids.push(
-          await this.members.createGuestRow(
-            tx,
-            groupId,
-            (slot as { name: string }).name,
-          ),
-        );
+        ids.push(await this.members.createGuestRow(tx, groupId, slot.name));
       }
     }
 
@@ -483,18 +420,9 @@ export class MatchesService {
     };
   }
 
+  // The contract guarantees ISO 8601, so the parse cannot fail.
   private parsePlayedAt(playedAt?: string) {
-    if (!playedAt) {
-      return new Date();
-    }
-
-    const date = new Date(playedAt);
-
-    if (Number.isNaN(date.getTime())) {
-      throw new BadRequestException('Invalid playedAt');
-    }
-
-    return date;
+    return playedAt ? new Date(playedAt) : new Date();
   }
 
   private getWinnerTeam(body: MatchBody) {

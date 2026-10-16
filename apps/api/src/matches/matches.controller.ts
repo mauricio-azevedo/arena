@@ -8,11 +8,12 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
+import { matchBodySchema, type MatchBody } from '@arena/contracts';
 import { CurrentUser } from '../auth/current-user.decorator';
 import type { AuthUser } from '../auth/auth.types';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { ZodValidationPipe } from '../common/zod-validation.pipe';
 import { MatchesService } from './matches.service';
-import type { MatchBody } from './matches.service';
 
 @Controller('groups/:groupId/matches')
 export class MatchesController {
@@ -23,7 +24,7 @@ export class MatchesController {
   create(
     @Param('groupId') groupId: string,
     @CurrentUser() user: AuthUser,
-    @Body() body: MatchBody,
+    @Body(new ZodValidationPipe(matchBodySchema)) body: MatchBody,
   ) {
     return this.matchesService.create(groupId, user.sub, body);
   }
@@ -44,7 +45,7 @@ export class MatchesController {
     @Param('groupId') groupId: string,
     @Param('id') id: string,
     @CurrentUser() user: AuthUser,
-    @Body() body: MatchBody,
+    @Body(new ZodValidationPipe(matchBodySchema)) body: MatchBody,
   ) {
     return this.matchesService.update(groupId, id, user.sub, body);
   }
