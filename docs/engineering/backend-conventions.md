@@ -42,16 +42,21 @@ create(@Param('groupId') groupId: string, @CurrentUser() user: AuthUser,
 
 - Services own validation, authorization, and persistence. One clear
   responsibility per service; split rather than grow a god-service.
-- **Validation is imperative** (no `class-validator`, no global `ValidationPipe`).
-  Throw Nest HTTP exceptions: `BadRequestException`, `NotFoundException`,
-  `ForbiddenException`, `ConflictException`, `UnauthorizedException`.
+- **Request bodies are parsed at the route**: `@Body(new ZodValidationPipe(schema))`
+  (`common/zod-validation.pipe.ts`) with the schema from `@arena/contracts/<module>`; the
+  service takes the inferred type. A shape failure answers 400 with one `message` entry per
+  issue. No `class-validator`, no global pipe. Modules not yet converted keep inline body
+  types and shape checks in the service (`code-quality-backlog.md`).
+- **Business rules are imperative** in services. Throw Nest HTTP exceptions:
+  `BadRequestException`, `NotFoundException`, `ForbiddenException`, `ConflictException`,
+  `UnauthorizedException`.
 - **Machine-readable error codes** (`common/api-errors.ts`): when the frontend must
   react to a _specific_ business failure (not just show the message), throw via the
   coded factories — `codedBadRequest(code, message)` / `codedConflict` /
   `codedUnauthorized`. They stamp the full body `{ statusCode, error, code, message }`
   (Nest passes object bodies through verbatim, so the factories carry the standard
   fields themselves). The `API_ERROR_CODES` registry is **append-only** — the web app
-  mirrors it by hand in `apps/web/src/types/api.ts` and branches on `code`, never on copy.
+  imports it from `@arena/contracts` and branches on `code`, never on copy.
   Plain string exceptions remain the default everywhere else.
 - Multi-write workflows run in `this.prisma.$transaction(async (tx) => …)`.
   Services accept an optional `tx` (`Prisma.TransactionClient | PrismaService`,
@@ -70,7 +75,9 @@ create(@Param('groupId') groupId: string, @CurrentUser() user: AuthUser,
 
 ## 5. DTOs / types
 
-- No `dto/` folders in practice; request shapes are inline types or `*.type.ts`.
+- No `dto/` folders. A request body is a zod schema plus its `z.infer` type in
+  `@arena/contracts/<module>` (`matchBodySchema`, `MatchBody`); modules not yet converted keep
+  inline types or `*.type.ts`.
 - Response/internal contracts live in per-module `types/` (`feed-item-draft.type.ts`,
   `profile-summary-response.type.ts`). One important type per file.
 - Generators implement a shared generic interface

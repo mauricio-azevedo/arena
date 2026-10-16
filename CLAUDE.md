@@ -14,7 +14,8 @@ docs — and keep them current when you change behavior.
 
 pnpm-workspaces monorepo (`pnpm-workspace.yaml`: `apps/*`, `packages/*`), tasks run by
 Turborepo (`turbo.json`). `packages/contracts` (`@arena/contracts`) holds the error codes and
-avatar keys both apps share; response types are still re-declared by hand in the frontend.
+avatar keys both apps share, plus request-body schemas one subpath per API module
+(`@arena/contracts/matches`); response types are still re-declared by hand in the frontend.
 
 ```txt
 apps/api/   NestJS 12 · Prisma 7 (pg adapter) · JWT · in-DB job queue · PostgreSQL
@@ -56,9 +57,11 @@ read JSON/config files directly rather than via `node -e`.
 - **Backend layering**: thin controllers → services own all logic. Services split
   by role: `*-reader` (queries+viewer filtering), `*-writer` (persistence),
   `*-orchestrator` (generator+writer), `*-generator` (input→draft), `*-projection`
-  (rebuild derived state), `*-read` (read a read model). Validation is imperative
-  (no `class-validator`, no global pipe); throw Nest HTTP exceptions. Multi-write
-  flows use `prisma.$transaction`; services take an optional `tx`.
+  (rebuild derived state), `*-read` (read a read model). Request bodies: zod schema from
+  `@arena/contracts/<module>`, parsed per route by `ZodValidationPipe`; business rules
+  imperative in services, throwing Nest HTTP exceptions (unconverted modules still check
+  shape in the service). Multi-write flows use `prisma.$transaction`; services take an
+  optional `tx`.
 - **⚠️ Async pipeline (key fact)**: match create/update/delete write the match +
   4 placeholder players, mark it `PENDING`, and **enqueue a `ProcessingJob`** — they
   do NOT compute ratings inline. A Postgres-backed worker (`processing/`, claims
@@ -101,8 +104,9 @@ read JSON/config files directly rather than via `node -e`.
 - kebab-case files with role suffixes; PascalCase classes/components; camelCase
   verb methods; **named exports** (except Next route files); `import type` for
   types. Feature-first organization; keep code local until genuinely shared.
-- Backend types in per-module `types/`; no `dto/` in practice. Frontend mirrors the
-  API in `apps/web/src/types/api.ts` + feature `*.type.ts` — **sync by hand**.
+- Backend types in per-module `types/`; no `dto/`. Request bodies: `@arena/contracts/<module>`
+  (schema + inferred type, both apps). Frontend mirrors the API's response types in
+  `apps/web/src/types/api.ts` + feature `*.type.ts` — **sync by hand**.
 - Logging: `structuredLog('domain.event', {...})` (`observability/structured-log.ts`).
 - API routes are use-case shaped (`GET /me/profile/summary`), never UI-shaped; no
   `/api` prefix.
@@ -129,6 +133,8 @@ read JSON/config files directly rather than via `node -e`.
 - New derived state: add a `*-projection.service.ts` and call it from
   `processing-job-runner.service.ts`.
 - Backend response shape change: update `apps/web/src/types/api.ts` (and feature types).
+- Request body change: edit the schema in `packages/contracts/src/<module>.ts`; both apps fail
+  `tsc` until they match. New module: add its subpath to `packages/contracts/package.json` `exports`.
 - Per `docs/README.md`, update docs in the same PR when product behavior, feed/
   rating rules, auth, schema, key UX, API contracts, or QA flows change.
   </content>

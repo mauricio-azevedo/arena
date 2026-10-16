@@ -1,5 +1,6 @@
+import type { MatchBody } from '@arena/contracts/matches';
 import { apiRequest } from '@/lib/api-client';
-import type { CreateMatchInput, Match } from '@/types/api';
+import type { Match } from '@/types/api';
 
 export function getGroupMatches(groupId: string): Promise<Match[]> {
   return apiRequest<Match[]>(`/groups/${groupId}/matches`, {
@@ -13,11 +14,7 @@ export function getGroupMatch(groupId: string, matchId: string): Promise<Match> 
   });
 }
 
-export function createGroupMatch(
-  token: string,
-  groupId: string,
-  input: CreateMatchInput,
-): Promise<Match> {
+export function createGroupMatch(token: string, groupId: string, input: MatchBody): Promise<Match> {
   return apiRequest<Match>(`/groups/${groupId}/matches`, {
     method: 'POST',
     token,
@@ -29,7 +26,7 @@ export function updateGroupMatch(
   token: string,
   groupId: string,
   matchId: string,
-  input: CreateMatchInput,
+  input: MatchBody,
 ): Promise<Match> {
   return apiRequest<Match>(`/groups/${groupId}/matches/${matchId}`, {
     method: 'PATCH',
