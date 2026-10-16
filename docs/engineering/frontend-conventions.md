@@ -110,12 +110,14 @@ export function getProfileMatches(token: string): Promise<ProfileMatchListItem[]
 
 ## 7. Types
 
+- Request body types come from `@arena/contracts/<module>` (`MatchBody`, `MatchPlayerInput`),
+  `import type` only: the web never loads a schema at runtime, so zod stays out of the bundle.
 - `types/api.ts` hand-mirrors the backend response types (`User`, `Group`,
   `GroupMember`, `Match`, `MatchPlayer`, …). **Keep it in sync with the API by
-  hand** until the zod migration (`code-quality-backlog.md`). Constants both apps
-  share (`ApiErrorCode`, `AvatarColorKey`) come from `@arena/contracts`; the gradient
-  table in `lib/avatar-color.ts` is keyed by it, so a new key fails `tsc` until it has
-  a gradient.
+  hand** until response types move to `@arena/contracts` (`code-quality-backlog.md`).
+  Constants both apps share (`ApiErrorCode`, `AvatarColorKey`) come from `@arena/contracts`;
+  the gradient table in `lib/avatar-color.ts` is keyed by it, so a new key fails `tsc` until
+  it has a gradient.
 - Features prefer lightweight view-model types over reusing full API types when
   they only need a subset.
 - Enums are union types in `enums/*.enum.ts`

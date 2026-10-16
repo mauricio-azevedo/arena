@@ -217,12 +217,16 @@ packages/contracts/
   src/
     api-errors.ts     API_ERROR_CODES, ApiErrorCode
     avatar-color.ts   AVATAR_COLOR_KEYS, AvatarColorKey, isAvatarColorKey
-    index.ts
+    index.ts          root export: the two above
+    matches.ts        matchBodySchema, MatchBody, MatchPlayerInput; @arena/contracts/matches
 ```
 
 `@arena/contracts` holds values both apps must agree on byte for byte. A constant goes there on
 its second consumer, not before; a mirrored _rule_ with different code on each side (member display
-name, password length) stays local.
+name, password length) stays local. Request-body schemas are one file per API module, exported as
+a subpath (`@arena/contracts/<module>`, `exports` in `package.json`), never from the root index:
+the root is bundled into the web for its constants, and the CJS zod behind a schema cannot be
+tree-shaken (64 locales, +95 kB gzipped per route when it was tried in #267).
 
 ### 3.4 `docs/`
 

@@ -172,7 +172,7 @@ rows.
 - A `User` has **0..N** memberships; a `Group` has **1..N** members; the pair is
   unique (`@@unique([groupId, userId])`).
 - A `Match` has **exactly 4** `MatchPlayer` rows across 2 teams; a player cannot
-  appear twice (enforced in `MatchesService.validateMatchBody` + DB uniques).
+  appear twice (enforced in `MatchesService.resolvePlayerIds` + DB uniques).
 - A match **cannot end in a draw**; `winnerTeam` is derived from the score.
 - Group-scoped child rows FK on the composite `(id, groupId)` of their parent, so
   cross-group references are impossible at the DB level.

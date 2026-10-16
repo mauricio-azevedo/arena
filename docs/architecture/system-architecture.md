@@ -28,9 +28,10 @@ arena/
 | Database | PostgreSQL 16 (local via `docker-compose`; Neon in hosted environments)                         |
 | Deploy   | `web` on Vercel (`vercel.json`, only `main` auto-deploys); `api` + DB hosted separately         |
 
-There is **no shared package** between `api` and `web`. The frontend re-declares
-the API contract by hand in `apps/web/src/types/api.ts` and per-feature `*.type.ts`
-files. Keep these in sync manually when backend responses change.
+`@arena/contracts` (`packages/contracts`) is the shared package: error codes, avatar keys,
+and request-body schemas, one subpath per API module (`@arena/contracts/matches`). Response
+types are still re-declared by hand in `apps/web/src/types/api.ts` and per-feature `*.type.ts`
+files; keep those in sync when backend responses change.
 
 ---
 
@@ -76,12 +77,15 @@ Minimal on purpose:
 
 ### 2.4 Validation & DTOs
 
-There is **no `class-validator`**. Request bodies are typed inline (or via
-`*.type.ts`) and validated imperatively inside services, throwing Nest HTTP
-exceptions (`BadRequestException`, `NotFoundException`, `ForbiddenException`,
-`ConflictException`, `UnauthorizedException`). Example:
-`MatchesService.validateMatchBody` enforces "4 distinct players, no draw, valid
-score" (`matches.service.ts:306`).
+There is **no `class-validator`** and no global pipe. A request body's shape is a zod schema
+in `@arena/contracts/<module>` (`packages/contracts/src/matches.ts`); the controller parses it
+with `@Body(new ZodValidationPipe(schema))` (`common/zod-validation.pipe.ts`), which answers
+400 with one `message` entry per issue, and the service receives the inferred type. Business
+rules stay imperative in services, throwing Nest HTTP exceptions (`BadRequestException`,
+`NotFoundException`, `ForbiddenException`, `ConflictException`, `UnauthorizedException`):
+`MatchesService.resolvePlayerIds` rejects a player appearing twice. Converted so far: matches;
+the other modules still type bodies inline and check shape in the service
+(`code-quality-backlog.md`).
 
 ### 2.5 Persistence (Prisma)
 
