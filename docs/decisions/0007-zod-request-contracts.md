@@ -34,5 +34,4 @@ is runtime check and type in one declaration. OpenAPI: second hand-synced mirror
 
 ## More Information
 
-Implemented module by module from #267, matches first. Response types in a later PR; API returns
-`Date` where web receives strings.
+Implemented module by module from #267, matches first. Responses: ADR 0008.

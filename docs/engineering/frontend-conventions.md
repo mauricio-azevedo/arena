@@ -112,9 +112,11 @@ export function getProfileMatches(token: string): Promise<ProfileMatchListItem[]
 
 - Request body types come from `@arena/contracts/<module>` (`MatchBody`, `MatchPlayerInput`),
   `import type` only: the web never loads a schema at runtime, so zod stays out of the bundle.
-- `types/api.ts` hand-mirrors the backend response types (`User`, `Group`,
-  `GroupMember`, `Match`, `MatchPlayer`, …). **Keep it in sync with the API by
-  hand** until response types move to `@arena/contracts` (`code-quality-backlog.md`).
+- Response types come from the same subpath (`Match`, `MatchPlayer`, `MatchTeam`): the
+  resource name is the wire shape (`z.input`, ISO strings), `XResponse` is the API's and never
+  imported here. `types/api.ts` hand-mirrors the responses of modules not yet converted (`User`,
+  `Group`, `GroupMember`, …). **Keep those in sync with the API by hand** until their module
+  moves (`code-quality-backlog.md`).
   Constants both apps share (`ApiErrorCode`, `AvatarColorKey`) come from `@arena/contracts`;
   the gradient table in `lib/avatar-color.ts` is keyed by it, so a new key fails `tsc` until
   it has a gradient.
