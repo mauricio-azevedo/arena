@@ -177,61 +177,6 @@ export type AuthResponse = {
   accessToken: string;
 };
 
-export type MatchTeam = 'TEAM_A' | 'TEAM_B';
-
-export type MatchPlayer = {
-  id: string;
-  matchId: string;
-  groupId: string;
-  groupMemberId: string;
-  team: MatchTeam;
-  position: number;
-  ratingBefore: number;
-  ratingAfter: number;
-  ratingDelta: number;
-
-  rankBefore: number | null;
-  rankAfter: number | null;
-  rankDelta: number | null;
-  movementDirection: 'UP' | 'DOWN' | null;
-  movementPositions: number | null;
-
-  ratingDeviationBefore: number | null;
-  ratingDeviationAfter: number | null;
-  ratingVolatilityBefore: number | null;
-  ratingVolatilityAfter: number | null;
-  ratingMuBefore: number | null;
-  ratingMuAfter: number | null;
-  ratingSigmaBefore: number | null;
-  ratingSigmaAfter: number | null;
-
-  playedAt: string;
-  createdAt: string;
-  updatedAt: string;
-  groupMember?: GroupMember;
-};
-
-export type Match = {
-  id: string;
-  groupId: string;
-  gamesA: number;
-  gamesB: number;
-  winnerTeam: MatchTeam;
-  teamAExpected: number | null;
-  teamBExpected: number | null;
-  teamAActual: number | null;
-  teamBActual: number | null;
-  teamARatingBefore: number | null;
-  teamBRatingBefore: number | null;
-  teamARatingAfter: number | null;
-  teamBRatingAfter: number | null;
-  ratingAlgorithm: string;
-  playedAt: string;
-  createdAt: string;
-  updatedAt: string;
-  players: MatchPlayer[];
-};
-
 export type NotificationType =
   | 'CLAIM_OFFER'
   | 'CLAIM_OFFER_DECLINED'

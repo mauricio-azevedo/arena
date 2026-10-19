@@ -3,7 +3,8 @@
 import { type CSSProperties, useMemo, useState } from 'react';
 import { ArrowUpDown } from 'lucide-react';
 import type { MatchPlayerInput } from '@arena/contracts/matches';
-import type { GroupMember, Match } from '@/types/api';
+import type { Match } from '@arena/contracts/matches';
+import type { GroupMember } from '@/types/api';
 import { Drawer, DrawerActionHeader, DrawerContent } from '@/components/ui/drawer';
 import { Meta } from '@/components/ui/text';
 import { createGroupMatch, updateGroupMatch } from '@/features/matches/api/matches.api';

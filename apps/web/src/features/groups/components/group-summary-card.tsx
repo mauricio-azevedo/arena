@@ -2,7 +2,8 @@
 
 import { useState } from 'react';
 import { Search } from 'lucide-react';
-import type { Group, GroupMember, Match, MyGroup } from '@/types/api';
+import type { Match } from '@arena/contracts/matches';
+import type { Group, GroupMember, MyGroup } from '@/types/api';
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
 import { Body, Dot, Label, Meta, Title } from '@/components/ui/text';
 import { GroupAvatar } from '@/components/ui/group-avatar';

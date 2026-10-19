@@ -1,6 +1,5 @@
-import type { MatchBody } from '@arena/contracts/matches';
+import type { Match, MatchBody, MatchDeletedResponse } from '@arena/contracts/matches';
 import { apiRequest } from '@/lib/api-client';
-import type { Match } from '@/types/api';
 
 export function getGroupMatches(groupId: string): Promise<Match[]> {
   return apiRequest<Match[]>(`/groups/${groupId}/matches`, {
@@ -39,8 +38,8 @@ export function deleteGroupMatch(
   token: string,
   groupId: string,
   matchId: string,
-): Promise<{ success: boolean }> {
-  return apiRequest<{ success: boolean }>(`/groups/${groupId}/matches/${matchId}`, {
+): Promise<MatchDeletedResponse> {
+  return apiRequest<MatchDeletedResponse>(`/groups/${groupId}/matches/${matchId}`, {
     method: 'DELETE',
     token,
   });
