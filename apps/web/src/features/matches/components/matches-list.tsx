@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowDown, ArrowUp, MoreVertical, Pencil, Trash2 } from 'lucide-react';
-import type { Match, MatchPlayer } from '@/types/api';
+import type { Match, MatchPlayer } from '@arena/contracts/matches';
 import { Button } from '@/components/ui/button';
 import { Body, Heading, Label, Meta, Stat } from '@/components/ui/text';
 import { cn } from '@/lib/utils';
@@ -316,9 +316,9 @@ function AvatarPair({ players }: { players: MatchPlayer[] }) {
       {players.slice(0, 2).map((player, index) => (
         <MemberAvatar
           key={player.id}
-          userId={player.groupMember?.userId ?? null}
+          userId={player.groupMember.userId}
           name={getPlayerFullName(player)}
-          avatarColor={player.groupMember?.user?.avatarColor ?? null}
+          avatarColor={player.groupMember.user?.avatarColor ?? null}
           size="xs"
           className={index > 0 ? '-ml-3' : undefined}
         />

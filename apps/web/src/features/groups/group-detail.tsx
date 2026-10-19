@@ -15,7 +15,8 @@ import {
 } from '@/features/groups/api/groups.api';
 import { getGroupMatches } from '@/features/matches/api/matches.api';
 import { getAccessToken } from '@/lib/auth';
-import type { Group, GroupMember, Match, MyGroup } from '@/types/api';
+import type { Match } from '@arena/contracts/matches';
+import type { Group, GroupMember, MyGroup } from '@/types/api';
 import { GroupDetailLoadingState } from '@/features/groups/components/group-detail-loading-state';
 import { Card, CardContent } from '@/components/ui/card';
 import { Body, Label } from '@/components/ui/text';

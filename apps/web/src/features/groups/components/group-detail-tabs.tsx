@@ -1,7 +1,8 @@
 'use client';
 
 import { type ReactNode, useMemo } from 'react';
-import type { GroupMember, Match } from '@/types/api';
+import type { Match } from '@arena/contracts/matches';
+import type { GroupMember } from '@/types/api';
 import { Label } from '@/components/ui/text';
 import { MatchesList } from '@/features/matches/components/matches-list';
 import { RankingList } from '@/features/groups/components/ranking-list';

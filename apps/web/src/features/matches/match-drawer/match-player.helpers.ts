@@ -1,4 +1,5 @@
-import type { GroupMember, Match } from '@/types/api';
+import type { Match } from '@arena/contracts/matches';
+import type { GroupMember } from '@/types/api';
 import { nameInitial } from '@/lib/avatar';
 import { resolveMemberName } from '@/lib/member-name';
 
@@ -86,8 +87,8 @@ export function buildPlayerLookup(members: GroupMember[], match?: Match) {
         firstName,
         fullName,
         initial: initialOf(firstName),
-        avatarColor: player.groupMember?.user?.avatarColor ?? null,
-        userId: player.groupMember?.userId ?? null,
+        avatarColor: player.groupMember.user?.avatarColor ?? null,
+        userId: player.groupMember.userId,
       });
     }
   }

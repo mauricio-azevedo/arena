@@ -1,4 +1,4 @@
-import type { Match, MatchTeam } from '@/types/api';
+import type { Match, MatchTeam } from '@arena/contracts/matches';
 
 type MatchExpectation = 'FAVORITE_BIG_WIN' | 'FAVORITE_WIN';
 type MatchResult = 'FAVORITE_BIG_WIN' | 'FAVORITE_WIN' | 'UNDERDOG_WIN' | 'UNDERDOG_BIG_WIN';

@@ -2,7 +2,8 @@
 
 import { createContext, useCallback, useContext, useMemo, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
-import type { GroupMember, Match } from '@/types/api';
+import type { Match } from '@arena/contracts/matches';
+import type { GroupMember } from '@/types/api';
 import { MatchDrawer, type MatchDrawerTarget } from './match-drawer';
 
 type MatchDrawerContextValue = {

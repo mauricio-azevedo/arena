@@ -13,7 +13,7 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Display, Overline, Heading, Stat, Title } from '@/components/ui/text';
 import { StandingCard } from '@/features/groups/components/standing-card';
 import { MatchCard } from '@/features/matches/components/matches-list';
-import type { Match, MatchPlayer, MatchTeam } from '@/types/api';
+import type { Match, MatchPlayer, MatchTeam } from '@arena/contracts/matches';
 
 /**
  * Internal design-system reference. Not part of the product surface — it exists
@@ -315,29 +315,9 @@ function demoPlayer(
     updatedAt: TS,
     groupMember: {
       id,
-      groupId: 'demo',
       userId: id,
       displayName: null,
-      rating: 1000,
-      ratingDeviation: null,
-      ratingVolatility: null,
-      ratingMu: null,
-      ratingSigma: null,
-      ratingAlgorithm: 'BEACH_ELO_V1',
-      role: 'MEMBER',
-      leftAt: null,
-      createdAt: TS,
-      updatedAt: TS,
-      user: {
-        id,
-        firstName,
-        lastName: '',
-        nickname: null,
-        email: null,
-        avatarColor: null,
-        createdAt: TS,
-        updatedAt: TS,
-      },
+      user: { firstName, lastName: '', nickname: null, avatarColor: 'blue' },
     },
   };
 }
@@ -357,6 +337,7 @@ const DEMO_MATCH: Match = {
   teamARatingAfter: 2016,
   teamBRatingAfter: 2034,
   ratingAlgorithm: 'BEACH_ELO_V1',
+  processingStatus: 'PROCESSED',
   playedAt: TS,
   createdAt: TS,
   updatedAt: TS,

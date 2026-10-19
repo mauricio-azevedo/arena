@@ -29,9 +29,10 @@ arena/
 | Deploy   | `web` on Vercel (`vercel.json`, only `main` auto-deploys); `api` + DB hosted separately         |
 
 `@arena/contracts` (`packages/contracts`) is the shared package: error codes, avatar keys,
-and request-body schemas, one subpath per API module (`@arena/contracts/matches`). Response
-types are still re-declared by hand in `apps/web/src/types/api.ts` and per-feature `*.type.ts`
-files; keep those in sync when backend responses change.
+and request and response schemas, one subpath per API module (`@arena/contracts/matches`).
+Modules not yet converted still re-declare their response types by hand in
+`apps/web/src/types/api.ts` and per-feature `*.type.ts` files; keep those in sync when backend
+responses change.
 
 ---
 
@@ -86,6 +87,14 @@ rules stay imperative in services, throwing Nest HTTP exceptions (`BadRequestExc
 `MatchesService.resolvePlayerIds` rejects a player appearing twice. Converted so far: matches;
 the other modules still type bodies inline and check shape in the service
 (`code-quality-backlog.md`).
+
+Responses are zod schemas in the same module file (ADR 0008): dates are `isoDateTime` codecs
+(`packages/contracts/src/iso-datetime.ts`), so `z.output` is the API's return type (`Date`) and
+`z.input` is the wire the web imports (ISO string). Services annotate their returns with the
+`XResponse` type and shape the Prisma query to it (`MatchesService.matchInclude`: `omit` the
+processing internals, identity-only `select` on the player's member). Nothing parses responses in
+production; `apps/api/test/app.e2e-spec.ts` parses one body per route with the strict schema, so
+an unpromised field fails CI.
 
 ### 2.5 Persistence (Prisma)
 

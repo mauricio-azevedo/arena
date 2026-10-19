@@ -78,8 +78,13 @@ create(@Param('groupId') groupId: string, @CurrentUser() user: AuthUser,
 - No `dto/` folders. A request body is a zod schema plus its `z.infer` type in
   `@arena/contracts/<module>` (`matchBodySchema`, `MatchBody`); modules not yet converted keep
   inline types or `*.type.ts`.
-- Response/internal contracts live in per-module `types/` (`feed-item-draft.type.ts`,
-  `profile-summary-response.type.ts`). One important type per file.
+- A response is a `z.strictObject` in the same file (`matchResponseSchema`), dates as the
+  `isoDateTime` codec; the service annotates its return with the `z.output` type
+  (`Promise<MatchResponse>`) and shapes the Prisma `select`/`omit` to the schema. What the API
+  sends minus internals, not only what the web reads today. Never parse a response in production;
+  the e2e spec parses one per route (ADR 0008).
+- Internal contracts and unconverted responses live in per-module `types/`
+  (`feed-item-draft.type.ts`, `profile-summary-response.type.ts`). One important type per file.
 - Generators implement a shared generic interface
   (`FeedItemGenerator<Input>` → `FeedItemDraft | null`).
 - Values the web app must match exactly (`API_ERROR_CODES`, `AVATAR_COLOR_KEYS`) are imported from

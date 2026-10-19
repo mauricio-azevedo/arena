@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import type { Match } from '@/types/api';
+import type { Match } from '@arena/contracts/matches';
 
 export type SlotKey = 'a1' | 'a2' | 'b1' | 'b2';
 export type Slots = Record<SlotKey, string | null>;

@@ -14,8 +14,9 @@ docs — and keep them current when you change behavior.
 
 pnpm-workspaces monorepo (`pnpm-workspace.yaml`: `apps/*`, `packages/*`), tasks run by
 Turborepo (`turbo.json`). `packages/contracts` (`@arena/contracts`) holds the error codes and
-avatar keys both apps share, plus request-body schemas one subpath per API module
-(`@arena/contracts/matches`); response types are still re-declared by hand in the frontend.
+avatar keys both apps share, plus request and response schemas one subpath per API module
+(`@arena/contracts/matches`); modules not yet converted still re-declare response types by hand
+in the frontend.
 
 ```txt
 apps/api/   NestJS 12 · Prisma 7 (pg adapter) · JWT · in-DB job queue · PostgreSQL
@@ -104,9 +105,11 @@ read JSON/config files directly rather than via `node -e`.
 - kebab-case files with role suffixes; PascalCase classes/components; camelCase
   verb methods; **named exports** (except Next route files); `import type` for
   types. Feature-first organization; keep code local until genuinely shared.
-- Backend types in per-module `types/`; no `dto/`. Request bodies: `@arena/contracts/<module>`
-  (schema + inferred type, both apps). Frontend mirrors the API's response types in
-  `apps/web/src/types/api.ts` + feature `*.type.ts` — **sync by hand**.
+- Backend types in per-module `types/`; no `dto/`. Request bodies and responses:
+  `@arena/contracts/<module>` (zod schema; dates are `isoDateTime` codecs, so `z.output` = API
+  return with `Date`, `z.input` = wire the web imports). Services annotate their return with the
+  `XResponse` type; the web imports the resource name, `import type` only. Unconverted modules still
+  mirror responses in `apps/web/src/types/api.ts` + feature `*.type.ts` — **sync by hand**.
 - Logging: `structuredLog('domain.event', {...})` (`observability/structured-log.ts`).
 - API routes are use-case shaped (`GET /me/profile/summary`), never UI-shaped; no
   `/api` prefix.
@@ -132,9 +135,10 @@ read JSON/config files directly rather than via `node -e`.
   confirm build → update `database-reference.md` + `data-model.md` + affected docs.
 - New derived state: add a `*-projection.service.ts` and call it from
   `processing-job-runner.service.ts`.
-- Backend response shape change: update `apps/web/src/types/api.ts` (and feature types).
-- Request body change: edit the schema in `packages/contracts/src/<module>.ts`; both apps fail
-  `tsc` until they match. New module: add its subpath to `packages/contracts/package.json` `exports`.
+- Request body or response change: edit the schema in `packages/contracts/src/<module>.ts`; both
+  apps fail `tsc` until they match, and the e2e strict parse fails on an unpromised field.
+  Unconverted module: update `apps/web/src/types/api.ts` (and feature types) by hand. New module:
+  add its subpath to `packages/contracts/package.json` `exports`.
 - Per `docs/README.md`, update docs in the same PR when product behavior, feed/
   rating rules, auth, schema, key UX, API contracts, or QA flows change.
   </content>
