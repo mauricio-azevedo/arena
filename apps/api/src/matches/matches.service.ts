@@ -120,7 +120,7 @@ export class MatchesService {
 
       return tx.match.findUniqueOrThrow({
         where: { id: match.id },
-        include: this.matchInclude(),
+        ...this.matchInclude(),
       });
     });
   }
@@ -216,7 +216,7 @@ export class MatchesService {
 
       return tx.match.findUniqueOrThrow({
         where: { id },
-        include: this.matchInclude(),
+        ...this.matchInclude(),
       });
     });
   }
@@ -281,7 +281,7 @@ export class MatchesService {
         id: { in: activeMatchIds.map((match) => match.id) },
       },
       orderBy: [{ playedAt: 'desc' }, { createdAt: 'desc' }],
-      include: this.matchInclude(),
+      ...this.matchInclude(),
     });
   }
 
@@ -305,7 +305,7 @@ export class MatchesService {
         id,
         groupId,
       },
-      include: this.matchInclude(),
+      ...this.matchInclude(),
     });
 
     if (!match) {
@@ -490,19 +490,27 @@ export class MatchesService {
     return matches[0] ?? null;
   }
 
+  // Shapes the response to `matchResponseSchema`: processing internals stay
+  // server-side and each player's member is identity only (the ratings that
+  // matter here are the MatchPlayer snapshot). `GET /groups/:id/matches` has no
+  // guard, so anything selected here is public.
   private matchInclude() {
     return {
-      players: {
-        orderBy: [{ team: 'asc' as const }, { position: 'asc' as const }],
-        include: {
-          groupMember: {
-            include: {
-              user: {
-                select: {
-                  id: true,
-                  ...MEMBER_USER_SELECT,
-                  email: true,
-                },
+      omit: {
+        processedAt: true,
+        processingError: true,
+        deletedAt: true,
+      },
+      include: {
+        players: {
+          orderBy: [{ team: 'asc' as const }, { position: 'asc' as const }],
+          include: {
+            groupMember: {
+              select: {
+                id: true,
+                userId: true,
+                displayName: true,
+                user: { select: MEMBER_USER_SELECT },
               },
             },
           },
