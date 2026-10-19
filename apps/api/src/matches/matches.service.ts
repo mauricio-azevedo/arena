@@ -4,7 +4,11 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import type { MatchBody } from '@arena/contracts/matches';
+import type {
+  MatchBody,
+  MatchDeletedResponse,
+  MatchResponse,
+} from '@arena/contracts/matches';
 import { MatchTeam } from '../generated/prisma/enums';
 import {
   MEMBER_USER_SELECT,
@@ -37,7 +41,11 @@ export class MatchesService {
     private readonly processingJobs: ProcessingJobWriterService,
   ) {}
 
-  async create(groupId: string, userId: string, body: MatchBody) {
+  async create(
+    groupId: string,
+    userId: string,
+    body: MatchBody,
+  ): Promise<MatchResponse> {
     return this.prisma.$transaction(async (tx) => {
       await this.ensureGroupExists(tx, groupId);
       await this.ensureActiveGroupMember(tx, groupId, userId);
@@ -110,14 +118,19 @@ export class MatchesService {
         tx,
       );
 
-      return tx.match.findUnique({
+      return tx.match.findUniqueOrThrow({
         where: { id: match.id },
         include: this.matchInclude(),
       });
     });
   }
 
-  async update(groupId: string, id: string, userId: string, body: MatchBody) {
+  async update(
+    groupId: string,
+    id: string,
+    userId: string,
+    body: MatchBody,
+  ): Promise<MatchResponse> {
     return this.prisma.$transaction(async (tx) => {
       await this.ensureGroupExists(tx, groupId);
       await this.ensureActiveGroupMember(tx, groupId, userId);
@@ -201,14 +214,18 @@ export class MatchesService {
         tx,
       );
 
-      return tx.match.findUnique({
+      return tx.match.findUniqueOrThrow({
         where: { id },
         include: this.matchInclude(),
       });
     });
   }
 
-  async remove(groupId: string, id: string, userId: string) {
+  async remove(
+    groupId: string,
+    id: string,
+    userId: string,
+  ): Promise<MatchDeletedResponse> {
     return this.prisma.$transaction(async (tx) => {
       await this.ensureGroupExists(tx, groupId);
       await this.ensureActiveGroupMember(tx, groupId, userId);
@@ -244,7 +261,7 @@ export class MatchesService {
     });
   }
 
-  async findAll(groupId: string) {
+  async findAll(groupId: string): Promise<MatchResponse[]> {
     const group = await this.prisma.group.findUnique({
       where: { id: groupId },
     });
@@ -268,7 +285,7 @@ export class MatchesService {
     });
   }
 
-  async findOne(groupId: string, id: string) {
+  async findOne(groupId: string, id: string): Promise<MatchResponse> {
     const group = await this.prisma.group.findUnique({
       where: { id: groupId },
     });
