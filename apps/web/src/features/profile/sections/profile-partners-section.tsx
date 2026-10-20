@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { ChevronRight } from 'lucide-react';
+import type { ProfileSummaryPartner } from '@arena/contracts/profiles';
 import {
   Drawer,
   DrawerContent,
@@ -10,7 +11,6 @@ import {
   DrawerTitle,
 } from '@/components/ui/drawer';
 import { Body, Heading, Meta } from '@/components/ui/text';
-import type { ProfileSummaryPartner } from '../types/profile-summary-partner.type';
 import { PartnerRow } from './partner-row';
 
 const INLINE_LIMIT = 3;

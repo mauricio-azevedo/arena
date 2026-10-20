@@ -1,4 +1,4 @@
-import type { ProfileMatchListItem } from '@/features/profile/types/profile-match-list-item.type';
+import type { ProfileMatchListItem } from '@arena/contracts/profiles';
 
 export type MemberProfileStats = {
   matchesPlayed: number;

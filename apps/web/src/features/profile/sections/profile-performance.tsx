@@ -1,13 +1,11 @@
+import type { ProfileSummaryStats } from '@arena/contracts/profiles';
 import { cn } from '@/lib/utils';
 import { Card, CardContent } from '@/components/ui/card';
 import { Dot, Heading, Label, Meta, Stat } from '@/components/ui/text';
 import { recentFormChip } from '../helpers/recent-form.helper';
-import type { ProfileSummaryStats } from '../types/profile-summary-stats.type';
 
 export function ProfilePerformance({ stats }: { stats: ProfileSummaryStats }) {
-  const { wins, losses, matchesPlayed, winRate } = stats;
-  // Tolerate an older/partial API response that predates recentForm.
-  const recentForm = stats.recentForm ?? [];
+  const { wins, losses, matchesPlayed, winRate, recentForm } = stats;
   const hasMatches = matchesPlayed > 0;
 
   return (

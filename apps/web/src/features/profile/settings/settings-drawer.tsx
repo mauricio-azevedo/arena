@@ -1,8 +1,8 @@
 'use client';
 
 import { useState } from 'react';
+import type { ProfileUser } from '@arena/contracts/profiles';
 import { Drawer, DrawerContent } from '@/components/ui/drawer';
-import type { ProfileUser } from '../types/profile-user.type';
 import { EditProfileView, type EditedUser } from './edit-profile-view';
 import { PasswordView } from './password-view';
 import { SettingsMenuView } from './settings-menu-view';

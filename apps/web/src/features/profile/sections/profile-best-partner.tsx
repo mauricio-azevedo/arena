@@ -1,10 +1,10 @@
+import type { ProfileSummaryPartner } from '@arena/contracts/profiles';
 import { cn } from '@/lib/utils';
 import { MemberAvatar } from '@/components/ui/member-avatar';
 import { Card, CardContent } from '@/components/ui/card';
 import { Dot, Heading, Label, Meta, Overline } from '@/components/ui/text';
 import { partnerRateTone } from '../helpers/partner-rate.helper';
 import { firstNameOf } from '../helpers/profile-name.helper';
-import type { ProfileSummaryPartner } from '../types/profile-summary-partner.type';
 
 export function ProfileBestPartner({
   partner,
@@ -17,7 +17,7 @@ export function ProfileBestPartner({
   ownerLabel: string;
   ownerUserId: string;
   ownerName: string;
-  ownerAvatarColor: string | null | undefined;
+  ownerAvatarColor: string;
 }) {
   const tone = partnerRateTone(partner.winRate);
   const partnerFirstName = firstNameOf(partner.displayName);
@@ -34,7 +34,7 @@ export function ProfileBestPartner({
                 <MemberAvatar
                   userId={ownerUserId}
                   name={ownerName}
-                  avatarColor={ownerAvatarColor ?? null}
+                  avatarColor={ownerAvatarColor}
                   size="lg"
                   className={ringClass}
                 />
