@@ -12,6 +12,10 @@
     "./matches": {
       "types": "./dist/matches.d.ts",
       "default": "./dist/matches.js"
+    },
+    "./profiles": {
+      "types": "./dist/profiles.d.ts",
+      "default": "./dist/profiles.js"
     }
   },
   "scripts": {
