@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import type { ProfileSummaryPartner } from '@arena/contracts/profiles';
 import {
   MEMBER_USER_SELECT,
   resolveMemberAvatarColor,
@@ -6,7 +7,6 @@ import {
 } from '../../common/member-display-name';
 import { winRatePercent } from '../../common/win-rate';
 import { PrismaService } from '../../prisma/prisma.service';
-import type { ProfileSummaryPartner } from '../types/profile-summary-partner.type';
 
 // "Melhor dupla" needs enough games to be meaningful — below this we'd surface a
 // 1–0 partner at 100% over a proven partnership.

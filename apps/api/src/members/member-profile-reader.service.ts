@@ -1,4 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import type {
+  ProfileMatchListItemResponse,
+  ProfileSummaryStats,
+} from '@arena/contracts/profiles';
 import { MatchTeam } from '../generated/prisma/enums';
 import {
   MEMBER_USER_SELECT,
@@ -6,8 +10,6 @@ import {
   resolveMemberDisplayName,
 } from '../common/member-display-name';
 import { PrismaService } from '../prisma/prisma.service';
-import type { ProfileMatchListItem } from '../me/types/profile-match-list-item.type';
-import type { ProfileSummaryStats } from '../me/types/profile-summary-stats.type';
 import { RECENT_FORM_SIZE } from '../me/profile-summary/profile-summary-stats.service';
 import { winRatePercent } from '../common/win-rate';
 import type { MemberProfile } from './types/member-profile.type';
@@ -59,7 +61,7 @@ export class MemberProfileReaderService {
   // The match list already carries each result, so stats derive from it — no
   // separate matchPlayer query.
   private statsFromMatches(
-    matches: ProfileMatchListItem[],
+    matches: ProfileMatchListItemResponse[],
   ): ProfileSummaryStats {
     const matchesPlayed = matches.length;
     const wins = matches.filter((match) => match.result === 'WIN').length;
@@ -77,7 +79,7 @@ export class MemberProfileReaderService {
   // instead of a userId — so it works for stub players too.
   private async findMatches(
     groupMemberId: string,
-  ): Promise<ProfileMatchListItem[]> {
+  ): Promise<ProfileMatchListItemResponse[]> {
     const matchPlayers = await this.prisma.matchPlayer.findMany({
       where: {
         groupMemberId,

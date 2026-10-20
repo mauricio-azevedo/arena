@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import type { ProfileSummaryResponse } from '@arena/contracts/profiles';
 import { PrismaService } from '../../prisma/prisma.service';
-import type { ProfileSummaryResponse } from '../types/profile-summary-response.type';
 import { ProfileSummaryGroupsService } from './profile-summary-groups.service';
 import { ProfileSummaryMatchesService } from './profile-summary-matches.service';
 import { ProfileSummaryPartnersService } from './profile-summary-partners.service';

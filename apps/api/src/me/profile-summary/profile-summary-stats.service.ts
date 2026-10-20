@@ -1,8 +1,10 @@
 import { Injectable } from '@nestjs/common';
+import type {
+  ProfileMatchResult,
+  ProfileSummaryStats,
+} from '@arena/contracts/profiles';
 import { PrismaService } from '../../prisma/prisma.service';
 import { winRatePercent } from '../../common/win-rate';
-import type { ProfileSummaryMatchResult } from '../types/profile-summary-match-result.type';
-import type { ProfileSummaryStats } from '../types/profile-summary-stats.type';
 
 export const RECENT_FORM_SIZE = 8;
 
@@ -46,9 +48,7 @@ export class ProfileSummaryStatsService {
     };
   }
 
-  private async loadRecentForm(
-    userId: string,
-  ): Promise<ProfileSummaryMatchResult[]> {
+  private async loadRecentForm(userId: string): Promise<ProfileMatchResult[]> {
     const recent = await this.prisma.matchPlayer.findMany({
       where: {
         groupMember: {
