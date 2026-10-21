@@ -64,15 +64,9 @@ export class RankingService {
             winsCount: true,
           },
         },
-        user: {
-          select: {
-            id: true,
-            ...MEMBER_USER_SELECT,
-            email: true,
-            createdAt: true,
-            updatedAt: true,
-          },
-        },
+        // Identity only, as everywhere a member is embedded; no guard on the
+        // route, so anything selected here is public.
+        user: { select: MEMBER_USER_SELECT },
       },
     });
 

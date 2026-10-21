@@ -178,7 +178,7 @@ export class MembersService {
 
     const member = await this.prisma.groupMember.findUnique({
       where: { id: memberId },
-      include: this.memberInclude(),
+      select: this.memberSelect(),
     });
 
     if (!member || member.groupId !== groupId) {
@@ -285,7 +285,7 @@ export class MembersService {
         { user: { firstName: 'asc' } },
         { user: { lastName: 'asc' } },
       ],
-      include: this.memberInclude(),
+      select: this.memberSelect(),
     });
   }
 
@@ -294,19 +294,31 @@ export class MembersService {
   private findOne(id: string): Promise<GroupMemberResponse> {
     return this.prisma.groupMember.findUniqueOrThrow({
       where: { id },
-      include: this.memberInclude(),
+      select: this.memberSelect(),
     });
   }
 
-  private memberInclude() {
+  // Shapes the row to `groupMemberResponseSchema`: the claim-email fields stay
+  // server-side and the user is identity only (no id, no email). `GET …/members`
+  // has no guard, so anything selected here is public.
+  private memberSelect() {
     return {
-      user: {
-        select: {
-          id: true,
-          ...MEMBER_USER_SELECT,
-          email: true,
-        },
-      },
+      id: true,
+      groupId: true,
+      userId: true,
+      displayName: true,
+      rating: true,
+      ratingDeviation: true,
+      ratingVolatility: true,
+      ratingMu: true,
+      ratingSigma: true,
+      ratingAlgorithm: true,
+      currentRank: true,
+      role: true,
+      leftAt: true,
+      createdAt: true,
+      updatedAt: true,
+      user: { select: MEMBER_USER_SELECT },
     };
   }
 }
