@@ -1,9 +1,9 @@
 import Link from 'next/link';
 import { ArrowDown, ArrowUp } from 'lucide-react';
+import type { ProfileSummaryGroup } from '@arena/contracts/profiles';
 import { cn } from '@/lib/utils';
 import { Heading, Label, Meta, Stat } from '@/components/ui/text';
 import { GroupAvatar } from '@/components/ui/group-avatar';
-import type { ProfileSummaryGroup } from '../types/profile-summary-group.type';
 
 export function ProfileGroupsRail({ groups }: { groups: ProfileSummaryGroup[] }) {
   if (groups.length === 0) {
@@ -52,7 +52,7 @@ function GroupRailCard({ group }: { group: ProfileSummaryGroup }) {
         <Stat size="lg" className="font-extrabold">
           {group.currentRank != null ? `#${group.currentRank}` : '—'}
         </Stat>
-        <Meta className="text-faint-foreground">de {group.membersCount ?? 0}</Meta>
+        <Meta className="text-faint-foreground">de {group.membersCount}</Meta>
       </div>
     </Link>
   );

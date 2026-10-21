@@ -1,12 +1,14 @@
 import { Injectable } from '@nestjs/common';
+import type { ProfileSummaryGroupResponse } from '@arena/contracts/profiles';
 import { PrismaService } from '../../prisma/prisma.service';
-import type { ProfileSummaryGroup } from '../types/profile-summary-group.type';
 
 @Injectable()
 export class ProfileSummaryGroupsService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findRecentGroups(userId: string): Promise<ProfileSummaryGroup[]> {
+  async findRecentGroups(
+    userId: string,
+  ): Promise<ProfileSummaryGroupResponse[]> {
     const memberships = await this.prisma.groupMember.findMany({
       where: {
         userId,

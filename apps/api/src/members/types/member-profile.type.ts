@@ -1,5 +1,7 @@
-import type { ProfileMatchListItem } from '../../me/types/profile-match-list-item.type';
-import type { ProfileSummaryStats } from '../../me/types/profile-summary-stats.type';
+import type {
+  ProfileMatchListItemResponse,
+  ProfileSummaryStats,
+} from '@arena/contracts/profiles';
 
 // Group-scoped profile for a single member (real or stub). Unlike the userId-based
 // /users profile (cross-group), this is everything about one membership inside one
@@ -13,5 +15,5 @@ export type MemberProfile = {
   rating: number;
   currentRank: number | null;
   stats: ProfileSummaryStats;
-  matches: ProfileMatchListItem[];
+  matches: ProfileMatchListItemResponse[];
 };

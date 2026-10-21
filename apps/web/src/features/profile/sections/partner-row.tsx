@@ -1,9 +1,9 @@
+import type { ProfileSummaryPartner } from '@arena/contracts/profiles';
 import { cn } from '@/lib/utils';
 import { MemberAvatar } from '@/components/ui/member-avatar';
 import { Label, Meta } from '@/components/ui/text';
 import { partnerRateTone } from '../helpers/partner-rate.helper';
 import { firstNameOf } from '../helpers/profile-name.helper';
-import type { ProfileSummaryPartner } from '../types/profile-summary-partner.type';
 
 export function PartnerRow({
   partner,

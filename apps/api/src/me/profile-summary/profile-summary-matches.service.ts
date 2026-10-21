@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
+import type { ProfileSummaryMatchResponse } from '@arena/contracts/profiles';
 import { MatchTeam } from '../../generated/prisma/enums';
 import {
   MEMBER_USER_SELECT,
   resolveMemberDisplayName,
 } from '../../common/member-display-name';
 import { PrismaService } from '../../prisma/prisma.service';
-import type { ProfileSummaryMatch } from '../types/profile-summary-match.type';
 
 @Injectable()
 export class ProfileSummaryMatchesService {
@@ -13,7 +13,7 @@ export class ProfileSummaryMatchesService {
 
   async findRecentMatches(
     profileUserId: string,
-  ): Promise<ProfileSummaryMatch[]> {
+  ): Promise<ProfileSummaryMatchResponse[]> {
     const matchPlayers = await this.prisma.matchPlayer.findMany({
       where: {
         groupMember: {

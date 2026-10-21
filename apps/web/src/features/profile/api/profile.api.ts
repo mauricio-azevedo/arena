@@ -1,6 +1,6 @@
+import type { ProfileSummary } from '@arena/contracts/profiles';
 import { apiRequest } from '@/lib/api-client';
 import type { AuthResponse } from '@/types/api';
-import type { ProfileSummary } from '../types/profile-summary.type';
 
 export type UpdateProfileInput = {
   firstName?: string;

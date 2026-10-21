@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import type { ProfileUser } from '@arena/contracts/profiles';
 import { apiErrorMessage } from '@/lib/api-error';
 import { setAccessToken } from '@/lib/auth';
 import { MemberAvatar } from '@/components/ui/member-avatar';
@@ -11,18 +12,16 @@ import { SheetField } from '@/components/ui/sheet-field';
 import { useToast } from '@/components/ui/toast';
 import { Meta } from '@/components/ui/text';
 import { updateProfile, type UpdateProfileInput } from '../api/profile.api';
-import type { ProfileUser } from '../types/profile-user.type';
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const MAX_NICKNAME = 24;
 
-export type EditedUser = {
-  firstName: string;
-  lastName: string;
-  nickname: string | null;
-  email: string | null;
-  avatarColor: string | null;
-};
+// What a save changes, in the contract's own field types so the merge back into
+// the loaded summary stays exact.
+export type EditedUser = Pick<
+  ProfileUser,
+  'firstName' | 'lastName' | 'nickname' | 'email' | 'avatarColor'
+>;
 
 // Edit-profile as a view inside the settings sheet: a back chevron returns to the
 // menu, and a successful save applies the change and returns to the menu too.
@@ -42,8 +41,7 @@ export function EditProfileView({
     lastName: user.lastName,
     nickname: user.nickname ?? '',
     email: user.email ?? '',
-    // Every account has a colour; fall back to blue only defensively.
-    avatarColor: user.avatarColor ?? 'blue',
+    avatarColor: user.avatarColor,
   };
 
   const [firstName, setFirstName] = useState(initial.firstName);

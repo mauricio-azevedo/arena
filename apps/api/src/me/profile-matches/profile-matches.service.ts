@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
+import type { ProfileMatchListItemResponse } from '@arena/contracts/profiles';
 import { MatchTeam } from '../../generated/prisma/enums';
 import {
   MEMBER_USER_SELECT,
   resolveMemberDisplayName,
 } from '../../common/member-display-name';
 import { PrismaService } from '../../prisma/prisma.service';
-import type { ProfileMatchListItem } from '../types/profile-match-list-item.type';
 
 type MatchIdRow = {
   id: string;
@@ -15,7 +15,9 @@ type MatchIdRow = {
 export class ProfileMatchesService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findMatches(profileUserId: string): Promise<ProfileMatchListItem[]> {
+  async findMatches(
+    profileUserId: string,
+  ): Promise<ProfileMatchListItemResponse[]> {
     const activeMatches = await this.prisma.$queryRaw<MatchIdRow[]>`
       SELECT m."id"
       FROM "Match" m

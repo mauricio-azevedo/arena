@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import type { ProfileSummary } from '@arena/contracts/profiles';
 import { Dot, Meta } from '@/components/ui/text';
 import { getAccessToken } from '@/lib/auth';
 import { APP_VERSION } from '@/lib/app-version';
@@ -15,7 +16,6 @@ import { ProfileIdentity } from './sections/profile-identity';
 import { ProfilePartnersSection } from './sections/profile-partners-section';
 import { type EditedUser, SettingsDrawer } from './settings/settings-drawer';
 import { ProfilePerformance } from './sections/profile-performance';
-import type { ProfileSummary } from './types/profile-summary.type';
 
 type Status = 'loading' | 'signed-out' | 'ready' | 'error';
 
@@ -103,11 +103,7 @@ export function ProfileScreen({
     );
   }
 
-  // Default the list fields so an older/partial summary can't crash the screen.
-  const { user, stats, bestPartner } = summary;
-  const partners = summary.partners ?? [];
-  const partnerCount = summary.partnerCount ?? partners.length;
-  const recentGroups = summary.recentGroups ?? [];
+  const { user, stats, bestPartner, partners, partnerCount, recentGroups } = summary;
   const ownerLabel = isOwn ? 'Você' : user.firstName;
 
   return (

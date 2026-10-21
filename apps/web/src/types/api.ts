@@ -4,7 +4,7 @@ export type User = {
   lastName: string;
   nickname: string | null;
   email: string | null;
-  avatarColor: string | null;
+  avatarColor: string;
   createdAt: string;
   updatedAt: string;
 };
