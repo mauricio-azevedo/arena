@@ -1,5 +1,9 @@
-import { MEMBER_USER_SELECT } from '../common/member-display-name';
 import { Injectable, NotFoundException } from '@nestjs/common';
+import type {
+  RankingEntryResponse,
+  RankingMovementResponse,
+} from '@arena/contracts/ranking';
+import { MEMBER_USER_SELECT } from '../common/member-display-name';
 import { PrismaService } from '../prisma/prisma.service';
 
 const EMPTY_GROUP_MEMBER_STATS = {
@@ -7,25 +11,17 @@ const EMPTY_GROUP_MEMBER_STATS = {
   winsCount: 0,
 };
 
-type RankingMovementDirection = 'UP' | 'DOWN';
-
-type VisibleRankingMovementRow = {
+// The movement plus the member it belongs to; the id keys the lookup and stays
+// off the wire (the entry it hangs on carries it).
+type VisibleRankingMovementRow = RankingMovementResponse & {
   groupMemberId: string;
-  direction: RankingMovementDirection;
-  positions: number;
-  previousRank: number;
-  currentRank: number;
-  previousRating: number;
-  currentRating: number;
-  sourceMatchId: string;
-  occurredAt: Date;
 };
 
 @Injectable()
 export class RankingService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findAll(groupId: string) {
+  async findAll(groupId: string): Promise<RankingEntryResponse[]> {
     const group = await this.prisma.group.findUnique({
       where: { id: groupId },
     });
@@ -34,10 +30,8 @@ export class RankingService {
       throw new NotFoundException('Group not found');
     }
 
-    const rankingMovements = await this.findVisibleRankingMovements(groupId);
-    const rankingMovementByMemberId = new Map(
-      rankingMovements.map((movement) => [movement.groupMemberId, movement]),
-    );
+    const rankingMovementByMemberId =
+      await this.findVisibleRankingMovements(groupId);
     const members = await this.prisma.groupMember.findMany({
       where: {
         groupId,
@@ -57,6 +51,7 @@ export class RankingService {
         ratingMu: true,
         ratingSigma: true,
         ratingAlgorithm: true,
+        currentRank: true,
         role: true,
         userId: true,
         displayName: true,
@@ -88,7 +83,9 @@ export class RankingService {
     }));
   }
 
-  private async findVisibleRankingMovements(groupId: string) {
+  private async findVisibleRankingMovements(
+    groupId: string,
+  ): Promise<Map<string, RankingMovementResponse>> {
     const rows = await this.prisma.$queryRaw<VisibleRankingMovementRow[]>`
       SELECT
         "groupMemberId",
@@ -106,16 +103,8 @@ export class RankingService {
         AND "invalidatedAt" IS NULL
     `;
 
-    return rows.map((row) => ({
-      groupMemberId: row.groupMemberId,
-      direction: row.direction,
-      positions: row.positions,
-      previousRank: row.previousRank,
-      currentRank: row.currentRank,
-      previousRating: row.previousRating,
-      currentRating: row.currentRating,
-      sourceMatchId: row.sourceMatchId,
-      occurredAt: row.occurredAt,
-    }));
+    return new Map(
+      rows.map(({ groupMemberId, ...movement }) => [groupMemberId, movement]),
+    );
   }
 }

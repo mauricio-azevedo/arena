@@ -1,4 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import type { MemberProfileResponse } from '@arena/contracts/members';
 import type {
   ProfileMatchListItemResponse,
   ProfileSummaryStats,
@@ -12,7 +13,6 @@ import {
 import { PrismaService } from '../prisma/prisma.service';
 import { RECENT_FORM_SIZE } from '../me/profile-summary/profile-summary-stats.service';
 import { winRatePercent } from '../common/win-rate';
-import type { MemberProfile } from './types/member-profile.type';
 
 @Injectable()
 export class MemberProfileReaderService {
@@ -21,7 +21,7 @@ export class MemberProfileReaderService {
   async getMemberProfile(
     groupId: string,
     memberId: string,
-  ): Promise<MemberProfile> {
+  ): Promise<MemberProfileResponse> {
     const member = await this.prisma.groupMember.findFirst({
       where: { id: memberId, groupId },
       select: {

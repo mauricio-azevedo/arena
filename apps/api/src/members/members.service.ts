@@ -4,6 +4,11 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import type {
+  GroupMemberResponse,
+  GuestMemberBody,
+  MemberBody,
+} from '@arena/contracts/members';
 import { GroupMemberRole } from '../generated/prisma/enums';
 import {
   MEMBER_USER_SELECT,
@@ -12,21 +17,6 @@ import {
 import { PrismaService } from '../prisma/prisma.service';
 import { ProcessingJobWriterService } from '../processing/processing-job-writer.service';
 import type { Prisma } from '../generated/prisma/client';
-
-// Trims and validates a stub player's name, returning the canonical form.
-function normalizeGuestName(rawName: string): string {
-  const name = rawName?.trim();
-
-  if (!name) {
-    throw new BadRequestException('Name is required');
-  }
-
-  if (name.length > 60) {
-    throw new BadRequestException('Name is too long');
-  }
-
-  return name;
-}
 
 @Injectable()
 export class MembersService {
@@ -38,12 +28,8 @@ export class MembersService {
   async create(
     groupId: string,
     requesterUserId: string,
-    body: { userId: string },
-  ) {
-    if (!body.userId) {
-      throw new BadRequestException('User is required');
-    }
-
+    body: MemberBody,
+  ): Promise<GroupMemberResponse> {
     const group = await this.prisma.group.findUnique({
       where: { id: groupId },
     });
@@ -112,11 +98,8 @@ export class MembersService {
   async createGuest(
     groupId: string,
     requesterUserId: string,
-    body: { name: string },
-  ) {
-    // Validate the name up front, before any lookups.
-    normalizeGuestName(body.name);
-
+    body: GuestMemberBody,
+  ): Promise<GroupMemberResponse> {
     const group = await this.prisma.group.findUnique({
       where: { id: groupId },
     });
@@ -143,18 +126,17 @@ export class MembersService {
     return this.findOne(memberId);
   }
 
-  // Shared core for creating a stub player row (jogador sem conta): validate the
-  // name and insert the membership, returning its id. The caller owns the group
-  // and requester-authorization checks. Takes a client so it can run inside an
-  // outer transaction — e.g. so a stub is only persisted when the match it belongs
-  // to is, never as an orphan from an abandoned form.
+  // Shared core for creating a stub player row (jogador sem conta): insert the
+  // membership and return its id. The name arrives canonical (trimmed, 1–60) from
+  // `guestNameSchema`, on the guest body and inline in a match body. The caller
+  // owns the group and requester-authorization checks. Takes a client so it can
+  // run inside an outer transaction — e.g. so a stub is only persisted when the
+  // match it belongs to is, never as an orphan from an abandoned form.
   async createGuestRow(
     client: Prisma.TransactionClient,
     groupId: string,
-    rawName: string,
+    name: string,
   ): Promise<string> {
-    const name = normalizeGuestName(rawName);
-
     const membership = await client.groupMember.create({
       data: {
         groupId,
@@ -173,7 +155,7 @@ export class MembersService {
     groupId: string,
     memberId: string,
     requesterUserId: string,
-  ) {
+  ): Promise<GroupMemberResponse> {
     const group = await this.prisma.group.findUnique({
       where: { id: groupId },
     });
@@ -231,7 +213,7 @@ export class MembersService {
     groupId: string,
     memberId: string,
     requesterUserId: string,
-  ) {
+  ): Promise<GroupMemberResponse> {
     const group = await this.prisma.group.findUnique({
       where: { id: groupId },
     });
@@ -284,7 +266,7 @@ export class MembersService {
     return this.findOne(member.id);
   }
 
-  async findAll(groupId: string) {
+  async findAll(groupId: string): Promise<GroupMemberResponse[]> {
     const group = await this.prisma.group.findUnique({
       where: { id: groupId },
     });
@@ -307,8 +289,10 @@ export class MembersService {
     });
   }
 
-  private findOne(id: string) {
-    return this.prisma.groupMember.findUnique({
+  // Re-reads a membership the caller just wrote or checked, so a miss is an
+  // invariant break, not a client error.
+  private findOne(id: string): Promise<GroupMemberResponse> {
+    return this.prisma.groupMember.findUniqueOrThrow({
       where: { id },
       include: this.memberInclude(),
     });
