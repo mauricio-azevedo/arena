@@ -107,7 +107,7 @@ Good:
 profile-summary-tab.tsx
 profile-matches.api.ts
 group-created-feed-item.generator.ts
-profile-match-list-item.type.ts
+member-profile.type.ts
 ```
 
 Avoid vague names:
@@ -215,19 +215,26 @@ Built to `dist/` (the API's `tsc` cannot run a sibling package's `.ts`).
 ```txt
 packages/contracts/
   src/
-    api-errors.ts     API_ERROR_CODES, ApiErrorCode
-    avatar-color.ts   AVATAR_COLOR_KEYS, AvatarColorKey, isAvatarColorKey
-    index.ts          root export: the two above
-    iso-datetime.ts   isoDateTime codec (wire ISO string <-> API Date); imported by module files
-    matches.ts        matchBodySchema + matchResponseSchema and their types; @arena/contracts/matches
+    api-errors.ts         API_ERROR_CODES, ApiErrorCode
+    avatar-color.ts       AVATAR_COLOR_KEYS, AvatarColorKey, isAvatarColorKey
+    group-member-role.ts  groupMemberRoleSchema, GroupMemberRole; leaf
+    index.ts              root export: api-errors + avatar-color
+    iso-datetime.ts       isoDateTime codec (wire ISO string <-> API Date); leaf
+    matches.ts            matchBodySchema + matchResponseSchema and their types; @arena/contracts/matches
+    profiles.ts           profileSummaryResponseSchema + profileMatchListItemSchema and their types;
+                          @arena/contracts/profiles, served by `me` and `users`
 ```
 
 `@arena/contracts` holds values both apps must agree on byte for byte. A constant goes there on
 its second consumer, not before; a mirrored _rule_ with different code on each side (member display
-name, password length) stays local. Request and response schemas are one file per API module,
-exported as a subpath (`@arena/contracts/<module>`, `exports` in `package.json`), never from the root index:
+name, password length) stays local. Request and response schemas are one file per API module, or
+per resource when two modules serve the same shapes (`profiles.ts`: `me` and `users`), exported as
+a subpath (`@arena/contracts/<module>`, `exports` in `package.json`), never from the root index:
 the root is bundled into the web for its constants, and the CJS zod behind a schema cannot be
-tree-shaken (64 locales, +95 kB gzipped per route when it was tried in #267).
+tree-shaken (64 locales, +95 kB gzipped per route when it was tried in #267). Module files import
+leaves (`iso-datetime.ts`, `group-member-role.ts`) and each other one way (`profiles` → `matches`
+for `matchTeamSchema`); a schema two modules need goes in a leaf, never a cross-import that could
+cycle.
 
 ### 3.4 `docs/`
 
@@ -601,8 +608,8 @@ API files should:
 Good:
 
 ```ts
+import type { ProfileMatchListItem } from '@arena/contracts/profiles';
 import { apiRequest } from '@/lib/api-client';
-import type { ProfileMatchListItem } from '../types/profile-match-list-item.type';
 
 export function getProfileMatches(token: string): Promise<ProfileMatchListItem[]> {
   return apiRequest<ProfileMatchListItem[]>('/me/profile/matches', {
@@ -616,6 +623,11 @@ export function getProfileMatches(token: string): Promise<ProfileMatchListItem[]
 
 ## 10. Types on the frontend
 
+API request and response shapes are never declared here: `import type` them from
+`@arena/contracts/<module>` (`frontend-conventions.md` §7). `types/` holds view models, UI state
+and the mirrors of modules not yet converted (`features/members/types/member-profile.type.ts`,
+`code-quality-backlog.md`).
+
 ### 10.1 Default rule
 
 Use one file per important exported type.
@@ -623,10 +635,8 @@ Use one file per important exported type.
 Good:
 
 ```txt
-profile-user.type.ts
 profile-tab.type.ts
 profile-match-base.type.ts
-profile-match-list-item.type.ts
 feed-item.type.ts
 ```
 
@@ -637,34 +647,32 @@ feed-item.type.ts
 Types may be grouped only when all conditions are true:
 
 1. They are only used together.
-2. They belong to the same API contract.
+2. They belong to the same view model or unconverted response.
 3. They are small.
 4. They are not imported independently by multiple areas.
 
 Example:
 
 ```txt
-profile-summary.type.ts
+profile-tab.type.ts
 ```
 
 may contain:
 
 ```ts
-export type ProfileSummary = {
-  stats: ProfileSummaryStats;
-  recentMatches: ProfileSummaryMatch[];
-  recentGroups: ProfileSummaryGroup[];
+export type ProfileTab = {
+  label: string;
+  href: string;
+  badge: ProfileTabBadge | null;
 };
 
-type ProfileSummaryStats = {
-  matchesPlayed: number;
-  wins: number;
-  losses: number;
-  winRate: number;
+type ProfileTabBadge = {
+  count: number;
+  highlighted: boolean;
 };
 ```
 
-But if `ProfileSummaryStats` is imported elsewhere, it should get its own file.
+But if `ProfileTabBadge` is imported elsewhere, it should get its own file.
 
 ---
 
@@ -674,7 +682,6 @@ Create a separate file when the type:
 
 - is imported by more than one file;
 - represents a domain concept;
-- is part of a public API contract;
 - is reused across tabs/features;
 - is large enough to distract from the parent type.
 
@@ -682,7 +689,7 @@ Good:
 
 ```txt
 types/profile-match-base.type.ts
-types/profile-user.type.ts
+types/profile-tab.type.ts
 types/feed-item.type.ts
 ```
 
@@ -702,8 +709,8 @@ models.ts
 Use specific names:
 
 ```txt
-profile-user.type.ts
-profile-match-list-item.type.ts
+profile-tab.type.ts
+profile-match-base.type.ts
 feed-item.type.ts
 ```
 
@@ -715,29 +722,33 @@ Closed sets of values should live in `enums/`.
 
 This applies even when implemented as TypeScript union types.
 
+Sets the API owns are the exception: `z.enum` types in `@arena/contracts/<module>`
+(`ProfileMatchResult`), `import type` from there. Mirrors of modules not yet converted stay in
+`enums/` until their module moves (`feed-item-type.enum.ts`).
+
 Good:
 
 ```txt
-enums/profile-match-result.enum.ts
+enums/profile-tab-id.enum.ts
 ```
 
 ```ts
-export type ProfileMatchResult = 'WIN' | 'LOSS';
+export type ProfileTabId = 'summary' | 'matches' | 'groups';
 ```
 
 Also acceptable when a runtime enum is needed:
 
 ```ts
-export enum ProfileMatchResult {
-  Win = 'WIN',
-  Loss = 'LOSS',
+export enum ProfileTabId {
+  Summary = 'summary',
+  Matches = 'matches',
+  Groups = 'groups',
 }
 ```
 
 Use union types when:
 
 - runtime lookup is not needed;
-- values come from the API;
 - the enum is only used for typing.
 
 Use runtime enums or constants when:
@@ -941,8 +952,8 @@ profile-tabs.tsx
 profile-summary-tab.tsx
 profile-summary-stats-grid.tsx
 profile-date-format.helper.ts
-profile-user.type.ts
-profile-match-result.enum.ts
+profile-tab.type.ts
+profile-tab-id.enum.ts
 profile-matches.api.ts
 ```
 
@@ -984,7 +995,7 @@ Good:
 
 ```ts
 export function Profile() {}
-export type ProfileUser = {};
+export type ProfileTab = {};
 ```
 
 Exception:
@@ -1014,7 +1025,6 @@ src/profile/
   profile.service.ts
 
   types/
-  dto/
   helpers/
 ```
 
@@ -1065,7 +1075,7 @@ A module should contain:
 
 - controller for HTTP entrypoints;
 - services for business logic;
-- types/dtos for contracts;
+- types for internal contracts (§21);
 - helper classes when needed.
 
 ---
@@ -1168,31 +1178,24 @@ me/
 
 ---
 
-## 21. Backend types and DTOs
+## 21. Backend types and contracts
 
-### 21.1 `dto/`
+### 21.1 Request bodies and responses
 
-Use `dto/` for request bodies and validation-oriented input contracts.
-
-Examples:
-
-```txt
-create-group.dto.ts
-create-match.dto.ts
-accept-invite.dto.ts
-```
+No `dto/`. A request body is a zod schema and a response a `z.strictObject`, both in
+`@arena/contracts/<module>` (ADR 0007, ADR 0008; rules in `backend-conventions.md` §5). Modules not
+yet converted keep `*-input.type.ts` / `*-response.type.ts` in `types/`.
 
 ### 21.2 `types/`
 
-Use `types/` for internal or response contracts.
+Use `types/` for internal contracts and the inputs and responses of modules not yet converted.
 
 Examples:
 
 ```txt
-profile-response.type.ts
-profile-summary-response.type.ts
-profile-match-list-item.type.ts
 feed-item-draft.type.ts
+member-profile.type.ts
+update-profile-input.type.ts
 ```
 
 ### 21.3 One important type per file
@@ -1200,9 +1203,9 @@ feed-item-draft.type.ts
 Backend follows the same default rule as frontend:
 
 ```txt
-profile-response.type.ts
-profile-summary-stats.type.ts
 feed-item-draft.type.ts
+feed-item-generator.type.ts
+member-profile.type.ts
 ```
 
 Small private helper types may remain inside the service file if they are not exported.
@@ -1246,9 +1249,9 @@ Examples:
 groups.controller.ts
 groups.service.ts
 groups.module.ts
-create-group.dto.ts
+zod-validation.pipe.ts
 profile-summary.service.ts
-profile-match-list-item.type.ts
+member-profile.type.ts
 group-created-feed-item.generator.ts
 ```
 
@@ -1418,7 +1421,7 @@ Good:
 
 ```ts
 export function getProfileMatches() {}
-export type ProfileUser = {};
+export type ProfileTab = {};
 export class ProfileSummaryService {}
 ```
 
@@ -1440,7 +1443,7 @@ Good:
 
 ```ts
 import { Card, CardContent } from '@/components/ui/card';
-import type { ProfileUser } from '../types/profile-user.type';
+import type { ProfileUser } from '@arena/contracts/profiles';
 ```
 
 Use `import type` for type-only imports.
@@ -1448,7 +1451,7 @@ Use `import type` for type-only imports.
 Good:
 
 ```ts
-import type { ProfileMatchListItem } from '../types/profile-match-list-item.type';
+import type { ProfileMatchListItem } from '@arena/contracts/profiles';
 ```
 
 ---
@@ -1460,13 +1463,13 @@ Always use `import type` when importing only types.
 Good:
 
 ```ts
-import type { ProfileSummary } from './types/profile-summary.type';
+import type { ProfileSummary } from '@arena/contracts/profiles';
 ```
 
 Bad:
 
 ```ts
-import { ProfileSummary } from './types/profile-summary.type';
+import { ProfileSummary } from '@arena/contracts/profiles';
 ```
 
 ---
@@ -1482,7 +1485,7 @@ import * as profile from './types';
 Prefer explicit imports:
 
 ```ts
-import type { ProfileUser } from './types/profile-user.type';
+import type { ProfileUser } from '@arena/contracts/profiles';
 ```
 
 Namespace imports are allowed when they improve clarity or avoid excessive renamed imports.
@@ -1671,10 +1674,9 @@ src/features/profile/
     profile-signed-out-state.tsx
 
   enums/
-    profile-match-result.enum.ts
+    profile-tab-id.enum.ts
 
   types/
-    profile-user.type.ts
     profile-tab.type.ts
     profile-match-base.type.ts
 
@@ -1694,11 +1696,6 @@ src/features/profile/
         recent-matches-section.tsx
         recent-groups-section.tsx
 
-      types/
-        profile-summary.type.ts
-        profile-summary-stats.type.ts
-        profile-summary-group.type.ts
-
     matches/
       profile-matches-tab.tsx
 
@@ -1707,9 +1704,6 @@ src/features/profile/
 
       sections/
         profile-matches-list.tsx
-
-      types/
-        profile-match-list-item.type.ts
 
     groups/
       profile-groups-tab.tsx
@@ -1775,13 +1769,8 @@ src/me/
     profile-stats.service.ts
 
   types/
-    profile-response.type.ts
-    profile-user.type.ts
-    profile-summary-response.type.ts
-    profile-summary-stats.type.ts
-    profile-summary-match.type.ts
-    profile-summary-group.type.ts
-    profile-match-list-item.type.ts
+    update-profile-input.type.ts
+    update-password-input.type.ts
 ```
 
 ---
@@ -1796,7 +1785,7 @@ Bad:
 
 ```txt
 components/profile-header.tsx
-types/profile-summary.type.ts
+types/profile-tab.type.ts
 helpers/profile-date-format.helper.ts
 ```
 
@@ -1804,7 +1793,7 @@ Good:
 
 ```txt
 features/profile/components/profile-header.tsx
-features/profile/tabs/summary/types/profile-summary.type.ts
+features/profile/types/profile-tab.type.ts
 features/profile/helpers/profile-date-format.helper.ts
 ```
 
@@ -1859,7 +1848,7 @@ Good:
 profile-match-card.tsx
 profile-matches.api.ts
 profile-date-format.helper.ts
-profile-match-list-item.type.ts
+member-profile.type.ts
 profile-matches.service.ts
 ```
 

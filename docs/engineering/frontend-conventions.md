@@ -114,16 +114,17 @@ export function getProfileMatches(token: string): Promise<ProfileMatchListItem[]
   `import type` only: the web never loads a schema at runtime, so zod stays out of the bundle.
 - Response types come from the same subpath (`Match`, `MatchPlayer`, `MatchTeam`): the
   resource name is the wire shape (`z.input`, ISO strings), `XResponse` is the API's and never
-  imported here. `types/api.ts` hand-mirrors the responses of modules not yet converted (`User`,
-  `Group`, `GroupMember`, …). **Keep those in sync with the API by hand** until their module
-  moves (`code-quality-backlog.md`).
+  imported here. `types/api.ts` and the feature `*.type.ts` files hand-mirror the responses of
+  modules not yet converted (`User`, `Group`, `GroupMember`, `MemberProfile`, …). **Keep those in
+  sync with the API by hand** until their module moves (`code-quality-backlog.md`).
   Constants both apps share (`ApiErrorCode`, `AvatarColorKey`) come from `@arena/contracts`;
   the gradient table in `lib/avatar-color.ts` is keyed by it, so a new key fails `tsc` until
   it has a gradient.
 - Features prefer lightweight view-model types over reusing full API types when
   they only need a subset.
-- Enums are union types in `enums/*.enum.ts`
-  (`type ProfileMatchResult = 'WIN' | 'LOSS'`), not the `enum` keyword.
+- Enums are union types in `enums/*.enum.ts` (`type FeedItemType = 'GROUP_CREATED' | …`), not
+  the `enum` keyword; a set the API owns comes from `@arena/contracts/<module>`
+  (`ProfileMatchResult`), `import type` only.
 
 ## 8. Shared chrome, navigation, routing helpers
 
