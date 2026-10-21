@@ -16,6 +16,14 @@
     "./profiles": {
       "types": "./dist/profiles.d.ts",
       "default": "./dist/profiles.js"
+    },
+    "./members": {
+      "types": "./dist/members.d.ts",
+      "default": "./dist/members.js"
+    },
+    "./ranking": {
+      "types": "./dist/ranking.d.ts",
+      "default": "./dist/ranking.js"
     }
   },
   "scripts": {

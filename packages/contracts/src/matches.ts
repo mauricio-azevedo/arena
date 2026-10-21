@@ -1,12 +1,14 @@
 import { z } from 'zod';
 import { isoDateTime } from './iso-datetime';
+import { guestNameSchema, memberIdentitySchema } from './member-identity';
+import { rankingMovementDirectionSchema } from './ranking-movement-direction';
 
 // A match player is either an existing group member or a brand-new guest named
 // inline; the API creates the guest's stub inside the match transaction, so it
 // only exists once the match does. Strict objects make the two shapes exclusive.
 const matchPlayerInputSchema = z.union([
   z.strictObject({ memberId: z.uuid() }),
-  z.strictObject({ name: z.string().trim().min(1).max(60) }),
+  z.strictObject({ name: guestNameSchema }),
 ]);
 
 export const matchBodySchema = z
@@ -40,25 +42,6 @@ export const matchTeamSchema = z.enum(['TEAM_A', 'TEAM_B']);
 
 export const matchProcessingStatusSchema = z.enum(['PENDING', 'PROCESSING', 'PROCESSED', 'FAILED']);
 
-const rankingMovementDirectionSchema = z.enum(['UP', 'DOWN']);
-
-// Identity only. Ratings in a match response are the MatchPlayer snapshot; the
-// member's current rating, role or leftAt would be misleading next to it.
-const matchPlayerMemberSchema = z.strictObject({
-  id: z.uuid(),
-  // Null for stub players (jogadores sem conta); displayName carries their name.
-  userId: z.uuid().nullable(),
-  displayName: z.string().nullable(),
-  user: z
-    .strictObject({
-      firstName: z.string(),
-      lastName: z.string(),
-      nickname: z.string().nullable(),
-      avatarColor: z.string(),
-    })
-    .nullable(),
-});
-
 const matchPlayerSchema = z.strictObject({
   id: z.uuid(),
   matchId: z.uuid(),
@@ -89,7 +72,9 @@ const matchPlayerSchema = z.strictObject({
   playedAt: isoDateTime,
   createdAt: isoDateTime,
   updatedAt: isoDateTime,
-  groupMember: matchPlayerMemberSchema,
+  // Identity only. Ratings in a match response are the MatchPlayer snapshot; the
+  // member's current rating, role or leftAt would be misleading next to it.
+  groupMember: memberIdentitySchema,
 });
 
 export const matchResponseSchema = z.strictObject({
