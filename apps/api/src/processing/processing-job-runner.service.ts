@@ -25,6 +25,12 @@ import type { ProcessingJob } from './processing-job.types';
 const DEFAULT_LOCK_TIMEOUT_MS = 60_000;
 const DEFAULT_TRANSACTION_TIMEOUT_MS = 60_000;
 const RANKING_MOVEMENT_FEED_THRESHOLD = 2;
+const MIN_NEXT_DUE_DELAY_MS = 250;
+const MAX_NEXT_DUE_DELAY_MS = 3_600_000;
+
+type NextDueRow = {
+  delayMs: number | null;
+};
 
 type MatchMember = {
   id: string;
@@ -72,6 +78,7 @@ type SnapshotMovement = RankingMovementFeedMovement;
 export class ProcessingJobRunnerService {
   private readonly logger = new Logger(ProcessingJobRunnerService.name);
   private readonly workerId = `api-${process.pid}-${randomUUID()}`;
+  private stopping = false;
 
   constructor(
     private readonly prisma: PrismaService,
@@ -84,18 +91,71 @@ export class ProcessingJobRunnerService {
     private readonly groupHomeSummary: GroupHomeSummaryService,
   ) {}
 
+  // Returns how many jobs ran, so the worker can drain until a pass claims
+  // nothing instead of coming back on a timer.
   async runNextBatch(limit = 5) {
     await this.releaseStaleProcessingJobs();
 
+    let processedCount = 0;
+
     for (let index = 0; index < limit; index += 1) {
+      if (this.stopping) {
+        return processedCount;
+      }
+
       const job = await this.claimNextJob();
 
       if (!job) {
-        return;
+        return processedCount;
       }
 
       await this.runClaimedJob(job);
+      processedCount += 1;
     }
+
+    return processedCount;
+  }
+
+  // Shutdown: claim nothing more. The job already running is awaited by the
+  // worker, which owns the lifecycle.
+  stop() {
+    this.stopping = true;
+  }
+
+  // How long until the next row could be claimable: the earliest PENDING
+  // `availableAt` (a retry), or the lock expiry of a PROCESSING row whose
+  // worker died. null = nothing queued, so nothing to wait for.
+  //
+  // Measured on the DB clock, like the claim query itself: app/DB skew would
+  // fire the worker's timer early, claim nothing, and re-arm at the floor in a
+  // loop.
+  async getNextDueDelayMs() {
+    const lockTimeoutSeconds = this.getLockTimeoutMs() / 1000;
+
+    const rows = await this.prisma.$queryRaw<NextDueRow[]>`
+      SELECT (
+        EXTRACT(EPOCH FROM (
+          LEAST(
+            MIN("availableAt") FILTER (WHERE "status" = 'PENDING'),
+            MIN("lockedAt") FILTER (WHERE "status" = 'PROCESSING')
+              + ${lockTimeoutSeconds}::double precision * INTERVAL '1 second'
+          ) - NOW()
+        )) * 1000
+      )::double precision AS "delayMs"
+      FROM "ProcessingJob"
+      WHERE "status" IN ('PENDING', 'PROCESSING')
+    `;
+
+    const delayMs = rows[0]?.delayMs ?? null;
+
+    if (delayMs === null) {
+      return null;
+    }
+
+    return Math.min(
+      Math.max(delayMs, MIN_NEXT_DUE_DELAY_MS),
+      MAX_NEXT_DUE_DELAY_MS,
+    );
   }
 
   private async releaseStaleProcessingJobs() {
