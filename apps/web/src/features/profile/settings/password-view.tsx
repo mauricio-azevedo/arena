@@ -1,6 +1,7 @@
 'use client';
 
 import { FormEvent, useMemo, useState } from 'react';
+import type { PasswordUpdatedResponse } from '@arena/contracts/me';
 import { Button } from '@/components/ui/button';
 import { DrawerActionHeader, DrawerFooter } from '@/components/ui/drawer';
 import { SheetPasswordField } from '@/components/ui/sheet-field';
@@ -8,8 +9,9 @@ import { useToast } from '@/components/ui/toast';
 import { Meta } from '@/components/ui/text';
 import { apiRequest } from '@/lib/api-client';
 import { apiErrorMessage, getApiErrorCode, getApiErrorStatus } from '@/lib/api-error';
-import { setAccessToken } from '@/lib/auth';
 
+// `me-password.service.ts` answers both with a code this view turns into copy;
+// checking them here keeps the user from submitting to learn that.
 const MIN_PASSWORD_LENGTH = 6;
 const MAX_PASSWORD_BYTES = 72;
 
@@ -59,15 +61,12 @@ export function PasswordView({ token, onBack }: { token: string; onBack: () => v
     setIsSubmitting(true);
 
     try {
-      const result = await apiRequest<{ accessToken?: string }>('/me/password', {
+      // The session survives a password change, so there is no new token.
+      await apiRequest<PasswordUpdatedResponse>('/me/password', {
         method: 'PATCH',
         token,
         body: { currentPassword, newPassword },
       });
-
-      if (result?.accessToken) {
-        setAccessToken(result.accessToken);
-      }
 
       setCurrentPassword('');
       setNewPassword('');

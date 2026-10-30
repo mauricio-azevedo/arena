@@ -4,6 +4,11 @@ import request from 'supertest';
 import { App } from 'supertest/types';
 import { AVATAR_COLOR_KEYS } from '@arena/contracts';
 import {
+  accountSchema,
+  authSessionResponseSchema,
+} from '@arena/contracts/auth';
+import { passwordUpdatedResponseSchema } from '@arena/contracts/me';
+import {
   groupHomeCardResponseSchema,
   groupMembershipResponseSchema,
   groupSchema,
@@ -159,11 +164,7 @@ describe('App (e2e)', () => {
           password: 'secret1',
         })
         .expect(201);
-      // Auth gets its contract in a later sub-issue of #267.
-      const registered = register.body as {
-        accessToken: string;
-        user: { id: string };
-      };
+      const registered = authSessionResponseSchema.parse(register.body);
       token = registered.accessToken;
       userId = registered.user.id;
 
@@ -649,6 +650,134 @@ describe('App (e2e)', () => {
       expect(matchDeletedResponseSchema.parse(res.body)).toEqual({
         success: true,
       });
+    });
+  });
+
+  // The account's own routes, on their own user: a password change here must
+  // not move the credentials the match flow signs in with.
+  describe('account', () => {
+    const password = 'secret1';
+    let email: string;
+    let token: string;
+    let userId: string;
+
+    beforeAll(async () => {
+      email = `e2e-account-${Date.now()}@arena.test`;
+      const res = await request(app.getHttpServer())
+        .post('/auth/register')
+        .send({
+          firstName: '  Ana   Maria ',
+          lastName: 'Silva',
+          email: ` ${email.toUpperCase()} `,
+          password,
+          nickname: '   ',
+        })
+        .expect(201);
+
+      const session = authSessionResponseSchema.parse(res.body);
+      token = session.accessToken;
+      userId = session.user.id;
+
+      // The schema normalizes: spaces collapse, the e-mail lowercases, and an
+      // all-whitespace nickname is stored as none at all.
+      expect(session.user).toMatchObject({
+        firstName: 'Ana Maria',
+        email,
+        nickname: null,
+      });
+    });
+
+    it('POST /auth/login answers the session contract', async () => {
+      const res = await request(app.getHttpServer())
+        .post('/auth/login')
+        .send({ email, password })
+        .expect(201);
+
+      const session = authSessionResponseSchema.parse(res.body);
+      expect(session.user.id).toBe(userId);
+      expect(session.accessToken).toBeTruthy();
+    });
+
+    it('POST /auth/login rejects a wrong password with 401', () => {
+      return request(app.getHttpServer())
+        .post('/auth/login')
+        .send({ email, password: 'wrong-password' })
+        .expect(401);
+    });
+
+    it('GET /auth/me answers the account contract', async () => {
+      const res = await request(app.getHttpServer())
+        .get('/auth/me')
+        .set('Authorization', `Bearer ${token}`)
+        .expect(200);
+
+      expect(accountSchema.parse(res.body).id).toBe(userId);
+    });
+
+    it('PATCH /me/profile answers the session contract and clears the nickname', async () => {
+      const named = await request(app.getHttpServer())
+        .patch('/me/profile')
+        .set('Authorization', `Bearer ${token}`)
+        .send({ nickname: 'Aninha', avatarColor: AVATAR_COLOR_KEYS[2] })
+        .expect(200);
+
+      expect(authSessionResponseSchema.parse(named.body).user).toMatchObject({
+        nickname: 'Aninha',
+        avatarColor: AVATAR_COLOR_KEYS[2],
+      });
+
+      const cleared = await request(app.getHttpServer())
+        .patch('/me/profile')
+        .set('Authorization', `Bearer ${token}`)
+        .send({ nickname: '  ' })
+        .expect(200);
+
+      expect(
+        authSessionResponseSchema.parse(cleared.body).user.nickname,
+      ).toBeNull();
+    });
+
+    it('PATCH /me/profile rejects an empty body and a colour outside the palette', async () => {
+      await request(app.getHttpServer())
+        .patch('/me/profile')
+        .set('Authorization', `Bearer ${token}`)
+        .send({})
+        .expect(400);
+
+      await request(app.getHttpServer())
+        .patch('/me/profile')
+        .set('Authorization', `Bearer ${token}`)
+        .send({ avatarColor: 'chartreuse' })
+        .expect(400);
+    });
+
+    it('PATCH /me/password answers the acknowledgement contract', async () => {
+      const res = await request(app.getHttpServer())
+        .patch('/me/password')
+        .set('Authorization', `Bearer ${token}`)
+        .send({ currentPassword: password, newPassword: 'secret2' })
+        .expect(200);
+
+      expect(passwordUpdatedResponseSchema.parse(res.body)).toEqual({
+        success: true,
+      });
+
+      await request(app.getHttpServer())
+        .post('/auth/login')
+        .send({ email, password: 'secret2' })
+        .expect(201);
+    });
+
+    // Length stayed in the service precisely so the answer carries a code the
+    // UI can turn into its own copy; a schema failure would not.
+    it('PATCH /me/password answers a coded 400 for a password under the minimum', async () => {
+      const res = await request(app.getHttpServer())
+        .patch('/me/password')
+        .set('Authorization', `Bearer ${token}`)
+        .send({ currentPassword: 'secret2', newPassword: 'short' })
+        .expect(400);
+
+      expect(res.body).toMatchObject({ code: 'PASSWORD_TOO_SHORT' });
     });
   });
 

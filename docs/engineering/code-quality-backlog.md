@@ -37,9 +37,16 @@ built in) and `components/ui/drawer.tsx` (`DrawerActionHeader` — one header ac
   schemas, e2e strict parse); profiles (#294: `me` + `users` responses, one subpath); members +
   ranking (#295: member identity as a leaf both reuse, claim-email fields dropped from the member
   and ranking payloads); groups (#296: one group row for every payload that embeds one, `_count`
-  and the creator dropped from the wire). Next, one sub-issue each: auth + me (#297, `me` profile
-  has 14 shape checks, password 6 with coded length errors), invites + claims (#298),
-  notifications + highlights (#299), then delete `types/api.ts` (#300).
+  and the creator dropped from the wire); auth + me (#297: the account's fields shared by
+  register and the profile edit, 23 shape checks deleted, `AuthResponse` gone, login's missing
+  `nickname` and `avatarColor` fixed). Next, one sub-issue each: invites + claims (#298, where
+  `User` finally leaves `types/api.ts` — the invite's `createdBy` and the claim's `user` send
+  less than it promises), notifications + highlights (#299), then delete `types/api.ts` (#300).
+
+- **Register accepts a password the hash truncates.** `PATCH /me/password` rejects anything
+  over 72 bytes (bcrypt hashes the first 72 and ignores the rest, `PASSWORD_TOO_LONG`), while
+  `POST /auth/register` has no cap and no client-side one either, so a longer password silently
+  becomes its first 72 bytes. One cap, in `@arena/contracts/auth`, next time either is touched.
 
 - **Duplicated submit/loading/error machine (~6 forms).** The same `useState` error + `isSubmitting`
   - try/catch/finally lives in login, register, create-group, edit-profile, password,

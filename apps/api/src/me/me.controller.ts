@@ -1,13 +1,18 @@
 import { Body, Controller, Get, Patch, UseGuards } from '@nestjs/common';
+import {
+  updatePasswordBodySchema,
+  updateProfileBodySchema,
+  type UpdatePasswordBody,
+  type UpdateProfileBody,
+} from '@arena/contracts/me';
 import { CurrentUser } from '../auth/current-user.decorator';
 import type { AuthUser } from '../auth/auth.types';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { ZodValidationPipe } from '../common/zod-validation.pipe';
 import { MePasswordService } from './me-password.service';
 import { MeService } from './me.service';
 import { ProfileSummaryService } from './profile-summary/profile-summary.service';
 import { ProfileMatchesService } from './profile-matches/profile-matches.service';
-import type { UpdatePasswordInput } from './types/update-password-input.type';
-import type { UpdateProfileInput } from './types/update-profile-input.type';
 
 @Controller('me')
 export class MeController {
@@ -36,7 +41,8 @@ export class MeController {
   @UseGuards(JwtAuthGuard)
   updateProfile(
     @CurrentUser() user: AuthUser,
-    @Body() body: UpdateProfileInput,
+    @Body(new ZodValidationPipe(updateProfileBodySchema))
+    body: UpdateProfileBody,
   ) {
     return this.meService.updateProfile(user.sub, body);
   }
@@ -45,7 +51,8 @@ export class MeController {
   @UseGuards(JwtAuthGuard)
   updatePassword(
     @CurrentUser() user: AuthUser,
-    @Body() body: UpdatePasswordInput,
+    @Body(new ZodValidationPipe(updatePasswordBodySchema))
+    body: UpdatePasswordBody,
   ) {
     return this.mePasswordService.updatePassword(user.sub, body);
   }

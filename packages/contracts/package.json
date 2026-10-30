@@ -28,6 +28,14 @@
     "./groups": {
       "types": "./dist/groups.d.ts",
       "default": "./dist/groups.js"
+    },
+    "./auth": {
+      "types": "./dist/auth.d.ts",
+      "default": "./dist/auth.js"
+    },
+    "./me": {
+      "types": "./dist/me.d.ts",
+      "default": "./dist/me.js"
     }
   },
   "scripts": {

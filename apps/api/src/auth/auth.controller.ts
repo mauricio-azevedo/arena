@@ -1,4 +1,11 @@
 import { Body, Controller, Get, Headers, Post } from '@nestjs/common';
+import {
+  loginBodySchema,
+  registerBodySchema,
+  type LoginBody,
+  type RegisterBody,
+} from '@arena/contracts/auth';
+import { ZodValidationPipe } from '../common/zod-validation.pipe';
 import { AuthService } from './auth.service';
 
 @Controller('auth')
@@ -7,26 +14,13 @@ export class AuthController {
 
   @Post('register')
   register(
-    @Body()
-    body: {
-      firstName: string;
-      lastName: string;
-      email: string;
-      password: string;
-      nickname?: string;
-    },
+    @Body(new ZodValidationPipe(registerBodySchema)) body: RegisterBody,
   ) {
     return this.authService.register(body);
   }
 
   @Post('login')
-  login(
-    @Body()
-    body: {
-      email: string;
-      password: string;
-    },
-  ) {
+  login(@Body(new ZodValidationPipe(loginBodySchema)) body: LoginBody) {
     return this.authService.login(body);
   }
 

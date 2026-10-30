@@ -115,8 +115,12 @@ export function getProfileMatches(token: string): Promise<ProfileMatchListItem[]
 - Response types come from the same subpath (`Group`, `GroupHomeCard`, `RankingEntry`): the
   resource name is the wire shape (`z.input`, ISO strings), `XResponse` is the API's and never
   imported here. `types/api.ts` and the feature `*.type.ts` files hand-mirror the responses of
-  modules not yet converted (`User`, `GroupInvite`, `AppNotification`, …). **Keep those in sync
-  with the API by hand** until their module moves (`code-quality-backlog.md`).
+  modules not yet converted (`GroupInvite`, `AppNotification`, the `User` those two embed, …).
+  **Keep those in sync with the API by hand** until their module moves
+  (`code-quality-backlog.md`).
+- A body the schema normalizes has two types: send `XInput` (`RegisterInput`,
+  `UpdateProfileInput`), never `XBody`, which is what the service receives after the
+  normalization.
   Constants both apps share (`ApiErrorCode`, `AvatarColorKey`) come from `@arena/contracts`;
   the gradient table in `lib/avatar-color.ts` is keyed by it, so a new key fails `tsc` until
   it has a gradient.
