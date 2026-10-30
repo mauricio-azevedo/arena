@@ -1,5 +1,6 @@
+import type { Group } from '@arena/contracts/groups';
 import { apiRequest } from '@/lib/api-client';
-import type { AcceptClaimResult, Group, GroupInvite, User } from '@/types/api';
+import type { AcceptClaimResult, GroupInvite, User } from '@/types/api';
 
 // Without a target this is the group's open invite; with `targetGroupMemberId` it is a
 // closed invite addressed to that guest. Plain requests reuse the active invite server-side,

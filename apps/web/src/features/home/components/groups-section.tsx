@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Body, Heading, Label } from '@/components/ui/text';
 import { getAllGroups } from '@/features/groups/api/groups.api';
-import type { GroupHomeCard } from '@/features/groups/types/group-home.type';
+import type { GroupHomeCard } from '@arena/contracts/groups';
 import { CreateGroupSheet } from '@/features/groups/components/create-group-sheet';
 import { buildAuthPath } from '@/features/auth/auth-navigation';
 import { getAccessToken } from '@/lib/auth';

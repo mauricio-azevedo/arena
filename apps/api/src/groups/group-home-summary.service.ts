@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import type { GroupHomeLeader } from '@arena/contracts/groups';
 import type { Prisma } from '../generated/prisma/client';
 import {
   MEMBER_USER_SELECT,
@@ -7,14 +8,6 @@ import {
 import { PrismaService } from '../prisma/prisma.service';
 
 type PrismaClientLike = Prisma.TransactionClient | PrismaService;
-
-type GroupHomeLeader = {
-  groupMemberId: string;
-  userId: string | null;
-  displayName: string;
-  rating: number;
-  rank: number;
-};
 
 type LastRelevantFeedItem = {
   id: string;

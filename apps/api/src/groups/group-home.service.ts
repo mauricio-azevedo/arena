@@ -1,4 +1,8 @@
 import { Injectable } from '@nestjs/common';
+import type {
+  GroupHomeCardResponse,
+  GroupHomeLeader,
+} from '@arena/contracts/groups';
 import { Prisma } from '../generated/prisma/client';
 import type {
   FeedItemType,
@@ -16,14 +20,6 @@ type GroupHomeSummaryRow = {
   lastError: string | null;
 };
 
-type GroupHomeLeader = {
-  groupMemberId: string;
-  userId: string | null;
-  displayName: string;
-  rating: number;
-  rank: number;
-};
-
 type LastRelevantActivity = {
   id: string;
   type: FeedItemType;
@@ -36,7 +32,7 @@ type LastRelevantActivity = {
 export class GroupHomeService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findHomeGroups(userId?: string) {
+  async findHomeGroups(userId?: string): Promise<GroupHomeCardResponse[]> {
     if (!userId) {
       return this.findPublicSuggestions(null);
     }
@@ -136,7 +132,7 @@ export class GroupHomeService {
       .sort((a, b) => this.compareHomeCards(a, b));
   }
 
-  async findAllGroups(userId?: string) {
+  async findAllGroups(userId?: string): Promise<GroupHomeCardResponse[]> {
     const groups = await this.prisma.group.findMany({
       where: {
         visibility: 'PUBLIC',
@@ -236,7 +232,9 @@ export class GroupHomeService {
       .sort((a, b) => this.comparePublicCards(a, b));
   }
 
-  private async findPublicSuggestions(userId: string | null) {
+  private async findPublicSuggestions(
+    userId: string | null,
+  ): Promise<GroupHomeCardResponse[]> {
     const excludedGroupIds = userId
       ? (
           await this.prisma.groupMember.findMany({

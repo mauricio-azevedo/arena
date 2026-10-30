@@ -1,6 +1,7 @@
 'use client';
 
 import { Check } from 'lucide-react';
+import type { AvatarColorKey } from '@arena/contracts';
 import { AVATAR_COLORS } from '@/lib/avatar-color';
 import { cn } from '@/lib/utils';
 
@@ -14,7 +15,7 @@ export function ColorSwatchPicker({
   className,
 }: {
   value: string;
-  onChange: (key: string) => void;
+  onChange: (key: AvatarColorKey) => void;
   className?: string;
 }) {
   return (

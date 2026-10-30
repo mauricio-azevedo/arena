@@ -32,11 +32,12 @@ built in) and `components/ui/drawer.tsx` (`DrawerActionHeader` — one header ac
 ## Medium — duplicated logic / divergent treatment
 
 - **API request/response types are hand-mirrored** in `apps/web/src/types/api.ts` and the feature
-  `*.type.ts` files (~24 response types). Moving to `@arena/contracts` module by module (#267,
+  `*.type.ts` files (~19 response types). Moving to `@arena/contracts` module by module (#267,
   ADR 0007, ADR 0008). Done: matches (#293: body and responses, `ZodValidationPipe`, codec
   schemas, e2e strict parse); profiles (#294: `me` + `users` responses, one subpath); members +
   ranking (#295: member identity as a leaf both reuse, claim-email fields dropped from the member
-  and ranking payloads). Next, one sub-issue each: groups (#296), auth + me (#297, `me` profile
+  and ranking payloads); groups (#296: one group row for every payload that embeds one, `_count`
+  and the creator dropped from the wire). Next, one sub-issue each: auth + me (#297, `me` profile
   has 14 shape checks, password 6 with coded length errors), invites + claims (#298),
   notifications + highlights (#299), then delete `types/api.ts` (#300).
 

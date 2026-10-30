@@ -18,7 +18,7 @@ import { getAccessToken } from '@/lib/auth';
 import type { Match } from '@arena/contracts/matches';
 import type { GroupMember } from '@arena/contracts/members';
 import type { RankingEntry } from '@arena/contracts/ranking';
-import type { Group, MyGroup } from '@/types/api';
+import type { Group, GroupMembership } from '@arena/contracts/groups';
 import { GroupDetailLoadingState } from '@/features/groups/components/group-detail-loading-state';
 import { Card, CardContent } from '@/components/ui/card';
 import { Body, Label } from '@/components/ui/text';
@@ -38,7 +38,7 @@ type GroupDetailData = {
   ranking: RankingEntry[];
   members: GroupMember[];
   matches: Match[];
-  membership: MyGroup | null;
+  membership: GroupMembership | null;
 };
 
 export function GroupDetail({ groupId, tab, autoOpenCompose = false }: Props) {

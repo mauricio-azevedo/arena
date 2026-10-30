@@ -1,8 +1,7 @@
+import type { Group, GroupBody, GroupHomeCard, GroupMembership } from '@arena/contracts/groups';
 import type { GroupMember, GuestMemberBody } from '@arena/contracts/members';
 import type { RankingEntry } from '@arena/contracts/ranking';
 import { apiRequest } from '@/lib/api-client';
-import type { Group, MyGroup } from '@/types/api';
-import type { GroupHomeCard } from '@/features/groups/types/group-home.type';
 
 export function getGroups(): Promise<Group[]> {
   return apiRequest<Group[]>('/groups', {
@@ -30,21 +29,14 @@ export function getAllGroups(token?: string): Promise<GroupHomeCard[]> {
   });
 }
 
-export function getMyGroups(token: string): Promise<MyGroup[]> {
-  return apiRequest<MyGroup[]>('/me/groups', {
+export function getMyGroups(token: string): Promise<GroupMembership[]> {
+  return apiRequest<GroupMembership[]>('/me/groups', {
     token,
     cache: 'no-store',
   });
 }
 
-export function createGroup(
-  token: string,
-  input: {
-    name: string;
-    description?: string;
-    avatarColor?: string;
-  },
-): Promise<Group> {
+export function createGroup(token: string, input: GroupBody): Promise<Group> {
   return apiRequest<Group>('/groups', {
     method: 'POST',
     token,
