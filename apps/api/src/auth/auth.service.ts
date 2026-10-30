@@ -1,12 +1,14 @@
 import { API_ERROR_CODES, codedConflict } from '../common/api-errors';
-import { MEMBER_USER_SELECT } from '../common/member-display-name';
-import {
-  BadRequestException,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import type {
+  AccountResponse,
+  AuthSessionResponse,
+  LoginBody,
+  RegisterBody,
+} from '@arena/contracts/auth';
 import * as bcrypt from 'bcrypt';
+import { ACCOUNT_SELECT } from './account-select';
 import { PrismaService } from '../prisma/prisma.service';
 import { pickDefaultAvatarColor } from '../common/avatar-color';
 import { structuredLog } from '../observability/structured-log';
@@ -26,28 +28,11 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async register(body: {
-    firstName: string;
-    lastName: string;
-    email: string;
-    password: string;
-    nickname?: string;
-  }) {
-    const firstName = body.firstName?.trim();
-    const lastName = body.lastName?.trim();
-    const email = body.email?.trim().toLowerCase();
-    const password = body.password;
-    // Optional: an empty/whitespace nickname stays null so it never shadows the
+  async register(body: RegisterBody): Promise<AuthSessionResponse> {
+    const { firstName, lastName, email, password } = body;
+    // Optional: an absent or emptied nickname stays null so it never shadows the
     // "First Last" display name downstream.
-    const nickname = body.nickname?.trim() || null;
-
-    if (!firstName || !lastName || !email || !password) {
-      throw new BadRequestException('All fields are required');
-    }
-
-    if (password.length < 6) {
-      throw new BadRequestException('Password must have at least 6 characters');
-    }
+    const nickname = body.nickname ?? null;
 
     const existingUser = await this.prisma.user.findUnique({
       where: { email },
@@ -68,7 +53,7 @@ export class AuthService {
         passwordHash,
         avatarColor: pickDefaultAvatarColor(email),
       },
-      select: this.userSelect(),
+      select: ACCOUNT_SELECT,
     });
 
     // A stub may have been waiting for this email — offer it now (never auto-claims). A
@@ -126,47 +111,36 @@ export class AuthService {
     ]);
   }
 
-  async login(body: { email: string; password: string }) {
-    const email = body.email?.trim().toLowerCase();
-    const password = body.password;
+  async login(body: LoginBody): Promise<AuthSessionResponse> {
+    const { email, password } = body;
 
-    if (!email || !password) {
-      throw new BadRequestException('Email and password are required');
-    }
-
+    // The hash is the one column the account payload must not carry, so it is
+    // compared and then dropped.
     const user = await this.prisma.user.findUnique({
       where: { email },
+      select: { ...ACCOUNT_SELECT, passwordHash: true },
     });
 
-    if (!user) {
+    // One answer for an unknown address and a wrong password: which half failed
+    // is not the caller's business.
+    if (!user || !(await bcrypt.compare(password, user.passwordHash))) {
       throw new UnauthorizedException('Invalid email or password');
     }
 
-    const passwordMatches = await bcrypt.compare(password, user.passwordHash);
-
-    if (!passwordMatches) {
-      throw new UnauthorizedException('Invalid email or password');
-    }
+    const { passwordHash: _passwordHash, ...account } = user;
 
     return {
-      user: {
-        id: user.id,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        email: user.email,
-        createdAt: user.createdAt,
-        updatedAt: user.updatedAt,
-      },
-      accessToken: this.signToken(user.id, user.email),
+      user: account,
+      accessToken: this.signToken(account.id, account.email),
     };
   }
 
-  async me(authorization?: string) {
+  async me(authorization?: string): Promise<AccountResponse> {
     const payload = this.verifyAuthorizationHeader(authorization);
 
     const user = await this.prisma.user.findUnique({
       where: { id: payload.sub },
-      select: this.userSelect(),
+      select: ACCOUNT_SELECT,
     });
 
     if (!user) {
@@ -195,15 +169,5 @@ export class AuthService {
     } catch {
       throw new UnauthorizedException('Invalid token');
     }
-  }
-
-  private userSelect() {
-    return {
-      id: true,
-      ...MEMBER_USER_SELECT,
-      email: true,
-      createdAt: true,
-      updatedAt: true,
-    };
   }
 }

@@ -1,9 +1,10 @@
-import {
-  BadRequestException,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
+import type {
+  PasswordUpdatedResponse,
+  UpdatePasswordBody,
+} from '@arena/contracts/me';
+import { MIN_PASSWORD_LENGTH } from '@arena/contracts/auth';
 import {
   API_ERROR_CODES,
   codedBadRequest,
@@ -11,24 +12,24 @@ import {
 } from '../common/api-errors';
 import { Prisma } from '../generated/prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
-import type { UpdatePasswordInput } from './types/update-password-input.type';
 
-const MIN_PASSWORD_LENGTH = 6;
+// bcrypt hashes the first 72 bytes and ignores the rest, so a longer password
+// would silently become a shorter one.
 const MAX_PASSWORD_BYTES = 72;
 const SALT_ROUNDS = 10;
-const PASSWORD_UPDATE_FIELDS = ['currentPassword', 'newPassword'] as const;
-
-type NormalizedUpdatePasswordInput = {
-  currentPassword: string;
-  newPassword: string;
-};
 
 @Injectable()
 export class MePasswordService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async updatePassword(userId: string, body: UpdatePasswordInput) {
-    const input = this.normalizeUpdatePasswordInput(body);
+  // Length lives here, not in the schema: the UI turns each failure into its own
+  // copy, and only a coded answer carries that (`PASSWORD_TOO_SHORT` /
+  // `PASSWORD_TOO_LONG`).
+  async updatePassword(
+    userId: string,
+    body: UpdatePasswordBody,
+  ): Promise<PasswordUpdatedResponse> {
+    this.ensureNewPasswordLength(body.newPassword);
 
     const currentUser = await this.prisma.user.findUnique({
       where: { id: userId },
@@ -43,7 +44,7 @@ export class MePasswordService {
     }
 
     const currentPasswordMatches = await bcrypt.compare(
-      input.currentPassword,
+      body.currentPassword,
       currentUser.passwordHash,
     );
 
@@ -55,7 +56,7 @@ export class MePasswordService {
     }
 
     const isSamePassword = await bcrypt.compare(
-      input.newPassword,
+      body.newPassword,
       currentUser.passwordHash,
     );
 
@@ -66,7 +67,7 @@ export class MePasswordService {
       );
     }
 
-    const passwordHash = await bcrypt.hash(input.newPassword, SALT_ROUNDS);
+    const passwordHash = await bcrypt.hash(body.newPassword, SALT_ROUNDS);
 
     try {
       await this.prisma.user.update({
@@ -85,51 +86,7 @@ export class MePasswordService {
     return { success: true };
   }
 
-  private normalizeUpdatePasswordInput(
-    body: UpdatePasswordInput,
-  ): NormalizedUpdatePasswordInput {
-    if (!body || typeof body !== 'object' || Array.isArray(body)) {
-      throw new BadRequestException('Invalid password update payload');
-    }
-
-    const unknownFields = Object.keys(body).filter(
-      (field) =>
-        !PASSWORD_UPDATE_FIELDS.includes(
-          field as (typeof PASSWORD_UPDATE_FIELDS)[number],
-        ),
-    );
-
-    if (unknownFields.length > 0) {
-      throw new BadRequestException('Unsupported password update fields');
-    }
-
-    return {
-      currentPassword: this.normalizeCurrentPassword(body.currentPassword),
-      newPassword: this.normalizeNewPassword(body.newPassword),
-    };
-  }
-
-  private normalizeCurrentPassword(value: unknown) {
-    if (typeof value !== 'string') {
-      throw new BadRequestException('Current password must be a string');
-    }
-
-    if (!value) {
-      throw new BadRequestException('Current password is required');
-    }
-
-    return value;
-  }
-
-  private normalizeNewPassword(value: unknown) {
-    if (typeof value !== 'string') {
-      throw new BadRequestException('New password must be a string');
-    }
-
-    if (!value) {
-      throw new BadRequestException('New password is required');
-    }
-
+  private ensureNewPasswordLength(value: string) {
     if (value.length < MIN_PASSWORD_LENGTH) {
       throw codedBadRequest(
         API_ERROR_CODES.PASSWORD_TOO_SHORT,
@@ -143,8 +100,6 @@ export class MePasswordService {
         `New password must have at most ${MAX_PASSWORD_BYTES} bytes`,
       );
     }
-
-    return value;
   }
 
   private isRecordNotFoundError(error: unknown) {
