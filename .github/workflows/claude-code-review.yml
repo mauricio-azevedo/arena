@@ -6,6 +6,9 @@ on:
 
 jobs:
   claude-review:
+    # Dependabot-triggered pull_request runs get no repository secrets, so the
+    # OAuth token would be empty and the job would always fail.
+    if: github.event.pull_request.user.login != 'dependabot[bot]'
     runs-on: ubuntu-latest
     permissions:
       contents: read
