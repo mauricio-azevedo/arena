@@ -107,7 +107,7 @@ Good:
 profile-summary-tab.tsx
 profile-matches.api.ts
 group-created-feed-item.generator.ts
-member-profile.type.ts
+weekly-highlight.type.ts
 ```
 
 Avoid vague names:
@@ -221,8 +221,16 @@ packages/contracts/
     index.ts              root export: api-errors + avatar-color
     iso-datetime.ts       isoDateTime codec (wire ISO string <-> API Date); leaf
     matches.ts            matchBodySchema + matchResponseSchema and their types; @arena/contracts/matches
+    member-identity.ts    memberIdentitySchema (how a member is named and colored),
+                          guestNameSchema; leaf
+    members.ts            memberBodySchema + guestMemberBodySchema, groupMemberResponseSchema +
+                          memberProfileResponseSchema; @arena/contracts/members
     profiles.ts           profileSummaryResponseSchema + profileMatchListItemSchema and their types;
                           @arena/contracts/profiles, served by `me` and `users`
+    ranking.ts            rankingEntrySchema + rankingMovementSchema and their types;
+                          @arena/contracts/ranking
+    ranking-movement-direction.ts
+                          rankingMovementDirectionSchema, RankingMovementDirection; leaf
 ```
 
 `@arena/contracts` holds values both apps must agree on byte for byte. A constant goes there on
@@ -232,9 +240,11 @@ per resource when two modules serve the same shapes (`profiles.ts`: `me` and `us
 a subpath (`@arena/contracts/<module>`, `exports` in `package.json`), never from the root index:
 the root is bundled into the web for its constants, and the CJS zod behind a schema cannot be
 tree-shaken (64 locales, +95 kB gzipped per route when it was tried in #267). Module files import
-leaves (`iso-datetime.ts`, `group-member-role.ts`) and each other one way (`profiles` → `matches`
-for `matchTeamSchema`); a schema two modules need goes in a leaf, never a cross-import that could
-cycle.
+leaves (`iso-datetime.ts`, `group-member-role.ts`, `member-identity.ts`,
+`ranking-movement-direction.ts`) and each other one way, `ranking` → `members` → `profiles` →
+`matches` (`rankingEntrySchema` extends `groupMemberResponseSchema`, which reuses the profile
+stats and match-list shapes, which reuse `matchTeamSchema`); a schema two modules need goes in a
+leaf, never a cross-import that could cycle.
 
 ### 3.4 `docs/`
 
@@ -625,7 +635,7 @@ export function getProfileMatches(token: string): Promise<ProfileMatchListItem[]
 
 API request and response shapes are never declared here: `import type` them from
 `@arena/contracts/<module>` (`frontend-conventions.md` §7). `types/` holds view models, UI state
-and the mirrors of modules not yet converted (`features/members/types/member-profile.type.ts`,
+and the mirrors of modules not yet converted (`features/groups/types/group-home.type.ts`,
 `code-quality-backlog.md`).
 
 ### 10.1 Default rule
@@ -1194,7 +1204,7 @@ Examples:
 
 ```txt
 feed-item-draft.type.ts
-member-profile.type.ts
+claim-summary.type.ts
 update-profile-input.type.ts
 ```
 
@@ -1205,7 +1215,7 @@ Backend follows the same default rule as frontend:
 ```txt
 feed-item-draft.type.ts
 feed-item-generator.type.ts
-member-profile.type.ts
+feed-player.type.ts
 ```
 
 Small private helper types may remain inside the service file if they are not exported.
@@ -1251,7 +1261,7 @@ groups.service.ts
 groups.module.ts
 zod-validation.pipe.ts
 profile-summary.service.ts
-member-profile.type.ts
+claim-summary.type.ts
 group-created-feed-item.generator.ts
 ```
 
@@ -1848,7 +1858,7 @@ Good:
 profile-match-card.tsx
 profile-matches.api.ts
 profile-date-format.helper.ts
-member-profile.type.ts
+profile-tab.type.ts
 profile-matches.service.ts
 ```
 
