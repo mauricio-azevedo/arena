@@ -1,6 +1,7 @@
 'use client';
 
 import { FormEvent, useMemo, useState } from 'react';
+import { MAX_PASSWORD_BYTES, MIN_PASSWORD_LENGTH } from '@arena/contracts';
 import type { PasswordUpdatedResponse } from '@arena/contracts/me';
 import { Button } from '@/components/ui/button';
 import { DrawerActionHeader, DrawerFooter } from '@/components/ui/drawer';
@@ -11,9 +12,8 @@ import { apiRequest } from '@/lib/api-client';
 import { apiErrorMessage, getApiErrorCode, getApiErrorStatus } from '@/lib/api-error';
 
 // `me-password.service.ts` answers both with a code this view turns into copy;
-// checking them here keeps the user from submitting to learn that.
-const MIN_PASSWORD_LENGTH = 6;
-const MAX_PASSWORD_BYTES = 72;
+// checking them here keeps the user from submitting to learn that. Both are the
+// contract's own numbers, so the view cannot disagree with the service.
 
 // Change-password as a view inside the settings sheet: a back chevron returns to
 // the menu; a successful change clears the fields and confirms with a toast.

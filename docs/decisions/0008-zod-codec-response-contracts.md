@@ -54,7 +54,12 @@ claimer's e-mail off invites and claims, the processing internals off matches. O
 on the way: `GUEST_TAKEN_OVER` was being written but was missing from the web's hand-mirrored
 notification union, and crashed the card — the class of bug this ADR exists to end.
 
-Open from here, each on its own trigger: ESM output for the package (unblocks client-side form
-schemas without the CJS zod bundle, needs a Jest spike — the API tests `require` it); OpenAPI
-emission, on a second consumer; a zod-free leaf module for the password and e-mail constants the
-web still duplicates, since importing them today would pull zod into the bundle.
+The last duplication closed on 2026-10-30: `account-field-rules.ts` is a zod-free leaf on the
+package root, so the web's forms import the password minimum, the bcrypt byte cap, the nickname
+cap and the e-mail pattern instead of retyping them. It also shows the cheaper shape of this
+decision — a value both sides need is a plain export, and only a value that needs *parsing* on
+the client needs the package to ship ESM.
+
+Open from here, each on its own trigger: ESM output for the package (client-side form schemas
+without the CJS zod bundle, needs a Jest spike — the API tests `require` it; no longer blocking
+anything); OpenAPI emission, on a second consumer.

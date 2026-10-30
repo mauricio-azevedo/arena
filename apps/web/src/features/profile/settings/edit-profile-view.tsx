@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { EMAIL_REGEX, MAX_NICKNAME_LENGTH } from '@arena/contracts';
 import type { ProfileUser } from '@arena/contracts/profiles';
 import { apiErrorMessage } from '@/lib/api-error';
 import { setAccessToken } from '@/lib/auth';
@@ -13,9 +14,6 @@ import { useToast } from '@/components/ui/toast';
 import { Meta } from '@/components/ui/text';
 import type { UpdateProfileInput } from '@arena/contracts/me';
 import { updateProfile } from '../api/profile.api';
-
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const MAX_NICKNAME = 24;
 
 // What a save changes, in the contract's own field types so the merge back into
 // the loaded summary stays exact.
@@ -65,7 +63,7 @@ export function EditProfileView({
     trimmed.firstName.length > 0 &&
     trimmed.lastName.length > 0 &&
     EMAIL_REGEX.test(trimmed.email) &&
-    trimmed.nickname.length <= MAX_NICKNAME;
+    trimmed.nickname.length <= MAX_NICKNAME_LENGTH;
 
   const hasChanges =
     trimmed.firstName !== initial.firstName ||

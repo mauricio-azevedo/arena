@@ -122,6 +122,11 @@ export function getProfileMatches(token: string): Promise<ProfileMatchListItem[]
   Constants both apps share (`ApiErrorCode`, `AvatarColorKey`) come from `@arena/contracts`;
   the gradient table in `lib/avatar-color.ts` is keyed by it, so a new key fails `tsc` until
   it has a gradient.
+- **A form's field rules come from the contract, never retyped.** `EMAIL_REGEX`,
+  `MIN_PASSWORD_LENGTH`, `MAX_PASSWORD_BYTES` and `MAX_NICKNAME_LENGTH` are on the package
+  root — zod-free, so importing them is free — and the schemas in `auth.ts`/`me.ts` enforce
+  the same values. A form that writes its own `6` or its own e-mail pattern can silently
+  reject what the API accepts, or accept what it rejects.
 - A component that needs part of a response takes that part **derived**, never restated:
   `Pick<GroupMember, 'id' | 'displayName'>`, `Extract<ClaimResult, { outcome: 'BLOCKED' }>`,
   `NonNullable<XProps['field']>`. Spelling the fields out again is a mirror that `tsc` cannot

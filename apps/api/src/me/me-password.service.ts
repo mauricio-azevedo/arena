@@ -4,7 +4,7 @@ import type {
   PasswordUpdatedResponse,
   UpdatePasswordBody,
 } from '@arena/contracts/me';
-import { MIN_PASSWORD_LENGTH } from '@arena/contracts/auth';
+import { MAX_PASSWORD_BYTES, MIN_PASSWORD_LENGTH } from '@arena/contracts';
 import {
   API_ERROR_CODES,
   codedBadRequest,
@@ -13,9 +13,6 @@ import {
 import { Prisma } from '../generated/prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 
-// bcrypt hashes the first 72 bytes and ignores the rest, so a longer password
-// would silently become a shorter one.
-const MAX_PASSWORD_BYTES = 72;
 const SALT_ROUNDS = 10;
 
 @Injectable()
