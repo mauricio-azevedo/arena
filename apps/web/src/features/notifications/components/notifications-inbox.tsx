@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { BellOff, Loader2 } from 'lucide-react';
 import { Body, Label, Overline } from '@/components/ui/text';
 import { getAccessToken } from '@/lib/auth';
-import type { AppNotification } from '@/types/api';
+import type { AppNotification } from '@arena/contracts/notifications';
 import {
   getNotifications,
   markAllNotificationsRead,

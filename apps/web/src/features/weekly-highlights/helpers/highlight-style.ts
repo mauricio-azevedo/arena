@@ -1,5 +1,5 @@
 import { CalendarCheck, Crown, Flame, Medal, TrendingUp, type LucideIcon } from 'lucide-react';
-import type { HighlightType } from '@/features/weekly-highlights/types/weekly-highlight.type';
+import type { HighlightType } from '@arena/contracts/weekly-highlights';
 
 type HighlightStyle = {
   icon: LucideIcon;

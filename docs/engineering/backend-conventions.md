@@ -91,8 +91,9 @@ create(@Param('groupId') groupId: string, @CurrentUser() user: AuthUser,
   (`Promise<MatchResponse>`) and shapes the Prisma `select`/`omit` to the schema. What the API
   sends minus internals, not only what the web reads today. Never parse a response in production;
   the e2e spec parses one per route (ADR 0008).
-- Internal contracts and unconverted responses live in per-module `types/`
-  (`feed-item-draft.type.ts`, `notification.types.ts`). One important type per file.
+- Internal contracts live in per-module `types/` — a writer's input, a generator's draft
+  (`notification.types.ts`, `feed-item-draft.type.ts`). One important type per file; a shape the
+  API sends belongs in `@arena/contracts`, never here.
 - Generators implement a shared generic interface
   (`FeedItemGenerator<Input>` → `FeedItemDraft | null`).
 - Values the web app must match exactly (`API_ERROR_CODES`, `AVATAR_COLOR_KEYS`) are imported from
@@ -167,11 +168,17 @@ create(@Param('groupId') groupId: string, @CurrentUser() user: AuthUser,
 | `GET /me/profile/summary`, `GET /me/profile/matches`                                                                                      | required                     | me              |
 | `PATCH /me/profile`, `PATCH /me/password`                                                                                                 | required                     | me              |
 | `GET /users/:userId/profile/summary`, `…/profile/matches`, `…/groups`                                                                     | viewer-scoped                | users           |
+| `GET /me/notifications`, `GET …/unread-count`, `POST …/read`                                                                              | required                     | notifications   |
 | `GET /home/weekly-highlights`                                                                                                             | optional                     | home-highlights |
 | `GET /health` (liveness only — no database access; the hosting platform's health check polls it)                                          | public                       | health          |
 
 Routes are use-case oriented (`GET /me/profile/summary`), never UI-shaped. No
 global `/api` prefix.
+
+The feed and processing rows have no web caller, so they have no response contract and no e2e
+parse: their shape is settled when something starts reading it, not before (`@arena/contracts`
+promises what the API sends to a consumer, and a schema with no consumer is a guess to keep in
+sync). `GET /health` is a literal and needs none.
 
 ---
 

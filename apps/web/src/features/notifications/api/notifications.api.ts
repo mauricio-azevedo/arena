@@ -1,5 +1,9 @@
 import { apiRequest } from '@/lib/api-client';
-import type { AppNotification } from '@/types/api';
+import type {
+  AppNotification,
+  NotificationsReadResponse,
+  UnreadNotificationCountResponse,
+} from '@arena/contracts/notifications';
 
 export function getNotifications(token: string): Promise<AppNotification[]> {
   return apiRequest<AppNotification[]>('/me/notifications', {
@@ -8,15 +12,17 @@ export function getNotifications(token: string): Promise<AppNotification[]> {
   });
 }
 
-export function getUnreadNotificationCount(token: string): Promise<{ count: number }> {
-  return apiRequest<{ count: number }>('/me/notifications/unread-count', {
+export function getUnreadNotificationCount(
+  token: string,
+): Promise<UnreadNotificationCountResponse> {
+  return apiRequest<UnreadNotificationCountResponse>('/me/notifications/unread-count', {
     token,
     cache: 'no-store',
   });
 }
 
-export function markAllNotificationsRead(token: string): Promise<{ updated: number }> {
-  return apiRequest<{ updated: number }>('/me/notifications/read', {
+export function markAllNotificationsRead(token: string): Promise<NotificationsReadResponse> {
+  return apiRequest<NotificationsReadResponse>('/me/notifications/read', {
     method: 'POST',
     token,
   });

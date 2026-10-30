@@ -8,7 +8,7 @@ import { getWeeklyHighlights } from '@/features/weekly-highlights/api/weekly-hig
 import { highlightSentence } from '@/features/weekly-highlights/helpers/highlight-copy';
 import { highlightStyle } from '@/features/weekly-highlights/helpers/highlight-style';
 import { hueFromId } from '@/lib/group-identity';
-import type { WeeklyHighlightCard } from '@/features/weekly-highlights/types/weekly-highlight.type';
+import type { WeeklyHighlightCard } from '@arena/contracts/weekly-highlights';
 import { getAccessToken } from '@/lib/auth';
 
 type LoadState = 'loading' | 'ready' | 'error';

@@ -243,12 +243,19 @@ packages/contracts/
                           memberUserSchema, guestNameSchema; leaf
     members.ts            memberBodySchema + guestMemberBodySchema, groupMemberResponseSchema +
                           memberProfileResponseSchema; @arena/contracts/members
+    notifications.ts      notificationSchema + unreadNotificationCountResponseSchema +
+                          notificationsReadResponseSchema and their types;
+                          @arena/contracts/notifications, response-only — the inbox acts on
+                          the caller's own rows, so no route has a body
     profiles.ts           profileSummaryResponseSchema + profileMatchListItemSchema and their types;
                           @arena/contracts/profiles, served by `me` and `users`
     ranking.ts            rankingEntrySchema + rankingMovementSchema and their types;
                           @arena/contracts/ranking
     ranking-movement-direction.ts
                           rankingMovementDirectionSchema, RankingMovementDirection; leaf
+    weekly-highlights.ts  weeklyHighlightCardSchema and its types;
+                          @arena/contracts/weekly-highlights, response-only, served by
+                          `home-highlights`
 ```
 
 `@arena/contracts` holds values both apps must agree on byte for byte. A constant goes there on
@@ -266,7 +273,8 @@ invite answers its target's claim summary and embeds a group, the group home sta
 the profile stats and match-list shapes, which reuse `matchTeamSchema`; `me` edits the account
 `auth` creates, and the claim-email body is that account's own e-mail, so the field schemas and
 the session response live with `auth`); a schema two modules need goes in a leaf, never a
-cross-import that could cycle.
+cross-import that could cycle. `notifications` and `weekly-highlights` import no module at all:
+both answer identity already resolved to a name and a palette key, so neither embeds a member.
 
 ### 3.4 `docs/`
 

@@ -114,10 +114,8 @@ export function getProfileMatches(token: string): Promise<ProfileMatchListItem[]
   `import type` only: the web never loads a schema at runtime, so zod stays out of the bundle.
 - Response types come from the same subpath (`Group`, `GroupHomeCard`, `RankingEntry`): the
   resource name is the wire shape (`z.input`, ISO strings), `XResponse` is the API's and never
-  imported here. `types/api.ts` and the feature `*.type.ts` files hand-mirror the responses of
-  modules not yet converted (`AppNotification`, `WeeklyHighlightCard`).
-  **Keep those in sync with the API by hand** until their module moves
-  (`code-quality-backlog.md`).
+  imported here. Every module's responses now come from a subpath — nothing is hand-mirrored, and
+  a feature `*.type.ts` holds view-models only, never a field list that copies a response.
 - A body the schema normalizes has two types: send `XInput` (`RegisterInput`,
   `UpdateProfileInput`), never `XBody`, which is what the service receives after the
   normalization.

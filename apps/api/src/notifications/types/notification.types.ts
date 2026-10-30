@@ -12,14 +12,3 @@ export type CreateNotificationInput = {
   // Denormalized render payload (names, counts, deep-link refs). Frozen at write time.
   data: Prisma.InputJsonValue;
 };
-
-export type NotificationView = {
-  id: string;
-  type: NotificationType;
-  groupId: string | null;
-  actorUserId: string | null;
-  data: Record<string, unknown>;
-  read: boolean;
-  acted: boolean;
-  createdAt: Date;
-};

@@ -30,9 +30,8 @@ arena/
 
 `@arena/contracts` (`packages/contracts`) is the shared package: error codes, avatar keys,
 and request and response schemas, one subpath per API module (`@arena/contracts/matches`).
-Modules not yet converted still re-declare their response types by hand in
-`apps/web/src/types/api.ts` and per-feature `*.type.ts` files; keep those in sync when backend
-responses change.
+Every module's responses live there: the two apps infer their types from one declaration, so
+neither can drift without failing `tsc`.
 
 ---
 
@@ -86,9 +85,9 @@ with `@Body(new ZodValidationPipe(schema))` (`common/zod-validation.pipe.ts`), w
 400 with one `message` entry per issue, and the service receives the inferred type. Business
 rules stay imperative in services, throwing Nest HTTP exceptions (`BadRequestException`,
 `NotFoundException`, `ForbiddenException`, `ConflictException`, `UnauthorizedException`):
-`MatchesService.resolvePlayerIds` rejects a player appearing twice. Converted so far: matches,
-members, groups, auth + me, invites and claims; the other modules still type bodies inline and
-check shape in the service (`code-quality-backlog.md`).
+`MatchesService.resolvePlayerIds` rejects a player appearing twice. Every route that takes a body
+parses it this way; the remaining modules (notifications, home-highlights, feed, processing,
+ranking) are read-only and have none.
 
 Responses are zod schemas in the same module file (ADR 0008): dates are `isoDateTime` codecs
 (`packages/contracts/src/iso-datetime.ts`), so `z.output` is the API's return type (`Date`) and
