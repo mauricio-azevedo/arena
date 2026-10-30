@@ -2,6 +2,12 @@ import { Test } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { App } from 'supertest/types';
+import { AVATAR_COLOR_KEYS } from '@arena/contracts';
+import {
+  groupHomeCardResponseSchema,
+  groupMembershipResponseSchema,
+  groupSchema,
+} from '@arena/contracts/groups';
 import {
   matchDeletedResponseSchema,
   matchResponseSchema,
@@ -153,7 +159,7 @@ describe('App (e2e)', () => {
           password: 'secret1',
         })
         .expect(201);
-      // Auth and groups get their contracts in later sub-issues of #267.
+      // Auth gets its contract in a later sub-issue of #267.
       const registered = register.body as {
         accessToken: string;
         user: { id: string };
@@ -166,7 +172,7 @@ describe('App (e2e)', () => {
         .set('Authorization', `Bearer ${token}`)
         .send({ name: 'E2E group' })
         .expect(201);
-      groupId = (group.body as { id: string }).id;
+      groupId = groupSchema.parse(group.body).id;
 
       // The registered user plays from the creator's seat, so the profile routes
       // answer with a real match, partner and rank; the other three are guests.
@@ -475,6 +481,162 @@ describe('App (e2e)', () => {
           .parse(roster.body)
           .map((entry) => entry.id);
         expect(memberIds).not.toContain(addedMemberId);
+      });
+    });
+
+    // Runs on the processed match, so a home card carries a ranked standing, a
+    // leader and real counts instead of their empty defaults. The three paths
+    // behind the two home routes answer one shape: the viewer's groups, every
+    // public group, and public suggestions for a signed-out or group-less
+    // viewer.
+    describe('groups', () => {
+      beforeAll(async () => {
+        await waitUntilProcessed(app, groupId, matchId);
+        await waitUntilQueueQuiet(app.get(PrismaService));
+      }, 30_000);
+
+      it('POST /groups answers the group contract and picks a palette colour', async () => {
+        const res = await request(app.getHttpServer())
+          .post('/groups')
+          .set('Authorization', `Bearer ${token}`)
+          .send({ name: '  E2E contract group  ', description: '   ' })
+          .expect(201);
+
+        const group = groupSchema.parse(res.body);
+        // The schema trims both; an empty description is stored as null.
+        expect(group).toMatchObject({
+          name: 'E2E contract group',
+          description: null,
+          visibility: 'PUBLIC',
+          createdById: userId,
+        });
+        expect(AVATAR_COLOR_KEYS).toContain(group.avatarColor);
+      });
+
+      it('POST /groups rejects a blank name and a colour outside the palette', async () => {
+        await request(app.getHttpServer())
+          .post('/groups')
+          .set('Authorization', `Bearer ${token}`)
+          .send({ name: '   ' })
+          .expect(400);
+
+        await request(app.getHttpServer())
+          .post('/groups')
+          .set('Authorization', `Bearer ${token}`)
+          .send({ name: 'E2E rejected group', avatarColor: 'puce' })
+          .expect(400);
+      });
+
+      it('GET /groups answers a list of the group contract', async () => {
+        const res = await request(app.getHttpServer())
+          .get('/groups')
+          .expect(200);
+
+        const ids = groupSchema
+          .array()
+          .parse(res.body)
+          .map((group) => group.id);
+        expect(ids).toContain(groupId);
+      });
+
+      it('GET /groups/:groupId answers the group contract', async () => {
+        const res = await request(app.getHttpServer())
+          .get(`/groups/${groupId}`)
+          .expect(200);
+
+        expect(groupSchema.parse(res.body).id).toBe(groupId);
+      });
+
+      it('GET /groups/home answers the home card contract for a member', async () => {
+        const res = await request(app.getHttpServer())
+          .get('/groups/home')
+          .set('Authorization', `Bearer ${token}`)
+          .expect(200);
+
+        const card = groupHomeCardResponseSchema
+          .array()
+          .parse(res.body)
+          .find((entry) => entry.group.id === groupId);
+
+        if (!card) {
+          throw new Error('The home feed is missing the group');
+        }
+
+        expect(card.relationship).toBe('MEMBER');
+        expect(card.group.matchesCount).toBe(1);
+        expect(card.group.membersCount).toBeGreaterThan(0);
+        expect(card.group.lastMatchAt).not.toBeNull();
+        expect(card.currentUser?.role).toBe('ADMIN');
+        // The projection ran, so the viewer is ranked and the group has a leader.
+        expect(card.currentUser?.standing.kind).toBe('RANKED');
+        expect(card.leaders.length).toBeGreaterThan(0);
+        expect(card.projection?.status).toBe('CURRENT');
+      });
+
+      it('GET /groups/home answers public suggestions for a signed-out viewer', async () => {
+        const res = await request(app.getHttpServer())
+          .get('/groups/home')
+          .expect(200);
+
+        const cards = groupHomeCardResponseSchema.array().parse(res.body);
+        expect(cards.length).toBeGreaterThan(0);
+        expect(
+          cards.every(
+            (card) =>
+              card.relationship === 'PUBLIC_SUGGESTION' &&
+              card.currentUser === null,
+          ),
+        ).toBe(true);
+      });
+
+      it('GET /groups/home/all answers the home card contract for every public group', async () => {
+        const res = await request(app.getHttpServer())
+          .get('/groups/home/all')
+          .expect(200);
+
+        const card = groupHomeCardResponseSchema
+          .array()
+          .parse(res.body)
+          .find((entry) => entry.group.id === groupId);
+
+        if (!card) {
+          throw new Error('The public feed is missing the group');
+        }
+
+        // Signed out: no membership and no projection state on the card.
+        expect(card).toMatchObject({
+          relationship: 'PUBLIC_SUGGESTION',
+          sortReason: 'PUBLIC_SUGGESTION',
+          currentUser: null,
+          projection: null,
+        });
+      });
+
+      it('GET /me/groups answers a list of the membership contract', async () => {
+        const res = await request(app.getHttpServer())
+          .get('/me/groups')
+          .set('Authorization', `Bearer ${token}`)
+          .expect(200);
+
+        const membership = groupMembershipResponseSchema
+          .array()
+          .parse(res.body)
+          .find((entry) => entry.groupId === groupId);
+
+        expect(membership?.role).toBe('ADMIN');
+        expect(membership?.group.id).toBe(groupId);
+      });
+
+      it('GET /users/:userId/groups answers the same membership contract', async () => {
+        const res = await request(app.getHttpServer())
+          .get(`/users/${userId}/groups`)
+          .expect(200);
+
+        const groupIds = groupMembershipResponseSchema
+          .array()
+          .parse(res.body)
+          .map((entry) => entry.groupId);
+        expect(groupIds).toContain(groupId);
       });
     });
 

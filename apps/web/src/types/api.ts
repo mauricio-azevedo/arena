@@ -1,4 +1,4 @@
-import type { GroupMemberRole } from '@arena/contracts/members';
+import type { Group } from '@arena/contracts/groups';
 
 export type User = {
   id: string;
@@ -9,31 +9,6 @@ export type User = {
   avatarColor: string;
   createdAt: string;
   updatedAt: string;
-};
-
-export type Group = {
-  id: string;
-  name: string;
-  description: string | null;
-  visibility: 'PUBLIC';
-  avatarColor: string;
-  createdById: string;
-  createdAt: string;
-  updatedAt: string;
-  _count?: {
-    members: number;
-    matches: number;
-  };
-};
-
-export type MyGroup = {
-  id: string;
-  role: GroupMemberRole;
-  rating: number;
-  groupId: string;
-  createdAt: string;
-  updatedAt: string;
-  group: Group;
 };
 
 // A lightweight roster row on the open invite: just enough to self-recognize.

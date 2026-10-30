@@ -1,11 +1,6 @@
-import { MEMBER_USER_SELECT } from '../common/member-display-name';
-import { isAvatarColorKey } from '@arena/contracts';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import type { GroupBody, GroupResponse } from '@arena/contracts/groups';
 import { pickDefaultAvatarColor } from '../common/avatar-color';
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
 import { GroupMemberRole } from '../generated/prisma/enums';
 import { PrismaService } from '../prisma/prisma.service';
 import { FeedOrchestratorService } from '../feed/feed-orchestrator.service';
@@ -19,26 +14,9 @@ export class GroupsService {
     private readonly groupHomeSummary: GroupHomeSummaryService,
   ) {}
 
-  async create(body: {
-    name: string;
-    description?: string;
-    avatarColor?: string;
-    createdById: string;
-  }) {
-    const name = body.name?.trim();
-
-    if (!name) {
-      throw new BadRequestException('Group name is required');
-    }
-
-    if (!body.createdById) {
-      throw new BadRequestException('Group creator is required');
-    }
-
-    // A chosen colour must be a known palette key; an omitted one falls back to a
-    // deterministic varied default (seeded by the name) so groups aren't all blue.
-    const avatarColor = this.resolveAvatarColor(body.avatarColor, name);
-
+  async create(
+    body: GroupBody & { createdById: string },
+  ): Promise<GroupResponse> {
     const creator = await this.prisma.user.findUnique({
       where: { id: body.createdById },
     });
@@ -50,9 +28,11 @@ export class GroupsService {
     return this.prisma.$transaction(async (tx) => {
       const group = await tx.group.create({
         data: {
-          name,
-          description: body.description?.trim() || null,
-          avatarColor,
+          name: body.name,
+          description: body.description || null,
+          // An omitted colour falls back to a deterministic varied default
+          // (seeded by the name) so groups aren't all blue.
+          avatarColor: body.avatarColor ?? pickDefaultAvatarColor(body.name),
           createdById: body.createdById,
         },
       });
@@ -78,72 +58,22 @@ export class GroupsService {
 
       await this.groupHomeSummary.syncGroupSummary(group.id, tx);
 
-      return tx.group.findUnique({
-        where: { id: group.id },
-        include: {
-          createdBy: {
-            select: {
-              id: true,
-              ...MEMBER_USER_SELECT,
-              email: true,
-            },
-          },
-          _count: {
-            select: {
-              members: true,
-              matches: true,
-            },
-          },
-        },
-      });
+      return group;
     });
   }
 
-  private resolveAvatarColor(value: string | undefined, seed: string): string {
-    if (value === undefined) {
-      return pickDefaultAvatarColor(seed);
-    }
-
-    const normalized = value.trim();
-    if (!isAvatarColorKey(normalized)) {
-      throw new BadRequestException('Invalid avatar color');
-    }
-
-    return normalized;
-  }
-
-  findAll() {
+  // Every `Group` column is promised by `groupSchema`, so the row is the
+  // response; a column added to the model fails the e2e parse until it is
+  // promised there or selected away here.
+  findAll(): Promise<GroupResponse[]> {
     return this.prisma.group.findMany({
       orderBy: { createdAt: 'desc' },
-      include: {
-        _count: {
-          select: {
-            members: true,
-            matches: true,
-          },
-        },
-      },
     });
   }
 
-  async findOne(groupId: string) {
+  async findOne(groupId: string): Promise<GroupResponse> {
     const group = await this.prisma.group.findUnique({
       where: { id: groupId },
-      include: {
-        createdBy: {
-          select: {
-            id: true,
-            ...MEMBER_USER_SELECT,
-            email: true,
-          },
-        },
-        _count: {
-          select: {
-            members: true,
-            matches: true,
-          },
-        },
-      },
     });
 
     if (!group) {

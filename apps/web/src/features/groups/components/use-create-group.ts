@@ -2,6 +2,7 @@
 
 import { useCallback, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import type { AvatarColorKey } from '@arena/contracts';
 import { getAccessToken } from '@/lib/auth';
 import { DEFAULT_AVATAR_COLOR } from '@/lib/avatar-color';
 import { createGroup } from '@/features/groups/api/groups.api';
@@ -15,7 +16,7 @@ export function useCreateGroup() {
 
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
-  const [avatarColor, setAvatarColor] = useState<string>(DEFAULT_AVATAR_COLOR);
+  const [avatarColor, setAvatarColor] = useState<AvatarColorKey>(DEFAULT_AVATAR_COLOR);
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 

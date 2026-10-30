@@ -1,8 +1,10 @@
 import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import { groupBodySchema, type GroupBody } from '@arena/contracts/groups';
 import { CurrentUser } from '../auth/current-user.decorator';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { OptionalJwtAuthGuard } from '../auth/optional-jwt-auth.guard';
 import type { AuthUser } from '../auth/auth.types';
+import { ZodValidationPipe } from '../common/zod-validation.pipe';
 import { GroupsService } from './groups.service';
 import { GroupHomeService } from './group-home.service';
 
@@ -17,12 +19,7 @@ export class GroupsController {
   @UseGuards(JwtAuthGuard)
   create(
     @CurrentUser() user: AuthUser,
-    @Body()
-    body: {
-      name: string;
-      description?: string;
-      avatarColor?: string;
-    },
+    @Body(new ZodValidationPipe(groupBodySchema)) body: GroupBody,
   ) {
     return this.groupsService.create({
       ...body,
