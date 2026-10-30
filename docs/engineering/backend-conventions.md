@@ -27,8 +27,8 @@ companion to the _prescriptive_ [`../code-organization.md`](../code-organization
 
 Controllers only: declare routes, apply guards, read `@Param`/`@Body`/
 `@CurrentUser`, call a service, return its result. No Prisma, no business logic,
-no response shaping. A request body is parsed at the route by its schema;
-unconverted modules still type it inline (`code-quality-backlog.md`).
+no response shaping. Every request body is parsed at the route by its schema —
+there is no route left that types one inline.
 
 ```ts
 @Post()
@@ -46,8 +46,8 @@ create(@Param('groupId') groupId: string, @CurrentUser() user: AuthUser,
 - **Request bodies are parsed at the route**: `@Body(new ZodValidationPipe(schema))`
   (`common/zod-validation.pipe.ts`) with the schema from `@arena/contracts/<module>`; the
   service takes the inferred type. A shape failure answers 400 with one `message` entry per
-  issue. No `class-validator`, no global pipe. Modules not yet converted keep inline body
-  types and shape checks in the service (`code-quality-backlog.md`).
+  issue. No `class-validator`, no global pipe. A `@Body()` without the pipe is a bug: `grep` for
+  one answers nothing today, and a new route is expected to keep it that way.
 - **A schema checks shape; a coded rule stays in the service.** Shape includes
   normalization (trim, lowercase, collapsed spaces) and the caps a column or form already
   implies, so the service never re-checks a type. A limit the UI must answer with its own
@@ -84,8 +84,8 @@ create(@Param('groupId') groupId: string, @CurrentUser() user: AuthUser,
 ## 5. DTOs / types
 
 - No `dto/` folders. A request body is a zod schema plus its `z.infer` type in
-  `@arena/contracts/<module>` (`matchBodySchema`, `MatchBody`); modules not yet converted keep
-  inline types or `*.type.ts`.
+  `@arena/contracts/<module>` (`matchBodySchema`, `MatchBody`) — for every module, so no body or
+  response is declared twice.
 - A response is a `z.strictObject` in the same file (`matchResponseSchema`), dates as the
   `isoDateTime` codec; the service annotates its return with the `z.output` type
   (`Promise<MatchResponse>`) and shapes the Prisma `select`/`omit` to the schema. What the API
@@ -175,10 +175,14 @@ create(@Param('groupId') groupId: string, @CurrentUser() user: AuthUser,
 Routes are use-case oriented (`GET /me/profile/summary`), never UI-shaped. No
 global `/api` prefix.
 
-The feed and processing rows have no web caller, so they have no response contract and no e2e
-parse: their shape is settled when something starts reading it, not before (`@arena/contracts`
-promises what the API sends to a consumer, and a schema with no consumer is a guess to keep in
-sync). `GET /health` is a literal and needs none.
+Every row above answers a schema from `@arena/contracts/<module>`, and `app.e2e-spec.ts` parses
+each one strict — a field the API sends without promising it fails there, not in the web app.
+Adding a route means adding its parse.
+
+Three rows are exempt. The feed and processing rows have no web caller, so they have no response
+contract and no e2e parse: their shape is settled when something starts reading it, not before
+(`@arena/contracts` promises what the API sends to a consumer, and a schema with no consumer is a
+guess to keep in sync). `GET /health` is a literal and needs none.
 
 ---
 

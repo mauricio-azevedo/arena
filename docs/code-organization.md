@@ -664,9 +664,9 @@ export function getProfileMatches(token: string): Promise<ProfileMatchListItem[]
 ## 10. Types on the frontend
 
 API request and response shapes are never declared here: `import type` them from
-`@arena/contracts/<module>` (`frontend-conventions.md` §7). `types/` holds view models, UI state
-and the mirrors of modules not yet converted
-(`features/weekly-highlights/types/weekly-highlight.type.ts`, `code-quality-backlog.md`).
+`@arena/contracts/<module>` (`frontend-conventions.md` §7). Every module is converted, so a type
+file holds view models and UI state only — never a field list that copies a response. Derive
+instead of restating: `Pick<GroupMember, …>`, `Extract<ClaimResult, { outcome: 'BLOCKED' }>`.
 
 ### 10.1 Default rule
 
@@ -687,7 +687,7 @@ feed-item.type.ts
 Types may be grouped only when all conditions are true:
 
 1. They are only used together.
-2. They belong to the same view model or unconverted response.
+2. They belong to the same view model.
 3. They are small.
 4. They are not imported independently by multiple areas.
 
@@ -763,8 +763,8 @@ Closed sets of values should live in `enums/`.
 This applies even when implemented as TypeScript union types.
 
 Sets the API owns are the exception: `z.enum` types in `@arena/contracts/<module>`
-(`ProfileMatchResult`, `FeedItemType`), `import type` from there. A mirror of a module not yet
-converted stays in `enums/` until that module moves.
+(`ProfileMatchResult`, `FeedItemType`, `GroupMemberRole`), `import type` from there. A literal
+union that restates one is a mirror, however short.
 
 Good:
 
@@ -1223,12 +1223,13 @@ me/
 ### 21.1 Request bodies and responses
 
 No `dto/`. A request body is a zod schema and a response a `z.strictObject`, both in
-`@arena/contracts/<module>` (ADR 0007, ADR 0008; rules in `backend-conventions.md` §5). Modules not
-yet converted keep `*-input.type.ts` / `*-response.type.ts` in `types/`.
+`@arena/contracts/<module>` (ADR 0007, ADR 0008; rules in `backend-conventions.md` §5). Every
+module is converted: a route's body or response never gets a `*.type.ts`.
 
 ### 21.2 `types/`
 
-Use `types/` for internal contracts and the inputs and responses of modules not yet converted.
+Use `types/` for internal contracts — shapes that cross service boundaries without crossing the
+wire.
 
 Examples:
 

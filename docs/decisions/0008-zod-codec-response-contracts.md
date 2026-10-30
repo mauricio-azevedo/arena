@@ -41,3 +41,20 @@ for a type problem.
 
 Spike on zod 4.6.7, #293. Convention: `XResponse` = `z.output`, resource name = `z.input`, one
 name when they coincide. Implemented module by module from #267, matches first.
+
+Complete 2026-10-30 (#300). `apps/web/src/types/api.ts` and the feature `*.type.ts` mirrors are
+deleted; every route but feed, processing and `/health` is parsed strict in
+`app.e2e-spec.ts` (`backend-conventions.md` §10 says why those three are exempt), and a test in
+the package renders every exported schema with `io: 'input'` so the emission path above stays
+open while no consumer uses it.
+
+Trimming the wire to the contract removed fields nobody had promised: the claim-email columns off
+the member and ranking payloads, `_count` and the creator off group rows, the inviter's and the
+claimer's e-mail off invites and claims, the processing internals off matches. One drift surfaced
+on the way: `GUEST_TAKEN_OVER` was being written but was missing from the web's hand-mirrored
+notification union, and crashed the card — the class of bug this ADR exists to end.
+
+Open from here, each on its own trigger: ESM output for the package (unblocks client-side form
+schemas without the CJS zod bundle, needs a Jest spike — the API tests `require` it); OpenAPI
+emission, on a second consumer; a zod-free leaf module for the password and e-mail constants the
+web still duplicates, since importing them today would pull zod into the bundle.
