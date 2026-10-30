@@ -192,16 +192,7 @@ export class GroupInvitesService {
     const invite = await this.prisma.groupInvite.findUnique({
       where: { token },
       include: {
-        group: {
-          include: {
-            _count: {
-              select: {
-                members: true,
-                matches: true,
-              },
-            },
-          },
-        },
+        group: true,
         createdBy: {
           select: {
             id: true,
