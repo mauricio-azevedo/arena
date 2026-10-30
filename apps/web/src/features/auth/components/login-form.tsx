@@ -1,11 +1,12 @@
 'use client';
 
 import { FormEvent, useState } from 'react';
+import { EMAIL_REGEX } from '@arena/contracts';
 import { Button } from '@/components/ui/button';
 import { SheetField, SheetPasswordField } from '@/components/ui/sheet-field';
 import { Meta } from '@/components/ui/text';
 import { login } from '@/features/auth/auth.api';
-import { AUTH_EMAIL_REGEX, LOGIN_ERROR } from '@/features/auth/auth-validation';
+import { LOGIN_ERROR } from '@/features/auth/auth-validation';
 import { NOTICE_COPY, type AuthNotice } from '@/features/auth/auth-navigation';
 import { setAccessToken } from '@/lib/auth';
 
@@ -27,7 +28,7 @@ export function LoginForm({
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const canSubmit = AUTH_EMAIL_REGEX.test(email.trim()) && password.length > 0;
+  const canSubmit = EMAIL_REGEX.test(email.trim()) && password.length > 0;
 
   async function handleSubmit(event?: FormEvent<HTMLFormElement>) {
     event?.preventDefault();
