@@ -1,4 +1,9 @@
 import { Controller, Get, Post, UseGuards } from '@nestjs/common';
+import type {
+  NotificationResponse,
+  NotificationsReadResponse,
+  UnreadNotificationCountResponse,
+} from '@arena/contracts/notifications';
 import { CurrentUser } from '../auth/current-user.decorator';
 import type { AuthUser } from '../auth/auth.types';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
@@ -14,17 +19,23 @@ export class NotificationsController {
   ) {}
 
   @Get()
-  list(@CurrentUser() user: AuthUser) {
+  list(@CurrentUser() user: AuthUser): Promise<NotificationResponse[]> {
     return this.reader.listForUser(user.sub);
   }
 
+  // The two counters are the one place a response is shaped outside a service:
+  // the service answers the number, the route names the field.
   @Get('unread-count')
-  async unreadCount(@CurrentUser() user: AuthUser) {
+  async unreadCount(
+    @CurrentUser() user: AuthUser,
+  ): Promise<UnreadNotificationCountResponse> {
     return { count: await this.reader.unreadCount(user.sub) };
   }
 
   @Post('read')
-  async markAllRead(@CurrentUser() user: AuthUser) {
+  async markAllRead(
+    @CurrentUser() user: AuthUser,
+  ): Promise<NotificationsReadResponse> {
     return { updated: await this.writer.markAllRead(user.sub) };
   }
 }

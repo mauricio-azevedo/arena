@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
+import type { NotificationResponse } from '@arena/contracts/notifications';
 import { PrismaService } from '../prisma/prisma.service';
-import type { NotificationView } from './types/notification.types';
 
 const MAX_NOTIFICATIONS = 50;
 
@@ -8,7 +8,7 @@ const MAX_NOTIFICATIONS = 50;
 export class NotificationReaderService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async listForUser(userId: string): Promise<NotificationView[]> {
+  async listForUser(userId: string): Promise<NotificationResponse[]> {
     const rows = await this.prisma.notification.findMany({
       where: { recipientUserId: userId },
       orderBy: { createdAt: 'desc' },
@@ -20,7 +20,9 @@ export class NotificationReaderService {
       type: row.type,
       groupId: row.groupId,
       actorUserId: row.actorUserId,
-      data: (row.data ?? {}) as Record<string, unknown>,
+      // A JSON column: whoever wrote the row owns the shape. The cast is the
+      // promise, kept honest by the contract parse in the e2e spec.
+      data: (row.data ?? {}) as NotificationResponse['data'],
       read: row.readAt !== null,
       acted: row.actedAt !== null,
       createdAt: row.createdAt,

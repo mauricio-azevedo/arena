@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import type { WeeklyHighlightCard } from '@arena/contracts/weekly-highlights';
 import { PrismaService } from '../prisma/prisma.service';
 import {
   MEMBER_USER_SELECT,
@@ -19,7 +20,7 @@ const MAX_PER_TYPE_PER_PART = 2;
 const ARENA_CACHE_TTL_MS = 30_000;
 const ARENA_CANDIDATE_POOL = 60;
 
-type Origin = 'GROUP' | 'ARENA';
+type Origin = WeeklyHighlightCard['origin'];
 
 type HighlightRow = {
   userId: string;
@@ -35,16 +36,6 @@ type HighlightRow = {
     nickname: string | null;
     avatarColor: string | null;
   };
-};
-
-export type WeeklyHighlightCard = {
-  userId: string;
-  displayName: string;
-  avatarColor: string | null;
-  groupMemberId: string;
-  group: { id: string; name: string };
-  achievement: { type: HighlightType; value: number };
-  origin: Origin;
 };
 
 @Injectable()
