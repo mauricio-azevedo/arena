@@ -8,14 +8,21 @@ import {
   type MatchBody,
 } from '@arena/contracts/matches';
 import {
+  groupMemberResponseSchema,
+  memberProfileResponseSchema,
+} from '@arena/contracts/members';
+import {
   profileMatchListItemSchema,
   profileSummaryResponseSchema,
 } from '@arena/contracts/profiles';
+import { rankingEntrySchema } from '@arena/contracts/ranking';
 import { AppModule } from '../src/app.module';
 
 // Ratings, ranks and partner stats are projected by the job a match write
-// enqueues, picked up by the worker's 1 s poll. Tests that read them wait for
-// the match instead of racing the queue.
+// enqueues, picked up by the worker's 1 s poll. Reads of them wait for the
+// match instead of racing the queue. A second write on the match waits too:
+// the first job marks the match processed unconditionally, so left in flight
+// it could publish the old result over the new write.
 async function waitUntilProcessed(
   app: INestApplication<App>,
   groupId: string,
@@ -71,6 +78,7 @@ describe('App (e2e)', () => {
     let userId: string;
     let groupId: string;
     let matchId: string;
+    let biaMemberId: string;
     let matchBody: MatchBody;
 
     beforeAll(async () => {
@@ -85,7 +93,7 @@ describe('App (e2e)', () => {
           password: 'secret1',
         })
         .expect(201);
-      // Auth, groups and members get their contracts in later sub-issues of #267.
+      // Auth and groups get their contracts in later sub-issues of #267.
       const registered = register.body as {
         accessToken: string;
         user: { id: string };
@@ -105,9 +113,10 @@ describe('App (e2e)', () => {
       const members = await request(app.getHttpServer())
         .get(`/groups/${groupId}/members`)
         .expect(200);
-      const creator = (
-        members.body as { id: string; userId: string | null }[]
-      ).find((member) => member.userId === userId);
+      const creator = groupMemberResponseSchema
+        .array()
+        .parse(members.body)
+        .find((member) => member.userId === userId);
 
       if (!creator) {
         throw new Error('The group creator is not listed as a member');
@@ -132,8 +141,26 @@ describe('App (e2e)', () => {
 
       const match = matchResponseSchema.parse(res.body);
       matchId = match.id;
-      expect(match.players).toHaveLength(4);
       expect(match.winnerTeam).toBe('TEAM_A');
+      // Ordered by team, then position, as promised: the slots the body named
+      // are the indexes below.
+      expect(
+        match.players.map((player) => `${player.team}:${player.position}`),
+      ).toEqual(['TEAM_A:1', 'TEAM_A:2', 'TEAM_B:1', 'TEAM_B:2']);
+
+      // The update below keeps these four by id: a name on an update adds a
+      // new guest, as on create.
+      const [teamAPlayer1, teamAPlayer2, teamBPlayer1, teamBPlayer2] =
+        match.players.map((player) => ({ memberId: player.groupMemberId }));
+      matchBody = {
+        ...matchBody,
+        teamAPlayer1,
+        teamAPlayer2,
+        teamBPlayer1,
+        teamBPlayer2,
+      };
+      // The creator's partner, a stub: the member profile runs on her.
+      biaMemberId = teamAPlayer2.memberId;
     });
 
     it('GET /groups/:groupId/matches answers a list of the match contract', async () => {
@@ -154,6 +181,9 @@ describe('App (e2e)', () => {
     });
 
     it('PATCH /groups/:groupId/matches/:id answers the match contract', async () => {
+      // On the processed match, so the update's job is the only one in flight.
+      await waitUntilProcessed(app, groupId, matchId);
+
       const res = await request(app.getHttpServer())
         .patch(`/groups/${groupId}/matches/${matchId}`)
         .set('Authorization', `Bearer ${token}`)
@@ -161,7 +191,7 @@ describe('App (e2e)', () => {
         .expect(200);
 
       expect(matchResponseSchema.parse(res.body).winnerTeam).toBe('TEAM_B');
-    });
+    }, 20_000);
 
     // Same shapes behind /me (own profile, email included) and /users/:userId
     // (anyone's, email withheld). Runs on the processed match so stats,
@@ -217,6 +247,174 @@ describe('App (e2e)', () => {
 
         const matches = profileMatchListItemSchema.array().parse(res.body);
         expect(matches.map((match) => match.id)).toEqual([matchId]);
+      });
+    });
+
+    // Members and the ranking share the membership shape; the ranking adds the
+    // projected stats and movement. Runs on the processed match so ranks, stats
+    // and the creator's movement are populated, not their empty defaults. The
+    // writes then take the roster through add, unlink and remove, and a
+    // newcomer shows the defaults.
+    describe('members and ranking', () => {
+      let secondUserId: string;
+      let guestMemberId: string;
+      let addedMemberId: string;
+
+      beforeAll(async () => {
+        await waitUntilProcessed(app, groupId, matchId);
+
+        // A second account for `POST …/members`: the route adds an existing
+        // user, and the creator is already in.
+        const register = await request(app.getHttpServer())
+          .post('/auth/register')
+          .send({
+            firstName: 'Segunda',
+            lastName: 'Conta',
+            email: `e2e-${Date.now()}-b@arena.test`,
+            password: 'secret1',
+          })
+          .expect(201);
+        secondUserId = (register.body as { user: { id: string } }).user.id;
+      }, 20_000);
+
+      it('GET /groups/:groupId/ranking answers a list of the ranking entry contract', async () => {
+        const res = await request(app.getHttpServer())
+          .get(`/groups/${groupId}/ranking`)
+          .expect(200);
+
+        const ranking = rankingEntrySchema.array().parse(res.body);
+        // Everyone started at 1000, all #1; after the one match the two winners
+        // share #1 and the two losers #2, in display order.
+        expect(ranking.map((entry) => entry.currentRank)).toEqual([1, 1, 2, 2]);
+
+        const creator = ranking.find((entry) => entry.userId === userId);
+        expect(creator?.stats).toEqual({ matchesCount: 1, winsCount: 0 });
+        expect(creator?.rankingMovement).toMatchObject({
+          direction: 'DOWN',
+          positions: 1,
+          previousRank: 1,
+          currentRank: 2,
+          sourceMatchId: matchId,
+        });
+      });
+
+      it('GET /groups/:groupId/members/:memberId/profile answers the member profile contract', async () => {
+        // The only profile a stub player can have: no account behind it.
+        const res = await request(app.getHttpServer())
+          .get(`/groups/${groupId}/members/${biaMemberId}/profile`)
+          .expect(200);
+
+        const profile = memberProfileResponseSchema.parse(res.body);
+        expect(profile).toMatchObject({
+          groupMemberId: biaMemberId,
+          userId: null,
+          displayName: 'Bia',
+          avatarColor: null,
+        });
+        expect(profile.stats.matchesPlayed).toBe(1);
+        expect(profile.matches.map((match) => match.id)).toEqual([matchId]);
+      });
+
+      it('POST /groups/:groupId/members/guest answers the member contract', async () => {
+        const res = await request(app.getHttpServer())
+          .post(`/groups/${groupId}/members/guest`)
+          .set('Authorization', `Bearer ${token}`)
+          // The schema trims: the stored name is canonical.
+          .send({ name: '  Edu  ' })
+          .expect(201);
+
+        const member = groupMemberResponseSchema.parse(res.body);
+        guestMemberId = member.id;
+        expect(member).toMatchObject({
+          userId: null,
+          displayName: 'Edu',
+          user: null,
+          role: 'MEMBER',
+          leftAt: null,
+        });
+      });
+
+      it('POST /groups/:groupId/members answers the member contract', async () => {
+        const res = await request(app.getHttpServer())
+          .post(`/groups/${groupId}/members`)
+          .set('Authorization', `Bearer ${token}`)
+          .send({ userId: secondUserId })
+          .expect(201);
+
+        const member = groupMemberResponseSchema.parse(res.body);
+        addedMemberId = member.id;
+        expect(member.userId).toBe(secondUserId);
+        expect(member.user).toMatchObject({
+          firstName: 'Segunda',
+          lastName: 'Conta',
+        });
+      });
+
+      it('GET /groups/:groupId/members answers a list of the member contract', async () => {
+        const res = await request(app.getHttpServer())
+          .get(`/groups/${groupId}/members`)
+          .expect(200);
+
+        const members = groupMemberResponseSchema.array().parse(res.body);
+        // The four players, the guest and the added account.
+        expect(members).toHaveLength(6);
+        expect(members.map((member) => member.id)).toEqual(
+          expect.arrayContaining([guestMemberId, addedMemberId]),
+        );
+      });
+
+      it('GET /groups/:groupId/ranking lists a member who never played with zero stats and no rank', async () => {
+        const res = await request(app.getHttpServer())
+          .get(`/groups/${groupId}/ranking`)
+          .expect(200);
+
+        const added = rankingEntrySchema
+          .array()
+          .parse(res.body)
+          .find((entry) => entry.id === addedMemberId);
+        // No stats row and no rank until the next processed match.
+        expect(added).toMatchObject({
+          rating: 1000,
+          currentRank: null,
+          stats: { matchesCount: 0, winsCount: 0 },
+          rankingMovement: null,
+        });
+      });
+
+      it('POST /groups/:groupId/members/:memberId/unlink answers the member contract as a stub', async () => {
+        const res = await request(app.getHttpServer())
+          .post(`/groups/${groupId}/members/${addedMemberId}/unlink`)
+          .set('Authorization', `Bearer ${token}`)
+          .expect(201);
+
+        const member = groupMemberResponseSchema.parse(res.body);
+        // The account is detached and its name frozen into displayName.
+        expect(member).toMatchObject({
+          id: addedMemberId,
+          userId: null,
+          user: null,
+          displayName: 'Segunda Conta',
+        });
+      });
+
+      it('DELETE /groups/:groupId/members/:memberId answers the member contract and drops them from the roster', async () => {
+        const res = await request(app.getHttpServer())
+          .delete(`/groups/${groupId}/members/${addedMemberId}`)
+          .set('Authorization', `Bearer ${token}`)
+          .expect(200);
+
+        const member = groupMemberResponseSchema.parse(res.body);
+        expect(member.id).toBe(addedMemberId);
+        expect(member.leftAt).not.toBeNull();
+
+        const roster = await request(app.getHttpServer())
+          .get(`/groups/${groupId}/members`)
+          .expect(200);
+        const memberIds = groupMemberResponseSchema
+          .array()
+          .parse(roster.body)
+          .map((entry) => entry.id);
+        expect(memberIds).not.toContain(addedMemberId);
       });
     });
 

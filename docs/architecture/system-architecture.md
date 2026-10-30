@@ -84,8 +84,8 @@ with `@Body(new ZodValidationPipe(schema))` (`common/zod-validation.pipe.ts`), w
 400 with one `message` entry per issue, and the service receives the inferred type. Business
 rules stay imperative in services, throwing Nest HTTP exceptions (`BadRequestException`,
 `NotFoundException`, `ForbiddenException`, `ConflictException`, `UnauthorizedException`):
-`MatchesService.resolvePlayerIds` rejects a player appearing twice. Converted so far: matches;
-the other modules still type bodies inline and check shape in the service
+`MatchesService.resolvePlayerIds` rejects a player appearing twice. Converted so far: matches
+and members; the other modules still type bodies inline and check shape in the service
 (`code-quality-backlog.md`).
 
 Responses are zod schemas in the same module file (ADR 0008): dates are `isoDateTime` codecs

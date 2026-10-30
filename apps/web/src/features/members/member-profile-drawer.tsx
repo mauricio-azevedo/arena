@@ -4,16 +4,15 @@ import { useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
 import Link from 'next/link';
 import { ChevronRight, Info, Send } from 'lucide-react';
+import type { GroupMemberRole, MemberProfile } from '@arena/contracts/members';
 import { Drawer, DrawerNested, DrawerContent, DrawerTitle } from '@/components/ui/drawer';
 import { Dot, Label, Meta } from '@/components/ui/text';
 import { MemberAvatar } from '@/components/ui/member-avatar';
 import { cn } from '@/lib/utils';
 import { getCurrentUserIdFromAccessToken } from '@/lib/auth';
 import { memberRoleTag } from '@/lib/member-role';
-import type { GroupMemberRole } from '@/types/api';
 import { getMemberProfile } from './api/members.api';
 import { InviteSheetContent } from '@/features/invites/components/invite-sheet';
-import type { MemberProfile } from './types/member-profile.type';
 
 type MemberProfileDrawerProps = {
   open: boolean;

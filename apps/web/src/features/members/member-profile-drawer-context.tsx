@@ -2,7 +2,8 @@
 
 import { createContext, useCallback, useContext, useMemo, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
-import type { GroupMember, GroupMemberRole } from '@/types/api';
+import type { GroupMemberRole } from '@arena/contracts/members';
+import type { RankingEntry } from '@arena/contracts/ranking';
 import { MemberProfileDrawer } from './member-profile-drawer';
 
 type MemberProfileDrawerContextValue = {
@@ -22,7 +23,7 @@ export function useMemberProfileDrawer() {
 type MemberProfileDrawerProviderProps = {
   groupId: string;
   groupName: string;
-  ranking: GroupMember[];
+  ranking: RankingEntry[];
   // The viewer's role in this group; gates the admin-only stub shortcuts.
   viewerRole?: GroupMemberRole | null;
   children: ReactNode;

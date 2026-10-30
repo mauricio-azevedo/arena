@@ -1,3 +1,5 @@
+import type { GroupMemberRole } from '@arena/contracts/members';
+
 export type User = {
   id: string;
   firstName: string;
@@ -22,46 +24,6 @@ export type Group = {
     members: number;
     matches: number;
   };
-};
-
-export type GroupMemberRole = 'ADMIN' | 'MEMBER';
-
-export type RankingMovement = {
-  direction: 'UP' | 'DOWN';
-  positions: number;
-  previousRank: number;
-  currentRank: number;
-  previousRating: number;
-  currentRating: number;
-  sourceMatchId: string;
-  occurredAt: string;
-};
-
-export type GroupMemberStats = {
-  matchesCount: number;
-  winsCount: number;
-};
-
-export type GroupMember = {
-  id: string;
-  groupId: string;
-  // Null for stub players (jogadores sem conta); displayName carries their name.
-  userId: string | null;
-  displayName: string | null;
-  rating: number;
-  ratingDeviation: number | null;
-  ratingVolatility: number | null;
-  ratingMu: number | null;
-  ratingSigma: number | null;
-  ratingAlgorithm: string;
-  role: GroupMemberRole;
-  leftAt: string | null;
-  createdAt: string;
-  updatedAt: string;
-  user?: User;
-  group?: Group;
-  stats?: GroupMemberStats;
-  rankingMovement?: RankingMovement | null;
 };
 
 export type MyGroup = {

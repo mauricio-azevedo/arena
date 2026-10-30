@@ -1,5 +1,7 @@
+import type { GroupMember, GuestMemberBody } from '@arena/contracts/members';
+import type { RankingEntry } from '@arena/contracts/ranking';
 import { apiRequest } from '@/lib/api-client';
-import type { Group, GroupMember, MyGroup } from '@/types/api';
+import type { Group, MyGroup } from '@/types/api';
 import type { GroupHomeCard } from '@/features/groups/types/group-home.type';
 
 export function getGroups(): Promise<Group[]> {
@@ -50,8 +52,8 @@ export function createGroup(
   });
 }
 
-export function getGroupRanking(groupId: string): Promise<GroupMember[]> {
-  return apiRequest<GroupMember[]>(`/groups/${groupId}/ranking`, {
+export function getGroupRanking(groupId: string): Promise<RankingEntry[]> {
+  return apiRequest<RankingEntry[]>(`/groups/${groupId}/ranking`, {
     cache: 'no-store',
   });
 }
@@ -67,11 +69,11 @@ export function getGroupMembers(groupId: string): Promise<GroupMember[]> {
 export function createGuestMember(
   token: string,
   groupId: string,
-  name: string,
+  input: GuestMemberBody,
 ): Promise<GroupMember> {
   return apiRequest<GroupMember>(`/groups/${groupId}/members/guest`, {
     method: 'POST',
     token,
-    body: { name },
+    body: input,
   });
 }

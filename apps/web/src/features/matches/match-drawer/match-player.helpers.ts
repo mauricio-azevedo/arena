@@ -1,5 +1,5 @@
 import type { Match } from '@arena/contracts/matches';
-import type { GroupMember } from '@/types/api';
+import type { GroupMember } from '@arena/contracts/members';
 import { nameInitial } from '@/lib/avatar';
 import { resolveMemberName } from '@/lib/member-name';
 
@@ -21,6 +21,11 @@ function initialOf(name: string) {
   return nameInitial(name);
 }
 
+// What the composer reads off a roster entry: identity for the picker and the
+// lookup, `leftAt` to keep a member who left out of the pool. A `GroupMember`
+// satisfies it as is; a draft guest is built as exactly this.
+export type RosterMember = Pick<GroupMember, 'id' | 'userId' | 'displayName' | 'user' | 'leftAt'>;
+
 // Prefix marking a guest named inline but not yet persisted. On submit, slots
 // holding a draft id send the guest's name instead of a member id; the backend
 // creates the stub atomically with the match.
@@ -30,29 +35,20 @@ export function isDraftGuest(memberId: string) {
   return memberId.startsWith(DRAFT_GUEST_PREFIX);
 }
 
-// A local-only stub player: shaped as a GroupMember so it flows through the
+// A local-only stub player: shaped as a roster member so it flows through the
 // roster, picker and lookup unchanged, but never touches the network until the
 // match is saved.
-export function makeDraftGuest(groupId: string, name: string): GroupMember {
+export function makeDraftGuest(name: string): RosterMember {
   return {
     id: `${DRAFT_GUEST_PREFIX}${crypto.randomUUID()}`,
-    groupId,
     userId: null,
     displayName: name,
-    rating: 1000,
-    ratingDeviation: null,
-    ratingVolatility: null,
-    ratingMu: null,
-    ratingSigma: null,
-    ratingAlgorithm: 'BEACH_ELO_V1',
-    role: 'MEMBER',
+    user: null,
     leftAt: null,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
   };
 }
 
-export function resolveFromMember(member: GroupMember): ResolvedPlayer {
+export function resolveFromMember(member: RosterMember): ResolvedPlayer {
   const { firstName, fullName } = resolveMemberName(member);
 
   return {
@@ -67,7 +63,7 @@ export function resolveFromMember(member: GroupMember): ResolvedPlayer {
 
 // Lookup keyed by groupMemberId, merging the live roster with the match snapshot
 // so edit mode can always name its four players.
-export function buildPlayerLookup(members: GroupMember[], match?: Match) {
+export function buildPlayerLookup(members: RosterMember[], match?: Match) {
   const lookup = new Map<string, ResolvedPlayer>();
 
   for (const member of members) {

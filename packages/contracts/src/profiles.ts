@@ -14,7 +14,7 @@ import { matchTeamSchema } from './matches';
 
 const profileMatchResultSchema = z.enum(['WIN', 'LOSS']);
 
-const profileSummaryStatsSchema = z.strictObject({
+export const profileSummaryStatsSchema = z.strictObject({
   matchesPlayed: z.int(),
   wins: z.int(),
   losses: z.int(),

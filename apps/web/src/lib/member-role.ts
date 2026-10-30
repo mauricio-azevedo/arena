@@ -1,4 +1,4 @@
-import type { GroupMemberRole } from '@/types/api';
+import type { GroupMemberRole } from '@arena/contracts/members';
 
 export type MemberRoleTag = { label: string; className: string };
 

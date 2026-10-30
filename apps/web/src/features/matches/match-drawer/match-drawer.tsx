@@ -2,9 +2,9 @@
 
 import { type CSSProperties, useMemo, useState } from 'react';
 import { ArrowUpDown } from 'lucide-react';
-import type { MatchPlayerInput } from '@arena/contracts/matches';
-import type { Match } from '@arena/contracts/matches';
-import type { GroupMember } from '@/types/api';
+import type { Match, MatchPlayerInput } from '@arena/contracts/matches';
+import type { GroupMember } from '@arena/contracts/members';
+import type { RankingEntry } from '@arena/contracts/ranking';
 import { Drawer, DrawerActionHeader, DrawerContent } from '@/components/ui/drawer';
 import { Meta } from '@/components/ui/text';
 import { createGroupMatch, updateGroupMatch } from '@/features/matches/api/matches.api';
@@ -17,6 +17,7 @@ import {
   isDraftGuest,
   makeDraftGuest,
   resolveFromMember,
+  type RosterMember,
 } from './match-player.helpers';
 import { SLOT_KEYS, type SlotKey, useMatchForm } from './use-match-form';
 
@@ -31,7 +32,7 @@ type MatchDrawerProps = {
   groupId: string;
   groupName: string;
   members: GroupMember[];
-  ranking: GroupMember[];
+  ranking: RankingEntry[];
   currentMembershipId: string | null;
   onClose: () => void;
   onSaved: () => void;
@@ -83,7 +84,7 @@ type MatchComposerProps = {
   groupId: string;
   groupName: string;
   members: GroupMember[];
-  ranking: GroupMember[];
+  ranking: RankingEntry[];
   currentMembershipId: string | null;
   onClose: () => void;
   onSaved: () => void;
@@ -111,9 +112,12 @@ function MatchComposer({
   const [error, setError] = useState<string | null>(null);
   // Guests named inline this session: local-only drafts, merged into the roster so
   // they're immediately pickable. Persisted only when the match is saved.
-  const [draftGuests, setDraftGuests] = useState<GroupMember[]>([]);
+  const [draftGuests, setDraftGuests] = useState<RosterMember[]>([]);
 
-  const roster = useMemo(() => [...members, ...draftGuests], [members, draftGuests]);
+  const roster = useMemo<RosterMember[]>(
+    () => [...members, ...draftGuests],
+    [members, draftGuests],
+  );
   const lookup = useMemo(() => buildPlayerLookup(roster, match), [roster, match]);
 
   const rankById = useMemo(() => {
@@ -205,7 +209,7 @@ function MatchComposer({
       return;
     }
 
-    const draft = makeDraftGuest(groupId, name);
+    const draft = makeDraftGuest(name);
     setDraftGuests((prev) => [...prev, draft]);
     setConvOpen(false);
     setConvName('');

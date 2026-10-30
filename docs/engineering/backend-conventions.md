@@ -84,7 +84,7 @@ create(@Param('groupId') groupId: string, @CurrentUser() user: AuthUser,
   sends minus internals, not only what the web reads today. Never parse a response in production;
   the e2e spec parses one per route (ADR 0008).
 - Internal contracts and unconverted responses live in per-module `types/`
-  (`feed-item-draft.type.ts`, `member-profile.type.ts`). One important type per file.
+  (`feed-item-draft.type.ts`, `claim-summary.type.ts`). One important type per file.
 - Generators implement a shared generic interface
   (`FeedItemGenerator<Input>` → `FeedItemDraft | null`).
 - Values the web app must match exactly (`API_ERROR_CODES`, `AVATAR_COLOR_KEYS`) are imported from

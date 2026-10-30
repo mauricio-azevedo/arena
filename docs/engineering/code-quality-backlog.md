@@ -32,12 +32,13 @@ built in) and `components/ui/drawer.tsx` (`DrawerActionHeader` — one header ac
 ## Medium — duplicated logic / divergent treatment
 
 - **API request/response types are hand-mirrored** in `apps/web/src/types/api.ts` and the feature
-  `*.type.ts` files (~28 response types). Moving to `@arena/contracts` module by module (#267,
+  `*.type.ts` files (~24 response types). Moving to `@arena/contracts` module by module (#267,
   ADR 0007, ADR 0008). Done: matches (#293: body and responses, `ZodValidationPipe`, codec
-  schemas, e2e strict parse); profiles (#294: `me` + `users` responses, one subpath). Next, one
-  sub-issue each: members + ranking (#295), groups (#296), auth + me (#297, `me` profile has 14
-  shape checks, password 6 with coded length errors), invites + claims (#298), notifications +
-  highlights (#299), then delete `types/api.ts` (#300).
+  schemas, e2e strict parse); profiles (#294: `me` + `users` responses, one subpath); members +
+  ranking (#295: member identity as a leaf both reuse, claim-email fields dropped from the member
+  and ranking payloads). Next, one sub-issue each: groups (#296), auth + me (#297, `me` profile
+  has 14 shape checks, password 6 with coded length errors), invites + claims (#298),
+  notifications + highlights (#299), then delete `types/api.ts` (#300).
 
 - **Duplicated submit/loading/error machine (~6 forms).** The same `useState` error + `isSubmitting`
   - try/catch/finally lives in login, register, create-group, edit-profile, password,

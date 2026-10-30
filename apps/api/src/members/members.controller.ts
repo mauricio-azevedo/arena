@@ -7,9 +7,16 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
+import {
+  guestMemberBodySchema,
+  memberBodySchema,
+  type GuestMemberBody,
+  type MemberBody,
+} from '@arena/contracts/members';
 import { CurrentUser } from '../auth/current-user.decorator';
 import type { AuthUser } from '../auth/auth.types';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { ZodValidationPipe } from '../common/zod-validation.pipe';
 import { MembersService } from './members.service';
 import { MemberProfileReaderService } from './member-profile-reader.service';
 
@@ -25,7 +32,7 @@ export class MembersController {
   create(
     @Param('groupId') groupId: string,
     @CurrentUser() user: AuthUser,
-    @Body() body: { userId: string },
+    @Body(new ZodValidationPipe(memberBodySchema)) body: MemberBody,
   ) {
     return this.membersService.create(groupId, user.sub, body);
   }
@@ -35,7 +42,7 @@ export class MembersController {
   createGuest(
     @Param('groupId') groupId: string,
     @CurrentUser() user: AuthUser,
-    @Body() body: { name: string },
+    @Body(new ZodValidationPipe(guestMemberBodySchema)) body: GuestMemberBody,
   ) {
     return this.membersService.createGuest(groupId, user.sub, body);
   }
