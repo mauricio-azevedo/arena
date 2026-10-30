@@ -5,7 +5,7 @@ import { Search } from 'lucide-react';
 import type { Match } from '@arena/contracts/matches';
 import type { GroupMember } from '@arena/contracts/members';
 import type { RankingEntry } from '@arena/contracts/ranking';
-import type { Group, MyGroup } from '@/types/api';
+import type { Group, GroupMembership } from '@arena/contracts/groups';
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
 import { Body, Dot, Label, Meta, Title } from '@/components/ui/text';
 import { GroupAvatar } from '@/components/ui/group-avatar';
@@ -16,7 +16,7 @@ export type GroupSummaryCardProps = {
   ranking: RankingEntry[];
   members: GroupMember[];
   matches: Match[];
-  membership: MyGroup | null;
+  membership: GroupMembership | null;
   // 0-match group: identity only — search and standing wait for the first match.
   isEmpty: boolean;
 };

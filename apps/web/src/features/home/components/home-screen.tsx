@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { getGroupHome } from '@/features/groups/api/groups.api';
-import type { GroupHomeCard } from '@/features/groups/types/group-home.type';
+import type { GroupHomeCard } from '@arena/contracts/groups';
 import { WeeklyHighlightsRail } from '@/features/weekly-highlights/components/weekly-highlights-rail';
 import { useAccessToken } from '@/hooks/use-access-token';
 import { GroupsSection } from './groups-section';

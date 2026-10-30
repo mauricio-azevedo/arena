@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { ArrowDown, ArrowUp } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Dot, Label, Meta, Overline, Stat } from '@/components/ui/text';
-import type { GroupHomeCard } from '@/features/groups/types/group-home.type';
+import type { GroupHomeCard } from '@arena/contracts/groups';
 import { GroupAvatar } from '@/components/ui/group-avatar';
 import { cn } from '@/lib/utils';
 
