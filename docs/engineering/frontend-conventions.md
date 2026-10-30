@@ -115,7 +115,7 @@ export function getProfileMatches(token: string): Promise<ProfileMatchListItem[]
 - Response types come from the same subpath (`Group`, `GroupHomeCard`, `RankingEntry`): the
   resource name is the wire shape (`z.input`, ISO strings), `XResponse` is the API's and never
   imported here. `types/api.ts` and the feature `*.type.ts` files hand-mirror the responses of
-  modules not yet converted (`GroupInvite`, `AppNotification`, the `User` those two embed, …).
+  modules not yet converted (`AppNotification`, `WeeklyHighlightCard`).
   **Keep those in sync with the API by hand** until their module moves
   (`code-quality-backlog.md`).
 - A body the schema normalizes has two types: send `XInput` (`RegisterInput`,

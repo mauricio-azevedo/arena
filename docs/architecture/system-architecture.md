@@ -87,8 +87,8 @@ with `@Body(new ZodValidationPipe(schema))` (`common/zod-validation.pipe.ts`), w
 rules stay imperative in services, throwing Nest HTTP exceptions (`BadRequestException`,
 `NotFoundException`, `ForbiddenException`, `ConflictException`, `UnauthorizedException`):
 `MatchesService.resolvePlayerIds` rejects a player appearing twice. Converted so far: matches,
-members and groups; the other modules still type bodies inline and check shape in the service
-(`code-quality-backlog.md`).
+members, groups, auth + me, invites and claims; the other modules still type bodies inline and
+check shape in the service (`code-quality-backlog.md`).
 
 Responses are zod schemas in the same module file (ADR 0008): dates are `isoDateTime` codecs
 (`packages/contracts/src/iso-datetime.ts`), so `z.output` is the API's return type (`Date`) and
