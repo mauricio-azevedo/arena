@@ -44,6 +44,14 @@
     "./me": {
       "types": "./dist/me.d.ts",
       "default": "./dist/me.js"
+    },
+    "./notifications": {
+      "types": "./dist/notifications.d.ts",
+      "default": "./dist/notifications.js"
+    },
+    "./weekly-highlights": {
+      "types": "./dist/weekly-highlights.d.ts",
+      "default": "./dist/weekly-highlights.js"
     }
   },
   "scripts": {
