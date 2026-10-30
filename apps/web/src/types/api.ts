@@ -1,5 +1,8 @@
 import type { Group } from '@arena/contracts/groups';
 
+// The user embedded in an invite or a claim payload. The account's own view is
+// `Account` (`@arena/contracts/auth`); these two routes send less than this type
+// promises and get their contract with the invites and claims module (#298).
 export type User = {
   id: string;
   firstName: string;
@@ -108,11 +111,6 @@ export type AcceptClaimResult =
       sharedMatches: SharedMatch[];
       admins: ClaimAdmin[];
     };
-
-export type AuthResponse = {
-  user: User;
-  accessToken: string;
-};
 
 export type NotificationType =
   | 'CLAIM_OFFER'

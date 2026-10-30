@@ -1,14 +1,6 @@
 import type { ProfileSummary } from '@arena/contracts/profiles';
+import type { AuthSession, UpdateProfileInput } from '@arena/contracts/me';
 import { apiRequest } from '@/lib/api-client';
-import type { AuthResponse } from '@/types/api';
-
-export type UpdateProfileInput = {
-  firstName?: string;
-  lastName?: string;
-  nickname?: string;
-  email?: string;
-  avatarColor?: string;
-};
 
 export function getProfileSummary(token: string): Promise<ProfileSummary> {
   return apiRequest<ProfileSummary>('/me/profile/summary', {
@@ -17,8 +9,10 @@ export function getProfileSummary(token: string): Promise<ProfileSummary> {
   });
 }
 
-export function updateProfile(token: string, input: UpdateProfileInput): Promise<AuthResponse> {
-  return apiRequest<AuthResponse>('/me/profile', {
+// A partial edit: send only what changed. The answer re-signs the token, which
+// carries the e-mail.
+export function updateProfile(token: string, input: UpdateProfileInput): Promise<AuthSession> {
+  return apiRequest<AuthSession>('/me/profile', {
     method: 'PATCH',
     token,
     body: input,

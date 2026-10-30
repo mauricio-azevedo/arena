@@ -11,7 +11,8 @@ import { DrawerActionHeader, DrawerFooter } from '@/components/ui/drawer';
 import { SheetField } from '@/components/ui/sheet-field';
 import { useToast } from '@/components/ui/toast';
 import { Meta } from '@/components/ui/text';
-import { updateProfile, type UpdateProfileInput } from '../api/profile.api';
+import type { UpdateProfileInput } from '@arena/contracts/me';
+import { updateProfile } from '../api/profile.api';
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const MAX_NICKNAME = 24;
