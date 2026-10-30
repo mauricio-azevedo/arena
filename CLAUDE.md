@@ -15,8 +15,7 @@ docs — and keep them current when you change behavior.
 pnpm-workspaces monorepo (`pnpm-workspace.yaml`: `apps/*`, `packages/*`), tasks run by
 Turborepo (`turbo.json`). `packages/contracts` (`@arena/contracts`) holds the error codes and
 avatar keys both apps share, plus request and response schemas one subpath per API module
-(`@arena/contracts/matches`); modules not yet converted still re-declare response types by hand
-in the frontend.
+(`@arena/contracts/matches`) — every module, so no response is declared twice.
 
 ```txt
 apps/api/   NestJS 12 · Prisma 7 (pg adapter) · JWT · in-DB job queue · PostgreSQL
@@ -60,8 +59,8 @@ read JSON/config files directly rather than via `node -e`.
   `*-orchestrator` (generator+writer), `*-generator` (input→draft), `*-projection`
   (rebuild derived state), `*-read` (read a read model). Request bodies: zod schema from
   `@arena/contracts/<module>`, parsed per route by `ZodValidationPipe`; business rules
-  imperative in services, throwing Nest HTTP exceptions (unconverted modules still check
-  shape in the service). Multi-write flows use `prisma.$transaction`; services take an
+  imperative in services, throwing Nest HTTP exceptions. Multi-write flows use
+  `prisma.$transaction`; services take an
   optional `tx`.
 - **⚠️ Async pipeline (key fact)**: match create/update/delete write the match +
   4 placeholder players, mark it `PENDING`, and **enqueue a `ProcessingJob`** — they
@@ -108,8 +107,8 @@ read JSON/config files directly rather than via `node -e`.
 - Backend types in per-module `types/`; no `dto/`. Request bodies and responses:
   `@arena/contracts/<module>` (zod schema; dates are `isoDateTime` codecs, so `z.output` = API
   return with `Date`, `z.input` = wire the web imports). Services annotate their return with the
-  `XResponse` type; the web imports the resource name, `import type` only. Unconverted modules still
-  mirror responses in `apps/web/src/types/api.ts` + feature `*.type.ts` — **sync by hand**.
+  `XResponse` type; the web imports the resource name, `import type` only. A feature `*.type.ts`
+  holds view-models only — never a field list that copies a response.
 - Logging: `structuredLog('domain.event', {...})` (`observability/structured-log.ts`).
 - API routes are use-case shaped (`GET /me/profile/summary`), never UI-shaped; no
   `/api` prefix.
@@ -136,9 +135,8 @@ read JSON/config files directly rather than via `node -e`.
 - New derived state: add a `*-projection.service.ts` and call it from
   `processing-job-runner.service.ts`.
 - Request body or response change: edit the schema in `packages/contracts/src/<module>.ts`; both
-  apps fail `tsc` until they match, and the e2e strict parse fails on an unpromised field.
-  Unconverted module: update `apps/web/src/types/api.ts` (and feature types) by hand. New module:
-  add its subpath to `packages/contracts/package.json` `exports`.
+  apps fail `tsc` until they match, and the e2e strict parse fails on an unpromised field. New
+  module: add its subpath to `packages/contracts/package.json` `exports`.
 - Per `docs/README.md`, update docs in the same PR when product behavior, feed/
   rating rules, auth, schema, key UX, API contracts, or QA flows change.
   </content>
