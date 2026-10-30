@@ -136,7 +136,7 @@ create(@Param('groupId') groupId: string, @CurrentUser() user: AuthUser,
 | `GET /feed`                                                                                                                               | optional                     | feed            |
 | `GET /feed/groups/:groupId`                                                                                                               | optional                     | feed            |
 | `POST /groups`                                                                                                                            | required                     | groups          |
-| `GET /groups/home`                                                                                                                        | optional                     | groups          |
+| `GET /groups/home`, `GET /groups/home/all`                                                                                                | optional                     | groups          |
 | `GET /groups`, `GET /groups/:groupId`                                                                                                     | public                       | groups          |
 | `POST /groups/:groupId/invites` (optional `targetGroupMemberId` ⇒ closed; a plain request reuses the active invite, so links stay stable) | required (admin)             | group-invites   |
 | `GET /groups/:groupId/invites/:token`, `POST …/:token/accept`                                                                             | varies                       | group-invites   |

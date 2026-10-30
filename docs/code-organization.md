@@ -217,7 +217,11 @@ packages/contracts/
   src/
     api-errors.ts         API_ERROR_CODES, ApiErrorCode
     avatar-color.ts       AVATAR_COLOR_KEYS, AvatarColorKey, isAvatarColorKey
+    feed-item-type.ts     feedItemTypeSchema, FeedItemType; leaf
     group-member-role.ts  groupMemberRoleSchema, GroupMemberRole; leaf
+    groups.ts             groupBodySchema, groupSchema + groupMembershipResponseSchema +
+                          groupHomeCardResponseSchema and their types; @arena/contracts/groups,
+                          the membership payload served by `groups`, `me` and `users`
     index.ts              root export: api-errors + avatar-color
     iso-datetime.ts       isoDateTime codec (wire ISO string <-> API Date); leaf
     matches.ts            matchBodySchema + matchResponseSchema and their types; @arena/contracts/matches
@@ -241,10 +245,11 @@ a subpath (`@arena/contracts/<module>`, `exports` in `package.json`), never from
 the root is bundled into the web for its constants, and the CJS zod behind a schema cannot be
 tree-shaken (64 locales, +95 kB gzipped per route when it was tried in #267). Module files import
 leaves (`iso-datetime.ts`, `group-member-role.ts`, `member-identity.ts`,
-`ranking-movement-direction.ts`) and each other one way, `ranking` → `members` → `profiles` →
-`matches` (`rankingEntrySchema` extends `groupMemberResponseSchema`, which reuses the profile
-stats and match-list shapes, which reuse `matchTeamSchema`); a schema two modules need goes in a
-leaf, never a cross-import that could cycle.
+`ranking-movement-direction.ts`, `feed-item-type.ts`) and each other one way, `groups` →
+`ranking` → `members` → `profiles` → `matches` (the group home standing reuses
+`rankingMovementSchema`, `rankingEntrySchema` extends `groupMemberResponseSchema`, which reuses
+the profile stats and match-list shapes, which reuse `matchTeamSchema`); a schema two modules
+need goes in a leaf, never a cross-import that could cycle.
 
 ### 3.4 `docs/`
 
@@ -635,8 +640,8 @@ export function getProfileMatches(token: string): Promise<ProfileMatchListItem[]
 
 API request and response shapes are never declared here: `import type` them from
 `@arena/contracts/<module>` (`frontend-conventions.md` §7). `types/` holds view models, UI state
-and the mirrors of modules not yet converted (`features/groups/types/group-home.type.ts`,
-`code-quality-backlog.md`).
+and the mirrors of modules not yet converted
+(`features/weekly-highlights/types/weekly-highlight.type.ts`, `code-quality-backlog.md`).
 
 ### 10.1 Default rule
 
@@ -733,8 +738,8 @@ Closed sets of values should live in `enums/`.
 This applies even when implemented as TypeScript union types.
 
 Sets the API owns are the exception: `z.enum` types in `@arena/contracts/<module>`
-(`ProfileMatchResult`), `import type` from there. Mirrors of modules not yet converted stay in
-`enums/` until their module moves (`feed-item-type.enum.ts`).
+(`ProfileMatchResult`, `FeedItemType`), `import type` from there. A mirror of a module not yet
+converted stays in `enums/` until that module moves.
 
 Good:
 
