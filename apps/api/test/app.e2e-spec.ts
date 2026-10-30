@@ -161,6 +161,19 @@ describe('App (e2e)', () => {
       .expect({ status: 'ok' });
   });
 
+  it('GET /health/ready answers 200 with the database check', async () => {
+    const response = await request(app.getHttpServer())
+      .get('/health/ready')
+      .expect(200);
+
+    expect(response.body).toEqual({
+      status: 'ok',
+      checks: {
+        database: { status: 'ok', latencyMs: expect.any(Number) as number },
+      },
+    });
+  });
+
   describe('match flow', () => {
     let token: string;
     let email: string;
