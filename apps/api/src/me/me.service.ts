@@ -4,7 +4,9 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import type { GroupMembershipResponse } from '@arena/contracts/groups';
 import { Prisma } from '../generated/prisma/client';
+import { GROUP_MEMBERSHIP_SELECT } from '../groups/group-membership-select';
 import { PrismaService } from '../prisma/prisma.service';
 import { API_ERROR_CODES, codedConflict } from '../common/api-errors';
 import { isAvatarColorKey } from '@arena/contracts';
@@ -49,7 +51,7 @@ export class MeService {
     private readonly jwtService: JwtService,
   ) {}
 
-  findMyGroups(userId: string) {
+  findMyGroups(userId: string): Promise<GroupMembershipResponse[]> {
     return this.prisma.groupMember.findMany({
       where: {
         userId,
@@ -58,24 +60,7 @@ export class MeService {
       orderBy: {
         createdAt: 'desc',
       },
-      select: {
-        id: true,
-        role: true,
-        rating: true,
-        groupId: true,
-        createdAt: true,
-        updatedAt: true,
-        group: {
-          include: {
-            _count: {
-              select: {
-                members: true,
-                matches: true,
-              },
-            },
-          },
-        },
-      },
+      select: GROUP_MEMBERSHIP_SELECT,
     });
   }
 
