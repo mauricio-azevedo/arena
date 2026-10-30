@@ -134,7 +134,9 @@ Before opening a PR, ideally verify:
 - backend starts;
 - frontend starts;
 - `just ci` passes (same steps as CI; needs a migrated `DATABASE_URL` for e2e). Turbo caches
-  per task in `.turbo/`; a task with a cache hit replays its logs — `--force` reruns everything;
+  per task in `.turbo/`; a task with a cache hit replays its logs — `--force` reruns everything.
+  `test:e2e` is the exception: `cache: false`, so it always executes against the database you
+  gave it;
 - critical changed flows work manually;
 - migrations are included when schema changes require them;
 - docs are updated when product/architecture/API behavior changes.
