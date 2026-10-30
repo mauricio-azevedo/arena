@@ -171,6 +171,7 @@ create(@Param('groupId') groupId: string, @CurrentUser() user: AuthUser,
 | `GET /me/notifications`, `GET …/unread-count`, `POST …/read`                                                                              | required                     | notifications   |
 | `GET /home/weekly-highlights`                                                                                                             | optional                     | home-highlights |
 | `GET /health` (liveness only — no database access; the hosting platform's health check polls it)                                          | public                       | health          |
+| `GET /health/ready` (readiness — `SELECT 1` within 5 s, 503 + dependency error code otherwise)                                            | public                       | health          |
 
 Routes are use-case oriented (`GET /me/profile/summary`), never UI-shaped. No
 global `/api` prefix.
@@ -179,10 +180,12 @@ Every row above answers a schema from `@arena/contracts/<module>`, and `app.e2e-
 each one strict — a field the API sends without promising it fails there, not in the web app.
 Adding a route means adding its parse.
 
-Three rows are exempt. The feed and processing rows have no web caller, so they have no response
+The feed, processing and health rows are exempt. The feed and processing rows have no web caller, so they have no response
 contract and no e2e parse: their shape is settled when something starts reading it, not before
 (`@arena/contracts` promises what the API sends to a consumer, and a schema with no consumer is a
-guess to keep in sync). `GET /health` is a literal and needs none.
+guess to keep in sync). The health rows have no web caller either: `GET /health` is a literal and
+`GET /health/ready` is read by monitors and humans, so its shape lives in
+[`observability.md`](./observability.md) and is asserted inline in `app.e2e-spec.ts`.
 
 ---
 

@@ -120,6 +120,11 @@ string) and `errorLogFields(error)`. All significant operations emit a named
 event, e.g. `processing_job.claimed`, `rating_projection.completed`,
 `feed_projection.skipped`. Use this format for any new logging.
 
+`GET /health` is liveness (no database access; the platform health check polls
+it) and `GET /health/ready` is readiness (`SELECT 1` within 5 s, 503 with the
+failing dependency's error code). Response shapes and the first response to a
+503: [`../engineering/observability.md`](../engineering/observability.md).
+
 ---
 
 ## 3. The async processing pipeline (most important architectural fact)
