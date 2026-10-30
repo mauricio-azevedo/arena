@@ -43,6 +43,12 @@ one-file configuration; Vercel reads the same file.
 `pnpm turbo run build` from clean runs `contracts#build` and `api#generate` before the apps; a
 second run reports cache hits. `turbo run lint:check test` without a prior build is green.
 
+A task whose result depends on something turbo cannot hash declares `cache: false`, and the
+database is the case: `test:e2e` asserts against whatever `DATABASE_URL` points at, so a replayed
+green would prove nothing about the database at hand. It reports `cache bypass, force executing`
+on every run while still inheriting `^build` and `generate` from the graph (verified 2026-10-30:
+two consecutive runs, both executed; a broken assertion fails the run).
+
 ## Pros and Cons of the Options
 
 ### Turborepo

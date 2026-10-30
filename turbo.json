@@ -22,6 +22,21 @@
     "test": {
       "dependsOn": ["^build", "generate"]
     },
+    "test:e2e": {
+      "dependsOn": ["^build", "generate"],
+      // Never cached: the suite's result is a property of the database it ran
+      // against, which turbo cannot hash. A replayed green would assert nothing.
+      "cache": false,
+      "passThroughEnv": [
+        "DATABASE_URL",
+        "JWT_SECRET",
+        "PROCESSING_JOB_LOCK_TIMEOUT_MS",
+        "PROCESSING_JOB_TRANSACTION_TIMEOUT_MS",
+        "PROCESSING_WORKER_BATCH_SIZE",
+        "PROCESSING_WORKER_DISABLED",
+        "PROCESSING_WORKER_SAFETY_POLL_MS"
+      ]
+    },
     "dev": {
       "dependsOn": ["^build"],
       "cache": false,
