@@ -24,6 +24,10 @@
     "./ranking": {
       "types": "./dist/ranking.d.ts",
       "default": "./dist/ranking.js"
+    },
+    "./groups": {
+      "types": "./dist/groups.d.ts",
+      "default": "./dist/groups.js"
     }
   },
   "scripts": {
