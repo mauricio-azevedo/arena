@@ -2,7 +2,7 @@
 
 import { type ReactNode, useMemo } from 'react';
 import type { Match } from '@arena/contracts/matches';
-import type { GroupMember } from '@/types/api';
+import type { RankingEntry } from '@arena/contracts/ranking';
 import { Label } from '@/components/ui/text';
 import { MatchesList } from '@/features/matches/components/matches-list';
 import { RankingList } from '@/features/groups/components/ranking-list';
@@ -16,7 +16,7 @@ type Props = {
   // Fully controlled: the parent owns the tab state (the "N partidas" stat in the
   // identity header switches tabs too) and syncs the URL in one place.
   onTabChange: (tab: GroupTab) => void;
-  ranking: GroupMember[];
+  ranking: RankingEntry[];
   matches: Match[];
   canManageMatches: boolean;
   currentMembershipId: string | null;

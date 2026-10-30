@@ -1,4 +1,5 @@
-import type { GroupMemberRole, RankingMovement } from '@/types/api';
+import type { GroupMemberRole } from '@arena/contracts/members';
+import type { RankingMovement } from '@arena/contracts/ranking';
 import type { FeedItemType } from '@/features/feed/enums/feed-item-type.enum';
 
 type GroupHomeStanding =

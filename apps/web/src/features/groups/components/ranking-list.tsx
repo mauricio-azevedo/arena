@@ -1,5 +1,5 @@
 import { ArrowDown, ArrowUp } from 'lucide-react';
-import type { GroupMember, RankingMovement } from '@/types/api';
+import type { RankingEntry, RankingMovement } from '@arena/contracts/ranking';
 import { Card, CardContent } from '@/components/ui/card';
 import { Body, Dot, Label, Meta, Overline, Stat } from '@/components/ui/text';
 import { MemberName } from '@/features/members/components/member-name';
@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils';
 import { MemberAvatar } from '@/components/ui/member-avatar';
 
 type Props = {
-  ranking: GroupMember[];
+  ranking: RankingEntry[];
   currentMembershipId: string | null;
 };
 
@@ -51,7 +51,7 @@ function RankingRow({
   rank,
   isCurrent,
 }: {
-  member: GroupMember;
+  member: RankingEntry;
   rank: number;
   isCurrent: boolean;
 }) {
@@ -113,7 +113,7 @@ function RankingRow({
   );
 }
 
-function Movement({ movement }: { movement?: RankingMovement | null }) {
+function Movement({ movement }: { movement: RankingMovement | null }) {
   if (!movement) {
     return null;
   }
@@ -140,8 +140,8 @@ function Movement({ movement }: { movement?: RankingMovement | null }) {
 
 // Two muted tones for hierarchy: the figures sit at `muted`, the words at the
 // dimmer `faint` so the numbers read first.
-function StatsLine({ member }: { member: GroupMember }) {
-  const stats = member.stats ?? { matchesCount: 0, winsCount: 0 };
+function StatsLine({ member }: { member: RankingEntry }) {
+  const { stats } = member;
 
   if (stats.matchesCount === 0) {
     return <Meta className="text-faint-foreground">Sem partidas</Meta>;
@@ -158,6 +158,6 @@ function StatsLine({ member }: { member: GroupMember }) {
   );
 }
 
-function getMemberDisplayName(member: GroupMember) {
+function getMemberDisplayName(member: RankingEntry) {
   return resolveMemberName(member).fullName;
 }

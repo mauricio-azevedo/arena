@@ -3,7 +3,9 @@
 import { useState } from 'react';
 import { Search } from 'lucide-react';
 import type { Match } from '@arena/contracts/matches';
-import type { Group, GroupMember, MyGroup } from '@/types/api';
+import type { GroupMember } from '@arena/contracts/members';
+import type { RankingEntry } from '@arena/contracts/ranking';
+import type { Group, MyGroup } from '@/types/api';
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
 import { Body, Dot, Label, Meta, Title } from '@/components/ui/text';
 import { GroupAvatar } from '@/components/ui/group-avatar';
@@ -11,7 +13,7 @@ import { StandingCard } from '@/features/groups/components/standing-card';
 
 export type GroupSummaryCardProps = {
   group: Group;
-  ranking: GroupMember[];
+  ranking: RankingEntry[];
   members: GroupMember[];
   matches: Match[];
   membership: MyGroup | null;
@@ -28,10 +30,11 @@ export function GroupSummaryCard({
   isEmpty,
 }: GroupSummaryCardProps) {
   const currentRankIndex = membership
-    ? ranking.findIndex((member) => member.id === membership.id)
+    ? ranking.findIndex((entry) => entry.id === membership.id)
     : -1;
+  const currentEntry = currentRankIndex >= 0 ? ranking[currentRankIndex] : null;
   const currentMember = membership
-    ? (ranking[currentRankIndex] ?? members.find((member) => member.id === membership.id) ?? null)
+    ? (currentEntry ?? members.find((member) => member.id === membership.id) ?? null)
     : null;
   // Live lists, not `group._count`: the counts must agree with what the members
   // drawer and the Partidas tab actually show (both exclude left members and
@@ -45,7 +48,7 @@ export function GroupSummaryCard({
       ? buildStanding(ranking, currentRankIndex, currentRating)
       : null;
 
-  const movement = currentMember?.rankingMovement ?? null;
+  const movement = currentEntry?.rankingMovement ?? null;
   const lastChange = membership ? lastRatingChange(matches, membership.id) : null;
 
   return (
@@ -86,7 +89,7 @@ type Standing = {
   pointsToClimb: number | null;
 };
 
-function buildStanding(ranking: GroupMember[], index: number, rating: number): Standing {
+function buildStanding(ranking: RankingEntry[], index: number, rating: number): Standing {
   if (index < 0) {
     return { rank: null, progress: 0, pointsToClimb: null };
   }

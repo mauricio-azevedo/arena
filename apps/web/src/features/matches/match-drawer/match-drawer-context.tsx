@@ -3,7 +3,8 @@
 import { createContext, useCallback, useContext, useMemo, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import type { Match } from '@arena/contracts/matches';
-import type { GroupMember } from '@/types/api';
+import type { GroupMember } from '@arena/contracts/members';
+import type { RankingEntry } from '@arena/contracts/ranking';
 import { MatchDrawer, type MatchDrawerTarget } from './match-drawer';
 
 type MatchDrawerContextValue = {
@@ -26,7 +27,7 @@ type MatchDrawerProviderProps = {
   groupId: string;
   groupName: string;
   members: GroupMember[];
-  ranking: GroupMember[];
+  ranking: RankingEntry[];
   currentMembershipId: string | null;
   onSaved: () => void;
   autoOpenCreate?: boolean;

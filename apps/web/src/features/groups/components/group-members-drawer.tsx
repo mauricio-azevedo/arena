@@ -40,7 +40,8 @@ import { TOUCH_TARGET_48 } from '@/lib/touch-target';
 import { createGuestMember } from '@/features/groups/api/groups.api';
 import { InviteSheetContent } from '@/features/invites/components/invite-sheet';
 import { MemberProfileContent } from '@/features/members/member-profile-drawer';
-import type { GroupMember, GroupMemberRole } from '@/types/api';
+import type { GroupMember, GroupMemberRole } from '@arena/contracts/members';
+import type { RankingEntry } from '@arena/contracts/ranking';
 
 type GroupMembersDrawerProps = {
   open: boolean;
@@ -52,7 +53,7 @@ type GroupMembersDrawerProps = {
   viewerRole: GroupMemberRole | null;
   members: GroupMember[];
   // Live ranking — for the position line in a member's profile.
-  ranking: GroupMember[];
+  ranking: RankingEntry[];
   // Reloads the roster after a guest is added (bumps the group-detail refresh key).
   onMembersChanged: () => void;
 };
@@ -203,7 +204,7 @@ export function GroupMembersDrawer({
 
     const names = queue;
     const results = await Promise.allSettled(
-      names.map((guestName) => createGuestMember(token, groupId, guestName)),
+      names.map((guestName) => createGuestMember(token, groupId, { name: guestName })),
     );
     const failedNames = names.filter((_, i) => results[i].status === 'rejected');
     const added = names.length - failedNames.length;

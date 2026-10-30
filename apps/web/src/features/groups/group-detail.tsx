@@ -16,7 +16,9 @@ import {
 import { getGroupMatches } from '@/features/matches/api/matches.api';
 import { getAccessToken } from '@/lib/auth';
 import type { Match } from '@arena/contracts/matches';
-import type { Group, GroupMember, MyGroup } from '@/types/api';
+import type { GroupMember } from '@arena/contracts/members';
+import type { RankingEntry } from '@arena/contracts/ranking';
+import type { Group, MyGroup } from '@/types/api';
 import { GroupDetailLoadingState } from '@/features/groups/components/group-detail-loading-state';
 import { Card, CardContent } from '@/components/ui/card';
 import { Body, Label } from '@/components/ui/text';
@@ -33,7 +35,7 @@ type Props = {
 
 type GroupDetailData = {
   group: Group;
-  ranking: GroupMember[];
+  ranking: RankingEntry[];
   members: GroupMember[];
   matches: Match[];
   membership: MyGroup | null;
