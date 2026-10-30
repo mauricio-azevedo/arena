@@ -47,6 +47,7 @@ Engineering docs describe how to work on the codebase.
 - [`engineering/development-setup.md`](engineering/development-setup.md): local setup and development workflow.
 - [`engineering/database.md`](engineering/database.md): database, Prisma, Neon, and migration guidance.
 - [`engineering/database-reference.md`](engineering/database-reference.md): table/enum/index/migration reference mirroring the schema.
+- [`engineering/observability.md`](engineering/observability.md): health endpoints, log signals, and the first response to a 503.
 
 ### QA
 
