@@ -14,6 +14,15 @@ import {
   groupSchema,
 } from '@arena/contracts/groups';
 import {
+  claimMembershipSchema,
+  claimResultResponseSchema,
+  claimStubSummarySchema,
+} from '@arena/contracts/claims';
+import {
+  createdInviteResponseSchema,
+  publicInviteResponseSchema,
+} from '@arena/contracts/invites';
+import {
   matchDeletedResponseSchema,
   matchResponseSchema,
   type MatchBody,
@@ -638,6 +647,298 @@ describe('App (e2e)', () => {
           .parse(res.body)
           .map((entry) => entry.groupId);
         expect(groupIds).toContain(groupId);
+      });
+    });
+
+    // Runs on the processed match, so a claim summary carries a real record and
+    // the conflict has a shared match to find. Both invite kinds, both ways in
+    // (take over a guest, join as new) and the block that keeps two people from
+    // becoming one account.
+    describe('invites and claims', () => {
+      // A guest with no matches: the claim below takes it over, and the closed
+      // invite addressed to it degrades once it is gone.
+      let guestMemberId: string;
+      let openToken: string;
+      let closedToken: string;
+      let degradedToken: string;
+      let claimerToken: string;
+      let claimerUserId: string;
+      let joinerUserId: string;
+
+      beforeAll(async () => {
+        await waitUntilProcessed(app, groupId, matchId);
+        await waitUntilQueueQuiet(app.get(PrismaService));
+
+        const guest = await request(app.getHttpServer())
+          .post(`/groups/${groupId}/members/guest`)
+          .set('Authorization', `Bearer ${token}`)
+          .send({ name: 'Zeca' })
+          .expect(201);
+        guestMemberId = groupMemberResponseSchema.parse(guest.body).id;
+
+        const [claimer, joiner] = await Promise.all(
+          ['claimer', 'joiner'].map((who) =>
+            request(app.getHttpServer())
+              .post('/auth/register')
+              .send({
+                firstName: who === 'claimer' ? 'Zeca' : 'Nova',
+                lastName: 'Conta',
+                email: `e2e-${Date.now()}-${who}@arena.test`,
+                password: 'secret1',
+              })
+              .expect(201),
+          ),
+        );
+        const claimerSession = authSessionResponseSchema.parse(claimer.body);
+        claimerToken = claimerSession.accessToken;
+        claimerUserId = claimerSession.user.id;
+        joinerUserId = authSessionResponseSchema.parse(joiner.body).user.id;
+      }, 30_000);
+
+      it('POST /groups/:groupId/invites answers the created invite contract and reuses the link', async () => {
+        const create = () =>
+          request(app.getHttpServer())
+            .post(`/groups/${groupId}/invites`)
+            .set('Authorization', `Bearer ${token}`)
+            .send({})
+            .expect(201);
+
+        const invite = createdInviteResponseSchema.parse((await create()).body);
+        openToken = invite.token;
+        expect(invite).toMatchObject({
+          groupId,
+          createdById: userId,
+          targetGroupMemberId: null,
+          uses: 0,
+          maxUses: null,
+          expiresAt: null,
+          revokedAt: null,
+          path: `/invites/${invite.token}`,
+        });
+
+        // A plain request reuses the group's active invite, so a shared link
+        // stays valid however many times the sheet is opened.
+        const again = createdInviteResponseSchema.parse((await create()).body);
+        expect(again.token).toBe(openToken);
+      });
+
+      it('POST /groups/:groupId/invites rejects a zero cap and an unparseable expiry', async () => {
+        await request(app.getHttpServer())
+          .post(`/groups/${groupId}/invites`)
+          .set('Authorization', `Bearer ${token}`)
+          .send({ maxUses: 0 })
+          .expect(400);
+
+        await request(app.getHttpServer())
+          .post(`/groups/${groupId}/invites`)
+          .set('Authorization', `Bearer ${token}`)
+          .send({ expiresAt: 'next friday' })
+          .expect(400);
+      });
+
+      it('GET /invites/:token answers the open invite with the group roster', async () => {
+        const res = await request(app.getHttpServer())
+          .get(`/invites/${openToken}`)
+          .expect(200);
+
+        const invite = publicInviteResponseSchema.parse(res.body);
+        if (invite.kind !== 'OPEN') {
+          throw new Error('An invite with no target must answer OPEN');
+        }
+
+        expect(invite.targetUnavailable).toBe(false);
+        expect(invite.group.id).toBe(groupId);
+        // The inviter is named, not exposed: the strict parse above is what
+        // keeps an id or an e-mail off a public page.
+        expect(invite.createdBy).toMatchObject({
+          firstName: 'E2E',
+          lastName: 'Runner',
+          nickname: null,
+        });
+        expect(AVATAR_COLOR_KEYS).toContain(invite.createdBy.avatarColor);
+        // Unclaimed guests only, with the matches each has to lose.
+        expect(invite.guests).toEqual(
+          expect.arrayContaining([
+            { groupMemberId: biaMemberId, displayName: 'Bia', matchesCount: 1 },
+            {
+              groupMemberId: guestMemberId,
+              displayName: 'Zeca',
+              matchesCount: 0,
+            },
+          ]),
+        );
+      });
+
+      it('GET /groups/:groupId/invites/:token answers the same payload', async () => {
+        const res = await request(app.getHttpServer())
+          .get(`/groups/${groupId}/invites/${openToken}`)
+          .expect(200);
+
+        expect(publicInviteResponseSchema.parse(res.body).kind).toBe('OPEN');
+      });
+
+      it('GET /invites/:token answers a closed invite with its target recognition', async () => {
+        const create = await request(app.getHttpServer())
+          .post(`/groups/${groupId}/invites`)
+          .set('Authorization', `Bearer ${token}`)
+          .send({ targetGroupMemberId: biaMemberId })
+          .expect(201);
+        closedToken = createdInviteResponseSchema.parse(create.body).token;
+
+        const res = await request(app.getHttpServer())
+          .get(`/invites/${closedToken}`)
+          .expect(200);
+
+        const invite = publicInviteResponseSchema.parse(res.body);
+        if (invite.kind !== 'CLOSED') {
+          throw new Error('An invite with a target must answer CLOSED');
+        }
+
+        expect(invite.target).toMatchObject({
+          groupMemberId: biaMemberId,
+          displayName: 'Bia',
+          matchesCount: 1,
+        });
+        // The record the person is being asked to recognize, from their side.
+        expect(invite.target.recentMatches).toHaveLength(1);
+        expect(invite.target.recentMatches[0]).toMatchObject({
+          id: matchId,
+          result: 'LOSS',
+          partners: ['E2E Runner'],
+          scoreFor: 2,
+          scoreAgainst: 6,
+        });
+      });
+
+      it('GET /invites/:token/guests/:guestId/summary answers the stub summary', async () => {
+        const res = await request(app.getHttpServer())
+          .get(`/invites/${openToken}/guests/${guestMemberId}/summary`)
+          .expect(200);
+
+        expect(claimStubSummarySchema.parse(res.body)).toMatchObject({
+          groupMemberId: guestMemberId,
+          displayName: 'Zeca',
+          rank: null,
+          matchesCount: 0,
+          recentMatches: [],
+        });
+      });
+
+      it('POST /invites/:token/claim/:guestId blocks a guest the claimer played against', async () => {
+        // The creator partnered Bia in the one match, so the two cannot be the
+        // same person — a real outcome with the proof, not an error.
+        const res = await request(app.getHttpServer())
+          .post(`/invites/${openToken}/claim/${biaMemberId}`)
+          .set('Authorization', `Bearer ${token}`)
+          .expect(201);
+
+        const result = claimResultResponseSchema.parse(res.body);
+        if (result.outcome !== 'BLOCKED') {
+          throw new Error('A shared match must block the claim');
+        }
+
+        expect(result.stubName).toBe('Bia');
+        expect(result.sharedMatches.map((match) => match.id)).toEqual([
+          matchId,
+        ]);
+        expect(result.sharedMatches[0].teams.map((team) => team.team)).toEqual([
+          'TEAM_A',
+          'TEAM_B',
+        ]);
+        expect(
+          result.sharedMatches[0].teams
+            .flatMap((team) => team.players)
+            .filter((player) => player.isStub || player.isYou),
+        ).toHaveLength(2);
+        // Who to ask for help, named the same way the roster names them.
+        expect(result.admins.map((admin) => admin.name)).toEqual([
+          'E2E Runner',
+        ]);
+      });
+
+      it('POST /invites/:token/claim/:guestId answers the claimed membership', async () => {
+        // Addressed to this guest before it is taken over, so the degradation
+        // below has a closed invite to degrade.
+        const create = await request(app.getHttpServer())
+          .post(`/groups/${groupId}/invites`)
+          .set('Authorization', `Bearer ${token}`)
+          .send({ targetGroupMemberId: guestMemberId })
+          .expect(201);
+        degradedToken = createdInviteResponseSchema.parse(create.body).token;
+
+        const res = await request(app.getHttpServer())
+          .post(`/invites/${degradedToken}/claim/${guestMemberId}`)
+          .set('Authorization', `Bearer ${claimerToken}`)
+          .expect(201);
+
+        const result = claimResultResponseSchema.parse(res.body);
+        if (result.outcome !== 'CLAIMED') {
+          throw new Error('An unclaimed guest must answer CLAIMED');
+        }
+
+        // The stub keeps its id and history; the account is now behind it, so
+        // the frozen name gives way to the user's own.
+        expect(result.membership).toMatchObject({
+          id: guestMemberId,
+          groupId,
+          userId: claimerUserId,
+          displayName: null,
+          rating: 1000,
+          role: 'MEMBER',
+        });
+        expect(result.membership.user).toMatchObject({
+          firstName: 'Zeca',
+          lastName: 'Conta',
+          nickname: null,
+        });
+      });
+
+      it('GET /invites/:token degrades a closed invite whose target was taken over', async () => {
+        const res = await request(app.getHttpServer())
+          .get(`/invites/${degradedToken}`)
+          .expect(200);
+
+        const invite = publicInviteResponseSchema.parse(res.body);
+        if (invite.kind !== 'OPEN') {
+          throw new Error('A taken-over target must degrade to OPEN');
+        }
+
+        // Still a way in: the roster, with the reason the recognition is gone.
+        expect(invite.targetUnavailable).toBe(true);
+        expect(invite.guests.map((guest) => guest.groupMemberId)).not.toContain(
+          guestMemberId,
+        );
+      });
+
+      it('POST /groups/:groupId/invites/:token/accept answers the new membership', async () => {
+        const res = await request(app.getHttpServer())
+          .post(`/groups/${groupId}/invites/${closedToken}/accept`)
+          .send({ userId: joinerUserId })
+          .expect(201);
+
+        expect(claimMembershipSchema.parse(res.body)).toMatchObject({
+          groupId,
+          userId: joinerUserId,
+          displayName: null,
+          role: 'MEMBER',
+        });
+      });
+
+      it('POST /groups/:groupId/invites/:token/accept rejects a body with no user', async () => {
+        await request(app.getHttpServer())
+          .post(`/groups/${groupId}/invites/${openToken}/accept`)
+          .send({})
+          .expect(400);
+      });
+
+      it('POST /invites/:token/accept joins the caller from the token', async () => {
+        const res = await request(app.getHttpServer())
+          .post(`/invites/${openToken}/accept`)
+          .set('Authorization', `Bearer ${claimerToken}`)
+          .expect(201);
+
+        // Already a member through the claim: the same membership, not a second one.
+        expect(claimMembershipSchema.parse(res.body).id).toBe(guestMemberId);
       });
     });
 
