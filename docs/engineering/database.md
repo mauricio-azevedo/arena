@@ -162,6 +162,23 @@ When working with Neon:
 - confirm migrations against a non-production branch first when possible;
 - document manual production database operations in PRs or runbooks.
 
+Neon Free also meters compute, and that shapes what the API may do on a timer:
+
+- the compute suspends after 5 min without queries (fixed on Free) and resumes on
+  the next connection;
+- the allowance is 100 CU-hrs per project per month; a suspended compute bills
+  nothing, an idle-but-awake one bills its full size;
+- queries and idle-in-transaction count as activity — an open but quiet connection
+  does not;
+- connections are dropped at suspend, and any new connection resumes the compute.
+
+**Nothing in the API may touch the database on a timer.** A 1 s worker poll kept the
+compute awake around the clock (~6 CU-hrs/day), exhausted the month's allowance in 17
+days, and took production down on 2026-10-17 until the period reset — every deploy
+failing at `prisma migrate deploy` with P1001 (#302, ADR 0009). Background work waits
+for an in-process signal; a timer, when unavoidable, must be longer than the suspend
+window and budgeted against the allowance.
+
 ## Resetting a development database
 
 For local/dev only, a reset usually means:

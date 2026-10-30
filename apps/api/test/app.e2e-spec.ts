@@ -17,32 +17,92 @@ import {
 } from '@arena/contracts/profiles';
 import { rankingEntrySchema } from '@arena/contracts/ranking';
 import { AppModule } from '../src/app.module';
+import { PrismaService } from '../src/prisma/prisma.service';
+import { ProcessingJobRunnerService } from '../src/processing/processing-job-runner.service';
+import { ProcessingJobWriterService } from '../src/processing/processing-job-writer.service';
+
+async function waitFor(
+  condition: () => Promise<boolean>,
+  description: string,
+  timeoutMs: number,
+) {
+  const deadline = Date.now() + timeoutMs;
+
+  while (Date.now() < deadline) {
+    if (await condition()) {
+      return;
+    }
+
+    await new Promise((resolve) => setTimeout(resolve, 100));
+  }
+
+  throw new Error(`Timed out waiting for ${description}`);
+}
 
 // Ratings, ranks and partner stats are projected by the job a match write
-// enqueues, picked up by the worker's 1 s poll. Reads of them wait for the
-// match instead of racing the queue. A second write on the match waits too:
-// the first job marks the match processed unconditionally, so left in flight
-// it could publish the old result over the new write.
+// enqueues, which the worker picks up as soon as the write commits. Reads of
+// them wait for the match instead of racing the queue, on a budget tight
+// enough to fail if that hand-off ever goes back to waiting for a clock. A
+// second write on the match waits too: the first job marks the match processed
+// unconditionally, so left in flight it could publish the old result over the
+// new write.
 async function waitUntilProcessed(
   app: INestApplication<App>,
   groupId: string,
   matchId: string,
 ) {
-  const deadline = Date.now() + 15_000;
+  await waitFor(
+    async () => {
+      const res = await request(app.getHttpServer())
+        .get(`/groups/${groupId}/matches/${matchId}`)
+        .expect(200);
 
-  while (Date.now() < deadline) {
-    const res = await request(app.getHttpServer())
-      .get(`/groups/${groupId}/matches/${matchId}`)
-      .expect(200);
+      return (
+        matchResponseSchema.parse(res.body).processingStatus === 'PROCESSED'
+      );
+    },
+    `match ${matchId} to be processed`,
+    2_000,
+  );
+}
 
-    if (matchResponseSchema.parse(res.body).processingStatus === 'PROCESSED') {
-      return;
-    }
+function waitUntilQueueQuiet(prisma: PrismaService) {
+  return waitFor(
+    async () =>
+      (await prisma.processingJob.count({
+        where: { status: { in: ['PENDING', 'PROCESSING'] } },
+      })) === 0,
+    'the queue to go quiet',
+    10_000,
+  );
+}
 
-    await new Promise((resolve) => setTimeout(resolve, 200));
-  }
+function waitUntilJobStatus(
+  prisma: PrismaService,
+  jobId: string,
+  status: 'DONE' | 'FAILED',
+) {
+  return waitFor(
+    async () =>
+      (await prisma.processingJob.findUniqueOrThrow({ where: { id: jobId } }))
+        .status === status,
+    `job ${jobId} to be ${status}`,
+    5_000,
+  );
+}
 
-  throw new Error(`Match ${matchId} was not processed within 15 s`);
+function waitUntilJobAttempt(
+  prisma: PrismaService,
+  jobId: string,
+  attemptCount: number,
+) {
+  return waitFor(
+    async () =>
+      (await prisma.processingJob.findUniqueOrThrow({ where: { id: jobId } }))
+        .attemptCount >= attemptCount,
+    `job ${jobId} to reach attempt ${attemptCount}`,
+    8_000,
+  );
 }
 
 // The full module graph boots against a real database. Unit specs mock Prisma;
@@ -427,6 +487,120 @@ describe('App (e2e)', () => {
       expect(matchDeletedResponseSchema.parse(res.body)).toEqual({
         success: true,
       });
+    });
+  });
+
+  // The worker runs on wakes, not on a clock: a write hands off once it
+  // commits, and anything else that becomes due — a retry, a lock left by a
+  // process that died — is picked up by the one timer it arms when the queue
+  // goes quiet.
+  describe('processing queue', () => {
+    let prisma: PrismaService;
+    let runner: ProcessingJobRunnerService;
+    let writer: ProcessingJobWriterService;
+    let groupId: string;
+
+    beforeAll(async () => {
+      prisma = app.get(PrismaService);
+      runner = app.get(ProcessingJobRunnerService);
+      writer = app.get(ProcessingJobWriterService);
+
+      const register = await request(app.getHttpServer())
+        .post('/auth/register')
+        .send({
+          firstName: 'Queue',
+          lastName: 'Runner',
+          email: `e2e-queue-${Date.now()}@arena.test`,
+          password: 'secret1',
+        })
+        .expect(201);
+      const token = (register.body as { accessToken: string }).accessToken;
+
+      const group = await request(app.getHttpServer())
+        .post('/groups')
+        .set('Authorization', `Bearer ${token}`)
+        .send({ name: 'E2E queue group' })
+        .expect(201);
+      groupId = (group.body as { id: string }).id;
+
+      await waitUntilQueueQuiet(prisma);
+    });
+
+    it('has nothing to wait for while the queue is empty', async () => {
+      await expect(runner.getNextDueDelayMs()).resolves.toBeNull();
+    });
+
+    it('waits for the earlier of a due retry and an expiring lock', async () => {
+      const fixtureIds: string[] = [];
+
+      try {
+        const retry = await prisma.processingJob.create({
+          data: {
+            type: 'GROUP_RANKING_REBUILD',
+            groupId,
+            availableAt: new Date(Date.now() + 30_000),
+          },
+        });
+        fixtureIds.push(retry.id);
+
+        const retryDelayMs = await runner.getNextDueDelayMs();
+        expect(retryDelayMs).toBeGreaterThan(28_000);
+        expect(retryDelayMs).toBeLessThan(31_000);
+
+        // Locked 50 s ago, so the 60 s lock expires in ~10 s — sooner than the
+        // retry, and the worker has to come back for it.
+        const orphan = await prisma.processingJob.create({
+          data: {
+            type: 'GROUP_RANKING_REBUILD',
+            groupId,
+            status: 'PROCESSING',
+            lockedAt: new Date(Date.now() - 50_000),
+            lockedBy: 'dead-worker',
+            attemptCount: 1,
+          },
+        });
+        fixtureIds.push(orphan.id);
+
+        const lockDelayMs = await runner.getNextDueDelayMs();
+        expect(lockDelayMs).toBeGreaterThan(8_000);
+        expect(lockDelayMs).toBeLessThan(11_000);
+      } finally {
+        await prisma.processingJob.deleteMany({
+          where: { id: { in: fixtureIds } },
+        });
+      }
+    });
+
+    it('frees a lock left behind by a dead worker', async () => {
+      const job = await prisma.processingJob.create({
+        data: {
+          type: 'GROUP_RANKING_REBUILD',
+          groupId,
+          status: 'PROCESSING',
+          lockedAt: new Date(Date.now() - 61_000),
+          lockedBy: 'dead-worker',
+          attemptCount: 1,
+        },
+      });
+
+      writer.wake();
+
+      await waitUntilJobStatus(prisma, job.id, 'DONE');
+    });
+
+    it('comes back for a retry with no write in between', async () => {
+      // A match job without a match fails on its first attempt, so the retry
+      // falls due two seconds later with nothing else touching the queue.
+      const job = await writer.enqueueGroupJob({
+        type: 'MATCH_CREATED',
+        groupId,
+      });
+
+      try {
+        await waitUntilJobAttempt(prisma, job.id, 2);
+      } finally {
+        await prisma.processingJob.delete({ where: { id: job.id } });
+      }
     });
   });
 });

@@ -46,7 +46,7 @@ export class MatchesService {
     userId: string,
     body: MatchBody,
   ): Promise<MatchResponse> {
-    return this.prisma.$transaction(async (tx) => {
+    const created = await this.prisma.$transaction(async (tx) => {
       await this.ensureGroupExists(tx, groupId);
       await this.ensureActiveGroupMember(tx, groupId, userId);
 
@@ -123,6 +123,12 @@ export class MatchesService {
         ...this.matchInclude(),
       });
     });
+
+    // The job was written inside the transaction, where the worker's claim
+    // cannot see it yet; hand off now that it has committed.
+    this.processingJobs.wake();
+
+    return created;
   }
 
   async update(
@@ -131,7 +137,7 @@ export class MatchesService {
     userId: string,
     body: MatchBody,
   ): Promise<MatchResponse> {
-    return this.prisma.$transaction(async (tx) => {
+    const updated = await this.prisma.$transaction(async (tx) => {
       await this.ensureGroupExists(tx, groupId);
       await this.ensureActiveGroupMember(tx, groupId, userId);
 
@@ -219,6 +225,10 @@ export class MatchesService {
         ...this.matchInclude(),
       });
     });
+
+    this.processingJobs.wake();
+
+    return updated;
   }
 
   async remove(
@@ -226,7 +236,7 @@ export class MatchesService {
     id: string,
     userId: string,
   ): Promise<MatchDeletedResponse> {
-    return this.prisma.$transaction(async (tx) => {
+    const removed = await this.prisma.$transaction(async (tx) => {
       await this.ensureGroupExists(tx, groupId);
       await this.ensureActiveGroupMember(tx, groupId, userId);
 
@@ -259,6 +269,10 @@ export class MatchesService {
 
       return { success: true };
     });
+
+    this.processingJobs.wake();
+
+    return removed;
   }
 
   async findAll(groupId: string): Promise<MatchResponse[]> {

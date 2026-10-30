@@ -10,6 +10,10 @@ async function bootstrap() {
     origin: corsOrigin.split(','),
   });
 
+  // SIGTERM must reach onModuleDestroy: the processing worker stops claiming
+  // and finishes the job in flight instead of leaving a locked row behind.
+  app.enableShutdownHooks();
+
   await app.listen(process.env.PORT ?? 3000);
 }
 

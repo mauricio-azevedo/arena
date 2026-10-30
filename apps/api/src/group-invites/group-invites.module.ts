@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { AuthModule } from '../auth/auth.module';
 import { PrismaModule } from '../prisma/prisma.module';
+import { ProcessingModule } from '../processing/processing.module';
 import { GroupInvitesController } from './group-invites.controller';
 import { GroupInvitesService } from './group-invites.service';
 import { PublicInvitesController } from './public-invites.controller';
@@ -17,6 +18,7 @@ import { NotificationsModule } from '../notifications/notifications.module';
     GroupsModule,
     ClaimsModule,
     NotificationsModule,
+    ProcessingModule,
   ],
   controllers: [GroupInvitesController, PublicInvitesController],
   providers: [GroupInvitesService],

@@ -263,6 +263,10 @@ export class MembersService {
       );
     });
 
+    // The job was written inside the transaction, where the worker's claim
+    // cannot see it yet; hand off now that it has committed.
+    this.processingJobs.wake();
+
     return this.findOne(member.id);
   }
 
