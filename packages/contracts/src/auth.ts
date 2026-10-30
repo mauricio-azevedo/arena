@@ -1,25 +1,21 @@
 import { z } from 'zod';
+import {
+  EMAIL_REGEX,
+  MAX_EMAIL_LENGTH,
+  MAX_NAME_LENGTH,
+  MAX_NICKNAME_LENGTH,
+  MIN_PASSWORD_LENGTH,
+} from './account-field-rules';
 import { AVATAR_COLOR_KEYS } from './avatar-color';
 import { isoDateTime } from './iso-datetime';
 
 // ---------------------------------------------------------------------------
 // The account's own fields. `@arena/contracts/me` edits what register creates,
 // so both import these and sign-up and profile edit cannot drift on what a
-// name, a nickname or an e-mail is. Caps are shape (the column's width, which
-// the forms already guard), never policy: a rule the UI must react to answers
-// with a code from the service instead.
+// name, a nickname or an e-mail is. The numbers and the e-mail pattern live in
+// the zod-free `./account-field-rules`, which the web's forms import too — so
+// what a field may be is stated once for both apps.
 // ---------------------------------------------------------------------------
-
-const MAX_NAME_LENGTH = 80;
-const MAX_NICKNAME_LENGTH = 24;
-const MAX_EMAIL_LENGTH = 254;
-export const MIN_PASSWORD_LENGTH = 6;
-
-// Deliberately looser than `z.email()`: the web mirrors these exact characters
-// in its forms (`auth-validation.ts`, `edit-profile-view.tsx`) and cannot import
-// the schema — zod stays out of the web bundle (code-organization §3.3). A
-// stricter check here would reject what the form just accepted.
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 // "  Ana   Maria " → "Ana Maria": one display name, however it was typed.
 const collapseSpaces = (value: string) => value.trim().replace(/\s+/g, ' ');

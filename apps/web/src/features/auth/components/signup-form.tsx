@@ -1,15 +1,11 @@
 'use client';
 
 import { FormEvent, useState } from 'react';
+import { EMAIL_REGEX, MAX_NICKNAME_LENGTH, MIN_PASSWORD_LENGTH } from '@arena/contracts';
 import { Button } from '@/components/ui/button';
 import { SheetField, SheetPasswordField } from '@/components/ui/sheet-field';
 import { Meta } from '@/components/ui/text';
 import { register } from '@/features/auth/auth.api';
-import {
-  AUTH_EMAIL_REGEX,
-  MAX_NICKNAME_LENGTH,
-  MIN_PASSWORD_LENGTH,
-} from '@/features/auth/auth-validation';
 import { apiErrorMessage } from '@/lib/api-error';
 import { setAccessToken } from '@/lib/auth';
 
@@ -38,7 +34,7 @@ export function SignupForm({
   const canSubmit =
     firstName.trim().length > 0 &&
     lastName.trim().length > 0 &&
-    AUTH_EMAIL_REGEX.test(email.trim()) &&
+    EMAIL_REGEX.test(email.trim()) &&
     password.length >= MIN_PASSWORD_LENGTH &&
     nickname.trim().length <= MAX_NICKNAME_LENGTH;
 

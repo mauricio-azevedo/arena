@@ -215,6 +215,9 @@ Built to `dist/` (the API's `tsc` cannot run a sibling package's `.ts`).
 ```txt
 packages/contracts/
   src/
+    account-field-rules.ts  what a name, nickname, e-mail and password may be, as plain values;
+                          `auth.ts` builds its schemas from them and the web's forms check the
+                          same numbers. Leaf, zod-free, on the package root
     api-errors.ts         API_ERROR_CODES, ApiErrorCode
     auth.ts               the account's own field schemas (name, nickname, email, avatar colour),
                           registerBodySchema + loginBodySchema, accountSchema +

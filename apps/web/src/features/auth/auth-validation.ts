@@ -1,8 +1,4 @@
-// Shared validation for the login/signup drawer views, mirroring the account
-// fields in `@arena/contracts/auth` — the schemas themselves stay out of the web
-// bundle (zod is not shipped per route). The design's "8" password copy is wrong.
-export const AUTH_EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-export const MIN_PASSWORD_LENGTH = 6;
-export const MAX_NICKNAME_LENGTH = 24;
-
+// Copy shared by the login and signup views. What a field may be is not here:
+// the forms import those rules from `@arena/contracts`, the same values the
+// API's schemas enforce, so a form cannot drift from what the API accepts.
 export const LOGIN_ERROR = 'Não foi possível entrar. Verifique seu e-mail e senha.';
