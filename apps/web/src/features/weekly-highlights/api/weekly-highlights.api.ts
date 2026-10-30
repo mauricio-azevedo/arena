@@ -1,5 +1,5 @@
 import { apiRequest } from '@/lib/api-client';
-import type { WeeklyHighlightCard } from '@/features/weekly-highlights/types/weekly-highlight.type';
+import type { WeeklyHighlightCard } from '@arena/contracts/weekly-highlights';
 
 export function getWeeklyHighlights(token?: string): Promise<WeeklyHighlightCard[]> {
   return apiRequest<WeeklyHighlightCard[]>('/home/weekly-highlights', {

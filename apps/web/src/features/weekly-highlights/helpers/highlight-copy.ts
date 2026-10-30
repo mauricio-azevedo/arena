@@ -1,4 +1,4 @@
-import type { HighlightType } from '@/features/weekly-highlights/types/weekly-highlight.type';
+import type { HighlightType } from '@arena/contracts/weekly-highlights';
 
 // The card's hero line. Minimums in the spec keep every number plural.
 export function highlightSentence(type: HighlightType, value: number): string {

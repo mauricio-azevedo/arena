@@ -1,17 +1,21 @@
 import { Fragment } from 'react';
 import Link from 'next/link';
-import { ArrowUpToLine, Check, UserPlus, X, type LucideIcon } from 'lucide-react';
+import { ArrowUpToLine, Check, UserCheck, UserPlus, X, type LucideIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Dot, Label, Meta } from '@/components/ui/text';
 import { cn } from '@/lib/utils';
 import { formatFeedItemTime } from '@/features/feed/helpers/feed-item-time.helper';
-import type { AppNotification, NotificationType } from '@/types/api';
+import type { AppNotification, NotificationType } from '@arena/contracts/notifications';
 
 type Visual = { Icon: LucideIcon; circle: string };
 
+// Every type the inbox can hold, the retired ones included: their rows outlive
+// the flow that wrote them, and the contract is exhaustive so a new one cannot
+// reach this card without a look of its own.
 const TYPE_VISUAL: Record<NotificationType, Visual> = {
   CLAIM_OFFER: { Icon: UserPlus, circle: 'bg-brand/15 text-brand' },
   CLAIM_OFFER_DECLINED: { Icon: X, circle: 'bg-surface text-muted-foreground' },
+  GUEST_TAKEN_OVER: { Icon: UserCheck, circle: 'bg-success/15 text-success' },
   CLAIM_REQUEST: { Icon: ArrowUpToLine, circle: 'bg-tag-warn/15 text-tag-warn' },
   CLAIM_APPROVED: { Icon: Check, circle: 'bg-success/15 text-success' },
   CLAIM_DECLINED: { Icon: X, circle: 'bg-surface text-muted-foreground' },
