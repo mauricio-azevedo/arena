@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { ProcessingJobWriterService } from './processing-job-writer.service';
 import type {
   ProcessingJob,
   ProcessingJobStatus,
@@ -19,7 +20,10 @@ type GroupRankingProjection = {
 
 @Injectable()
 export class ProcessingJobReaderService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly writer: ProcessingJobWriterService,
+  ) {}
 
   async findGroupJobs(groupId: string) {
     const group = await this.prisma.group.findUnique({
@@ -101,6 +105,12 @@ export class ProcessingJobReaderService {
       WHERE "groupId" = ${groupId}
         AND "status" = 'FAILED'
     `;
+
+    // Requeued outside a transaction, so the rows are already visible to the
+    // worker's claim.
+    if (result.count > 0) {
+      this.writer.wake();
+    }
 
     return { retriedCount: result.count };
   }

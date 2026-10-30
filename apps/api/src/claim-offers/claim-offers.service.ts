@@ -17,6 +17,7 @@ import {
 import { requireGroupAdmin } from '../common/require-group-admin';
 import { PrismaService } from '../prisma/prisma.service';
 import { ClaimService } from '../claims/claim.service';
+import { ProcessingJobWriterService } from '../processing/processing-job-writer.service';
 import { NotificationWriterService } from '../notifications/notification-writer.service';
 import type {
   ClaimEmailState,
@@ -35,6 +36,7 @@ export class ClaimOffersService {
     private readonly prisma: PrismaService,
     private readonly claims: ClaimService,
     private readonly notifications: NotificationWriterService,
+    private readonly processingJobs: ProcessingJobWriterService,
   ) {}
 
   // --- Admin side -----------------------------------------------------------------
@@ -296,7 +298,7 @@ export class ClaimOffersService {
       throw new NotFoundException('Usuário não encontrado');
     }
 
-    return this.prisma.$transaction(async (tx) => {
+    const claimResult = await this.prisma.$transaction(async (tx) => {
       const stub = await tx.groupMember.findFirst({
         where: {
           id: stubId,
@@ -348,6 +350,12 @@ export class ClaimOffersService {
 
       return result;
     });
+
+    // A claim queues a group rebuild inside the transaction, where the
+    // worker's claim cannot see it yet; hand off now that it has committed.
+    this.processingJobs.wake();
+
+    return claimResult;
   }
 
   async decline(stubId: string, viewerUserId: string) {
