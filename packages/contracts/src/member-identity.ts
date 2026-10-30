@@ -5,8 +5,9 @@ import { z } from 'zod';
 
 // Mirrors MEMBER_USER_SELECT in the API: the four User fields behind
 // resolveMemberDisplayName / resolveMemberAvatarColor. No id (the member's
-// `userId` is the link) and no email.
-const memberUserSchema = z.strictObject({
+// `userId` is the link) and no email. Exported on its own for a payload that
+// names a `User` with no membership behind it (an invite's creator).
+export const memberUserSchema = z.strictObject({
   firstName: z.string(),
   lastName: z.string(),
   // Shown instead of first+last when set.
