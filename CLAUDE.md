@@ -49,7 +49,7 @@ pnpm run build && pnpm run lint
 ```
 
 Any app script also runs from the root as `pnpm --filter @arena/<app> <script>`.
-`node` and `pnpm` may not be on PATH in this environment (nvm; `.nvmrc` pins 22);
+`node` and `pnpm` may not be on PATH in this environment (nvm; `.nvmrc` pins 24);
 read JSON/config files directly rather than via `node -e`.
 
 ## Architecture in one screen
