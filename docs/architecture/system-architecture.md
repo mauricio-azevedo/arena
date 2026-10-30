@@ -72,6 +72,8 @@ split by responsibility rather than kept as one god-service. The recurring roles
 Minimal on purpose:
 
 - CORS from `CORS_ORIGIN` (comma-separated, default `http://localhost:3001`).
+- `enableShutdownHooks()`, so `SIGTERM` reaches `onModuleDestroy`: the processing
+  worker stops claiming and finishes the job in flight (ADR 0009).
 - Listens on `PORT` (default `3000`).
 - **No global `ValidationPipe`**, no global prefix. Routes are exactly what the
   `@Controller()` declares (e.g. `/groups`, not `/api/groups`).
@@ -144,10 +146,16 @@ Reads filter to non-deleted matches via raw SQL (`findActiveMatchIds`).
 
 `processing/` implements a custom Postgres-backed queue (no Bull/Redis):
 
-- `ProcessingWorkerService` — `OnModuleInit` sets a `setInterval` tick. Disabled
-  with `PROCESSING_WORKER_DISABLED=true`. Tunables:
-  `PROCESSING_WORKER_POLL_INTERVAL_MS` (default 1000),
-  `PROCESSING_WORKER_BATCH_SIZE` (default 5).
+- `ProcessingWorkerService` — runs on wakes, never on a clock (ADR 0009, #302):
+  an enqueue signals it after its transaction commits, startup recovers what a
+  crash or deploy left, and a single `setTimeout` covers the next row that
+  becomes claimable (a due retry, an expiring lock). A wake drains until a pass
+  claims nothing; an idle queue sends no queries, so the database compute
+  suspends. Disabled with `PROCESSING_WORKER_DISABLED=true`. Tunables:
+  `PROCESSING_WORKER_BATCH_SIZE` (claims per pass, default 5),
+  `PROCESSING_WORKER_SAFETY_POLL_MS` (off by default, floored at an hour; only
+  useful with more than one instance). Details:
+  [`processing-jobs.md`](./processing-jobs.md).
 - `ProcessingJobRunnerService` — claims jobs with `FOR UPDATE SKIP LOCKED`,
   runs them, and handles retries: `attemptCount` vs `maxAttempts` (default 5),
   exponential backoff, stale-lock recovery, `lastError` capture, terminal
@@ -197,6 +205,9 @@ See `docs/decisions/`:
 - `0004-unify-guest-invite-and-claim.md` — guest invite + claim become one primitive (accepted, implemented).
 - `0005-monorepo-layout-and-tooling.md` — `apps/*` + `packages/*` on pnpm workspaces (accepted, #256).
 - `0006-turborepo-task-graph.md` — Turborepo runs the workspace task graph (accepted, #258).
+- `0007-zod-request-contracts.md` — request bodies are zod schemas in `@arena/contracts` (accepted, #267).
+- `0008-zod-codec-response-contracts.md` — responses are zod codec schemas, one declaration for both apps (accepted, #267).
+- `0009-event-driven-processing-worker.md` — the worker wakes on writes instead of polling (accepted, #302).
 
 Deeper subsystem docs: [`processing-jobs.md`](./processing-jobs.md),
 [`feed-architecture.md`](./feed-architecture.md),
@@ -278,8 +289,10 @@ the data layer.
 - **Hosted DB**: Neon (project/branch model — verify branch before destructive
   ops; see [`../engineering/database.md`](../engineering/database.md)).
 - **Key env vars**: `DATABASE_URL`, `JWT_SECRET`, `CORS_ORIGIN`, `PORT`
-  (api); `NEXT_PUBLIC_API_URL` (web); `PROCESSING_WORKER_*` /
-  `PROCESSING_JOB_*` (worker tuning).
+  (api); `NEXT_PUBLIC_API_URL` (web); worker tuning —
+  `PROCESSING_WORKER_DISABLED`, `PROCESSING_WORKER_BATCH_SIZE`,
+  `PROCESSING_WORKER_SAFETY_POLL_MS`, `PROCESSING_JOB_LOCK_TIMEOUT_MS`,
+  `PROCESSING_JOB_TRANSACTION_TIMEOUT_MS`.
 - **Deploy**: `web` → Vercel, only `main` branch (`vercel.json`).
   </content>
   </invoke>

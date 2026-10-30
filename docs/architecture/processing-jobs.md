@@ -44,11 +44,49 @@ Future platform jobs must add stricter constraints together with their first con
 
 ## Worker behavior
 
-The worker claims pending jobs ordered by `availableAt` and `createdAt` using `FOR UPDATE SKIP LOCKED`.
+The worker runs on wakes, not on a clock (ADR 0009, #302). Three things wake it:
+
+- **An enqueue.** Write paths create the job inside their own transaction, where the claim query
+  cannot see it yet, and signal the worker once that transaction commits
+  (`ProcessingJobWriterService.wake()`, an in-process event). Enqueueing outside a transaction
+  wakes the worker by itself.
+- **Startup.** Picks up whatever a crash or a deploy left behind.
+- **Its own timer.** When a drain ends, the worker asks the database for the next moment something
+  becomes claimable — the earliest `availableAt` of a `PENDING` row, or the lock expiry of a
+  `PROCESSING` one — and arms a single `setTimeout` for it, clamped to [250 ms, 60 min]. Nothing
+  queued means no timer: an idle queue sends no queries, which is what lets the Neon compute
+  suspend.
+
+A wake drains: it claims pending jobs ordered by `availableAt` and `createdAt` using
+`FOR UPDATE SKIP LOCKED`, in batches of `PROCESSING_WORKER_BATCH_SIZE`, until a pass claims
+nothing — so a job enqueued mid-drain, by a request or by another job, is picked up without
+waiting for a timer. One drain runs at a time; wakes that arrive during one earn exactly one more
+pass. Every batch starts by releasing `PROCESSING` rows older than
+`PROCESSING_JOB_LOCK_TIMEOUT_MS`, wherever they were locked.
+
+Wakes and timers are hints. The table stays the source of truth and the claim query decides, so a
+missed hint delays a job and never loses one.
 
 The runner dispatches claimed jobs by `scope`:
 
 - `GROUP` jobs run the current group projection pipeline.
 - `PLATFORM` jobs fail explicitly until a concrete platform job type and handler are added.
 
-Group jobs continue to update group ranking projection state, feed projections, member stats, and group home summaries.
+Group jobs continue to update group ranking projection state, feed projections, member stats, and
+group home summaries.
+
+Failures retry with `min(60, 2 ** attemptCount)` s of backoff until `maxAttempts`; the retry's
+`availableAt` is what the idle timer waits for.
+
+### Shutdown
+
+`main.ts` calls `app.enableShutdownHooks()`, so `SIGTERM` reaches the worker: it unsubscribes,
+clears its timer, stops claiming and awaits the job in flight. A job that outlives the platform's
+kill grace dies with the process and leaves a locked row, released by the next drain's sweep.
+
+### Multiple instances
+
+The wake is in-process. `SKIP LOCKED` already keeps concurrent claims safe, but a write on one
+instance is invisible to the others until their next local drain. Setting
+`PROCESSING_WORKER_SAFETY_POLL_MS` (off by default, floored at an hour, since every poll
+reactivates the database compute for its full idle window) bounds that lag.

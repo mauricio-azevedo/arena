@@ -102,6 +102,12 @@ create(@Param('groupId') groupId: string, @CurrentUser() user: AuthUser,
 ## 7. Async processing
 
 - Match writes enqueue a `ProcessingJob`; the worker runs the projection cascade.
+- **Enqueue inside the transaction, `wake()` after it commits.** The job row belongs
+  to the same transaction as the write that caused it; the worker's claim cannot see
+  it until that commits, so whoever owns the transaction calls
+  `processingJobs.wake()` right after. Enqueueing outside a transaction wakes the
+  worker by itself. Never `await` or branch on a wake: it is a hint, and the claim
+  query decides (ADR 0009).
   Add new derived state by writing a `*-projection.service.ts` and calling it from
   `processing-job-runner.service.ts`. See
   [`../architecture/processing-jobs.md`](../architecture/processing-jobs.md) and
