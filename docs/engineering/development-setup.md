@@ -203,8 +203,8 @@ Check:
 ### Backend cannot reach database
 
 Ask the API first: `curl -i localhost:3000/health/ready`. A 503 names the failing
-dependency and its error code — `P2010`/`P1001` unreachable, `TIMEOUT` slow. Codes
-and what to do with them: [`observability.md`](./observability.md).
+dependency and its error code — `P1001` unreachable, `TIMEOUT` slow. Codes and
+what to do with them: [`observability.md`](./observability.md).
 
 Then check:
 
