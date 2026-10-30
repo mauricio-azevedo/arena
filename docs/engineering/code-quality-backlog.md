@@ -34,7 +34,9 @@ built in) and `components/ui/drawer.tsx` (`DrawerActionHeader` — one header ac
 - **Register accepts a password the hash truncates.** `PATCH /me/password` rejects anything
   over 72 bytes (bcrypt hashes the first 72 and ignores the rest, `PASSWORD_TOO_LONG`), while
   `POST /auth/register` has no cap and no client-side one either, so a longer password silently
-  becomes its first 72 bytes. One cap, in `@arena/contracts/auth`, next time either is touched.
+  becomes its first 72 bytes. The cap is now one value — `MAX_PASSWORD_BYTES` in
+  `account-field-rules.ts` — so the remaining work is the product half: register's failure is
+  uncoded, so the signup form has to guard the bytes itself and needs copy for it.
 
 - **Duplicated submit/loading/error machine (~6 forms).** The same `useState` error + `isSubmitting`
   - try/catch/finally lives in login, register, create-group, edit-profile, password,
