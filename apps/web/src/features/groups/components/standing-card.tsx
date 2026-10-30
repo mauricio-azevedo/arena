@@ -1,4 +1,5 @@
 import { ArrowDown, ArrowUp } from 'lucide-react';
+import type { RankingMovement } from '@arena/contracts/ranking';
 
 import { RatingRing } from '@/components/ui/rating-ring';
 import { Display, Meta, Overline, Stat } from '@/components/ui/text';
@@ -15,7 +16,7 @@ export type StandingCardProps = {
   /** The viewer's most recent rating change (net of its day); null hides the column. */
   lastChange: { delta: number; occurredAt: string } | null;
   /** Latest ranking movement (from the most recent match). */
-  movement?: { direction: 'UP' | 'DOWN'; positions: number; occurredAt: string } | null;
+  movement?: Pick<RankingMovement, 'direction' | 'positions' | 'occurredAt'> | null;
 };
 
 export function StandingCard({
@@ -80,11 +81,7 @@ export function StandingCard({
   );
 }
 
-function RankMovement({
-  movement,
-}: {
-  movement: { direction: 'UP' | 'DOWN'; positions: number; occurredAt: string };
-}) {
+function RankMovement({ movement }: { movement: NonNullable<StandingCardProps['movement']> }) {
   const isUp = movement.direction === 'UP';
   const Icon = isUp ? ArrowUp : ArrowDown;
 

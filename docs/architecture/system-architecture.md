@@ -95,7 +95,10 @@ Responses are zod schemas in the same module file (ADR 0008): dates are `isoDate
 `XResponse` type and shape the Prisma query to it (`MatchesService.matchInclude`: `omit` the
 processing internals, identity-only `select` on the player's member). Nothing parses responses in
 production; `apps/api/test/app.e2e-spec.ts` parses one body per route with the strict schema, so
-an unpromised field fails CI.
+an unpromised field fails CI (feed, processing and `/health` excepted —
+`backend-conventions.md` §10 says why). A second test, in the package itself, renders every
+exported schema with `z.toJSONSchema(…, { io: 'input' })`: nothing in either app calls the
+emitter, so without it the spec-emission path ADR 0008 keeps open could close unnoticed.
 
 ### 2.5 Persistence (Prisma)
 

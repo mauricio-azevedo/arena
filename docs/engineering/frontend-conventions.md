@@ -122,8 +122,10 @@ export function getProfileMatches(token: string): Promise<ProfileMatchListItem[]
   Constants both apps share (`ApiErrorCode`, `AvatarColorKey`) come from `@arena/contracts`;
   the gradient table in `lib/avatar-color.ts` is keyed by it, so a new key fails `tsc` until
   it has a gradient.
-- Features prefer lightweight view-model types over reusing full API types when
-  they only need a subset.
+- A component that needs part of a response takes that part **derived**, never restated:
+  `Pick<GroupMember, 'id' | 'displayName'>`, `Extract<ClaimResult, { outcome: 'BLOCKED' }>`,
+  `NonNullable<XProps['field']>`. Spelling the fields out again is a mirror that `tsc` cannot
+  catch drifting — and a two-value union (`'MEMBER' | 'ADMIN'`) is one too.
 - Enums are union types in `enums/*.enum.ts`, not the `enum` keyword; a set the API owns comes
   from `@arena/contracts/<module>` (`ProfileMatchResult`, `FeedItemType`), `import type` only.
 

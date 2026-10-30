@@ -35,3 +35,9 @@ is runtime check and type in one declaration. OpenAPI: second hand-synced mirror
 ## More Information
 
 Implemented module by module from #267, matches first. Responses: ADR 0008.
+
+Complete 2026-10-30 (#300): every route that takes a body parses it at the route, and no
+`@Body()` is left without the pipe. The service-level shape checks the conversion replaced are
+gone — the seventeen `BadRequestException`s left in `src/` are all rules (invite revoked, expired
+or used up; a stub already claimed; a player appearing twice; an e-mail clash), which is the
+division §3 of `backend-conventions.md` asks for.
