@@ -5,3 +5,7 @@ dist
 .idea
 .junie
 .turbo
+
+# Agent worktrees live inside the repo; prettier would walk them and report
+# paths that .prettierignore only matches repo-relative.
+.claude/worktrees/
