@@ -193,13 +193,8 @@ export class GroupInvitesService {
       where: { token },
       include: {
         group: true,
-        createdBy: {
-          select: {
-            id: true,
-            ...MEMBER_USER_SELECT,
-            email: true,
-          },
-        },
+        // The invite landing is public: the inviter is named, never exposed.
+        createdBy: { select: MEMBER_USER_SELECT },
       },
     });
 

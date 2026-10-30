@@ -228,14 +228,20 @@ export class ClaimService {
     };
   }
 
+  // The membership an accept or a claim lands on. Identity, role and rating: the
+  // caller already has the group, the claim-email columns are server-side, and
+  // the rating internals belong to the ranking payloads.
   findMembershipResponse(tx: Prisma.TransactionClient, id: string) {
-    return tx.groupMember.findUnique({
+    return tx.groupMember.findUniqueOrThrow({
       where: { id },
-      include: {
-        group: true,
-        user: {
-          select: { id: true, firstName: true, lastName: true, email: true },
-        },
+      select: {
+        id: true,
+        groupId: true,
+        userId: true,
+        displayName: true,
+        rating: true,
+        role: true,
+        user: { select: MEMBER_USER_SELECT },
       },
     });
   }
