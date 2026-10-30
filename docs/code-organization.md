@@ -216,6 +216,9 @@ Built to `dist/` (the API's `tsc` cannot run a sibling package's `.ts`).
 packages/contracts/
   src/
     api-errors.ts         API_ERROR_CODES, ApiErrorCode
+    auth.ts               the account's own field schemas (name, nickname, email, avatar colour),
+                          registerBodySchema + loginBodySchema, accountSchema +
+                          authSessionResponseSchema; @arena/contracts/auth
     avatar-color.ts       AVATAR_COLOR_KEYS, AvatarColorKey, isAvatarColorKey
     feed-item-type.ts     feedItemTypeSchema, FeedItemType; leaf
     group-member-role.ts  groupMemberRoleSchema, GroupMemberRole; leaf
@@ -225,6 +228,9 @@ packages/contracts/
     index.ts              root export: api-errors + avatar-color
     iso-datetime.ts       isoDateTime codec (wire ISO string <-> API Date); leaf
     matches.ts            matchBodySchema + matchResponseSchema and their types; @arena/contracts/matches
+    me.ts                 updateProfileBodySchema + updatePasswordBodySchema,
+                          passwordUpdatedResponseSchema; @arena/contracts/me, and the auth session
+                          the profile edit answers
     member-identity.ts    memberIdentitySchema (how a member is named and colored),
                           guestNameSchema; leaf
     members.ts            memberBodySchema + guestMemberBodySchema, groupMemberResponseSchema +
@@ -246,10 +252,11 @@ the root is bundled into the web for its constants, and the CJS zod behind a sch
 tree-shaken (64 locales, +95 kB gzipped per route when it was tried in #267). Module files import
 leaves (`iso-datetime.ts`, `group-member-role.ts`, `member-identity.ts`,
 `ranking-movement-direction.ts`, `feed-item-type.ts`) and each other one way, `groups` →
-`ranking` → `members` → `profiles` → `matches` (the group home standing reuses
+`ranking` → `members` → `profiles` → `matches` and `me` → `auth` (the group home standing reuses
 `rankingMovementSchema`, `rankingEntrySchema` extends `groupMemberResponseSchema`, which reuses
-the profile stats and match-list shapes, which reuse `matchTeamSchema`); a schema two modules
-need goes in a leaf, never a cross-import that could cycle.
+the profile stats and match-list shapes, which reuse `matchTeamSchema`; `me` edits the account
+`auth` creates, so the field schemas and the session response live with `auth`); a schema two
+modules need goes in a leaf, never a cross-import that could cycle.
 
 ### 3.4 `docs/`
 

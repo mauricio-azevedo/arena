@@ -27,13 +27,14 @@ companion to the _prescriptive_ [`../code-organization.md`](../code-organization
 
 Controllers only: declare routes, apply guards, read `@Param`/`@Body`/
 `@CurrentUser`, call a service, return its result. No Prisma, no business logic,
-no response shaping. Request bodies are typed inline in the handler signature.
+no response shaping. A request body is parsed at the route by its schema;
+unconverted modules still type it inline (`code-quality-backlog.md`).
 
 ```ts
 @Post()
 @UseGuards(JwtAuthGuard)
 create(@Param('groupId') groupId: string, @CurrentUser() user: AuthUser,
-       @Body() body: { gamesA: number; gamesB: number; /* … */ }) {
+       @Body(new ZodValidationPipe(matchBodySchema)) body: MatchBody) {
   return this.matchesService.create(groupId, user.sub, body);
 }
 ```
@@ -47,6 +48,13 @@ create(@Param('groupId') groupId: string, @CurrentUser() user: AuthUser,
   service takes the inferred type. A shape failure answers 400 with one `message` entry per
   issue. No `class-validator`, no global pipe. Modules not yet converted keep inline body
   types and shape checks in the service (`code-quality-backlog.md`).
+- **A schema checks shape; a coded rule stays in the service.** Shape includes
+  normalization (trim, lowercase, collapsed spaces) and the caps a column or form already
+  implies, so the service never re-checks a type. A limit the UI must answer with its own
+  copy does not go in the schema: a schema failure carries no `code`. That is why the new
+  password's length and byte limits live in `me-password.service.ts`
+  (`PASSWORD_TOO_SHORT` / `PASSWORD_TOO_LONG`) while register's minimum, which no screen
+  branches on, is in `registerBodySchema`.
 - **Business rules are imperative** in services. Throw Nest HTTP exceptions:
   `BadRequestException`, `NotFoundException`, `ForbiddenException`, `ConflictException`,
   `UnauthorizedException`.
