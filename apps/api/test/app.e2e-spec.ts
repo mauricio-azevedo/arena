@@ -32,10 +32,16 @@ import {
   memberProfileResponseSchema,
 } from '@arena/contracts/members';
 import {
+  notificationSchema,
+  notificationsReadResponseSchema,
+  unreadNotificationCountResponseSchema,
+} from '@arena/contracts/notifications';
+import {
   profileMatchListItemSchema,
   profileSummaryResponseSchema,
 } from '@arena/contracts/profiles';
 import { rankingEntrySchema } from '@arena/contracts/ranking';
+import { weeklyHighlightCardSchema } from '@arena/contracts/weekly-highlights';
 import { AppModule } from '../src/app.module';
 import { PrismaService } from '../src/prisma/prisma.service';
 import { ProcessingJobRunnerService } from '../src/processing/processing-job-runner.service';
@@ -1079,6 +1085,174 @@ describe('App (e2e)', () => {
         .expect(400);
 
       expect(res.body).toMatchObject({ code: 'PASSWORD_TOO_SHORT' });
+    });
+  });
+
+  // The inbox and the home rail: both read models whose only writers are other
+  // flows, so each is seeded through the flow that produces it — an anchored
+  // claim e-mail for the notification, a projected row for the highlight.
+  describe('notifications and highlights', () => {
+    let adminToken: string;
+    let adminUserId: string;
+    let adminMemberId: string;
+    let groupId: string;
+    let recipientToken: string;
+
+    beforeAll(async () => {
+      const stamp = Date.now();
+      const admin = await request(app.getHttpServer())
+        .post('/auth/register')
+        .send({
+          firstName: 'Inbox',
+          lastName: 'Admin',
+          email: `e2e-inbox-admin-${stamp}@arena.test`,
+          password: 'secret1',
+        })
+        .expect(201);
+      const adminSession = authSessionResponseSchema.parse(admin.body);
+      adminToken = adminSession.accessToken;
+      adminUserId = adminSession.user.id;
+
+      const recipientEmail = `e2e-inbox-${stamp}@arena.test`;
+      const recipient = await request(app.getHttpServer())
+        .post('/auth/register')
+        .send({
+          firstName: 'Zeca',
+          lastName: 'Conta',
+          email: recipientEmail,
+          password: 'secret1',
+        })
+        .expect(201);
+      recipientToken = authSessionResponseSchema.parse(
+        recipient.body,
+      ).accessToken;
+
+      const group = await request(app.getHttpServer())
+        .post('/groups')
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({ name: 'E2E inbox group' })
+        .expect(201);
+      groupId = groupSchema.parse(group.body).id;
+
+      const members = await request(app.getHttpServer())
+        .get(`/groups/${groupId}/members`)
+        .expect(200);
+      const admina = groupMemberResponseSchema
+        .array()
+        .parse(members.body)
+        .find((member) => member.userId === adminUserId);
+      if (!admina) {
+        throw new Error('The group creator is not listed as a member');
+      }
+      adminMemberId = admina.id;
+
+      const guest = await request(app.getHttpServer())
+        .post(`/groups/${groupId}/members/guest`)
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({ name: 'Zeca' })
+        .expect(201);
+      const guestMemberId = groupMemberResponseSchema.parse(guest.body).id;
+
+      // Anchoring the recipient's address on the stub is what writes them a
+      // CLAIM_OFFER — the only route that mints a notification on demand.
+      await request(app.getHttpServer())
+        .post(`/groups/${groupId}/members/${guestMemberId}/claim-email`)
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({ email: recipientEmail })
+        .expect(201);
+
+      // The rail reads GroupHighlight, which only the weekly-highlights
+      // projection writes; one row stands in for a processed week.
+      await app.get(PrismaService).groupHighlight.create({
+        data: {
+          groupId,
+          groupMemberId: adminMemberId,
+          userId: adminUserId,
+          type: 'WIN_STREAK_CURRENT',
+          value: 3,
+          score: 100,
+          anchorAt: new Date(),
+        },
+      });
+    }, 30_000);
+
+    it('GET /me/notifications answers a list of the notification contract', async () => {
+      const res = await request(app.getHttpServer())
+        .get('/me/notifications')
+        .set('Authorization', `Bearer ${recipientToken}`)
+        .expect(200);
+
+      const notifications = notificationSchema.array().parse(res.body);
+      expect(notifications).toHaveLength(1);
+      expect(notifications[0]).toMatchObject({
+        type: 'CLAIM_OFFER',
+        groupId,
+        read: false,
+        acted: false,
+      });
+      // The render payload is frozen at write time, deep link included.
+      expect(notifications[0].data.actions).toHaveLength(1);
+    });
+
+    it('GET /me/notifications/unread-count answers the badge contract', async () => {
+      const res = await request(app.getHttpServer())
+        .get('/me/notifications/unread-count')
+        .set('Authorization', `Bearer ${recipientToken}`)
+        .expect(200);
+
+      expect(unreadNotificationCountResponseSchema.parse(res.body)).toEqual({
+        count: 1,
+      });
+    });
+
+    it('POST /me/notifications/read answers how many it marked and empties the badge', async () => {
+      const read = await request(app.getHttpServer())
+        .post('/me/notifications/read')
+        .set('Authorization', `Bearer ${recipientToken}`)
+        .expect(201);
+
+      expect(notificationsReadResponseSchema.parse(read.body)).toEqual({
+        updated: 1,
+      });
+
+      const after = await request(app.getHttpServer())
+        .get('/me/notifications/unread-count')
+        .set('Authorization', `Bearer ${recipientToken}`)
+        .expect(200);
+
+      expect(
+        unreadNotificationCountResponseSchema.parse(after.body).count,
+      ).toBe(0);
+    });
+
+    it('GET /home/weekly-highlights answers the viewer their own group as a list of the card contract', async () => {
+      const res = await request(app.getHttpServer())
+        .get('/home/weekly-highlights')
+        .set('Authorization', `Bearer ${adminToken}`)
+        .expect(200);
+
+      const card = weeklyHighlightCardSchema
+        .array()
+        .parse(res.body)
+        .find((item) => item.groupMemberId === adminMemberId);
+
+      expect(card).toMatchObject({
+        userId: adminUserId,
+        displayName: 'Inbox Admin',
+        group: { id: groupId },
+        achievement: { type: 'WIN_STREAK_CURRENT', value: 3 },
+        origin: 'GROUP',
+      });
+    });
+
+    it('GET /home/weekly-highlights answers the same card contract to a signed-out viewer', async () => {
+      const res = await request(app.getHttpServer())
+        .get('/home/weekly-highlights')
+        .expect(200);
+
+      const cards = weeklyHighlightCardSchema.array().parse(res.body);
+      // Nothing viewer-scoped without a token: the group rail needs a membership.
+      expect(cards.every((card) => card.origin === 'ARENA')).toBe(true);
     });
   });
 
