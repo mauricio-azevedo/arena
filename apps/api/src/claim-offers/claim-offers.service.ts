@@ -3,6 +3,12 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import type {
+  ClaimDeclinedResponse,
+  ClaimEmailState,
+  ClaimOfferDetailResponse,
+  ClaimResultResponse,
+} from '@arena/contracts/claims';
 import { API_ERROR_CODES, codedBadRequest } from '../common/api-errors';
 import { Prisma } from '../generated/prisma/client';
 import {
@@ -19,13 +25,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { ClaimService } from '../claims/claim.service';
 import { ProcessingJobWriterService } from '../processing/processing-job-writer.service';
 import { NotificationWriterService } from '../notifications/notification-writer.service';
-import type {
-  ClaimEmailState,
-  ClaimOfferDetail,
-} from './types/claim-offer.types';
 import { claimOfferNotificationData } from './claim-offer-notification';
-
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 // Email-anchored claim: an admin attaches an email to a stub; the account that owns (or
 // later registers) that email is offered the stub's history to confirm. The email value
@@ -45,14 +45,10 @@ export class ClaimOffersService {
     groupId: string,
     stubId: string,
     adminUserId: string,
-    rawEmail: string | undefined,
+    // Already trimmed and lowercased by the schema.
+    email: string,
   ): Promise<ClaimEmailState> {
     await requireGroupAdmin(this.prisma, groupId, adminUserId);
-
-    const email = (rawEmail ?? '').trim().toLowerCase();
-    if (!EMAIL_RE.test(email)) {
-      throw new BadRequestException('Email inválido');
-    }
 
     const stub = await this.prisma.groupMember.findFirst({
       where: { id: stubId, groupId },
@@ -253,7 +249,7 @@ export class ClaimOffersService {
   async getOffer(
     stubId: string,
     viewerUserId: string,
-  ): Promise<ClaimOfferDetail> {
+  ): Promise<ClaimOfferDetailResponse> {
     const viewer = await this.prisma.user.findUnique({
       where: { id: viewerUserId },
       select: { email: true },
@@ -289,7 +285,10 @@ export class ClaimOffersService {
     };
   }
 
-  async confirm(stubId: string, viewerUserId: string) {
+  async confirm(
+    stubId: string,
+    viewerUserId: string,
+  ): Promise<ClaimResultResponse> {
     const viewer = await this.prisma.user.findUnique({
       where: { id: viewerUserId },
       select: { id: true, firstName: true, lastName: true, email: true },
@@ -358,7 +357,10 @@ export class ClaimOffersService {
     return claimResult;
   }
 
-  async decline(stubId: string, viewerUserId: string) {
+  async decline(
+    stubId: string,
+    viewerUserId: string,
+  ): Promise<ClaimDeclinedResponse> {
     const viewer = await this.prisma.user.findUnique({
       where: { id: viewerUserId },
       select: { email: true },

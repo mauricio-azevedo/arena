@@ -1,9 +1,9 @@
 import Link from 'next/link';
+import type { ClaimAdmin, SharedMatch } from '@arena/contracts/claims';
 import { Button } from '@/components/ui/button';
 import { Body, Label, Meta, Overline, Stat, Title } from '@/components/ui/text';
 import { cn } from '@/lib/utils';
 import { nameInitial } from '@/lib/avatar';
-import type { ClaimAdmin, SharedMatch } from '@/types/api';
 import { DashedAvatar, GroupBrandChip } from './claim-shared';
 
 type ClaimConflictProps = {

@@ -220,19 +220,27 @@ packages/contracts/
                           registerBodySchema + loginBodySchema, accountSchema +
                           authSessionResponseSchema; @arena/contracts/auth
     avatar-color.ts       AVATAR_COLOR_KEYS, AvatarColorKey, isAvatarColorKey
+    claims.ts             claimEmailBodySchema, claimStubSummarySchema + claimMembershipSchema +
+                          claimResultResponseSchema + claimEmailStateSchema +
+                          claimOfferDetailResponseSchema and their types;
+                          @arena/contracts/claims, the claim shapes both invite controllers
+                          and `claim-offers` answer
     feed-item-type.ts     feedItemTypeSchema, FeedItemType; leaf
     group-member-role.ts  groupMemberRoleSchema, GroupMemberRole; leaf
     groups.ts             groupBodySchema, groupSchema + groupMembershipResponseSchema +
                           groupHomeCardResponseSchema and their types; @arena/contracts/groups,
                           the membership payload served by `groups`, `me` and `users`
     index.ts              root export: api-errors + avatar-color
+    invites.ts            inviteBodySchema + inviteAcceptBodySchema, createdInviteResponseSchema +
+                          publicInviteResponseSchema (a union on `kind`) and their types;
+                          @arena/contracts/invites
     iso-datetime.ts       isoDateTime codec (wire ISO string <-> API Date); leaf
     matches.ts            matchBodySchema + matchResponseSchema and their types; @arena/contracts/matches
     me.ts                 updateProfileBodySchema + updatePasswordBodySchema,
                           passwordUpdatedResponseSchema; @arena/contracts/me, and the auth session
                           the profile edit answers
     member-identity.ts    memberIdentitySchema (how a member is named and colored),
-                          guestNameSchema; leaf
+                          memberUserSchema, guestNameSchema; leaf
     members.ts            memberBodySchema + guestMemberBodySchema, groupMemberResponseSchema +
                           memberProfileResponseSchema; @arena/contracts/members
     profiles.ts           profileSummaryResponseSchema + profileMatchListItemSchema and their types;
@@ -251,12 +259,14 @@ a subpath (`@arena/contracts/<module>`, `exports` in `package.json`), never from
 the root is bundled into the web for its constants, and the CJS zod behind a schema cannot be
 tree-shaken (64 locales, +95 kB gzipped per route when it was tried in #267). Module files import
 leaves (`iso-datetime.ts`, `group-member-role.ts`, `member-identity.ts`,
-`ranking-movement-direction.ts`, `feed-item-type.ts`) and each other one way, `groups` →
-`ranking` → `members` → `profiles` → `matches` and `me` → `auth` (the group home standing reuses
+`ranking-movement-direction.ts`, `feed-item-type.ts`) and each other one way, `invites` →
+`claims` → `groups` → `ranking` → `members` → `profiles` → `matches` and `me` → `auth` (an
+invite answers its target's claim summary and embeds a group, the group home standing reuses
 `rankingMovementSchema`, `rankingEntrySchema` extends `groupMemberResponseSchema`, which reuses
 the profile stats and match-list shapes, which reuse `matchTeamSchema`; `me` edits the account
-`auth` creates, so the field schemas and the session response live with `auth`); a schema two
-modules need goes in a leaf, never a cross-import that could cycle.
+`auth` creates, and the claim-email body is that account's own e-mail, so the field schemas and
+the session response live with `auth`); a schema two modules need goes in a leaf, never a
+cross-import that could cycle.
 
 ### 3.4 `docs/`
 

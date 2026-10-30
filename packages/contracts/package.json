@@ -29,6 +29,14 @@
       "types": "./dist/groups.d.ts",
       "default": "./dist/groups.js"
     },
+    "./invites": {
+      "types": "./dist/invites.d.ts",
+      "default": "./dist/invites.js"
+    },
+    "./claims": {
+      "types": "./dist/claims.d.ts",
+      "default": "./dist/claims.js"
+    },
     "./auth": {
       "types": "./dist/auth.d.ts",
       "default": "./dist/auth.js"

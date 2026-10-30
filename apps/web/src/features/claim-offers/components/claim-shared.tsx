@@ -1,10 +1,10 @@
 import { Fragment } from 'react';
+import type { ClaimRecentMatch } from '@arena/contracts/claims';
 import { cn } from '@/lib/utils';
 import { Label, Meta, Overline, Stat } from '@/components/ui/text';
 import { GroupAvatar } from '@/components/ui/group-avatar';
 import { avatarBgClass, nameInitial } from '@/lib/avatar';
 import { formatFeedItemTime } from '@/features/feed/helpers/feed-item-time.helper';
-import type { ClaimRecentMatch } from '@/types/api';
 
 // The "de qual grupo / que convite é esse" chip at the top of every claim screen.
 export function GroupBrandChip({

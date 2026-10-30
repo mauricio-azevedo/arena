@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { Copy, Info, Link2 } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
+import type { CreatedInvite } from '@arena/contracts/invites';
 import { Button } from '@/components/ui/button';
 import { DrawerTitle } from '@/components/ui/drawer';
 import { MemberAvatar } from '@/components/ui/member-avatar';
@@ -12,7 +13,6 @@ import { GroupAvatar } from '@/components/ui/group-avatar';
 import { getApiErrorCode } from '@/lib/api-error';
 import { getAccessToken } from '@/lib/auth';
 import { useCopyToClipboard } from '@/hooks/use-copy-to-clipboard';
-import type { GroupInvite } from '@/types/api';
 
 type InviteSheetContentProps = {
   groupId: string;
@@ -25,7 +25,7 @@ type InviteSheetContentProps = {
 
 type SheetStatus =
   | { state: 'loading' }
-  | { state: 'ready'; invite: GroupInvite }
+  | { state: 'ready'; invite: CreatedInvite }
   | { state: 'error'; kind: 'claimed' | 'generic' };
 
 // One sheet for both invite kinds: QR + copiable link, differing only in identity and

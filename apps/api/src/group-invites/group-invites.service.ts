@@ -5,6 +5,17 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { randomBytes } from 'crypto';
+import type {
+  ClaimMembership,
+  ClaimResultResponse,
+  ClaimStubSummaryResponse,
+} from '@arena/contracts/claims';
+import type {
+  CreatedInviteResponse,
+  InviteAcceptBody,
+  InviteBody,
+  PublicInviteResponse,
+} from '@arena/contracts/invites';
 import { Prisma } from '../generated/prisma/client';
 import { GroupMemberRole, NotificationType } from '../generated/prisma/enums';
 import { API_ERROR_CODES, codedBadRequest } from '../common/api-errors';
@@ -36,17 +47,8 @@ export class GroupInvitesService {
   // guest (deep-links straight to that guest's recognition). Both are admin-only.
   async create(
     groupId: string,
-    body: {
-      createdById: string;
-      maxUses?: number;
-      expiresAt?: string;
-      targetGroupMemberId?: string;
-    },
-  ) {
-    if (!body.createdById) {
-      throw new BadRequestException('Creator is required');
-    }
-
+    body: InviteBody & { createdById: string },
+  ): Promise<CreatedInviteResponse> {
     const group = await this.prisma.group.findUnique({
       where: { id: groupId },
     });
@@ -91,16 +93,7 @@ export class GroupInvitesService {
       }
     }
 
-    const expiresAt = body.expiresAt ? new Date(body.expiresAt) : null;
-
-    if (expiresAt && Number.isNaN(expiresAt.getTime())) {
-      throw new BadRequestException('Invalid expiresAt');
-    }
-
-    if (body.maxUses !== undefined && body.maxUses <= 0) {
-      throw new BadRequestException('maxUses must be greater than zero');
-    }
-
+    const expiresAt = body.expiresAt ?? null;
     const targetGroupMemberId = body.targetGroupMemberId ?? null;
 
     // A plain request (no expiry, no usage cap) reuses the active invite for the same
@@ -110,7 +103,7 @@ export class GroupInvitesService {
     // row per slot in the schema, so no lock is needed: an optimistic read serves the hot
     // reuse path in one query, and concurrent mints race on the INSERT — the loser catches
     // the unique violation and re-reads the winner, so both converge on one link.
-    if (body.maxUses === undefined && !body.expiresAt) {
+    if (body.maxUses === undefined && expiresAt === null) {
       const activePlainWhere: Prisma.GroupInviteWhereInput = {
         groupId,
         targetGroupMemberId,
@@ -193,13 +186,8 @@ export class GroupInvitesService {
       where: { token },
       include: {
         group: true,
-        createdBy: {
-          select: {
-            id: true,
-            ...MEMBER_USER_SELECT,
-            email: true,
-          },
-        },
+        // The invite landing is public: the inviter is named, never exposed.
+        createdBy: { select: MEMBER_USER_SELECT },
       },
     });
 
@@ -226,13 +214,14 @@ export class GroupInvitesService {
   // Closed invite → the target guest's recognition summary. A closed invite whose target
   // was already taken over (or left) degrades to open with `targetUnavailable`, so the
   // opener still has a way in.
-  async findByToken(token: string) {
+  async findByToken(token: string): Promise<PublicInviteResponse> {
     const invite = await this.loadValidInvite(token);
 
     if (!invite.targetGroupMemberId) {
       return {
         ...invite,
-        kind: 'OPEN' as const,
+        kind: 'OPEN',
+        targetUnavailable: false,
         guests: await this.listUnclaimedGuests(invite.groupId),
       };
     }
@@ -245,7 +234,7 @@ export class GroupInvitesService {
     if (!target) {
       return {
         ...invite,
-        kind: 'OPEN' as const,
+        kind: 'OPEN',
         targetUnavailable: true,
         guests: await this.listUnclaimedGuests(invite.groupId),
       };
@@ -253,7 +242,7 @@ export class GroupInvitesService {
 
     return {
       ...invite,
-      kind: 'CLOSED' as const,
+      kind: 'CLOSED',
       target: await this.claims.getStubClaimSummary(target),
     };
   }
@@ -310,11 +299,11 @@ export class GroupInvitesService {
     return guest && guest.userId === null && !guest.leftAt ? guest : null;
   }
 
-  async accept(groupId: string, token: string, body: { userId: string }) {
-    if (!body.userId) {
-      throw new BadRequestException('User is required');
-    }
-
+  async accept(
+    groupId: string,
+    token: string,
+    body: InviteAcceptBody,
+  ): Promise<ClaimMembership> {
     const user = await this.prisma.user.findUnique({
       where: { id: body.userId },
     });
@@ -325,9 +314,6 @@ export class GroupInvitesService {
 
     const invite = await this.prisma.groupInvite.findUnique({
       where: { token },
-      include: {
-        group: true,
-      },
     });
 
     if (!invite || invite.groupId !== groupId) {
@@ -402,7 +388,10 @@ export class GroupInvitesService {
     });
   }
 
-  async acceptByToken(token: string, body: { userId: string }) {
+  async acceptByToken(
+    token: string,
+    body: InviteAcceptBody,
+  ): Promise<ClaimMembership> {
     const invite = await this.prisma.groupInvite.findUnique({
       where: { token },
       select: {
@@ -419,7 +408,10 @@ export class GroupInvitesService {
 
   // The recognition payload for a guest picked from the open list (the closed invite
   // already carries its target's summary in findByToken). Public: the token is the auth.
-  async getGuestSummary(token: string, guestId: string) {
+  async getGuestSummary(
+    token: string,
+    guestId: string,
+  ): Promise<ClaimStubSummaryResponse> {
     const invite = await this.loadValidInvite(token);
     this.assertGuestAllowed(invite, guestId);
 
@@ -435,7 +427,11 @@ export class GroupInvitesService {
   // Take over a guest via an invite — the open-list pick or the closed link's target. The
   // shared core (performClaim) handles the simple claim and the already-a-member merge,
   // and refuses when the two ever shared a match.
-  async claimGuest(token: string, guestId: string, userId: string) {
+  async claimGuest(
+    token: string,
+    guestId: string,
+    userId: string,
+  ): Promise<ClaimResultResponse> {
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
 
     if (!user) {

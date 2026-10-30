@@ -2,12 +2,12 @@
 
 import { useState } from 'react';
 import { Check } from 'lucide-react';
+import type { InviteGuest } from '@arena/contracts/invites';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { MemberAvatar } from '@/components/ui/member-avatar';
 import { Body, Label, Meta, Title } from '@/components/ui/text';
 import { GroupBrandChip } from '@/features/claim-offers/components/claim-shared';
-import type { InviteGuest } from '@/types/api';
 
 // Open invite: the person self-identifies against the group's unclaimed guests (or joins
 // as new). Selecting a row + "Continuar" takes over that guest; "sou novo" joins fresh.
