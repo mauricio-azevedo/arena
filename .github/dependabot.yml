@@ -19,6 +19,11 @@ updates:
       security:
         applies-to: security-updates
         patterns: ['*']
+    ignore:
+      # The @types/node major tracks the Node major, pinned in .nvmrc and
+      # engines. Raise it together with those, not on its own.
+      - dependency-name: '@types/node'
+        update-types: ['version-update:semver-major']
     # Conventional Commits title, checked by pr-title.yml.
     commit-message:
       prefix: chore
