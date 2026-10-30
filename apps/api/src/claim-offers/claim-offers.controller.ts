@@ -7,9 +7,14 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
+import {
+  claimEmailBodySchema,
+  type ClaimEmailBody,
+} from '@arena/contracts/claims';
 import { CurrentUser } from '../auth/current-user.decorator';
 import type { AuthUser } from '../auth/auth.types';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { ZodValidationPipe } from '../common/zod-validation.pipe';
 import { ClaimOffersService } from './claim-offers.service';
 
 @Controller()
@@ -22,7 +27,7 @@ export class ClaimOffersController {
   setEmail(
     @Param('groupId') groupId: string,
     @Param('memberId') memberId: string,
-    @Body() body: { email: string },
+    @Body(new ZodValidationPipe(claimEmailBodySchema)) body: ClaimEmailBody,
     @CurrentUser() user: AuthUser,
   ) {
     return this.claimOffers.setClaimEmail(

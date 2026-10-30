@@ -1,7 +1,14 @@
 import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import {
+  inviteAcceptBodySchema,
+  inviteBodySchema,
+  type InviteAcceptBody,
+  type InviteBody,
+} from '@arena/contracts/invites';
 import { CurrentUser } from '../auth/current-user.decorator';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import type { AuthUser } from '../auth/auth.types';
+import { ZodValidationPipe } from '../common/zod-validation.pipe';
 import { GroupInvitesService } from './group-invites.service';
 
 @Controller('groups/:groupId/invites')
@@ -13,12 +20,7 @@ export class GroupInvitesController {
   create(
     @Param('groupId') groupId: string,
     @CurrentUser() user: AuthUser,
-    @Body()
-    body: {
-      maxUses?: number;
-      expiresAt?: string;
-      targetGroupMemberId?: string;
-    },
+    @Body(new ZodValidationPipe(inviteBodySchema)) body: InviteBody,
   ) {
     return this.groupInvitesService.create(groupId, {
       ...body,
@@ -35,7 +37,7 @@ export class GroupInvitesController {
   accept(
     @Param('groupId') groupId: string,
     @Param('token') token: string,
-    @Body() body: { userId: string },
+    @Body(new ZodValidationPipe(inviteAcceptBodySchema)) body: InviteAcceptBody,
   ) {
     return this.groupInvitesService.accept(groupId, token, body);
   }

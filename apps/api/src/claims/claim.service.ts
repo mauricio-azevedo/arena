@@ -1,4 +1,11 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
+import type {
+  ClaimAdmin,
+  ClaimMembership,
+  ClaimResultResponse,
+  ClaimStubSummaryResponse,
+  SharedMatchResponse,
+} from '@arena/contracts/claims';
 import type { Prisma } from '../generated/prisma/client';
 import { GroupMemberRole, MatchTeam } from '../generated/prisma/enums';
 import {
@@ -9,15 +16,6 @@ import { PrismaService } from '../prisma/prisma.service';
 import { FeedOrchestratorService } from '../feed/feed-orchestrator.service';
 import { GroupHomeSummaryService } from '../groups/group-home-summary.service';
 import { ProcessingJobWriterService } from '../processing/processing-job-writer.service';
-import type {
-  ClaimAdmin,
-  SharedMatch,
-  SharedMatchTeam,
-} from './types/claim-result.type';
-import type {
-  ClaimRecentMatch,
-  ClaimStubSummary,
-} from './types/claim-summary.type';
 
 type PrismaClientLike = Prisma.TransactionClient | PrismaService;
 
@@ -47,7 +45,7 @@ export class ClaimService {
     groupId: string,
     stub: ClaimStub,
     user: ClaimUser,
-  ) {
+  ): Promise<ClaimResultResponse> {
     const existingMembership = await tx.groupMember.findUnique({
       where: { groupId_userId: { groupId, userId: user.id } },
     });
@@ -100,7 +98,7 @@ export class ClaimService {
     groupId: string,
     stub: ClaimStub,
     membership: { id: string; leftAt: Date | null },
-  ) {
+  ): Promise<ClaimResultResponse> {
     const sharedMatches = await this.findSharedMatches(
       tx,
       groupId,
@@ -171,7 +169,7 @@ export class ClaimService {
     rating: number;
     currentRank: number | null;
     user: { firstName: string; lastName: string } | null;
-  }): Promise<ClaimStubSummary> {
+  }): Promise<ClaimStubSummaryResponse> {
     const [matchesCount, recent] = await Promise.all([
       this.prisma.matchPlayer.count({
         where: { groupMemberId: stub.id, match: { deletedAt: null } },
@@ -200,23 +198,27 @@ export class ClaimService {
       }),
     ]);
 
-    const recentMatches: ClaimRecentMatch[] = recent.map((matchPlayer) => {
-      const match = matchPlayer.match;
-      const isTeamA = matchPlayer.team === MatchTeam.TEAM_A;
-      return {
-        id: match.id,
-        result: match.winnerTeam === matchPlayer.team ? 'WIN' : 'LOSS',
-        partners: match.players
-          .filter((p) => p.team === matchPlayer.team && p.id !== matchPlayer.id)
-          .map((p) => resolveMemberDisplayName(p.groupMember)),
-        opponents: match.players
-          .filter((p) => p.team !== matchPlayer.team)
-          .map((p) => resolveMemberDisplayName(p.groupMember)),
-        scoreFor: isTeamA ? match.gamesA : match.gamesB,
-        scoreAgainst: isTeamA ? match.gamesB : match.gamesA,
-        playedAt: match.playedAt,
-      };
-    });
+    const recentMatches: ClaimStubSummaryResponse['recentMatches'] = recent.map(
+      (matchPlayer) => {
+        const match = matchPlayer.match;
+        const isTeamA = matchPlayer.team === MatchTeam.TEAM_A;
+        return {
+          id: match.id,
+          result: match.winnerTeam === matchPlayer.team ? 'WIN' : 'LOSS',
+          partners: match.players
+            .filter(
+              (p) => p.team === matchPlayer.team && p.id !== matchPlayer.id,
+            )
+            .map((p) => resolveMemberDisplayName(p.groupMember)),
+          opponents: match.players
+            .filter((p) => p.team !== matchPlayer.team)
+            .map((p) => resolveMemberDisplayName(p.groupMember)),
+          scoreFor: isTeamA ? match.gamesA : match.gamesB,
+          scoreAgainst: isTeamA ? match.gamesB : match.gamesA,
+          playedAt: match.playedAt,
+        };
+      },
+    );
 
     return {
       groupMemberId: stub.id,
@@ -231,7 +233,10 @@ export class ClaimService {
   // The membership an accept or a claim lands on. Identity, role and rating: the
   // caller already has the group, the claim-email columns are server-side, and
   // the rating internals belong to the ranking payloads.
-  findMembershipResponse(tx: Prisma.TransactionClient, id: string) {
+  findMembershipResponse(
+    tx: Prisma.TransactionClient,
+    id: string,
+  ): Promise<ClaimMembership> {
     return tx.groupMember.findUniqueOrThrow({
       where: { id },
       select: {
@@ -253,7 +258,7 @@ export class ClaimService {
     groupId: string,
     stubId: string,
     membershipId: string,
-  ): Promise<SharedMatch[]> {
+  ): Promise<SharedMatchResponse[]> {
     const matches = await tx.match.findMany({
       where: {
         groupId,
@@ -278,7 +283,9 @@ export class ClaimService {
     });
 
     return matches.map((match) => {
-      const buildTeam = (team: MatchTeam): SharedMatchTeam => ({
+      const buildTeam = (
+        team: MatchTeam,
+      ): SharedMatchResponse['teams'][number] => ({
         team,
         score: team === MatchTeam.TEAM_A ? match.gamesA : match.gamesB,
         won: match.winnerTeam === team,
