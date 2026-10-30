@@ -1,8 +1,9 @@
 import Link from 'next/link';
 import { Check } from 'lucide-react';
+import type { ClaimMembership, ClaimStubSummary } from '@arena/contracts/claims';
 import { Button } from '@/components/ui/button';
 import { Dot, Label, Meta } from '@/components/ui/text';
-import type { ClaimMembership, ClaimStubSummary } from '@/types/api';
+import { resolveMemberName } from '@/lib/member-name';
 import { PersonAvatar } from './claim-shared';
 import { EmptyState } from '@/components/ui/empty-state';
 
@@ -13,8 +14,9 @@ type ClaimSuccessProps = {
 };
 
 export function ClaimSuccess({ stub, membership, groupName }: ClaimSuccessProps) {
-  const claimedName =
-    `${membership.user.firstName} ${membership.user.lastName}`.trim() || stub.displayName;
+  // The name the account shows others, so a nickname wins here as it does on
+  // every other screen.
+  const claimedName = resolveMemberName(membership).fullName;
 
   return (
     <EmptyState

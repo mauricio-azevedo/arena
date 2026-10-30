@@ -1,10 +1,10 @@
 'use client';
 
+import type { ClaimStubSummary } from '@arena/contracts/claims';
 import { Button } from '@/components/ui/button';
 import { Body, Meta, Title } from '@/components/ui/text';
 import { DashedAvatar, GroupBrandChip } from '@/features/claim-offers/components/claim-shared';
 import { nameInitial } from '@/lib/avatar';
-import type { ClaimStubSummary } from '@/types/api';
 
 // Closed invite: addressed to one guest, so it lands straight on the "is this you?"
 // recognition — a one-tap identity confirmation before taking over the profile.

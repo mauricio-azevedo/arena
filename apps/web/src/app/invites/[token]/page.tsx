@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import type { GroupInvite } from '@/types/api';
+import type { PublicInvite } from '@arena/contracts/invites';
 import { AppShell } from '@/components/app-shell';
 import { InviteClient } from '@/features/invites/components/invite-client';
 import { getInvite } from '@/features/invites/api/invites.api';
@@ -14,7 +14,7 @@ type Props = {
 export default async function InvitePage({ params }: Props) {
   const { token } = await params;
 
-  let invite: GroupInvite;
+  let invite: PublicInvite;
   try {
     invite = await getInvite(token);
   } catch {

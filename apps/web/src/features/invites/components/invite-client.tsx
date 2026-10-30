@@ -3,8 +3,10 @@
 import { useEffect, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
-import type { AcceptClaimResult, GroupInvite } from '@/types/api';
+import type { ClaimResult } from '@arena/contracts/claims';
+import type { PublicInvite } from '@arena/contracts/invites';
 import { getAccessToken } from '@/lib/auth';
+import { resolveMemberName } from '@/lib/member-name';
 import { buildAuthPath } from '@/features/auth/auth-navigation';
 import { ClaimConflict } from '@/features/claim-offers/components/claim-conflict';
 import { acceptInvite, claimInviteGuest } from '@/features/invites/api/invites.api';
@@ -12,7 +14,7 @@ import { InviteWelcome } from './invite-welcome';
 import { InviteOpenRoster } from './invite-open-roster';
 import { InviteClosedRecognition } from './invite-closed-recognition';
 
-type Blocked = Extract<AcceptClaimResult, { outcome: 'BLOCKED' }>;
+type Blocked = Extract<ClaimResult, { outcome: 'BLOCKED' }>;
 type Screen = 'welcome' | 'roster' | 'recognition';
 
 // Orchestrates the invite landing: welcome → (open roster | closed recognition) → the
@@ -20,18 +22,22 @@ type Screen = 'welcome' | 'roster' | 'recognition';
 // visitor is sent to the auth screen carrying where to return and what to resume; on the
 // way back the `?take`/`?join` param replays the commit automatically. Outcomes: a claim
 // lands in the group, a shared-match block shows the conflict screen.
-export function InviteClient({ invite }: { invite: GroupInvite }) {
+export function InviteClient({ invite }: { invite: PublicInvite }) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const isClosed = invite.kind === 'CLOSED' && !!invite.target;
+  // One of the two is always set: the invite is addressed to a guest, or it is
+  // the group's link and carries the roster.
+  const closed = invite.kind === 'CLOSED' ? invite : null;
+  const open = invite.kind === 'OPEN' ? invite : null;
   const [screen, setScreen] = useState<Screen>('welcome');
   const [busy, setBusy] = useState(false);
   const [blocked, setBlocked] = useState<Blocked | null>(null);
   const [error, setError] = useState('');
 
-  const groupName = invite.group?.name ?? 'grupo';
-  const inviterName = resolveInviterName(invite);
+  const groupName = invite.group.name;
+  // Their nickname is the whole name when they set one, as everywhere else.
+  const inviterName = resolveMemberName({ user: invite.createdBy }).firstName;
 
   function goToGroup() {
     router.push(`/groups/${invite.groupId}`);
@@ -139,25 +145,25 @@ export function InviteClient({ invite }: { invite: GroupInvite }) {
     );
   }
 
-  if (screen === 'recognition' && invite.target) {
+  if (screen === 'recognition' && closed) {
     return (
       <InviteClosedRecognition
         groupName={groupName}
         inviterName={inviterName}
-        target={invite.target}
+        target={closed.target}
         busy={busy}
         error={error}
-        onConfirm={() => startClaim(invite.target!.groupMemberId, invite.target!.displayName)}
+        onConfirm={() => startClaim(closed.target.groupMemberId, closed.target.displayName)}
       />
     );
   }
 
-  if (screen === 'roster') {
+  if (screen === 'roster' && open) {
     return (
       <InviteOpenRoster
         groupName={groupName}
-        guests={invite.guests ?? []}
-        targetUnavailable={invite.targetUnavailable ?? false}
+        guests={open.guests}
+        targetUnavailable={open.targetUnavailable}
         busy={busy}
         error={error}
         onClaim={startClaim}
@@ -170,14 +176,7 @@ export function InviteClient({ invite }: { invite: GroupInvite }) {
     <InviteWelcome
       groupName={groupName}
       inviterName={inviterName}
-      onContinue={() => setScreen(isClosed ? 'recognition' : 'roster')}
+      onContinue={() => setScreen(closed ? 'recognition' : 'roster')}
     />
   );
-}
-
-// The inviter's first name for "{name} convidou você" — nickname wins, else first name.
-function resolveInviterName(invite: GroupInvite): string | null {
-  const inviter = invite.createdBy;
-  if (!inviter) return null;
-  return inviter.nickname?.trim() || inviter.firstName || null;
 }

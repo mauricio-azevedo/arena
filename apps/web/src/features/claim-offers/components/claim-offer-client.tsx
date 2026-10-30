@@ -3,13 +3,13 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Check, Loader2 } from 'lucide-react';
+import type { ClaimMembership, ClaimOfferDetail, ClaimResult } from '@arena/contracts/claims';
 import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Body, Meta, Title } from '@/components/ui/text';
 import { apiErrorMessage } from '@/lib/api-error';
 import { nameInitial } from '@/lib/avatar';
 import { getAccessToken } from '@/lib/auth';
-import type { ClaimAdmin, ClaimMembership, ClaimOfferDetail, SharedMatch } from '@/types/api';
 import {
   confirmClaimOffer,
   declineClaimOffer,
@@ -22,7 +22,7 @@ import { ClaimConflict } from './claim-conflict';
 type Props = { stubId: string };
 
 type Status = 'loading' | 'ready' | 'error';
-type Blocked = { stubName: string; sharedMatches: SharedMatch[]; admins: ClaimAdmin[] };
+type Blocked = Extract<ClaimResult, { outcome: 'BLOCKED' }>;
 
 // The confirm screen for an email-anchored claim offer: the person an admin pointed at
 // a stub sees its history and confirms ("Sou eu") or declines ("Não sou eu").
@@ -71,11 +71,7 @@ export function ClaimOfferClient({ stubId }: Props) {
       if (result.outcome === 'CLAIMED') {
         setClaimed(result.membership);
       } else {
-        setBlocked({
-          stubName: result.stubName,
-          sharedMatches: result.sharedMatches,
-          admins: result.admins,
-        });
+        setBlocked(result);
       }
     } catch (caught) {
       setError(apiErrorMessage(caught, 'Não foi possível assumir agora. Tente novamente.'));

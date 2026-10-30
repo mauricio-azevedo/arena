@@ -1,5 +1,5 @@
+import type { ClaimDeclinedResponse, ClaimOfferDetail, ClaimResult } from '@arena/contracts/claims';
 import { apiRequest } from '@/lib/api-client';
-import type { AcceptClaimResult, ClaimOfferDetail } from '@/types/api';
 
 // --- Recipient: read / confirm / decline the offer (legacy email-anchored claims) ---
 
@@ -10,13 +10,13 @@ export function getClaimOffer(token: string, stubId: string): Promise<ClaimOffer
   });
 }
 
-export function confirmClaimOffer(token: string, stubId: string): Promise<AcceptClaimResult> {
-  return apiRequest<AcceptClaimResult>(`/me/claims/${stubId}/confirm`, {
+export function confirmClaimOffer(token: string, stubId: string): Promise<ClaimResult> {
+  return apiRequest<ClaimResult>(`/me/claims/${stubId}/confirm`, {
     method: 'POST',
     token,
   });
 }
 
-export function declineClaimOffer(token: string, stubId: string): Promise<{ outcome: 'DECLINED' }> {
+export function declineClaimOffer(token: string, stubId: string): Promise<ClaimDeclinedResponse> {
   return apiRequest(`/me/claims/${stubId}/decline`, { method: 'POST', token });
 }
