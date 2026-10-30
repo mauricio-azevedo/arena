@@ -39,6 +39,6 @@
     "knip": "^5.88.1",
     "shadcn": "^4.21.5",
     "tailwindcss": "^4.3.3",
-    "typescript": "^5.9.3"
+    "typescript": "^7.0.2"
   }
 }
