@@ -4,11 +4,11 @@
     "module": "commonjs",
     "declaration": true,
     "strict": true,
+    "types": ["node", "jest"],
     "rootDir": "src",
     "outDir": "dist",
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true
   },
-  "include": ["src"],
-  "exclude": ["src/**/*.spec.ts"]
+  "include": ["src"]
 }

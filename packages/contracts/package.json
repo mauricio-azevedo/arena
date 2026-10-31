@@ -55,8 +55,8 @@
     }
   },
   "scripts": {
-    "build": "tsc -p tsconfig.json",
-    "dev": "tsc -p tsconfig.json --watch --preserveWatchOutput",
+    "build": "tsc -p tsconfig.build.json",
+    "dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
     "test": "jest"
   },
   "dependencies": {
@@ -67,7 +67,7 @@
     "@types/node": "^24.19.2",
     "jest": "^30.5.2",
     "ts-jest": "^29.4.15",
-    "typescript": "^5.9.3"
+    "typescript": "^6.0.3"
   },
   "jest": {
     "rootDir": "src",
