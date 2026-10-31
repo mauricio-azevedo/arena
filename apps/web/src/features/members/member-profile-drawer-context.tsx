@@ -42,7 +42,7 @@ export function MemberProfileDrawerProvider({
   const [open, setOpen] = useState(false);
   const [target, setTarget] = useState<{ memberId: string; key: number } | null>(null);
 
-  // Display rank comes from the live ranking order (stored currentRank can lag).
+  // Display rank comes from the live ranking order (the stored rank can lag).
   const rankById = useMemo(() => {
     const map = new Map<string, number>();
     ranking.forEach((member, index) => map.set(member.id, index + 1));

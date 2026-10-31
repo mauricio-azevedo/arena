@@ -28,8 +28,8 @@ export function PartnerRow({
       <div className="min-w-0 flex-1">
         <div className="flex min-w-0 items-baseline gap-tight">
           <Label className="truncate font-bold">{firstName}</Label>
-          {partner.currentRank != null && (
-            <Meta className="shrink-0 text-faint-foreground">#{partner.currentRank}</Meta>
+          {partner.rank != null && (
+            <Meta className="shrink-0 text-faint-foreground">#{partner.rank}</Meta>
           )}
         </div>
 

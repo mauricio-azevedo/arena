@@ -50,7 +50,7 @@ function GroupRailCard({ group }: { group: ProfileSummaryGroup }) {
 
       <div className="mt-comfortable flex items-baseline gap-tight">
         <Stat size="lg" className="font-extrabold">
-          {group.currentRank != null ? `#${group.currentRank}` : '—'}
+          {group.rank != null ? `#${group.rank}` : '—'}
         </Stat>
         <Meta className="text-faint-foreground">de {group.membersCount}</Meta>
       </div>

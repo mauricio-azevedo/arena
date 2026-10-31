@@ -100,7 +100,7 @@ describe('ProfileSummaryPartnersService.findPartners', () => {
       displayName: 'Kleiton',
       avatarColor: 'blue',
       // Rank comes from group A (8 matches > 3 matches).
-      currentRank: 5,
+      rank: 5,
       matchesTogether: 11,
       winsTogether: 9,
       lossesTogether: 2,

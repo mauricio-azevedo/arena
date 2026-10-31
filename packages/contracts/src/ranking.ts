@@ -7,6 +7,12 @@ import { rankingMovementDirectionSchema } from './ranking-movement-direction';
 // and `positions` drive the arrow next to a name, the before/after pairs the
 // detail. The same shape sits on the group home standing (`groups`), so no
 // member id inside: the owner is whatever it hangs on.
+//
+// The only payload that spells a rank `currentRank`: here the prefix pairs with
+// `previousRank` the way `currentRating` pairs with `previousRating`. A member's
+// rank on its own is `rank` everywhere (`members`, `profiles`, `groups`,
+// `claims`). Neither rank is nullable — a movement exists only between two
+// known positions.
 export const rankingMovementSchema = z.strictObject({
   direction: rankingMovementDirectionSchema,
   positions: z.int(),

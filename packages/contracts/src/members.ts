@@ -38,9 +38,13 @@ export const groupMemberResponseSchema = memberIdentitySchema.extend({
   ratingMu: z.number().nullable(),
   ratingSigma: z.number().nullable(),
   ratingAlgorithm: z.string(),
-  // Stored by the ranking projection, null until the first processed match. It
-  // can lag; the order of `GET …/ranking` is the rank shown.
-  currentRank: z.int().nullable(),
+  // `rank` is the one name a member's rank goes out under, on every payload that
+  // carries one — the column behind it is `currentRank`, and the
+  // `previousRank`/`currentRank` pair exists only inside a ranking movement,
+  // where the prefix earns itself. Null until the first processed match (a
+  // member can be in the group and unranked), and it can lag: the order of
+  // `GET …/ranking` is the rank shown.
+  rank: z.int().nullable(),
   role: groupMemberRoleSchema,
   leftAt: isoDateTime.nullable(),
   createdAt: isoDateTime,
@@ -58,7 +62,8 @@ export const memberProfileResponseSchema = z.strictObject({
   // Palette key of the linked user; null for stubs.
   avatarColor: z.string().nullable(),
   rating: z.number(),
-  currentRank: z.int().nullable(),
+  // Nullable: a stub player's profile exists before they are ranked.
+  rank: z.int().nullable(),
   stats: profileSummaryStatsSchema,
   // Most recent first.
   matches: z.array(profileMatchListItemSchema),

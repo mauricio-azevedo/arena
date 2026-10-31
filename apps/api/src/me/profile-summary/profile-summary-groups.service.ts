@@ -52,7 +52,7 @@ export class ProfileSummaryGroupsService {
             rating: membership.rating,
             role: membership.role,
             lastPlayedAt: lastMatch?.playedAt ?? null,
-            currentRank: membership.currentRank,
+            rank: membership.currentRank,
             membersCount: membersCountByGroup.get(membership.groupId) ?? 0,
             // Only trust the delta once the latest match has been projected.
             rankDelta:

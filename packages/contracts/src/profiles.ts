@@ -34,7 +34,7 @@ const profileSummaryPartnerSchema = z.strictObject({
   // Rank in the group the two have played the most together; null while
   // unranked. A hint once a partner is merged across groups, not a per-group
   // figure.
-  currentRank: z.int().nullable(),
+  rank: z.int().nullable(),
   matchesTogether: z.int(),
   winsTogether: z.int(),
   lossesTogether: z.int(),
@@ -81,7 +81,7 @@ const profileSummaryGroupSchema = z.strictObject({
   role: groupMemberRoleSchema,
   lastPlayedAt: isoDateTime.nullable(),
   // Rank in this group ("#13"); null while unranked.
-  currentRank: z.int().nullable(),
+  rank: z.int().nullable(),
   // Active members ("de 19").
   membersCount: z.int(),
   // Rank change from the latest match (positive = climbed); null until that

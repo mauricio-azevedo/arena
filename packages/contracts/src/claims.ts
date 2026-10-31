@@ -33,7 +33,7 @@ const claimRecentMatchSchema = z.strictObject({
 export const claimStubSummarySchema = z.strictObject({
   groupMemberId: z.uuid(),
   displayName: z.string(),
-  // Null until the ranking projection has a rank for them.
+  // Nullable: null until the ranking projection has a rank for the stub.
   rank: z.int().nullable(),
   rating: z.number(),
   matchesCount: z.int(),

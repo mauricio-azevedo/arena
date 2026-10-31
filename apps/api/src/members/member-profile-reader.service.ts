@@ -52,7 +52,7 @@ export class MemberProfileReaderService {
       displayName: resolveMemberDisplayName(member),
       avatarColor: resolveMemberAvatarColor(member),
       rating: member.rating,
-      currentRank: member.currentRank,
+      rank: member.currentRank,
       stats: this.statsFromMatches(matches),
       matches,
     };
