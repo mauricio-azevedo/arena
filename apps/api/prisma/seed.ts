@@ -14,6 +14,11 @@ if (!connectionString || !connectionString.includes('localhost')) {
   );
 }
 
+// --- Idempotency: the seed owns an empty database and nothing else. ---
+// `just setup` ends in a seed, so a re-run must never discard data the
+// developer created meanwhile; `--reset` is the explicit opt-in.
+const reset = process.argv.includes('--reset');
+
 const pool = new Pool({ connectionString });
 const prisma = new PrismaClient({ adapter: new PrismaPg(pool) });
 
@@ -109,6 +114,15 @@ async function runMatches(groupId: string, gm: string[], specs: MatchSpec[]) {
 }
 
 async function main() {
+  const existingUsers = await prisma.user.count();
+  if (existingUsers > 0 && !reset) {
+    console.log(
+      `Database already has data (${existingUsers} users) — nothing seeded.`,
+    );
+    console.log('  Replace it with: just db-reseed');
+    return;
+  }
+
   await wipe();
   const passwordHash = await bcrypt.hash(PASSWORD, 10);
 

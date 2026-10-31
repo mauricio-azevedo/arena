@@ -77,7 +77,7 @@ Guidelines:
 Typical backend workflow:
 
 ```bash
-just setup                     # once: install, .env from .env.example, Postgres, migrations
+just setup                     # once: install, .env from .env.example, Postgres, migrations, data
 just dev                       # API on :3000 and web on :3001; Ctrl-C stops both
 ```
 
@@ -97,6 +97,21 @@ Expected responsibilities of the backend dev server:
 - connect to PostgreSQL through Prisma;
 - validate auth and permissions;
 - execute domain transactions.
+
+### Seed data
+
+`just setup` ends in `just db-seed`, so the first `just dev` opens on groups with history instead
+of every empty state. The seed owns an empty database and nothing else: it leaves a database that
+already has rows untouched, and `just db-reseed` is the explicit "discard my local data" command.
+Both refuse a `DATABASE_URL` that is not localhost.
+
+A seeded database holds two groups — Quinta-feira (8 players) and Praia Norte (6) — with 13 matches
+each, arranged so rankings, win streaks and weekly highlights all have something to show. Every
+player signs in with their first name at `@arena.test` (`gus@arena.test`, `leo@arena.test`, …) and
+the password `arena123`.
+
+Ratings and rankings appear a moment after the API comes up, not at seed time: the seed enqueues
+one `GROUP_RANKING_REBUILD` per group and the worker runs the cascade on startup.
 
 ## Frontend setup
 

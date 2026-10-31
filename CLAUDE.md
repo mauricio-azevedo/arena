@@ -42,7 +42,7 @@ pnpm run format:check      # or format (prettier --write)
 pnpm run knip              # dead code/deps, one root knip.jsonc; part of `just ci`
 # api
 cd apps/api && pnpm exec prisma migrate dev && pnpm exec prisma generate
-pnpm run db:seed           # local only; seed.ts refuses a non-localhost DATABASE_URL
+pnpm run db:seed           # or `just db-seed`; skips a non-empty DB, `just db-reseed` replaces it
 pnpm run dev               # dev server
 pnpm run build             # nest build only; `generate` runs via turbo (or `pnpm run generate`)
 # web
