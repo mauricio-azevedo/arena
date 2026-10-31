@@ -1,4 +1,4 @@
-export type ReadinessStatus = 'ok' | 'error';
+type ReadinessStatus = 'ok' | 'error';
 
 export type ReadinessResponse = {
   status: ReadinessStatus;

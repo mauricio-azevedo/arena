@@ -1,7 +1,7 @@
 export type ProcessingJobType =
   'MATCH_CREATED' | 'MATCH_UPDATED' | 'MATCH_DELETED' | 'GROUP_RANKING_REBUILD';
 
-export type ProcessingJobScope = 'GROUP';
+type ProcessingJobScope = 'GROUP';
 
 export type ProcessingJobStatus = 'PENDING' | 'PROCESSING' | 'DONE' | 'FAILED';
 
