@@ -5,7 +5,7 @@ import { EMAIL_REGEX } from '@arena/contracts';
 import { Button } from '@/components/ui/button';
 import { SheetField, SheetPasswordField } from '@/components/ui/sheet-field';
 import { Meta } from '@/components/ui/text';
-import { login } from '@/features/auth/auth.api';
+import { login } from '@/features/auth/api/auth.api';
 import { LOGIN_ERROR } from '@/features/auth/auth-validation';
 import { NOTICE_COPY, type AuthNotice } from '@/features/auth/auth-navigation';
 import { setAccessToken } from '@/lib/auth';

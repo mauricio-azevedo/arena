@@ -2,6 +2,7 @@
 
 import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
+import { getSafeInternalHref, isSafeInternalHref } from '@/lib/internal-href';
 
 const STORAGE_KEY = 'arena:navigation-stack';
 const MAX_STACK_SIZE = 30;
@@ -124,12 +125,4 @@ function writeStack(stack: string[]) {
   }
 
   window.sessionStorage.setItem(STORAGE_KEY, JSON.stringify(stack));
-}
-
-function getSafeInternalHref(href: string, fallback: string) {
-  return isSafeInternalHref(href) ? href : fallback;
-}
-
-function isSafeInternalHref(href: unknown): href is string {
-  return typeof href === 'string' && href.startsWith('/') && !href.startsWith('//');
 }

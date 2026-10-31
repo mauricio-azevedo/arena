@@ -1,4 +1,4 @@
-export const ACCESS_TOKEN_STORAGE_KEY = 'arena_access_token';
+const ACCESS_TOKEN_STORAGE_KEY = 'arena_access_token';
 
 type JwtPayload = {
   sub?: string;
@@ -68,7 +68,7 @@ export function getCurrentUserIdFromAccessToken() {
   return getUserIdFromAccessToken(token);
 }
 
-export function getUserIdFromAccessToken(token: string) {
+function getUserIdFromAccessToken(token: string) {
   return decodeAccessToken(token)?.sub ?? null;
 }
 

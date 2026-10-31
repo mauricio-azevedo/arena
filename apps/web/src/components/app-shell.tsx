@@ -11,7 +11,7 @@ import { cn } from '@/lib/utils';
 import { getRoutePolicy } from '@/lib/route-policy';
 import { NavigationTracker } from '@/providers/navigation-tracker';
 
-export type AppShellChrome = {
+type AppShellChrome = {
   title?: string;
   back?: AppTopBarBack;
   trailing?: ReactNode;

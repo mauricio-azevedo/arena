@@ -5,7 +5,7 @@ import { EMAIL_REGEX, MAX_NICKNAME_LENGTH, MIN_PASSWORD_LENGTH } from '@arena/co
 import { Button } from '@/components/ui/button';
 import { SheetField, SheetPasswordField } from '@/components/ui/sheet-field';
 import { Meta } from '@/components/ui/text';
-import { register } from '@/features/auth/auth.api';
+import { register } from '@/features/auth/api/auth.api';
 import { apiErrorMessage } from '@/lib/api-error';
 import { setAccessToken } from '@/lib/auth';
 
