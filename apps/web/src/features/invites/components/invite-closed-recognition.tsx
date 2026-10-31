@@ -3,7 +3,7 @@
 import type { ClaimStubSummary } from '@arena/contracts/claims';
 import { Button } from '@/components/ui/button';
 import { Body, Meta, Title } from '@/components/ui/text';
-import { DashedAvatar, GroupBrandChip } from '@/features/claim-offers/components/claim-shared';
+import { DashedAvatar, GroupBrandChip } from './invite-shared';
 import { nameInitial } from '@/lib/avatar';
 
 // Closed invite: addressed to one guest, so it lands straight on the "is this you?"
