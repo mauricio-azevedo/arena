@@ -1,0 +1,16 @@
+# The API image is built from the repo root; only what `turbo prune` reads needs
+# to reach the daemon. Everything else is either regenerated inside the image or
+# must never enter it.
+**/node_modules
+**/dist
+**/.next
+**/.turbo
+**/.env
+**/coverage
+**/*.tsbuildinfo
+apps/api/src/generated
+.git
+.github
+.claude
+docs
+out

@@ -188,6 +188,23 @@ Both apps deploy from `main`; neither host builds other branches.
   Migrations are deployed explicitly with `pnpm --filter @arena/api exec prisma migrate deploy`;
   they are not part of the build.
 
+### API container image
+
+`apps/api/Dockerfile` packages the API. The build context is the repo root — `turbo prune` reduces
+the workspace to `@arena/api` and `@arena/contracts`, so the install layer is invalidated by their
+manifests alone:
+
+```bash
+just docker-build              # arena-api:local
+docker run --rm -p 3000:3000 -e DATABASE_URL=… -e JWT_SECRET=… arena-api:local
+```
+
+The image carries `dist/`, the generated Prisma client and production dependencies only; the build
+toolchain stays in the stages it belongs to. It runs as the `node` user, serves on `PORT`
+(default 3000), and declares a `HEALTHCHECK` against `/health` — liveness, not the database probe.
+CI builds it on every pull request. Render keeps running the native Node runtime above; the image
+is the deployment unit for the move off it.
+
 ## Troubleshooting
 
 ### Frontend cannot reach API
