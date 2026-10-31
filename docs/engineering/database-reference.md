@@ -18,23 +18,22 @@ For operational guidance (Neon, migrations, resets) see
 
 ## 1. Enums
 
-| Enum                           | Values                                                                                                                                   |
-| ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| `GroupVisibility`              | `PUBLIC`                                                                                                                                 |
-| `GroupMemberRole`              | `ADMIN`, `MEMBER`                                                                                                                        |
-| `MatchTeam`                    | `TEAM_A`, `TEAM_B`                                                                                                                       |
-| `MatchProcessingStatus`        | `PENDING`, `PROCESSING`, `PROCESSED`, `FAILED`                                                                                           |
-| `GroupRankingProjectionStatus` | `CURRENT`, `PROCESSING`, `FAILED`                                                                                                        |
-| `RankingMovementDirection`     | `UP`, `DOWN`                                                                                                                             |
-| `ProcessingJobType`            | `MATCH_CREATED`, `MATCH_UPDATED`, `MATCH_DELETED`, `GROUP_RANKING_REBUILD`, `PLATFORM_TRENDING_PLAYERS_REBUILD` _(deprecated)_           |
-| `ProcessingJobStatus`          | `PENDING`, `PROCESSING`, `DONE`, `FAILED`                                                                                                |
-| `ProcessingJobScope`           | `GROUP`, `PLATFORM` _(deprecated)_                                                                                                       |
-| `FeedItemType`                 | `GROUP_CREATED`, `MEMBER_JOINED`, `MATCH_CLOSE`, `MATCH_BLOWOUT`, `UPSET_WIN`, `RANKING_MOVEMENT`                                        |
-| `FeedItemScope`                | `GROUP`, `USER`                                                                                                                          |
-| `FeedItemVisibility`           | `GROUP_MEMBERS`, `SOCIAL_CIRCLE`, `PUBLIC`, `PRIVATE`                                                                                    |
-| `HighlightType`                | `WIN_STREAK_CURRENT`, `WIN_STREAK_RECORD`, `CLIMB`, `LEADERSHIP`, `MILESTONE_MATCHES`, `MILESTONE_WINS`                                  |
-| `NotificationType`             | `CLAIM_OFFER`, `CLAIM_OFFER_DECLINED`, `GUEST_TAKEN_OVER`, + deprecated `CLAIM_REQUEST`/`CLAIM_APPROVED`/`CLAIM_DECLINED`/`CLAIM_INVITE` |
-| `ClaimEmailStatus`             | `PENDING`, `DECLINED`                                                                                                                    |
+| Enum                           | Values                                                                                                                         |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------ |
+| `GroupVisibility`              | `PUBLIC`                                                                                                                       |
+| `GroupMemberRole`              | `ADMIN`, `MEMBER`                                                                                                              |
+| `MatchTeam`                    | `TEAM_A`, `TEAM_B`                                                                                                             |
+| `MatchProcessingStatus`        | `PENDING`, `PROCESSING`, `PROCESSED`, `FAILED`                                                                                 |
+| `GroupRankingProjectionStatus` | `CURRENT`, `PROCESSING`, `FAILED`                                                                                              |
+| `RankingMovementDirection`     | `UP`, `DOWN`                                                                                                                   |
+| `ProcessingJobType`            | `MATCH_CREATED`, `MATCH_UPDATED`, `MATCH_DELETED`, `GROUP_RANKING_REBUILD`, `PLATFORM_TRENDING_PLAYERS_REBUILD` _(deprecated)_ |
+| `ProcessingJobStatus`          | `PENDING`, `PROCESSING`, `DONE`, `FAILED`                                                                                      |
+| `ProcessingJobScope`           | `GROUP`, `PLATFORM` _(deprecated)_                                                                                             |
+| `FeedItemType`                 | `GROUP_CREATED`, `MEMBER_JOINED`, `MATCH_CLOSE`, `MATCH_BLOWOUT`, `UPSET_WIN`, `RANKING_MOVEMENT`                              |
+| `FeedItemScope`                | `GROUP`, `USER`                                                                                                                |
+| `FeedItemVisibility`           | `GROUP_MEMBERS`, `SOCIAL_CIRCLE`, `PUBLIC`, `PRIVATE`                                                                          |
+| `HighlightType`                | `WIN_STREAK_CURRENT`, `WIN_STREAK_RECORD`, `CLIMB`, `LEADERSHIP`, `MILESTONE_MATCHES`, `MILESTONE_WINS`                        |
+| `NotificationType`             | `GUEST_TAKEN_OVER`                                                                                                             |
 
 ---
 
@@ -82,9 +81,9 @@ Children cascade on group delete (members, matches, invites, feed items, jobs, a
 
 Open (no target ⇒ the group's roster self-identify link) or closed (target ⇒ one guest,
 deep-links to its recognition). Joining (`/invites/:token/accept`) and taking over a guest
-(`/invites/:token/claim/:guestId`) both go through `/invites/:token`. The email-anchored
-claim still coexists. Indexes: `[groupId]`, `[createdById]`, `[token]`,
-`[targetGroupMemberId]`. Partial unique index `GroupInvite_active_plain_key` on
+(`/invites/:token/claim/:guestId`) both go through `/invites/:token`. Indexes:
+`[groupId]`, `[createdById]`, `[token]`, `[targetGroupMemberId]`.
+Partial unique index `GroupInvite_active_plain_key` on
 `(groupId, COALESCE(targetGroupMemberId, ''))` `WHERE revokedAt IS NULL AND expiresAt IS NULL
 AND maxUses IS NULL` enforces "one active plain invite per (group, target)" in the schema, so
 `create()` reuses via an optimistic read with no lock. Raw-SQL only (Prisma can't express
@@ -92,27 +91,23 @@ partial/expression indexes in PSL); migration `20260705000000_group_invite_activ
 
 ### GroupMember
 
-| Column                                | Type                | Notes                                                                       |
-| ------------------------------------- | ------------------- | --------------------------------------------------------------------------- |
-| `id`                                  | uuid PK             |                                                                             |
-| `groupId`                             | FK→Group            | `onDelete: Cascade`                                                         |
-| `userId`                              | FK→User?            | nullable — null for stub players (jogadores sem conta); `onDelete: Cascade` |
-| `displayName`                         | String?             | name for stub players; null when `userId` is set (name comes from User)     |
-| `rating`                              | Float               | default `1000`                                                              |
-| `ratingDeviation/Volatility/Mu/Sigma` | Float?              | reserved for future algorithms                                              |
-| `ratingAlgorithm`                     | String              | default `BEACH_ELO_V1`                                                      |
-| `currentRank`                         | Int?                |                                                                             |
-| `role`                                | `GroupMemberRole`   | default `MEMBER`                                                            |
-| `leftAt`                              | DateTime?           | soft membership exit                                                        |
-| `claimEmail`                          | String?             | stubs only — email an admin anchored for the email-anchored claim           |
-| `claimEmailStatus`                    | `ClaimEmailStatus?` | `PENDING`/`DECLINED` (null = none); the offer's lifecycle                   |
-| `claimEmailNotifiedAt`                | DateTime?           | dedupe — set once the CLAIM_OFFER notification is sent                      |
+| Column                                | Type              | Notes                                                                       |
+| ------------------------------------- | ----------------- | --------------------------------------------------------------------------- |
+| `id`                                  | uuid PK           |                                                                             |
+| `groupId`                             | FK→Group          | `onDelete: Cascade`                                                         |
+| `userId`                              | FK→User?          | nullable — null for stub players (jogadores sem conta); `onDelete: Cascade` |
+| `displayName`                         | String?           | name for stub players; null when `userId` is set (name comes from User)     |
+| `rating`                              | Float             | default `1000`                                                              |
+| `ratingDeviation/Volatility/Mu/Sigma` | Float?            | reserved for future algorithms                                              |
+| `ratingAlgorithm`                     | String            | default `BEACH_ELO_V1`                                                      |
+| `currentRank`                         | Int?              |                                                                             |
+| `role`                                | `GroupMemberRole` | default `MEMBER`                                                            |
+| `leftAt`                              | DateTime?         | soft membership exit                                                        |
 
 Uniques: `[groupId, userId]` (NULL `userId` is distinct in Postgres, so a group can
-hold many stub players), `[id, groupId]` (composite used by child FKs),
-`[groupId, claimEmail]` (one anchored email per stub per group; NULLs distinct).
+hold many stub players), `[id, groupId]` (composite used by child FKs).
 Indexes: `[groupId]`, `[userId]`, `[groupId, rating]`, `[groupId, currentRank, rating]`,
-`[groupId, role]`, `[claimEmail]` (lookup on registration).
+`[groupId, role]`.
 
 ### GroupMemberStats _(derived)_
 
@@ -239,15 +234,13 @@ Unique: `[type, matchId]` (idempotent match-derived items). Indexes on
 | `actorUserId`     | FK→User?           | nullable, no FK relation back                                          |
 | `data`            | Json               | denormalized render payload (title/body/meta/actions), frozen at write |
 | `readAt`          | DateTime?          | null = unread                                                          |
-| `actedAt`         | DateTime?          | set when the recipient acts (approve/decline/claim)                    |
+| `actedAt`         | DateTime?          | set when the recipient acts; the card then reads as history            |
 | `createdAt`       | DateTime           |                                                                        |
 
 Per-user in-app inbox (unlike `FeedItem`, which is group-public with no recipient or
-read state). `CLAIM_OFFER` carries the email-anchored claim offer (deep-links to the
-confirm screen); `CLAIM_OFFER_DECLINED` tells admins the offer was declined or hit a
-conflict; `GUEST_TAKEN_OVER` tells admins a guest was taken over via an invite
-(informational; `targetGroupMemberId` = the resulting membership). Indexes on
-`[recipientUserId, createdAt]`, `[recipientUserId, readAt]`.
+read state). One type so far: `GUEST_TAKEN_OVER` tells admins a guest was taken over
+via an invite (informational; `targetGroupMemberId` = the resulting membership).
+Indexes on `[recipientUserId, createdAt]`, `[recipientUserId, readAt]`.
 
 ---
 
@@ -256,35 +249,36 @@ conflict; `GUEST_TAKEN_OVER` tells admins a guest was taken over via an invite
 Migrations live in `apps/api/prisma/migrations/` (Prisma, `migration_lock.toml`
 present). Chronological highlights — each row tells you when a capability landed:
 
-| Migration                                               | What it added                                                                 |
-| ------------------------------------------------------- | ----------------------------------------------------------------------------- |
-| `20260519173138_init`                                   | initial schema                                                                |
-| `20260520164812` / `20260520171039_add_activity_events` | activity events                                                               |
-| `20260520173506_add_feed_items`                         | `FeedItem`                                                                    |
-| `20260520195834_update_feed_item_scope`                 | feed scope                                                                    |
-| `20260522120000_remove_persisted_display_names`         | display name now derived                                                      |
-| `20260610190000_add_ranking_movements`                  | `RankingMovement`                                                             |
-| `20260610200000_add_processing_jobs`                    | `ProcessingJob` queue                                                         |
-| `20260611120000_add_ranking_movement_feed_item_type`    | `RANKING_MOVEMENT` feed type                                                  |
-| `20260611130000_add_match_processing_state`             | `Match.processingStatus`/`deletedAt`                                          |
-| `20260611143000_add_persisted_ranking_projections`      | `GroupRankingProjection`                                                      |
-| `20260612193000_add_group_home_summary`                 | `GroupHomeSummary`                                                            |
-| `20260616030000_add_group_member_stats`                 | `GroupMemberStats`                                                            |
-| `20260616214500_add_processing_job_scope`               | job `scope` (GROUP/PLATFORM)                                                  |
-| `20260616223500_add_platform_trending_players`          | `PlatformTrendingPlayer`                                                      |
-| `20260616232500` / `20260617011500` / `20260617150000`  | platform-trending job + read-model trims + highlight relations                |
-| `20260617024500_add_processing_job_live_dedupe_index`   | pending-job dedupe index                                                      |
-| `20260621033753_add_group_highlights`                   | `GroupHighlight` + `HighlightType` enum                                       |
-| `20260621043745_retire_platform_trending`               | drop `PlatformTrendingPlayer` (PLATFORM enum values deprecated in place)      |
-| `20260621212123_group_member_stub_players`              | `GroupMember.displayName` + nullable `userId` (stub players)                  |
-| `20260621232855_group_invite_claim_target`              | `GroupInvite.targetGroupMemberId`/`claimedByUserId` (later retired)           |
-| `20260623014023_add_notifications`                      | `Notification` + `NotificationType` enum (in-app inbox)                       |
-| `20260623020216_add_claim_requests`                     | `ClaimRequest` + `ClaimRequestStatus` enum (later retired)                    |
-| `20260623034426_add_claim_email`                        | `GroupMember.claimEmail*` + `ClaimEmailStatus` + `CLAIM_OFFER*` enum vals     |
-| `20260623194946_add_group_member_partner_stats`         | `GroupMemberPartnerStats` (per-teammate read model)                           |
-| `20260623035814_retire_claim_links_and_requests`        | drop `ClaimRequest`/`ClaimRequestStatus` + GroupInvite CLAIM columns          |
-| `20260627120000_add_guest_invite_target_and_takeover`   | `GroupInvite.targetGroupMemberId` (open/closed) + `GUEST_TAKEN_OVER` enum val |
-| `20260705000000_group_invite_active_plain_unique`       | dedupe + partial unique index for one active plain invite per (group, target) |
+| Migration                                               | What it added                                                                                    |
+| ------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| `20260519173138_init`                                   | initial schema                                                                                   |
+| `20260520164812` / `20260520171039_add_activity_events` | activity events                                                                                  |
+| `20260520173506_add_feed_items`                         | `FeedItem`                                                                                       |
+| `20260520195834_update_feed_item_scope`                 | feed scope                                                                                       |
+| `20260522120000_remove_persisted_display_names`         | display name now derived                                                                         |
+| `20260610190000_add_ranking_movements`                  | `RankingMovement`                                                                                |
+| `20260610200000_add_processing_jobs`                    | `ProcessingJob` queue                                                                            |
+| `20260611120000_add_ranking_movement_feed_item_type`    | `RANKING_MOVEMENT` feed type                                                                     |
+| `20260611130000_add_match_processing_state`             | `Match.processingStatus`/`deletedAt`                                                             |
+| `20260611143000_add_persisted_ranking_projections`      | `GroupRankingProjection`                                                                         |
+| `20260612193000_add_group_home_summary`                 | `GroupHomeSummary`                                                                               |
+| `20260616030000_add_group_member_stats`                 | `GroupMemberStats`                                                                               |
+| `20260616214500_add_processing_job_scope`               | job `scope` (GROUP/PLATFORM)                                                                     |
+| `20260616223500_add_platform_trending_players`          | `PlatformTrendingPlayer`                                                                         |
+| `20260616232500` / `20260617011500` / `20260617150000`  | platform-trending job + read-model trims + highlight relations                                   |
+| `20260617024500_add_processing_job_live_dedupe_index`   | pending-job dedupe index                                                                         |
+| `20260621033753_add_group_highlights`                   | `GroupHighlight` + `HighlightType` enum                                                          |
+| `20260621043745_retire_platform_trending`               | drop `PlatformTrendingPlayer` (PLATFORM enum values deprecated in place)                         |
+| `20260621212123_group_member_stub_players`              | `GroupMember.displayName` + nullable `userId` (stub players)                                     |
+| `20260621232855_group_invite_claim_target`              | `GroupInvite.targetGroupMemberId`/`claimedByUserId` (later retired)                              |
+| `20260623014023_add_notifications`                      | `Notification` + `NotificationType` enum (in-app inbox)                                          |
+| `20260623020216_add_claim_requests`                     | `ClaimRequest` + `ClaimRequestStatus` enum (later retired)                                       |
+| `20260623034426_add_claim_email`                        | `GroupMember.claimEmail*` + `ClaimEmailStatus` + `CLAIM_OFFER*` enum vals                        |
+| `20260623194946_add_group_member_partner_stats`         | `GroupMemberPartnerStats` (per-teammate read model)                                              |
+| `20260623035814_retire_claim_links_and_requests`        | drop `ClaimRequest`/`ClaimRequestStatus` + GroupInvite CLAIM columns                             |
+| `20260627120000_add_guest_invite_target_and_takeover`   | `GroupInvite.targetGroupMemberId` (open/closed) + `GUEST_TAKEN_OVER` enum val                    |
+| `20260705000000_group_invite_active_plain_unique`       | dedupe + partial unique index for one active plain invite per (group, target)                    |
+| `20261030120000_retire_email_anchored_claim`            | drop `GroupMember.claimEmail*`, `ClaimEmailStatus`, the six `CLAIM_*` enum values and their rows |
 
 When changing the schema: edit `schema.prisma` → `pnpm exec prisma migrate dev` →
 `pnpm exec prisma generate` → confirm the backend compiles → update this doc,

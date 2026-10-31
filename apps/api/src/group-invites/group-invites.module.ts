@@ -7,8 +7,8 @@ import { GroupInvitesService } from './group-invites.service';
 import { PublicInvitesController } from './public-invites.controller';
 import { FeedModule } from '../feed/feed.module';
 import { GroupsModule } from '../groups/groups.module';
-import { ClaimsModule } from '../claims/claims.module';
 import { NotificationsModule } from '../notifications/notifications.module';
+import { ClaimService } from './claim.service';
 
 @Module({
   imports: [
@@ -16,12 +16,11 @@ import { NotificationsModule } from '../notifications/notifications.module';
     AuthModule,
     FeedModule,
     GroupsModule,
-    ClaimsModule,
     NotificationsModule,
     ProcessingModule,
   ],
   controllers: [GroupInvitesController, PublicInvitesController],
-  providers: [GroupInvitesService],
+  providers: [GroupInvitesService, ClaimService],
   exports: [GroupInvitesService],
 })
 export class GroupInvitesModule {}

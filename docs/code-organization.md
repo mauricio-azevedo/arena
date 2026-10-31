@@ -223,11 +223,10 @@ packages/contracts/
                           registerBodySchema + loginBodySchema, accountSchema +
                           authSessionResponseSchema; @arena/contracts/auth
     avatar-color.ts       AVATAR_COLOR_KEYS, AvatarColorKey, isAvatarColorKey
-    claims.ts             claimEmailBodySchema, claimStubSummarySchema + claimMembershipSchema +
-                          claimResultResponseSchema + claimEmailStateSchema +
-                          claimOfferDetailResponseSchema and their types;
-                          @arena/contracts/claims, the claim shapes both invite controllers
-                          and `claim-offers` answer
+    claims.ts             claimStubSummarySchema + claimMembershipSchema +
+                          claimResultResponseSchema and their types;
+                          @arena/contracts/claims, the claim shapes both invite
+                          controllers answer
     feed-item-type.ts     feedItemTypeSchema, FeedItemType; leaf
     group-member-role.ts  groupMemberRoleSchema, GroupMemberRole; leaf
     groups.ts             groupBodySchema, groupSchema + groupMembershipResponseSchema +
@@ -274,10 +273,10 @@ leaves (`iso-datetime.ts`, `group-member-role.ts`, `member-identity.ts`,
 invite answers its target's claim summary and embeds a group, the group home standing reuses
 `rankingMovementSchema`, `rankingEntrySchema` extends `groupMemberResponseSchema`, which reuses
 the profile stats and match-list shapes, which reuse `matchTeamSchema`; `me` edits the account
-`auth` creates, and the claim-email body is that account's own e-mail, so the field schemas and
-the session response live with `auth`); a schema two modules need goes in a leaf, never a
-cross-import that could cycle. `notifications` and `weekly-highlights` import no module at all:
-both answer identity already resolved to a name and a palette key, so neither embeds a member.
+`auth` creates, so the field schemas and the session response live with `auth`); a schema two
+modules need goes in a leaf, never a cross-import that could cycle. `notifications` and
+`weekly-highlights` import no module at all: both answer identity already resolved to a name
+and a palette key, so neither embeds a member.
 
 ### 3.4 `docs/`
 

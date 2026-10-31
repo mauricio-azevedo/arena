@@ -302,9 +302,9 @@ export class MembersService {
     });
   }
 
-  // Shapes the row to `groupMemberResponseSchema`: the claim-email fields stay
-  // server-side and the user is identity only (no id, no email). `GET …/members`
-  // has no guard, so anything selected here is public.
+  // Shapes the row to `groupMemberResponseSchema`: the user is identity only
+  // (no id, no email). `GET …/members` has no guard, so anything selected here
+  // is public.
   private memberSelect() {
     return {
       id: true,

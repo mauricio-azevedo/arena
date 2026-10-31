@@ -11,8 +11,6 @@ import * as bcrypt from 'bcryptjs';
 import { ACCOUNT_SELECT } from './account-select';
 import { PrismaService } from '../prisma/prisma.service';
 import { pickDefaultAvatarColor } from '../common/avatar-color';
-import { structuredLog } from '../observability/structured-log';
-import { claimOfferNotificationData } from '../claim-offers/claim-offer-notification';
 
 const SALT_ROUNDS = 10;
 
@@ -56,59 +54,10 @@ export class AuthService {
       select: ACCOUNT_SELECT,
     });
 
-    // A stub may have been waiting for this email — offer it now (never auto-claims). A
-    // best-effort side effect: its failure must never fail the registration the user just
-    // completed (the account is already committed; failing here would lock them out).
-    try {
-      await this.notifyPendingClaimOffers(user.id, email);
-    } catch (error) {
-      structuredLog('auth.claim_offer_notify_failed', {
-        userId: user.id,
-        error: error instanceof Error ? error.message : String(error),
-      });
-    }
-
     return {
       user,
       accessToken: this.signToken(user.id, user.email),
     };
-  }
-
-  // Stubs an admin anchored to this email but couldn't notify yet (no account existed).
-  // Now that the account exists, send the same claim offer it would have gotten then.
-  private async notifyPendingClaimOffers(userId: string, email: string) {
-    const stubs = await this.prisma.groupMember.findMany({
-      where: {
-        claimEmail: email,
-        userId: null,
-        claimEmailStatus: 'PENDING',
-        claimEmailNotifiedAt: null,
-      },
-      select: {
-        id: true,
-        group: { select: { id: true, name: true } },
-      },
-    });
-
-    if (stubs.length === 0) {
-      return;
-    }
-
-    await this.prisma.$transaction([
-      this.prisma.notification.createMany({
-        data: stubs.map((stub) => ({
-          type: 'CLAIM_OFFER' as const,
-          recipientUserId: userId,
-          groupId: stub.group.id,
-          targetGroupMemberId: stub.id,
-          data: claimOfferNotificationData(stub.id, stub.group.name),
-        })),
-      }),
-      this.prisma.groupMember.updateMany({
-        where: { id: { in: stubs.map((stub) => stub.id) } },
-        data: { claimEmailNotifiedAt: new Date() },
-      }),
-    ]);
   }
 
   async login(body: LoginBody): Promise<AuthSessionResponse> {

@@ -84,19 +84,7 @@ enum FeedItemVisibility {
 }
 
 enum NotificationType {
-  CLAIM_REQUEST // deprecated — pre-email-anchored claim flow
-  CLAIM_APPROVED // deprecated
-  CLAIM_DECLINED // deprecated
-  CLAIM_INVITE // deprecated
-  CLAIM_OFFER // admin anchored an email to a stub → offer to that account
-  CLAIM_OFFER_DECLINED // the offered person declined → tell the admin
   GUEST_TAKEN_OVER // a guest was taken over via an invite → inform group admins
-}
-
-// State of the email an admin anchored to a stub (jogador sem conta).
-enum ClaimEmailStatus {
-  PENDING
-  DECLINED
 }
 
 model User {
@@ -219,13 +207,6 @@ model GroupMember {
 
   leftAt DateTime?
 
-  // Email-anchored claim (stubs only): an admin attaches an email; when an account with
-  // that email exists/registers, it's offered the stub's history to confirm. The email
-  // value itself is the auth nonce for the confirm — editing it invalidates old offers.
-  claimEmail           String?
-  claimEmailStatus     ClaimEmailStatus?
-  claimEmailNotifiedAt DateTime?
-
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -240,13 +221,11 @@ model GroupMember {
 
   @@unique([groupId, userId])
   @@unique([id, groupId])
-  @@unique([groupId, claimEmail])
   @@index([groupId])
   @@index([userId])
   @@index([groupId, rating])
   @@index([groupId, currentRank, rating])
   @@index([groupId, role])
-  @@index([claimEmail])
 }
 
 model GroupMemberStats {
@@ -618,7 +597,7 @@ model Notification {
   groupId         String?
   group           Group?           @relation(fields: [groupId], references: [id], onDelete: Cascade)
   actorUserId     String?
-  // The entity this notification is about (e.g. the stub a CLAIM_OFFER points at). A plain
+  // The entity this notification is about (e.g. the membership a GUEST_TAKEN_OVER names). A plain
   // column, no FK — the stub can be deleted by a merge, and we only need it to resolve the
   // notification (mark acted) when that entity's state changes.
   targetGroupMemberId String?

@@ -29,7 +29,7 @@ export type GuestMemberBody = z.infer<typeof guestMemberBodySchema>;
 // `POST …/members/:memberId/unlink` and `DELETE …/members/:memberId` — there
 // with `leftAt` set, a removal is a soft leave and the history stays on the
 // membership. Competitive state lives here, never on the user: one of these per
-// group per person. The claim-email fields stay server-side.
+// group per person.
 export const groupMemberResponseSchema = memberIdentitySchema.extend({
   groupId: z.uuid(),
   rating: z.number(),

@@ -152,8 +152,6 @@ create(@Param('groupId') groupId: string, @CurrentUser() user: AuthUser,
 | `GET /invites/:token` (OPEN ⇒ guest roster · CLOSED ⇒ target summary)                                                                     | public/required              | public-invites  |
 | `GET /invites/:token/guests/:guestId/summary`                                                                                             | public (token)               | public-invites  |
 | `POST /invites/:token/claim/:guestId`, `POST /invites/:token/accept`                                                                      | required                     | public-invites  |
-| `POST/DELETE/GET /groups/:groupId/members/:memberId/claim-email` (legacy — no UI creates anchors anymore)                                 | required (admin)             | claim-offers    |
-| `GET/POST /me/claims/:stubId`, `…/confirm`, `…/decline`                                                                                   | required (email match)       | claim-offers    |
 | `POST /groups/:groupId/members`, `GET …/members`                                                                                          | varies                       | members         |
 | `POST /groups/:groupId/members/guest`                                                                                                     | required (any active member) | members         |
 | `GET /groups/:groupId/members/:memberId/profile`                                                                                          | public                       | members         |

@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Body, Label, Meta, Overline, Stat, Title } from '@/components/ui/text';
 import { cn } from '@/lib/utils';
 import { nameInitial } from '@/lib/avatar';
-import { DashedAvatar, GroupBrandChip } from './claim-shared';
+import { DashedAvatar, GroupBrandChip } from './invite-shared';
 
 type ClaimConflictProps = {
   groupId: string;

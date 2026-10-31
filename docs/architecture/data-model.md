@@ -100,7 +100,7 @@ Tokenized invite link. `token` (unique), optional `expiresAt`/`revokedAt`,
 link — the opener self-identifies against the unclaimed guests) and **set = closed**
 (addressed to one guest, deep-links to its recognition). Public read via `/invites/:token`;
 join via `/invites/:token/accept`; take over a guest via `/invites/:token/claim/:guestId`.
-The older email-anchored claim on `GroupMember.claimEmail*` still coexists (see below).
+The take-over/merge core is `ClaimService.performClaim` (`group-invites/claim.service.ts`).
 
 ### FeedItem
 
@@ -126,24 +126,12 @@ The job-queue table that drives the async pipeline. `type`
 ### Notification
 
 Per-user in-app notification — the opposite of `FeedItem` (which is group-public
-with no recipient). `type` (`CLAIM_OFFER` to the offer recipient, `CLAIM_OFFER_DECLINED`
-to admins, `GUEST_TAKEN_OVER` to admins when a guest is taken over via an invite; the old
-`CLAIM_REQUEST/APPROVED/DECLINED/INVITE` are deprecated and no longer written),
+with no recipient). `type` (`GUEST_TAKEN_OVER`, to the group's other admins when a
+guest is taken over via an invite — the only moment that writes one so far),
 `recipientUser` (cascade), optional `group`/`actorUserId`/`targetGroupMemberId`, a
 denormalized `data` (JSON: title/body/meta/actions, frozen at write so old messages never
 re-render), and read state (`readAt`, `actedAt`). Not derived — written directly when the
-triggering event happens. Powers the claim / take-over flows
-([`../product/guests-and-invites.md`](../product/guests-and-invites.md)).
-
-### Email-anchored claim (on GroupMember, no own table)
-
-Claiming a stub has no dedicated table — its state lives in three `GroupMember` columns on
-stubs (`userId = null`): `claimEmail` (the email an admin anchored), `claimEmailStatus`
-(`PENDING`/`DECLINED`), and `claimEmailNotifiedAt` (notify-once dedupe). `@@unique([groupId,
-claimEmail])` keeps one anchored email per stub; `@@index([claimEmail])` powers the
-registration hook that offers waiting stubs to a new account. The email value is the offer's
-nonce — editing it invalidates outstanding confirms (the confirm authorizes by
-`user.email == stub.claimEmail`). The claim/merge core is `ClaimService.performClaim`. See
+triggering event happens. See
 [`../product/guests-and-invites.md`](../product/guests-and-invites.md).
 
 ---
