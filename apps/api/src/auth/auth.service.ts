@@ -7,7 +7,7 @@ import type {
   LoginBody,
   RegisterBody,
 } from '@arena/contracts/auth';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 import { ACCOUNT_SELECT } from './account-select';
 import { PrismaService } from '../prisma/prisma.service';
 import { pickDefaultAvatarColor } from '../common/avatar-color';

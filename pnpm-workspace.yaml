@@ -7,7 +7,6 @@ packages:
 # false → the script is redundant: it re-checks a native binding already installed
 #         via an optional platform package, or only prints a funding message.
 allowBuilds:
-  bcrypt: true
   '@prisma/engines': true
   prisma: true
   '@nestjs/core': false
