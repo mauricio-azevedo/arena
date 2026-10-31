@@ -4,18 +4,9 @@ import { isoDateTime } from './iso-datetime';
 // Response-only: every route of the inbox acts on the caller's own
 // notifications, taken from the token, so there is no body to parse.
 
-// The storage's enum, not today's product surface: a row written before a flow
-// was retired still has to render, so the deprecated values stay promised.
-export const notificationTypeSchema = z.enum([
-  'CLAIM_OFFER',
-  'CLAIM_OFFER_DECLINED',
-  'GUEST_TAKEN_OVER',
-  // Deprecated — pre-email-anchored claim flow. No longer written; rows exist.
-  'CLAIM_REQUEST',
-  'CLAIM_APPROVED',
-  'CLAIM_DECLINED',
-  'CLAIM_INVITE',
-]);
+// One moment so far. The retired claim flows' values were dropped from the
+// column with their rows, so nothing in the inbox can carry one.
+export const notificationTypeSchema = z.enum(['GUEST_TAKEN_OVER']);
 
 // A deep link the card offers while the notification is still actionable.
 const notificationActionSchema = z.strictObject({

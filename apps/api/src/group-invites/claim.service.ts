@@ -229,8 +229,8 @@ export class ClaimService {
   }
 
   // The membership an accept or a claim lands on. Identity, role and rating: the
-  // caller already has the group, the claim-email columns are server-side, and
-  // the rating internals belong to the ranking payloads.
+  // caller already has the group, and the rating internals belong to the
+  // ranking payloads.
   findMembershipResponse(
     tx: Prisma.TransactionClient,
     id: string,
