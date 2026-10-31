@@ -18,6 +18,40 @@ import { PrismaService } from '../prisma/prisma.service';
 import { ProcessingJobWriterService } from '../processing/processing-job-writer.service';
 import type { Prisma } from '../generated/prisma/client';
 
+// Everything `groupMemberResponseSchema` promises, and only that: the user is
+// identity only (no id, no email). `GET …/members` has no guard, so anything
+// selected here is public.
+const MEMBER_SELECT = {
+  id: true,
+  groupId: true,
+  userId: true,
+  displayName: true,
+  rating: true,
+  ratingDeviation: true,
+  ratingVolatility: true,
+  ratingMu: true,
+  ratingSigma: true,
+  ratingAlgorithm: true,
+  currentRank: true,
+  role: true,
+  leftAt: true,
+  createdAt: true,
+  updatedAt: true,
+  user: { select: MEMBER_USER_SELECT },
+} satisfies Prisma.GroupMemberSelect;
+
+type MemberRow = Prisma.GroupMemberGetPayload<{ select: typeof MEMBER_SELECT }>;
+
+// The column is `currentRank`; the wire field is `rank` (see
+// `groupMemberResponseSchema`). The rest of the row is the payload, so a new
+// promised column only needs adding to `MEMBER_SELECT`.
+function toMemberResponse({
+  currentRank,
+  ...member
+}: MemberRow): GroupMemberResponse {
+  return { ...member, rank: currentRank };
+}
+
 @Injectable()
 export class MembersService {
   constructor(
@@ -178,7 +212,7 @@ export class MembersService {
 
     const member = await this.prisma.groupMember.findUnique({
       where: { id: memberId },
-      select: this.memberSelect(),
+      select: MEMBER_SELECT,
     });
 
     if (!member || member.groupId !== groupId) {
@@ -279,7 +313,7 @@ export class MembersService {
       throw new NotFoundException('Group not found');
     }
 
-    return this.prisma.groupMember.findMany({
+    const members = await this.prisma.groupMember.findMany({
       where: {
         groupId,
         leftAt: null,
@@ -289,40 +323,20 @@ export class MembersService {
         { user: { firstName: 'asc' } },
         { user: { lastName: 'asc' } },
       ],
-      select: this.memberSelect(),
+      select: MEMBER_SELECT,
     });
+
+    return members.map(toMemberResponse);
   }
 
   // Re-reads a membership the caller just wrote or checked, so a miss is an
   // invariant break, not a client error.
-  private findOne(id: string): Promise<GroupMemberResponse> {
-    return this.prisma.groupMember.findUniqueOrThrow({
-      where: { id },
-      select: this.memberSelect(),
-    });
-  }
-
-  // Shapes the row to `groupMemberResponseSchema`: the user is identity only
-  // (no id, no email). `GET …/members` has no guard, so anything selected here
-  // is public.
-  private memberSelect() {
-    return {
-      id: true,
-      groupId: true,
-      userId: true,
-      displayName: true,
-      rating: true,
-      ratingDeviation: true,
-      ratingVolatility: true,
-      ratingMu: true,
-      ratingSigma: true,
-      ratingAlgorithm: true,
-      currentRank: true,
-      role: true,
-      leftAt: true,
-      createdAt: true,
-      updatedAt: true,
-      user: { select: MEMBER_USER_SELECT },
-    };
+  private async findOne(id: string): Promise<GroupMemberResponse> {
+    return toMemberResponse(
+      await this.prisma.groupMember.findUniqueOrThrow({
+        where: { id },
+        select: MEMBER_SELECT,
+      }),
+    );
   }
 }

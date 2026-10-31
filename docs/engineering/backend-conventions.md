@@ -91,6 +91,13 @@ create(@Param('groupId') groupId: string, @CurrentUser() user: AuthUser,
   (`Promise<MatchResponse>`) and shapes the Prisma `select`/`omit` to the schema. What the API
   sends minus internals, not only what the web reads today. Never parse a response in production;
   the e2e spec parses one per route (ADR 0008).
+- **One wire name per concept, across modules.** A field that means the same thing on two routes
+  is spelled the same on both, and nullable only where it genuinely can be null — with a comment
+  saying which. A member's rank is `rank` on every payload that carries one (`members`, `profiles`,
+  `groups`, `claims`), nullable until the ranking projection has one and not nullable where the
+  payload exists only for a ranked member; the column behind it is `currentRank`, and the service
+  renames it at the boundary. `previousRank`/`currentRank` survive only inside
+  `rankingMovementSchema`, where the prefix pairs with `previousRating`/`currentRating`.
 - Internal contracts live in per-module `types/` — a writer's input, a generator's draft
   (`notification.types.ts`, `feed-item-draft.type.ts`). One important type per file; a shape the
   API sends belongs in `@arena/contracts`, never here.

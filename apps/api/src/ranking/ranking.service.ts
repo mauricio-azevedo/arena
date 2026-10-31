@@ -70,9 +70,13 @@ export class RankingService {
       },
     });
 
-    return members.map((member) => ({
+    // The column is `currentRank`, the wire field is `rank` (see
+    // `groupMemberResponseSchema`); `stats` is a relation, replaced by its
+    // projected counts.
+    return members.map(({ currentRank, stats, ...member }) => ({
       ...member,
-      stats: member.stats ?? EMPTY_GROUP_MEMBER_STATS,
+      rank: currentRank,
+      stats: stats ?? EMPTY_GROUP_MEMBER_STATS,
       rankingMovement: rankingMovementByMemberId.get(member.id) ?? null,
     }));
   }

@@ -312,7 +312,7 @@ describe('App (e2e)', () => {
         expect(summary.recentGroups.map((group) => group.id)).toEqual([
           groupId,
         ]);
-        expect(summary.recentGroups[0].currentRank).not.toBeNull();
+        expect(summary.recentGroups[0].rank).not.toBeNull();
       });
 
       it('GET /me/profile/matches answers a list of the profile match contract', async () => {
@@ -380,7 +380,7 @@ describe('App (e2e)', () => {
         const ranking = rankingEntrySchema.array().parse(res.body);
         // Everyone started at 1000, all #1; after the one match the two winners
         // share #1 and the two losers #2, in display order.
-        expect(ranking.map((entry) => entry.currentRank)).toEqual([1, 1, 2, 2]);
+        expect(ranking.map((entry) => entry.rank)).toEqual([1, 1, 2, 2]);
 
         const creator = ranking.find((entry) => entry.userId === userId);
         expect(creator?.stats).toEqual({ matchesCount: 1, winsCount: 0 });
@@ -470,7 +470,7 @@ describe('App (e2e)', () => {
         // No stats row and no rank until the next processed match.
         expect(added).toMatchObject({
           rating: 1000,
-          currentRank: null,
+          rank: null,
           stats: { matchesCount: 0, winsCount: 0 },
           rankingMovement: null,
         });

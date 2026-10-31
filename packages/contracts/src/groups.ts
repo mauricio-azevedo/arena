@@ -63,6 +63,7 @@ export const groupHomeLeaderSchema = z.strictObject({
   userId: z.uuid().nullable(),
   displayName: z.string(),
   rating: z.number(),
+  // Not nullable: a leader is a rank-1 member by construction.
   rank: z.int(),
 });
 
@@ -72,6 +73,7 @@ export const groupHomeLeaderSchema = z.strictObject({
 const groupHomeStandingSchema = z.discriminatedUnion('kind', [
   z.strictObject({
     kind: z.literal('RANKED'),
+    // Not nullable: UNRANKED is the variant for a viewer without a rank yet.
     rank: z.int(),
     rating: z.number(),
     rankingMovement: rankingMovementSchema.nullable(),

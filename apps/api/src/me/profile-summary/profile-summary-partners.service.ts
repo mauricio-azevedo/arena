@@ -121,7 +121,7 @@ export class ProfileSummaryPartnersService {
       userId: partner.userId,
       displayName: partner.displayName,
       avatarColor: partner.avatarColor,
-      currentRank: partner.currentRank,
+      rank: partner.currentRank,
       matchesTogether: partner.matchesTogether,
       winsTogether: partner.winsTogether,
       lossesTogether,
