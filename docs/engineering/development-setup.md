@@ -152,6 +152,17 @@ A strong PR description should include:
 - migration notes when applicable;
 - rollback notes when risky.
 
+## Dead code
+
+`pnpm run knip` reports unused files, exports, types and dependencies. One root `knip.jsonc`
+covers the whole workspace — a per-package run cannot see cross-package imports, so
+`@arena/contracts` reads as unused in both apps. It is part of `just ci`, so the run is green:
+a new finding fails CI.
+
+Fix a finding rather than ignore it. Usually that means deleting dead code, or dropping `export`
+from something only its own file uses. `ignoreDependencies` is for packages reached without an
+import — each entry in `knip.jsonc` says why.
+
 ## Dependencies
 
 - `pnpm update -r` moves every package to the newest version inside its range and rewrites the

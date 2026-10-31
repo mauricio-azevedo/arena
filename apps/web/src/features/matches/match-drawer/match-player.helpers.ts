@@ -29,7 +29,7 @@ export type RosterMember = Pick<GroupMember, 'id' | 'userId' | 'displayName' | '
 // Prefix marking a guest named inline but not yet persisted. On submit, slots
 // holding a draft id send the guest's name instead of a member id; the backend
 // creates the stub atomically with the match.
-export const DRAFT_GUEST_PREFIX = 'draft:';
+const DRAFT_GUEST_PREFIX = 'draft:';
 
 export function isDraftGuest(memberId: string) {
   return memberId.startsWith(DRAFT_GUEST_PREFIX);

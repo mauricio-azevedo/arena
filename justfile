@@ -32,4 +32,5 @@ ci:
     pnpm run format:check
     pnpm turbo run lint:check build test
     pnpm run lint:docs
+    pnpm run knip
     pnpm turbo run test:e2e

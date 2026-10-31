@@ -21,7 +21,7 @@ export const WIN_VALUES: WinValue[] = [7, 6];
 export const LOSE_VALUES: LoseValue[] = [0, 1, 2, 3, 4, 5, 6];
 
 // Which loser scores are legal for a given winning score.
-export function loseOptionsFor(win: WinValue | null): LoseValue[] {
+function loseOptionsFor(win: WinValue | null): LoseValue[] {
   if (win === 7) return [5, 6];
   if (win === 6) return [0, 1, 2, 3, 4];
   return LOSE_VALUES;
@@ -154,5 +154,3 @@ export function useMatchForm(match?: Match) {
     canSave,
   };
 }
-
-export type MatchFormState = ReturnType<typeof useMatchForm>;

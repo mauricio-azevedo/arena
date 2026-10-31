@@ -9,6 +9,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { FeedOrchestratorService } from '../feed/feed-orchestrator.service';
 import type {
   RankingMovementFeedInput,
+  RankingMovementFeedLeadershipChange,
   RankingMovementFeedMovement,
   RankingMovementFeedPlayer,
 } from '../feed/types/ranking-movement-feed-input.type';
@@ -66,11 +67,7 @@ type RankingMovementFeedMatch = {
   }>;
 };
 
-type SnapshotLeadershipContext = {
-  previousLeaders: RankingMovementFeedPlayer[];
-  currentLeaders: RankingMovementFeedPlayer[];
-  dethronedLeaders: RankingMovementFeedPlayer[];
-};
+type SnapshotLeadershipContext = RankingMovementFeedLeadershipChange;
 
 type SnapshotMovement = RankingMovementFeedMovement;
 

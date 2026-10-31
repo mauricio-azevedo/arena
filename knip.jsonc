@@ -1,0 +1,24 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  // One run for the whole workspace: per-package configs cannot see cross-package
+  // imports, so `@arena/contracts` looked unused in both apps. `pnpm run knip`.
+  "workspaces": {
+    ".": {},
+    "apps/api": {
+      "entry": ["src/main.ts", "test/**/*.e2e-spec.ts"],
+      // The schema is in `project` so knip follows it into the generated client.
+      "project": ["src/**/*.ts", "test/**/*.ts", "prisma/*.prisma"],
+      // Imported only as `./generated/prisma/*`, which `prisma generate` emits.
+      "ignoreDependencies": ["@prisma/client"],
+      // Don't load prisma.config.ts: it resolves DATABASE_URL, which would make
+      // the analysis depend on the environment. `prisma/seed.ts` is reached
+      // through the `db:seed` script instead.
+      "prisma": { "config": [] },
+    },
+    "apps/web": {
+      // shadcn/ui primitives are vendored, so each is its own entry.
+      "entry": ["src/components/ui/**/*.{ts,tsx}"],
+    },
+    "packages/contracts": {},
+  },
+}

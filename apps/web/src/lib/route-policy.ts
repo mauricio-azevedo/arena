@@ -1,6 +1,6 @@
 import type { GroupMemberRole } from '@arena/contracts/members';
 
-export type RouteAccess =
+type RouteAccess =
   | {
       kind: 'public';
       requiresCheck: false;
@@ -16,7 +16,7 @@ export type RouteAccess =
       requiredRole?: GroupMemberRole;
     };
 
-export type RouteChromePolicy = {
+type RouteChromePolicy = {
   topBar: boolean;
   bottomNav: boolean;
   trackNavigation: boolean;

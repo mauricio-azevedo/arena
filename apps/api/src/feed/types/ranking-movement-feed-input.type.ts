@@ -1,11 +1,11 @@
 import type { MatchTeam } from '../../generated/prisma/enums';
 import type { FeedPlayer } from './feed-player.type';
 
-export type RankingMovementFeedDirection = 'UP' | 'DOWN';
+type RankingMovementFeedDirection = 'UP' | 'DOWN';
 
 export type RankingMovementFeedPlayer = FeedPlayer;
 
-export type RankingMovementFeedAffectedMember = RankingMovementFeedPlayer & {
+type RankingMovementFeedAffectedMember = RankingMovementFeedPlayer & {
   rank: number | null;
 };
 

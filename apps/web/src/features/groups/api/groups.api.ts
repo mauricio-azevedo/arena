@@ -3,12 +3,6 @@ import type { GroupMember, GuestMemberBody } from '@arena/contracts/members';
 import type { RankingEntry } from '@arena/contracts/ranking';
 import { apiRequest } from '@/lib/api-client';
 
-export function getGroups(): Promise<Group[]> {
-  return apiRequest<Group[]>('/groups', {
-    cache: 'no-store',
-  });
-}
-
 export function getGroup(groupId: string): Promise<Group> {
   return apiRequest<Group>(`/groups/${groupId}`, {
     cache: 'no-store',

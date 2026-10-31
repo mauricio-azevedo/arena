@@ -7,12 +7,6 @@ export function getGroupMatches(groupId: string): Promise<Match[]> {
   });
 }
 
-export function getGroupMatch(groupId: string, matchId: string): Promise<Match> {
-  return apiRequest<Match>(`/groups/${groupId}/matches/${matchId}`, {
-    cache: 'no-store',
-  });
-}
-
 export function createGroupMatch(token: string, groupId: string, input: MatchBody): Promise<Match> {
   return apiRequest<Match>(`/groups/${groupId}/matches`, {
     method: 'POST',
