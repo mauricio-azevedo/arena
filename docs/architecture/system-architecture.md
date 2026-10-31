@@ -21,12 +21,12 @@ arena/
   docs/       documentation (this file lives here)
 ```
 
-| Layer    | Tech                                                                                            |
-| -------- | ----------------------------------------------------------------------------------------------- |
-| Frontend | Next.js 16, React 19, TypeScript, Tailwind v4, shadcn/ui (radix-luma), lucide                   |
-| Backend  | NestJS 12, TypeScript, Prisma 7 (`@prisma/adapter-pg` + `pg` Pool), JWT (`@nestjs/jwt`), bcrypt |
-| Database | PostgreSQL 16 (local via `docker-compose`; Neon in hosted environments)                         |
-| Deploy   | `web` on Vercel (`vercel.json`, only `main` auto-deploys); `api` + DB hosted separately         |
+| Layer    | Tech                                                                                              |
+| -------- | ------------------------------------------------------------------------------------------------- |
+| Frontend | Next.js 16, React 19, TypeScript, Tailwind v4, shadcn/ui (radix-luma), lucide                     |
+| Backend  | NestJS 12, TypeScript, Prisma 7 (`@prisma/adapter-pg` + `pg` Pool), JWT (`@nestjs/jwt`), bcryptjs |
+| Database | PostgreSQL 16 (local via `docker-compose`; Neon in hosted environments)                           |
+| Deploy   | `web` on Vercel (`vercel.json`, only `main` auto-deploys); `api` + DB hosted separately           |
 
 `@arena/contracts` (`packages/contracts`) is the shared package: error codes, avatar keys,
 and request and response schemas, one subpath per API module (`@arena/contracts/matches`).
