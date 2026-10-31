@@ -18,6 +18,10 @@ dev: db-up
 db-up:
     docker compose up -d --wait
 
+# API container image. Context is the repo root: turbo prune needs the workspace.
+docker-build:
+    docker build -f apps/api/Dockerfile -t arena-api:local .
+
 # Apply pending migrations without prompting (CI and deploys)
 migrate-deploy:
     pnpm --filter @arena/api exec prisma migrate deploy
