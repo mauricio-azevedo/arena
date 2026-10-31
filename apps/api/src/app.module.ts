@@ -12,7 +12,6 @@ import { UsersModule } from './users/users.module';
 import { ProcessingModule } from './processing/processing.module';
 import { HomeHighlightsModule } from './home-highlights/home-highlights.module';
 import { NotificationsModule } from './notifications/notifications.module';
-import { ClaimOffersModule } from './claim-offers/claim-offers.module';
 import { HealthModule } from './health/health.module';
 
 @Module({
@@ -30,7 +29,6 @@ import { HealthModule } from './health/health.module';
     ProcessingModule,
     HomeHighlightsModule,
     NotificationsModule,
-    ClaimOffersModule,
     HealthModule,
   ],
 })

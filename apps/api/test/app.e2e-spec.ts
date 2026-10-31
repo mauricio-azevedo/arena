@@ -14,10 +14,7 @@ import {
   groupSchema,
 } from '@arena/contracts/groups';
 import {
-  claimDeclinedResponseSchema,
-  claimEmailStateSchema,
   claimMembershipSchema,
-  claimOfferDetailResponseSchema,
   claimResultResponseSchema,
   claimStubSummarySchema,
 } from '@arena/contracts/claims';
@@ -1105,14 +1102,14 @@ describe('App (e2e)', () => {
   });
 
   // The inbox and the home rail: both read models whose only writers are other
-  // flows, so each is seeded through the flow that produces it — an anchored
-  // claim e-mail for the notification, a projected row for the highlight.
+  // flows, so each is seeded through the flow that produces it — a guest taken
+  // over through an invite for the notification, a projected row for the
+  // highlight.
   describe('notifications and highlights', () => {
     let adminToken: string;
     let adminUserId: string;
     let adminMemberId: string;
     let groupId: string;
-    let recipientToken: string;
 
     beforeAll(async () => {
       const stamp = Date.now();
@@ -1129,18 +1126,17 @@ describe('App (e2e)', () => {
       adminToken = adminSession.accessToken;
       adminUserId = adminSession.user.id;
 
-      const recipientEmail = `e2e-inbox-${stamp}@arena.test`;
-      const recipient = await request(app.getHttpServer())
+      const taker = await request(app.getHttpServer())
         .post('/auth/register')
         .send({
-          firstName: 'Zeca',
-          lastName: 'Conta',
-          email: recipientEmail,
+          firstName: 'Rui',
+          lastName: 'Tomou',
+          email: `e2e-inbox-taker-${stamp}@arena.test`,
           password: 'secret1',
         })
         .expect(201);
-      recipientToken = authSessionResponseSchema.parse(
-        recipient.body,
+      const takerToken = authSessionResponseSchema.parse(
+        taker.body,
       ).accessToken;
 
       const group = await request(app.getHttpServer())
@@ -1169,12 +1165,20 @@ describe('App (e2e)', () => {
         .expect(201);
       const guestMemberId = groupMemberResponseSchema.parse(guest.body).id;
 
-      // Anchoring the recipient's address on the stub is what writes them a
-      // CLAIM_OFFER — the only route that mints a notification on demand.
-      await request(app.getHttpServer())
-        .post(`/groups/${groupId}/members/${guestMemberId}/claim-email`)
+      // Someone taking the guest over through an invite is what writes the
+      // group's other admins a GUEST_TAKEN_OVER — the only flow that mints a
+      // notification.
+      const invite = await request(app.getHttpServer())
+        .post(`/groups/${groupId}/invites`)
         .set('Authorization', `Bearer ${adminToken}`)
-        .send({ email: recipientEmail })
+        .send({ targetGroupMemberId: guestMemberId })
+        .expect(201);
+
+      await request(app.getHttpServer())
+        .post(
+          `/invites/${createdInviteResponseSchema.parse(invite.body).token}/claim/${guestMemberId}`,
+        )
+        .set('Authorization', `Bearer ${takerToken}`)
         .expect(201);
 
       // The rail reads GroupHighlight, which only the weekly-highlights
@@ -1195,25 +1199,29 @@ describe('App (e2e)', () => {
     it('GET /me/notifications answers a list of the notification contract', async () => {
       const res = await request(app.getHttpServer())
         .get('/me/notifications')
-        .set('Authorization', `Bearer ${recipientToken}`)
+        .set('Authorization', `Bearer ${adminToken}`)
         .expect(200);
 
       const notifications = notificationSchema.array().parse(res.body);
       expect(notifications).toHaveLength(1);
       expect(notifications[0]).toMatchObject({
-        type: 'CLAIM_OFFER',
+        type: 'GUEST_TAKEN_OVER',
         groupId,
         read: false,
         acted: false,
       });
-      // The render payload is frozen at write time, deep link included.
-      expect(notifications[0].data.actions).toHaveLength(1);
+      // The render payload is denormalized and frozen at write time, so the
+      // card reads the same after the group or the taker is renamed.
+      expect(notifications[0].data).toMatchObject({
+        title: 'Rui Tomou assumiu um perfil no E2E inbox group',
+        meta: 'convidado',
+      });
     });
 
     it('GET /me/notifications/unread-count answers the badge contract', async () => {
       const res = await request(app.getHttpServer())
         .get('/me/notifications/unread-count')
-        .set('Authorization', `Bearer ${recipientToken}`)
+        .set('Authorization', `Bearer ${adminToken}`)
         .expect(200);
 
       expect(unreadNotificationCountResponseSchema.parse(res.body)).toEqual({
@@ -1224,7 +1232,7 @@ describe('App (e2e)', () => {
     it('POST /me/notifications/read answers how many it marked and empties the badge', async () => {
       const read = await request(app.getHttpServer())
         .post('/me/notifications/read')
-        .set('Authorization', `Bearer ${recipientToken}`)
+        .set('Authorization', `Bearer ${adminToken}`)
         .expect(201);
 
       expect(notificationsReadResponseSchema.parse(read.body)).toEqual({
@@ -1233,7 +1241,7 @@ describe('App (e2e)', () => {
 
       const after = await request(app.getHttpServer())
         .get('/me/notifications/unread-count')
-        .set('Authorization', `Bearer ${recipientToken}`)
+        .set('Authorization', `Bearer ${adminToken}`)
         .expect(200);
 
       expect(
@@ -1269,172 +1277,6 @@ describe('App (e2e)', () => {
       const cards = weeklyHighlightCardSchema.array().parse(res.body);
       // Nothing viewer-scoped without a token: the group rail needs a membership.
       expect(cards.every((card) => card.origin === 'ARENA')).toBe(true);
-    });
-  });
-
-  // The email-anchored offer, both sides of it: an admin anchors an address on a
-  // stub, and the account that owns the address either takes the history over or
-  // says it is not them. Two stubs, because the two outcomes are terminal — a
-  // declined offer cannot then be confirmed.
-  describe('claim offer flow', () => {
-    let adminToken: string;
-    let groupId: string;
-    let declinerEmail: string;
-    let declinerToken: string;
-    let claimerEmail: string;
-    let claimerToken: string;
-    let declinedStubId: string;
-    let claimedStubId: string;
-
-    async function registerAccount(email: string, firstName: string) {
-      const res = await request(app.getHttpServer())
-        .post('/auth/register')
-        .send({ firstName, lastName: 'Oferta', email, password: 'secret1' })
-        .expect(201);
-
-      return authSessionResponseSchema.parse(res.body).accessToken;
-    }
-
-    async function createStub(name: string) {
-      const res = await request(app.getHttpServer())
-        .post(`/groups/${groupId}/members/guest`)
-        .set('Authorization', `Bearer ${adminToken}`)
-        .send({ name })
-        .expect(201);
-
-      return groupMemberResponseSchema.parse(res.body).id;
-    }
-
-    beforeAll(async () => {
-      const stamp = Date.now();
-      adminToken = await registerAccount(
-        `e2e-offer-admin-${stamp}@arena.test`,
-        'Offer',
-      );
-      declinerEmail = `e2e-offer-decliner-${stamp}@arena.test`;
-      declinerToken = await registerAccount(declinerEmail, 'Nina');
-      claimerEmail = `e2e-offer-claimer-${stamp}@arena.test`;
-      claimerToken = await registerAccount(claimerEmail, 'Rui');
-
-      const group = await request(app.getHttpServer())
-        .post('/groups')
-        .set('Authorization', `Bearer ${adminToken}`)
-        .send({ name: 'E2E offer group' })
-        .expect(201);
-      groupId = groupSchema.parse(group.body).id;
-
-      declinedStubId = await createStub('Nina');
-      claimedStubId = await createStub('Rui');
-    }, 30_000);
-
-    it('POST /groups/:groupId/members/:memberId/claim-email answers the anchor state', async () => {
-      const res = await request(app.getHttpServer())
-        .post(`/groups/${groupId}/members/${declinedStubId}/claim-email`)
-        .set('Authorization', `Bearer ${adminToken}`)
-        .send({ email: declinerEmail })
-        .expect(201);
-
-      // The address already belongs to an account, so the offer is deliverable
-      // and went out with the anchor.
-      expect(claimEmailStateSchema.parse(res.body)).toEqual({
-        email: declinerEmail,
-        status: 'PENDING',
-        notified: true,
-        accountExists: true,
-      });
-    });
-
-    it('GET /groups/:groupId/members/:memberId/claim-email answers the same state to the admin', async () => {
-      const res = await request(app.getHttpServer())
-        .get(`/groups/${groupId}/members/${declinedStubId}/claim-email`)
-        .set('Authorization', `Bearer ${adminToken}`)
-        .expect(200);
-
-      expect(claimEmailStateSchema.parse(res.body)).toEqual({
-        email: declinerEmail,
-        status: 'PENDING',
-        notified: true,
-        accountExists: true,
-      });
-    });
-
-    it('GET /me/claims/:stubId answers the offer its recipient reviews', async () => {
-      const res = await request(app.getHttpServer())
-        .get(`/me/claims/${declinedStubId}`)
-        .set('Authorization', `Bearer ${declinerToken}`)
-        .expect(200);
-
-      expect(claimOfferDetailResponseSchema.parse(res.body)).toMatchObject({
-        stubGroupMemberId: declinedStubId,
-        groupId,
-        groupName: 'E2E offer group',
-        stub: { displayName: 'Nina', matchesCount: 0, recentMatches: [] },
-      });
-    });
-
-    // The address is the auth nonce: another account holding the same offer id
-    // gets the same answer as one that never existed.
-    it('GET /me/claims/:stubId answers 404 to an account the offer is not for', () => {
-      return request(app.getHttpServer())
-        .get(`/me/claims/${declinedStubId}`)
-        .set('Authorization', `Bearer ${claimerToken}`)
-        .expect(404);
-    });
-
-    it('POST /me/claims/:stubId/decline answers the acknowledgement and leaves the anchor declined', async () => {
-      const declined = await request(app.getHttpServer())
-        .post(`/me/claims/${declinedStubId}/decline`)
-        .set('Authorization', `Bearer ${declinerToken}`)
-        .expect(201);
-
-      expect(claimDeclinedResponseSchema.parse(declined.body)).toEqual({
-        outcome: 'DECLINED',
-      });
-
-      // The address stays for the audit; the admin sees the refusal and decides.
-      const state = await request(app.getHttpServer())
-        .get(`/groups/${groupId}/members/${declinedStubId}/claim-email`)
-        .set('Authorization', `Bearer ${adminToken}`)
-        .expect(200);
-
-      expect(claimEmailStateSchema.parse(state.body)).toMatchObject({
-        email: declinerEmail,
-        status: 'DECLINED',
-      });
-    });
-
-    it('DELETE /groups/:groupId/members/:memberId/claim-email answers the cleared state', async () => {
-      const res = await request(app.getHttpServer())
-        .delete(`/groups/${groupId}/members/${declinedStubId}/claim-email`)
-        .set('Authorization', `Bearer ${adminToken}`)
-        .expect(200);
-
-      expect(claimEmailStateSchema.parse(res.body)).toEqual({
-        email: null,
-        status: null,
-        notified: false,
-        accountExists: false,
-      });
-    });
-
-    it('POST /me/claims/:stubId/confirm answers the membership the claimer ends up with', async () => {
-      await request(app.getHttpServer())
-        .post(`/groups/${groupId}/members/${claimedStubId}/claim-email`)
-        .set('Authorization', `Bearer ${adminToken}`)
-        .send({ email: claimerEmail })
-        .expect(201);
-
-      const res = await request(app.getHttpServer())
-        .post(`/me/claims/${claimedStubId}/confirm`)
-        .set('Authorization', `Bearer ${claimerToken}`)
-        .expect(201);
-
-      const result = claimResultResponseSchema.parse(res.body);
-      // Nobody shared a match with the stub, so the claim cannot be BLOCKED.
-      expect(result).toMatchObject({
-        outcome: 'CLAIMED',
-        membership: { id: claimedStubId, groupId, role: 'MEMBER' },
-      });
     });
   });
 

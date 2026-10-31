@@ -4,7 +4,7 @@ import { Prisma } from '../generated/prisma/client';
 import type { PrismaService } from '../prisma/prisma.service';
 import type { FeedOrchestratorService } from '../feed/feed-orchestrator.service';
 import type { GroupHomeSummaryService } from '../groups/group-home-summary.service';
-import type { ClaimService } from '../claims/claim.service';
+import type { ClaimService } from './claim.service';
 import type { NotificationWriterService } from '../notifications/notification-writer.service';
 
 // Plain creates read optimistically then INSERT — no transaction, no advisory lock.

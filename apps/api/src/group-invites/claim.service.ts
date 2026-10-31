@@ -17,8 +17,6 @@ import { FeedOrchestratorService } from '../feed/feed-orchestrator.service';
 import { GroupHomeSummaryService } from '../groups/group-home-summary.service';
 import { ProcessingJobWriterService } from '../processing/processing-job-writer.service';
 
-type PrismaClientLike = Prisma.TransactionClient | PrismaService;
-
 type ClaimUser = { id: string; firstName: string; lastName: string };
 
 type ClaimStub = {
@@ -27,10 +25,10 @@ type ClaimStub = {
   user?: { firstName: string; lastName: string } | null;
 };
 
-// The core of "attach this account to this stub", driven by the email-anchored claim
-// confirm (claim-offers). Case A (the person isn't a member yet) is a clean userId set;
-// case B (already a member) merges the stub into that membership — unless the two ever
-// shared a match, which makes it impossible.
+// The core of "attach this account to this stub", driven by the invite take-over
+// (`POST /invites/:token/claim/:guestId`). Case A (the person isn't a member yet) is a
+// clean userId set; case B (already a member) merges the stub into that membership —
+// unless the two ever shared a match, which makes it impossible.
 @Injectable()
 export class ClaimService {
   constructor(
@@ -253,8 +251,8 @@ export class ClaimService {
 
   // The non-deleted matches in this group where both members played (as partners or
   // opponents), with each team's players, score and winner — for the conflict screen.
-  async findSharedMatches(
-    tx: PrismaClientLike,
+  private async findSharedMatches(
+    tx: Prisma.TransactionClient,
     groupId: string,
     stubId: string,
     membershipId: string,
@@ -307,8 +305,8 @@ export class ClaimService {
   }
 
   // The group's admins, for the "fale com um admin" contact chips on the conflict screen.
-  async listGroupAdmins(
-    tx: PrismaClientLike,
+  private async listGroupAdmins(
+    tx: Prisma.TransactionClient,
     groupId: string,
   ): Promise<ClaimAdmin[]> {
     const admins = await tx.groupMember.findMany({
