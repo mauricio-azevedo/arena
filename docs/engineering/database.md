@@ -187,8 +187,8 @@ For local/dev only, a reset usually means:
 2. drop/reset schema or use the project's Prisma reset workflow;
 3. reapply migrations;
 4. regenerate Prisma client if needed;
-5. seed data with `pnpm --filter @arena/api run db:seed` (it refuses a non-localhost
-   `DATABASE_URL`);
+5. seed data with `just db-seed`, or `just db-reseed` to replace rows that survived the reset
+   (both refuse a non-localhost `DATABASE_URL`);
 6. restart backend/frontend dev servers.
 
 Exact commands should be kept aligned with package scripts and Prisma setup.
