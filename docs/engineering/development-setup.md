@@ -210,10 +210,10 @@ just docker-build              # arena-api:local
 docker run --rm -p 3000:3000 -e DATABASE_URL=… -e JWT_SECRET=… arena-api:local
 ```
 
-The image carries `dist/`, the generated Prisma client and production dependencies only; the build
-toolchain stays in the stages it belongs to. It runs as the `node` user, serves on `PORT`
-(default 3000), and declares a `HEALTHCHECK` against `/health` — liveness, not the database probe.
-CI builds it on every pull request. Render keeps running the native Node runtime above; the image
+The image carries `dist/`, the generated Prisma client and production dependencies only; no
+dependency compiles a native binding, so no stage installs a build toolchain. It runs as the
+`node` user, serves on `PORT` (default 3000), and declares a `HEALTHCHECK` against `/health` —
+liveness, not the database probe. CI builds it on every pull request. Render keeps running the native Node runtime above; the image
 is the deployment unit for the move off it.
 
 ## Troubleshooting

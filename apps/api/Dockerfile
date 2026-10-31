@@ -10,7 +10,8 @@
 #   deps       install from manifests alone, so source edits reuse this layer
 #   builder    @arena/contracts, the Prisma client, then `nest build`
 #   prod-deps  the same install without devDependencies
-# The runtime image copies from the last two and inherits no toolchain.
+# The runtime image copies from the last two. No dependency compiles a native
+# binding, so no stage installs a build toolchain.
 
 FROM node:24-slim AS base
 ENV PNPM_HOME=/pnpm
@@ -19,20 +20,13 @@ ENV COREPACK_ENABLE_DOWNLOAD_PROMPT=0
 RUN corepack enable
 WORKDIR /repo
 
-# Toolchain for bcrypt, the only dependency that compiles a native binding.
-# Installing it twice (deps, prod-deps) keeps it out of the runtime image.
-FROM base AS toolchain
-RUN apt-get update \
-  && apt-get install --no-install-recommends -y python3 make g++ \
-  && rm -rf /var/lib/apt/lists/*
-
 FROM base AS pruner
 COPY . .
 # turbo's CLI only — pinned to the major, so a lockfile bump never touches this
 # file. The pruned output format is stable within it.
 RUN pnpm dlx turbo@2 prune @arena/api --docker
 
-FROM toolchain AS deps
+FROM base AS deps
 COPY --from=pruner /repo/out/json/ .
 RUN pnpm install --frozen-lockfile
 
@@ -43,7 +37,7 @@ COPY --from=pruner /repo/out/full/ .
 ENV DATABASE_URL=postgresql://unused:unused@127.0.0.1:5432/unused
 RUN pnpm turbo run build --filter=@arena/api...
 
-FROM toolchain AS prod-deps
+FROM base AS prod-deps
 COPY --from=pruner /repo/out/json/ .
 RUN pnpm install --frozen-lockfile --prod
 
