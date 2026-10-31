@@ -85,7 +85,7 @@ Details and troubleshooting: `docs/engineering/development-setup.md`.
 
 ## Validation
 
-`just ci` runs what CI runs: format, lint, build, unit tests, and the e2e smoke test against the local database.
+`just ci` runs what CI runs: format, lint, build, unit tests, the dead-code check, and the e2e smoke test against the local database.
 
 ## Engineering standards
 

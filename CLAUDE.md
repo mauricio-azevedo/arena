@@ -39,8 +39,10 @@ pnpm run build             # turbo run build: contracts → api generate → app
 pnpm run test              # turbo run test
 pnpm run lint:check        # or lint (eslint --fix)
 pnpm run format:check      # or format (prettier --write)
+pnpm run knip              # dead code/deps, one root knip.jsonc; part of `just ci`
 # api
 cd apps/api && pnpm exec prisma migrate dev && pnpm exec prisma generate
+pnpm run db:seed           # local only; seed.ts refuses a non-localhost DATABASE_URL
 pnpm run dev               # dev server
 pnpm run build             # nest build only; `generate` runs via turbo (or `pnpm run generate`)
 # web

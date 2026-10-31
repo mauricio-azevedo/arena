@@ -9,12 +9,13 @@
     "lint": "turbo run lint",
     "lint:check": "turbo run lint:check && pnpm run lint:docs",
     "lint:docs": "markdownlint-cli2 \"docs/decisions/*.md\" \"#docs/decisions/adr-template*.md\"",
-    "knip": "pnpm -r run knip",
+    "knip": "knip",
     "test": "turbo run test",
     "format": "prettier . --write --ignore-unknown",
     "format:check": "prettier . --check --ignore-unknown"
   },
   "devDependencies": {
+    "knip": "^6.42.1",
     "markdownlint-cli2": "^0.24.0",
     "prettier": "^3.9.10",
     "turbo": "^2.11.10"

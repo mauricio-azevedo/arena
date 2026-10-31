@@ -7,6 +7,7 @@
   "license": "UNLICENSED",
   "scripts": {
     "generate": "prisma generate",
+    "db:seed": "tsx prisma/seed.ts",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
@@ -15,7 +16,6 @@
     "start:prod": "node dist/src/main.js",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "lint:check": "eslint \"{src,apps,libs,test}/**/*.ts\"",
-    "knip": "knip",
     "test": "node --experimental-vm-modules --disable-warning=ExperimentalWarning node_modules/jest/bin/jest.js",
     "test:watch": "node --experimental-vm-modules --disable-warning=ExperimentalWarning node_modules/jest/bin/jest.js --watch",
     "test:cov": "node --experimental-vm-modules --disable-warning=ExperimentalWarning node_modules/jest/bin/jest.js --coverage",
@@ -38,7 +38,6 @@
     "zod": "^4.6.7"
   },
   "devDependencies": {
-    "@eslint/eslintrc": "^3.3.7",
     "@eslint/js": "^10.0.1",
     "@nestjs/cli": "^12.0.10",
     "@nestjs/schematics": "^12.0.10",
@@ -53,15 +52,11 @@
     "eslint-plugin-prettier": "^5.5.7",
     "globals": "^17.13.0",
     "jest": "^30.5.2",
-    "knip": "^6.42.1",
     "prettier": "^3.9.10",
     "prisma": "^7.10.1",
-    "source-map-support": "^0.5.21",
     "supertest": "^7.3.1",
     "ts-jest": "^29.4.15",
     "ts-loader": "^9.6.2",
-    "ts-node": "^10.9.2",
-    "tsconfig-paths": "^4.2.0",
     "tsx": "^4.23.15",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.72.0"
