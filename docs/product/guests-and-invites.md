@@ -5,9 +5,8 @@
 > self-identify or recognition), and the sender UI — invite **sheets** on the group
 > screen (players sheet: `+` → "Convidar pro grupo"; a guest's row/profile → "Convidar").
 > A plain create request **reuses the group's active invite**, so the shared link/QR is
-> stable. The legacy **email-anchored claim** this replaced survives only on the
-> recipient side (`/claim/:stubId` still resolves offers already sent); its admin-side
-> UI was removed, so new email anchors can no longer be created.
+> stable. The legacy **email-anchored claim** this replaced is fully retired — schema,
+> routes and screen (#262).
 >
 > Replaces the former `stub-players.md` + `profile-claim.md`. The decision and its
 > trade-offs are recorded in

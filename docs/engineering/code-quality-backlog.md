@@ -18,16 +18,14 @@ built in) and `components/ui/drawer.tsx` (`DrawerActionHeader` — one header ac
   this for sheets; it (or a sibling) should cover card forms too, so every field gets the same
   label / error tint / inline-alert / message treatment. (A `SheetTextarea` variant covers
   create-group's description.)
-- **Inconsistent error UX (5 styles).** Form-level `text-destructive` `<p>` (login, register,
+- **Inconsistent error UX (4 styles).** Form-level `text-destructive` `<p>` (login, register,
   create-group, `invite-accept-client`) vs centered `text-danger` `<Meta>`
-  (edit-profile, password, `match-drawer`) vs `text-tag-warn` `<Meta>` (`claim-offer-client`)
-  vs the field-level treatment now in `SheetField`.
+  (edit-profile, password, `match-drawer`) vs the field-level treatment now in `SheetField`.
   Standardize: field-level where the error maps to a field; one danger form-level fallback
-  otherwise. `text-tag-warn` is for warnings, not errors.
-- **Missing loading / error / empty states.** `features/members/member-profile-drawer.tsx` and
-  `features/claim-offers/components/claim-offer-client.tsx` show bare error text with no retry.
-  Compare the complete pattern in `features/groups/components/my-groups-list.tsx` (skeleton +
-  error card + empty state).
+  otherwise.
+- **Missing loading / error / empty states.** `features/members/member-profile-drawer.tsx`
+  shows bare error text with no retry. Compare the complete pattern in
+  `features/groups/components/my-groups-list.tsx` (skeleton + error card + empty state).
 
 ## Medium — duplicated logic / divergent treatment
 
@@ -38,9 +36,9 @@ built in) and `components/ui/drawer.tsx` (`DrawerActionHeader` — one header ac
   `account-field-rules.ts` — so the remaining work is the product half: register's failure is
   uncoded, so the signup form has to guard the bytes itself and needs copy for it.
 
-- **Duplicated submit/loading/error machine (~6 forms).** The same `useState` error + `isSubmitting`
-  - try/catch/finally lives in login, register, create-group, edit-profile, password,
-    `claim-offer-client`. Extract a `useFormSubmit` hook.
+- **Duplicated submit/loading/error machine (~5 forms).** The same `useState` error + `isSubmitting`
+  - try/catch/finally lives in login, register, create-group, edit-profile and password.
+    Extract a `useFormSubmit` hook.
 - **Duplicated auth/token plumbing.** `getAccessToken()` → call → `setAccessToken(result.accessToken)`
   is copy-pasted across the same forms; fold into the submit hook or a small wrapper.
 - **Real-time field guidance is one-off.** `password-view`'s `PasswordGuidance` (live, colored) is

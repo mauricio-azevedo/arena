@@ -7,9 +7,9 @@ Accepted — implemented.
 The product concept lives in
 [`../product/guests-and-invites.md`](../product/guests-and-invites.md). Open and
 closed invites are live (backend, `/invites/:token` landing, and the invite sheets on
-the group screen). The email-anchored claim this ADR supersedes kept only its
-recipient-side flow (`/claim/:stubId`, for offers sent before the switch); the
-admin-side anchoring UI is gone.
+the group screen). The email-anchored claim this ADR supersedes is fully retired: the
+admin side went with the switch, and its recipient tail — schema columns, routes,
+`/claim/:stubId` and the `CLAIM_*` notifications — in #262.
 
 ## Context
 
@@ -86,13 +86,12 @@ Concretely:
 - **Requires a migration** when implemented: drop `claimEmail` / `claimEmailStatus` /
   `claimEmailNotifiedAt` and the registration hook, retire the `CLAIM_OFFER*` notifications and
   the generic join destination, and build the open self-identify list + closed deep-link plus
-  admin revert / delete-guest controls.
+  admin revert / delete-guest controls. _Done in #262 (migration
+  `20261030120000_retire_email_anchored_claim`), except admin revert / delete-guest._
 
 ## Supersedes
 
-The email-anchored claim model — currently described in
-[`../architecture/data-model.md`](../architecture/data-model.md) ("Email-anchored claim") and
-[`../engineering/database-reference.md`](../engineering/database-reference.md) — and the
+The email-anchored claim model — removed from the schema in #262 — and the
 former `stub-players.md` + `profile-claim.md` concept docs, now consolidated into
 [`../product/guests-and-invites.md`](../product/guests-and-invites.md). It also supersedes
 the intermediate sketches considered earlier in the same effort (admin user search + per-guest
