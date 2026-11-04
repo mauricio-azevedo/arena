@@ -173,7 +173,7 @@ PK `groupId`. `status` (`GroupRankingProjectionStatus`, default `CURRENT`), `ver
 
 ### GroupHomeSummary _(derived)_
 
-PK `groupId`. `membersCount`, `leaders` (JSON), `lastRelevantFeedItemId?` (FK→FeedItem `SetNull`), `lastRelevantAt?`, `projectionStatus?`, `lastProcessedAt?`, `lastError?`. Indexes `[lastRelevantAt]`, `[projectionStatus]`.
+PK `groupId`. `membersCount`, `lastRelevantFeedItemId?` (FK→FeedItem `SetNull`), `lastRelevantAt?`, `projectionStatus?`, `lastProcessedAt?`, `lastError?`. Indexes `[lastRelevantAt]`, `[projectionStatus]`.
 
 ### RankingMovement _(derived)_
 

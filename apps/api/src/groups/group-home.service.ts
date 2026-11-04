@@ -1,8 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import type {
-  GroupHomeCardResponse,
-  GroupHomeLeader,
-} from '@arena/contracts/groups';
+import type { GroupHomeCardResponse } from '@arena/contracts/groups';
 import { Prisma } from '../generated/prisma/client';
 import type {
   FeedItemType,
@@ -13,7 +10,6 @@ import { PrismaService } from '../prisma/prisma.service';
 type GroupHomeSummaryRow = {
   groupId: string;
   membersCount: number;
-  leaders: unknown;
   lastRelevantAt: Date | null;
   projectionStatus: GroupRankingProjectionStatus | null;
   lastProcessedAt: Date | null;
@@ -114,7 +110,6 @@ export class GroupHomeService {
             role: membership.role,
             standing: this.buildStanding(membership),
           },
-          leaders: this.parseLeaders(summary?.leaders),
           activity: {
             lastRelevant: activity,
             lastRelevantAt:
@@ -221,7 +216,6 @@ export class GroupHomeService {
                 standing: this.buildStanding(membership),
               }
             : null,
-          leaders: this.parseLeaders(summary?.leaders),
           activity: {
             lastRelevant: activity,
             lastRelevantAt: activity?.occurredAt ?? null,
@@ -296,7 +290,6 @@ export class GroupHomeService {
             lastMatchAt: stats?.lastMatchAt ?? null,
           },
           currentUser: null,
-          leaders: this.parseLeaders(summary?.leaders),
           activity: {
             lastRelevant: activity,
             lastRelevantAt: activity?.occurredAt ?? null,
@@ -316,7 +309,6 @@ export class GroupHomeService {
       SELECT
         "groupId",
         "membersCount",
-        "leaders",
         "lastRelevantAt",
         "projectionStatus",
         "lastProcessedAt",
@@ -440,28 +432,6 @@ export class GroupHomeService {
           }
         : null,
     };
-  }
-
-  private parseLeaders(value: unknown): GroupHomeLeader[] {
-    if (!Array.isArray(value)) {
-      return [];
-    }
-
-    return value.filter((leader): leader is GroupHomeLeader => {
-      if (!leader || typeof leader !== 'object') {
-        return false;
-      }
-
-      const candidate = leader as Partial<GroupHomeLeader>;
-      return (
-        typeof candidate.groupMemberId === 'string' &&
-        // userId is null for stub players (jogadores sem conta).
-        (typeof candidate.userId === 'string' || candidate.userId === null) &&
-        typeof candidate.displayName === 'string' &&
-        typeof candidate.rating === 'number' &&
-        typeof candidate.rank === 'number'
-      );
-    });
   }
 
   private getMemberSortReason(summary: GroupHomeSummaryRow | null) {

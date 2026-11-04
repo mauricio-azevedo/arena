@@ -54,19 +54,6 @@ export const groupMembershipResponseSchema = z.strictObject({
   group: groupSchema,
 });
 
-// The group's rank-1 members, denormalized into `GroupHomeSummary` by the
-// projection, so a home card costs no per-group ranking query. A tie shares the
-// top rank, hence a list.
-export const groupHomeLeaderSchema = z.strictObject({
-  groupMemberId: z.uuid(),
-  // Null for stub players (jogadores sem conta).
-  userId: z.uuid().nullable(),
-  displayName: z.string(),
-  rating: z.number(),
-  // Not nullable: a leader is a rank-1 member by construction.
-  rank: z.int(),
-});
-
 // The viewer's own standing in the group: a rank once the ranking projection
 // has one for them, otherwise the rating alone. The movement is the same shape
 // the ranking carries, so the arrow is rendered identically in both places.
@@ -124,7 +111,6 @@ export const groupHomeCardResponseSchema = z.strictObject({
       standing: groupHomeStandingSchema,
     })
     .nullable(),
-  leaders: z.array(groupHomeLeaderSchema),
   activity: z.strictObject({
     lastRelevant: groupHomeActivitySchema.nullable(),
     lastRelevantAt: isoDateTime.nullable(),
@@ -153,5 +139,3 @@ export type GroupMembershipResponse = z.output<typeof groupMembershipResponseSch
 export type GroupMembership = z.input<typeof groupMembershipResponseSchema>;
 export type GroupHomeCardResponse = z.output<typeof groupHomeCardResponseSchema>;
 export type GroupHomeCard = z.input<typeof groupHomeCardResponseSchema>;
-// Dates stay out of a leader row, so one name serves both apps.
-export type GroupHomeLeader = z.infer<typeof groupHomeLeaderSchema>;
