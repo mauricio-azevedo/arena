@@ -596,9 +596,8 @@ describe('App (e2e)', () => {
         expect(card.group.membersCount).toBeGreaterThan(0);
         expect(card.group.lastMatchAt).not.toBeNull();
         expect(card.currentUser?.role).toBe('ADMIN');
-        // The projection ran, so the viewer is ranked and the group has a leader.
+        // The projection ran, so the viewer is ranked.
         expect(card.currentUser?.standing.kind).toBe('RANKED');
-        expect(card.leaders.length).toBeGreaterThan(0);
         expect(card.projection?.status).toBe('CURRENT');
       });
 

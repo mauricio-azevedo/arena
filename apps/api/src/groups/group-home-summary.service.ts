@@ -1,10 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import type { GroupHomeLeader } from '@arena/contracts/groups';
 import type { Prisma } from '../generated/prisma/client';
-import {
-  MEMBER_USER_SELECT,
-  resolveMemberDisplayName,
-} from '../common/member-display-name';
 import { PrismaService } from '../prisma/prisma.service';
 
 type PrismaClientLike = Prisma.TransactionClient | PrismaService;
@@ -28,18 +23,15 @@ export class GroupHomeSummaryService {
 
   async syncGroupSummary(groupId: string, tx?: PrismaClientLike) {
     const client = tx ?? this.prisma;
-    const [membersCount, leaders, lastRelevantFeedItem, projection] =
-      await Promise.all([
-        this.countActiveMembers(client, groupId),
-        this.findLeaders(client, groupId),
-        this.findLastRelevantFeedItem(client, groupId),
-        this.findProjection(client, groupId),
-      ]);
+    const [membersCount, lastRelevantFeedItem, projection] = await Promise.all([
+      this.countActiveMembers(client, groupId),
+      this.findLastRelevantFeedItem(client, groupId),
+      this.findProjection(client, groupId),
+    ]);
 
     await this.upsertSummary(client, {
       groupId,
       membersCount,
-      leaders,
       lastRelevantFeedItemId: lastRelevantFeedItem?.id ?? null,
       lastRelevantAt: lastRelevantFeedItem?.occurredAt ?? null,
       projectionStatus: projection?.status ?? null,
@@ -55,40 +47,6 @@ export class GroupHomeSummaryService {
         leftAt: null,
       },
     });
-  }
-
-  private async findLeaders(
-    client: PrismaClientLike,
-    groupId: string,
-  ): Promise<GroupHomeLeader[]> {
-    const members = await client.groupMember.findMany({
-      where: {
-        groupId,
-        leftAt: null,
-        currentRank: 1,
-      },
-      orderBy: [{ rating: 'desc' }, { id: 'asc' }],
-      select: {
-        id: true,
-        userId: true,
-        displayName: true,
-        rating: true,
-        currentRank: true,
-        user: {
-          select: {
-            ...MEMBER_USER_SELECT,
-          },
-        },
-      },
-    });
-
-    return members.map((member) => ({
-      groupMemberId: member.id,
-      userId: member.userId,
-      displayName: resolveMemberDisplayName(member),
-      rating: member.rating,
-      rank: member.currentRank ?? 1,
-    }));
   }
 
   private async findLastRelevantFeedItem(
@@ -129,7 +87,6 @@ export class GroupHomeSummaryService {
     input: {
       groupId: string;
       membersCount: number;
-      leaders: GroupHomeLeader[];
       lastRelevantFeedItemId: string | null;
       lastRelevantAt: Date | null;
       projectionStatus: ProjectionStatus | null;
@@ -137,13 +94,10 @@ export class GroupHomeSummaryService {
       lastError: string | null;
     },
   ) {
-    const leaders = JSON.stringify(input.leaders);
-
     await client.$executeRaw`
       INSERT INTO "GroupHomeSummary" (
         "groupId",
         "membersCount",
-        "leaders",
         "lastRelevantFeedItemId",
         "lastRelevantAt",
         "projectionStatus",
@@ -155,7 +109,6 @@ export class GroupHomeSummaryService {
       VALUES (
         ${input.groupId},
         ${input.membersCount},
-        ${leaders}::jsonb,
         ${input.lastRelevantFeedItemId},
         ${input.lastRelevantAt},
         ${input.projectionStatus}::"GroupRankingProjectionStatus",
@@ -166,7 +119,6 @@ export class GroupHomeSummaryService {
       )
       ON CONFLICT ("groupId") DO UPDATE SET
         "membersCount" = EXCLUDED."membersCount",
-        "leaders" = EXCLUDED."leaders",
         "lastRelevantFeedItemId" = EXCLUDED."lastRelevantFeedItemId",
         "lastRelevantAt" = EXCLUDED."lastRelevantAt",
         "projectionStatus" = EXCLUDED."projectionStatus",

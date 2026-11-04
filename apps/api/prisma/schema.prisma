@@ -454,7 +454,6 @@ model GroupHomeSummary {
   group   Group  @relation(fields: [groupId], references: [id], onDelete: Cascade)
 
   membersCount Int @default(0)
-  leaders      Json @default("[]")
 
   lastRelevantFeedItemId String?
   lastRelevantFeedItem   FeedItem? @relation("GroupHomeSummaryLastRelevantFeedItem", fields: [lastRelevantFeedItemId], references: [id], onDelete: SetNull)

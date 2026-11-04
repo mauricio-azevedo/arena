@@ -144,7 +144,7 @@ Not derived — written directly when the triggering event happens. See
 | `GroupMemberStats`        | 1 per member             | stats projection             | `matchesCount`, `winsCount`                                                                                                         |
 | `GroupMemberPartnerStats` | 1 per (member, teammate) | partner-stats projection     | `matchesTogether`, `winsTogether` (directional; powers the profile "melhor dupla" / "suas duplas")                                  |
 | `GroupRankingProjection`  | 1 per group              | projection status tracker    | `status`, `version`, `lastProcessedMatchId/At`, `lastError`                                                                         |
-| `GroupHomeSummary`        | 1 per group              | home-summary service         | `membersCount`, `leaders` (JSON), `lastRelevantFeedItem`, `projectionStatus`                                                        |
+| `GroupHomeSummary`        | 1 per group              | home-summary service         | `membersCount`, `lastRelevantFeedItem`, `projectionStatus`                                                                          |
 | `GroupHighlight`          | 1 per (member, type)     | weekly-highlights projection | `type` (six achievements), `value`, `score`, `anchorAt` (7-day window key), `algorithmVersion` — powers the home "Essa semana" rail |
 
 These are caches for fast reads and stored historical truth. If they look wrong,
@@ -178,7 +178,7 @@ rows.
   mutable tables.
 - **Money/score-free**: ratings are `Float`, counts are `Int`.
 - **Soft delete** only on `Match` (`deletedAt`); membership exit via `leftAt`.
-- **JSON columns** (`metadata`, `leaders`, `movements`, …) are type-specific and
+- **JSON columns** (`metadata`, `movements`, …) are type-specific and
   validated in code, not the DB.
 - **Algorithm versioning**: rating-bearing rows carry `ratingAlgorithm` /
   `algorithmVersion` (`BEACH_ELO_V1`) so future migrations can identify the
