@@ -84,6 +84,20 @@ just dev                       # API on :3000 and web on :3001; Ctrl-C stops bot
 `just dev` builds `packages/*` first, then watches them alongside both apps; `nest --watch` picks
 up a rebuilt `@arena/contracts`, `next dev` may need a restart.
 
+### Parallel checkouts
+
+A linked git worktree gets its own database on the same server, so two branches can hold
+different migrations and `test:e2e` only ever wipes its own rows. `just env-local` — which
+`just setup` runs — derives it once into `apps/api/.env` (`arena_<worktree directory>` in place of
+`arena`); Prisma creates the database on the first `migrate deploy`, and everything that reads
+that file follows. A plain clone keeps `arena`, and a `DATABASE_URL` that does not point at
+localhost is left as it is.
+
+The Postgres container stays shared: `docker-compose.yml` fixes the compose project name, so
+`just db-up` from any checkout returns the one server on `localhost:5433`. `just db-drop`
+discards the current worktree's database when its branch is done; in a plain clone it refuses
+to run.
+
 Schema changes are applied by their author, not by `just dev`:
 
 ```bash

@@ -292,7 +292,8 @@ the data layer.
 ## 7. Environments & operations
 
 - **Local DB**: `just db-up` → Postgres 16 on `localhost:5433`
-  (`arena/arena`, db `arena`).
+  (`arena/arena`, db `arena`; one database per git worktree — see
+  [`../engineering/development-setup.md`](../engineering/development-setup.md)).
 - **Hosted DB**: Neon (project/branch model — verify branch before destructive
   ops; see [`../engineering/database.md`](../engineering/database.md)).
 - **Key env vars**: `DATABASE_URL`, `JWT_SECRET`, `CORS_ORIGIN`, `PORT`

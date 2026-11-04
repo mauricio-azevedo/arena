@@ -1,3 +1,7 @@
+# Fixed project name: a git worktree is a different directory, and compose would otherwise
+# derive a second project from it and collide on the container name and the port.
+name: arena
+
 services:
   postgres:
     image: postgres:16
