@@ -10,10 +10,6 @@
       "project": ["src/**/*.ts", "test/**/*.ts", "prisma/*.prisma"],
       // Imported only as `./generated/prisma/*`, which `prisma generate` emits.
       "ignoreDependencies": ["@prisma/client"],
-      // Don't load prisma.config.ts: it resolves DATABASE_URL, which would make
-      // the analysis depend on the environment. `prisma/seed.ts` is reached
-      // through the `db:seed` script instead.
-      "prisma": { "config": [] },
     },
     "apps/web": {
       // shadcn/ui primitives are vendored, so each is its own entry.
