@@ -24,7 +24,6 @@ export class NotificationReaderService {
       // promise, kept honest by the contract parse in the e2e spec.
       data: (row.data ?? {}) as NotificationResponse['data'],
       read: row.readAt !== null,
-      acted: row.actedAt !== null,
       createdAt: row.createdAt,
     }));
   }

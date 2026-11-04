@@ -88,6 +88,12 @@ Concretely:
   the generic join destination, and build the open self-identify list + closed deep-link plus
   admin revert / delete-guest controls. _Done in #262 (migration
   `20261030120000_retire_email_anchored_claim`), except admin revert / delete-guest._
+- **The admin notification carries no settled state until revert is built.** Retiring the claim
+  flow left nothing writing `Notification.actedAt`, so #358 dropped it (with
+  `targetGroupMemberId`, which only served to find the rows to settle) rather than keep a column
+  no code could set: the inbox tracks read/unread and nothing else. Admin revert has to settle
+  the notification it reverses, so building it brings the lifecycle back — as a column with a
+  writer, decided then against the revert flow it serves.
 
 ## Supersedes
 

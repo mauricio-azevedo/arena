@@ -8,7 +8,7 @@ import { isoDateTime } from './iso-datetime';
 // column with their rows, so nothing in the inbox can carry one.
 export const notificationTypeSchema = z.enum(['GUEST_TAKEN_OVER']);
 
-// A deep link the card offers while the notification is still actionable.
+// A deep link the card offers alongside the message.
 const notificationActionSchema = z.strictObject({
   label: z.string(),
   href: z.string(),
@@ -34,9 +34,6 @@ export const notificationSchema = z.strictObject({
   actorUserId: z.uuid().nullable(),
   data: notificationDataSchema,
   read: z.boolean(),
-  // Settled — confirmed, declined, or superseded by a later state change. The
-  // card then drops its (now dead) action and reads as history.
-  acted: z.boolean(),
   createdAt: isoDateTime,
 });
 

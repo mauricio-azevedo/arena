@@ -1208,7 +1208,6 @@ describe('App (e2e)', () => {
         type: 'GUEST_TAKEN_OVER',
         groupId,
         read: false,
-        acted: false,
       });
       // The render payload is denormalized and frozen at write time, so the
       // card reads the same after the group or the taker is renamed.
