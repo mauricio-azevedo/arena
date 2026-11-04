@@ -1,3 +1,6 @@
+// No include or exclude on purpose: this config has to cover every file ts-jest
+// and typescript-eslint compile, specs and e2e specs included. tsconfig.build.json
+// narrows the emitted output.
 {
   "compilerOptions": {
     "module": "nodenext",

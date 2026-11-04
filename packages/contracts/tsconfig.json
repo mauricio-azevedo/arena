@@ -10,5 +10,7 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true
   },
+  // All of src, specs included: ts-jest type-checks them against this config.
+  // tsconfig.build.json drops them from the emitted output.
   "include": ["src"]
 }
