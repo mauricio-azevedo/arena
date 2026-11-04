@@ -24,7 +24,8 @@ docs/       product / design / architecture / engineering / qa
 ```
 
 - **DB**: PostgreSQL 16. Local: `just db-up` → `localhost:5433`
-  (`arena/arena`, db `arena`). Hosted: Neon (verify branch before destructive ops).
+  (`arena/arena`, db `arena`; a git worktree gets its own `arena_<worktree>` — `just env-local`).
+  Hosted: Neon (verify branch before destructive ops).
 - **Deploy**: `apps/web` → Vercel (Root Directory `apps/web`; root `vercel.json` limits
   auto-deploys to `main`). `apps/api` → Render (Root Directory = repo root;
   `pnpm turbo run build --filter=@arena/api...` / `start:prod`). Details:
