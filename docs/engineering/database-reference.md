@@ -234,12 +234,13 @@ Unique: `[type, matchId]` (idempotent match-derived items). Indexes on
 | `actorUserId`     | FK→User?           | nullable, no FK relation back                                          |
 | `data`            | Json               | denormalized render payload (title/body/meta/actions), frozen at write |
 | `readAt`          | DateTime?          | null = unread                                                          |
-| `actedAt`         | DateTime?          | set when the recipient acts; the card then reads as history            |
 | `createdAt`       | DateTime           |                                                                        |
 
 Per-user in-app inbox (unlike `FeedItem`, which is group-public with no recipient or
 read state). One type so far: `GUEST_TAKEN_OVER` tells admins a guest was taken over
-via an invite (informational; `targetGroupMemberId` = the resulting membership).
+via an invite (informational). Read state is the only lifecycle — the settled/`actedAt`
+one went in #358, unwritten since the claim flow retired; see
+[ADR 0004](../decisions/0004-unify-guest-invite-and-claim.md).
 Indexes on `[recipientUserId, createdAt]`, `[recipientUserId, readAt]`.
 
 ---
@@ -279,6 +280,7 @@ present). Chronological highlights — each row tells you when a capability land
 | `20260627120000_add_guest_invite_target_and_takeover`   | `GroupInvite.targetGroupMemberId` (open/closed) + `GUEST_TAKEN_OVER` enum val                    |
 | `20260705000000_group_invite_active_plain_unique`       | dedupe + partial unique index for one active plain invite per (group, target)                    |
 | `20261030120000_retire_email_anchored_claim`            | drop `GroupMember.claimEmail*`, `ClaimEmailStatus`, the six `CLAIM_*` enum values and their rows |
+| `20261104120000_drop_notification_acted`                | drop `Notification.actedAt` + `targetGroupMemberId` (the acted lifecycle, unwritten)             |
 
 When changing the schema: edit `schema.prisma` → `pnpm exec prisma migrate dev` →
 `pnpm exec prisma generate` → confirm the backend compiles → update this doc,

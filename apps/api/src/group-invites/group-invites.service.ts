@@ -469,12 +469,7 @@ export class GroupInvitesService {
       );
 
       if (result.outcome === 'CLAIMED') {
-        await this.notifyGuestTakenOver(
-          tx,
-          invite.groupId,
-          user,
-          result.membership?.id ?? null,
-        );
+        await this.notifyGuestTakenOver(tx, invite.groupId, user);
       }
 
       return result;
@@ -494,7 +489,6 @@ export class GroupInvitesService {
     tx: Prisma.TransactionClient,
     groupId: string,
     user: { id: string; firstName: string; lastName: string },
-    membershipId: string | null,
   ) {
     const [group, admins] = await Promise.all([
       tx.group.findUnique({ where: { id: groupId }, select: { name: true } }),
@@ -528,7 +522,6 @@ export class GroupInvitesService {
         recipientUserId,
         groupId,
         actorUserId: user.id,
-        targetGroupMemberId: membershipId,
         data,
       })),
       tx,

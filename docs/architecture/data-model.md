@@ -128,10 +128,9 @@ The job-queue table that drives the async pipeline. `type`
 Per-user in-app notification — the opposite of `FeedItem` (which is group-public
 with no recipient). `type` (`GUEST_TAKEN_OVER`, to the group's other admins when a
 guest is taken over via an invite — the only moment that writes one so far),
-`recipientUser` (cascade), optional `group`/`actorUserId`/`targetGroupMemberId`, a
-denormalized `data` (JSON: title/body/meta/actions, frozen at write so old messages never
-re-render), and read state (`readAt`, `actedAt`). Not derived — written directly when the
-triggering event happens. See
+`recipientUser` (cascade), optional `group`/`actorUserId`, a denormalized `data` (JSON:
+title/body/meta/actions, frozen at write so old messages never re-render), and `readAt`.
+Not derived — written directly when the triggering event happens. See
 [`../product/guests-and-invites.md`](../product/guests-and-invites.md).
 
 ---

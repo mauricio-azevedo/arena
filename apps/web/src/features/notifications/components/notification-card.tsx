@@ -18,15 +18,9 @@ const TYPE_VISUAL: Record<NotificationType, Visual> = {
 export function NotificationCard({ notification }: { notification: AppNotification }) {
   const { Icon, circle } = TYPE_VISUAL[notification.type];
   const { title, body, meta, actions } = notification.data;
-  // Once resolved, a notification drops its (now-dead) action and reads as history.
-  const resolved = notification.acted;
-  const unread = !notification.read && !resolved;
+  const unread = !notification.read;
 
-  const metaParts = [
-    formatFeedItemTime(notification.createdAt),
-    meta,
-    resolved ? 'resolvido' : null,
-  ].filter(Boolean);
+  const metaParts = [formatFeedItemTime(notification.createdAt), meta].filter(Boolean);
 
   return (
     <div
@@ -35,7 +29,6 @@ export function NotificationCard({ notification }: { notification: AppNotificati
         unread
           ? 'bg-brand/[0.08] shadow-[inset_0_0_0_1px_color-mix(in_oklch,var(--brand)_28%,transparent)]'
           : 'bg-surface shadow-hairline',
-        resolved && 'opacity-60',
       )}
     >
       {unread && (
@@ -66,7 +59,7 @@ export function NotificationCard({ notification }: { notification: AppNotificati
         </div>
       </div>
 
-      {!resolved && actions && actions.length > 0 && (
+      {actions && actions.length > 0 && (
         <div className="mt-3.5 flex gap-2">
           {actions.map((action, index) => (
             <Button
