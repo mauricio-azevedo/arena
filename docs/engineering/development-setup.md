@@ -269,8 +269,17 @@ The image carries `dist/`, the generated Prisma client and production dependenci
 and Studio out of it (reason in the Dockerfile). No dependency compiles a native binding, so no
 stage installs a build toolchain. It runs as the `node` user, serves on `PORT` (default 3000),
 and declares a `HEALTHCHECK` against `/health` —
-liveness, not the database probe. CI builds it on every pull request. Render keeps running the native Node runtime above; the image
-is the deployment unit for the move off it.
+liveness, not the database probe.
+
+A pull request builds the image and discards it. A push to `main` publishes it to
+`ghcr.io/mauricio-azevedo/arena-api` under two tags: `:<commit sha>`, the immutable one a service
+pins, and `:main`, the newest build. The push uses `GITHUB_TOKEN` with `packages: write`. The
+package is private, so a host pulling it needs a registry credential — a personal access token
+with `read:packages`.
+
+Render still runs the native Node runtime above. Pointing it at the image is a dashboard change
+(runtime Docker, the `:<sha>` tag, that credential), and the AWS move after it is a change of where
+the same image is pulled rather than another build.
 
 ## Troubleshooting
 

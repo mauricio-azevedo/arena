@@ -47,7 +47,24 @@ jobs:
   api-image:
     name: api image
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write # GITHUB_TOKEN pushes to GHCR; no OIDC involved
+    env:
+      IMAGE: ghcr.io/${{ github.repository_owner }}/arena-api
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: extractions/setup-just@53165ef7e734c5c07cb06b3c8e7b647c5aa16db3 # v4.0.0
-      - run: just docker-build
+
+      # A pull request has nothing to deploy, so it only proves the image builds.
+      - if: github.event_name == 'pull_request'
+        run: just docker-build
+
+      # main publishes what the hosts pull: `:<sha>`, the immutable tag a service pins,
+      # and `:main`, which always names the newest build.
+      - if: github.event_name == 'push'
+        run: |
+          echo '${{ secrets.GITHUB_TOKEN }}' | docker login ghcr.io -u '${{ github.actor }}' --password-stdin
+          just docker-build "$IMAGE:$GITHUB_SHA" "$IMAGE:main"
+          docker push "$IMAGE:$GITHUB_SHA"
+          docker push "$IMAGE:main"
