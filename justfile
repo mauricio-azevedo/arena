@@ -47,8 +47,9 @@ db-drop:
     docker compose exec -T postgres dropdb -U arena --if-exists --force "{{ db }}"
 
 # API container image. Context is the repo root: turbo prune needs the workspace.
-docker-build:
-    docker build -f apps/api/Dockerfile -t arena-api:local .
+# One tag locally; CI passes the registry tags it then pushes.
+docker-build +tags='arena-api:local':
+    docker build -f apps/api/Dockerfile {{ prepend('-t ', tags) }} .
 
 # Apply pending migrations without prompting (CI and deploys)
 migrate-deploy:
