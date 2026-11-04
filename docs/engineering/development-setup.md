@@ -181,6 +181,31 @@ A strong PR description should include:
 - migration notes when applicable;
 - rollback notes when risky.
 
+## TypeScript configuration
+
+A package's `tsconfig.json` is its type-check config and has to cover every file its test runner
+feeds the compiler. Narrowing belongs in `tsconfig.build.json`, which exists only to keep specs
+out of the emitted output. Reversing the two hides errors instead of preventing them:
+`packages/contracts` once excluded `src/**/*.spec.ts` from `tsconfig.json` while `ts-jest`
+compiled those specs with that very config, so the specs were checked against a config that
+disowned them. TypeScript 5.9 inferred ambient `node` and `jest` types anyway; TypeScript 6
+stopped, and twenty-odd errors surfaced months after the mistake was made (#337).
+
+For the same reason, `"types"` is explicit wherever a runner's globals are relied on — nothing
+should depend on what happens to be in `node_modules/@types`. Audited per package (#357):
+
+| Package              | Test runner                                                  | `tsconfig.json` scope                               | `"types"`          |
+| -------------------- | ------------------------------------------------------------ | --------------------------------------------------- | ------------------ |
+| `apps/api`           | jest + ts-jest over `src/**/*.spec.ts`, `test/*.e2e-spec.ts` | no `include`/`exclude` — every `.ts` in the package | `["node", "jest"]` |
+| `packages/contracts` | jest + ts-jest over `src/**/*.spec.ts`                       | `["src"]` — specs included                          | `["node", "jest"]` |
+| `apps/web`           | none                                                         | `**/*.ts`, `**/*.tsx`, `**/*.mts`                   | inferred           |
+
+`apps/web` is the deliberate exception. It has no test runner and no spec files, so there are no
+runner globals to pin, and Next.js regenerates `next-env.d.ts` on every build and reaches its own
+types through a triple-slash reference that `"types"` does not gate — a pinned list there would be
+upkeep with nothing to catch. Adding a test runner to `apps/web` means adding `"types"` in the
+same change.
+
 ## Dead code
 
 `pnpm run knip` reports unused files, exports, types and dependencies. One root `knip.jsonc`
