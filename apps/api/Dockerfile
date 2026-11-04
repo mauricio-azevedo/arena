@@ -32,9 +32,6 @@ RUN pnpm install --frozen-lockfile
 
 FROM deps AS builder
 COPY --from=pruner /repo/out/full/ .
-# `prisma.config.ts` refuses to load without DATABASE_URL. `prisma generate`
-# never connects, and the generated client does not depend on the value.
-ENV DATABASE_URL=postgresql://unused:unused@127.0.0.1:5432/unused
 RUN pnpm turbo run build --filter=@arena/api...
 
 FROM base AS prod-deps

@@ -27,7 +27,7 @@ jobs:
         ports: ['5432:5432']
         options: --health-cmd pg_isready --health-interval 5s --health-retries 10
     env:
-      # prisma.config.ts reads DATABASE_URL at load; the e2e test boots the app against it
+      # `just migrate-deploy` and the e2e suite run against the service container
       DATABASE_URL: postgresql://arena:arena@localhost:5432/arena
       JWT_SECRET: ci-only-not-a-secret
     steps:

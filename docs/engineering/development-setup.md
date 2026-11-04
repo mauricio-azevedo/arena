@@ -62,8 +62,8 @@ NEXT_PUBLIC_API_BASE_URL
 Turbo runs tasks in strict env mode: a variable read at task time must be listed under `env` in
 `turbo.json` or the task does not see it, and a cached result would not depend on it. Today only
 `NEXT_PUBLIC_API_BASE_URL` (inlined by `next build`) qualifies; the API reads its variables at
-runtime, outside turbo. `generate` gets `DATABASE_URL` via `passThroughEnv`: `prisma.config.ts`
-refuses to load without it, but the generated client does not depend on its value.
+runtime, outside turbo. No build task needs `DATABASE_URL` — `prisma.config.ts` resolves it only
+when a `migrate` or `db` command reads the datasource, so `generate` and `build` run without it.
 
 Guidelines:
 
