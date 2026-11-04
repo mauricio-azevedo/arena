@@ -9,7 +9,7 @@
 #   pruner     the smallest workspace that still builds the API
 #   deps       install from manifests alone, so source edits reuse this layer
 #   builder    @arena/contracts, the Prisma client, then `nest build`
-#   prod-deps  the same install without devDependencies
+#   prod-deps  the same install without devDependencies or optional ones
 # The runtime image copies from the last two. No dependency compiles a native
 # binding, so no stage installs a build toolchain.
 
@@ -36,7 +36,13 @@ RUN pnpm turbo run build --filter=@arena/api...
 
 FROM base AS prod-deps
 COPY --from=pruner /repo/out/json/ .
-RUN pnpm install --frozen-lockfile --prod
+# `--no-optional` as well as `--prod`: @prisma/client declares `prisma` and
+# `typescript` as optional peers, pnpm records a resolved optional peer as an
+# optionalDependency of the client, and `--prod` installs those — so the CLI,
+# Studio (React, d3, visx, PGlite) and a compiler land in an image that only runs
+# `node dist`. The API's own tree declares no optional dependency it needs; the
+# only other one dropped is `pg-cloudflare`, the Workers-only socket for `pg`.
+RUN pnpm install --frozen-lockfile --prod --no-optional
 
 FROM base AS runtime
 ENV NODE_ENV=production
